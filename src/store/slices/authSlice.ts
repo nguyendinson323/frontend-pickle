@@ -20,6 +20,8 @@ import {
   LoginRequest,
   PlayerRegisterRequest,
   CoachRegisterRequest,
+  ClubRegisterRequest,
+  PartnerRegisterRequest,
   StateRegisterRequest,
   RegisterResponse
 } from '../../types/auth'
@@ -85,12 +87,19 @@ const authSlice = createSlice({
       state.isLoading = action.payload
     },
     loginSuccess: (state, action: PayloadAction<LoginResponse>) => {
+      console.log('🔍 Login Success - Full Response:', action.payload)
+      console.log('👤 User Data:', action.payload.user)
+      console.log('📊 Dashboard Data:', action.payload.dashboard)
+      
       state.user = action.payload.user
       state.dashboard = action.payload.dashboard
       state.token = action.payload.token
       state.isAuthenticated = true
       state.isLoading = false
       localStorage.setItem('token', action.payload.token)
+      
+      console.log('✅ Redux State Updated - isAuthenticated:', state.isAuthenticated)
+      console.log('✅ Redux State Updated - user role:', state.user?.role)
     },
     updateUser: (state, action: PayloadAction<Partial<User>>) => {
       if (state.user) {
@@ -197,6 +206,74 @@ export const registerCoach = (formData: CoachRegisterRequest) => async (dispatch
         curp: formData.curp,
         profile_photo_url: formData.profilePhotoUrl,
         id_document_url: formData.idDocumentUrl
+      }
+    }
+    
+    const response = await apiClient.post<RegisterResponse>('/api/auth/register', registerData)
+    dispatch(loginSuccess(response.data))
+    setAuthToken(response.data.token)
+    dispatch(stopLoading())
+    return response.data
+  } catch (error) {
+    dispatch(stopLoading())
+    throw error
+  }
+}
+
+export const registerClub = (formData: ClubRegisterRequest) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Creating club account...'))
+  
+  try {
+    const registerData = {
+      userData: {
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        role: 'club' as const,
+        phone: formData.phoneNumber
+      },
+      profileData: {
+        name: formData.clubName,
+        manager_name: formData.managerName,
+        manager_title: 'Manager',
+        club_type: formData.clubType,
+        rfc: formData.rfc,
+        logo_url: formData.logoUrl,
+        has_courts: false
+      }
+    }
+    
+    const response = await apiClient.post<RegisterResponse>('/api/auth/register', registerData)
+    dispatch(loginSuccess(response.data))
+    setAuthToken(response.data.token)
+    dispatch(stopLoading())
+    return response.data
+  } catch (error) {
+    dispatch(stopLoading())
+    throw error
+  }
+}
+
+export const registerPartner = (formData: PartnerRegisterRequest) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Creating partner account...'))
+  
+  try {
+    const registerData = {
+      userData: {
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        role: 'partner' as const,
+        phone: formData.phoneNumber
+      },
+      profileData: {
+        business_name: formData.businessName,
+        contact_name: formData.contactPersonName,
+        contact_title: 'Contact Person',
+        partner_type: formData.partnerType,
+        rfc: formData.rfc,
+        logo_url: formData.businessLogoUrl,
+        has_courts: true
       }
     }
     

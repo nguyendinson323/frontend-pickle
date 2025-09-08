@@ -19,7 +19,11 @@ const PlayerDashboardPage: React.FC = () => {
   const { user, dashboard } = useSelector((state: RootState) => state.auth)
 
   useEffect(() => {
+    console.log('🏁 PlayerDashboard - User:', user)
+    console.log('🏁 PlayerDashboard - Dashboard:', dashboard)
+    
     if (!user || user.role !== 'player') {
+      console.log('❌ Player auth check failed - redirecting to login')
       navigate('/login')
     }
   }, [user, navigate])

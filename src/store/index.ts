@@ -6,6 +6,8 @@ import messagesReducer from './slices/messagesSlice'
 import notificationsReducer from './slices/notificationsSlice'
 import commonReducer from './slices/commonSlice'
 import loadingReducer from './slices/loadingSlice'
+import playerReducer from './slices/playerSlice'
+import playerFinderReducer from './slices/playerFinderSlice'
 
 export const store = configureStore({
   reducer: {
@@ -15,7 +17,9 @@ export const store = configureStore({
     messages: messagesReducer,
     notifications: notificationsReducer,
     common: commonReducer,
-    loading: loadingReducer
+    loading: loadingReducer,
+    player: playerReducer,
+    playerFinder: playerFinderReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

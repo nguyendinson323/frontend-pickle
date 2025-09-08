@@ -1,0 +1,8 @@
+export { default as PartnerRegisterHeader } from './PartnerRegisterHeader'
+export { default as AccountInfoSection } from './AccountInfoSection'
+export { default as BusinessInfoSection } from './BusinessInfoSection'
+export { default as PartnerTypeSection } from './PartnerTypeSection'
+export { default as LogoUploadSection } from './LogoUploadSection'
+export { default as PartnerBenefitsSection } from './PartnerBenefitsSection'
+export { default as PrivacyPolicySection } from './PrivacyPolicySection'
+export { default as PartnerRegisterActions } from './PartnerRegisterActions'

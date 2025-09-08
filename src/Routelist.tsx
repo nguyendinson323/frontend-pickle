@@ -28,6 +28,9 @@ import ClubDashboardPage from './pages/club/ClubDashboard'
 import PartnerDashboardPage from './pages/partner/PartnerDashboard'
 import StateDashboardPage from './pages/state/StateDashboard'
 
+// Player pages
+import PlayerFinderPage from './pages/player/PlayerFinder'
+
 // Types
 export interface RouteConfig {
   path: string
@@ -122,6 +125,13 @@ const routes: RouteConfig[] = [
         key: "player-dashboard", 
         public: false,
         element: <PlayerDashboardPage />,
+        requiredRoles: ['player']
+    },
+    {
+        path: "/player/finder",
+        key: "player-finder", 
+        public: false,
+        element: <PlayerFinderPage />,
         requiredRoles: ['player']
     },
     {

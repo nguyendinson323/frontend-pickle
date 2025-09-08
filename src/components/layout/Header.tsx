@@ -33,12 +33,15 @@ const Header: React.FC = () => {
     { label: 'Courts', path: '/courts' }
   ]
 
-  const getPrivateNavItems = (role: UserRole): NavigationItem[] => {
+  const getPublicNavItems = (): NavigationItem[] => [
+    { label: 'Tournaments', path: '/tournaments', roles: [] },
+    { label: 'Courts', path: '/courts', roles: [] }
+  ]
+
+  const getPrivateDropdownItems = (role: UserRole): NavigationItem[] => {
     const baseItems: NavigationItem[] = [
       { label: 'Dashboard', path: '/dashboard', roles: ['admin', 'player', 'coach', 'club', 'partner', 'state'] },
-      { label: 'Profile', path: '/profile', roles: ['admin', 'player', 'coach', 'club', 'partner', 'state'] },
-      { label: 'Tournaments', path: '/tournaments', roles: ['admin', 'player', 'coach', 'club', 'partner', 'state'] },
-      { label: 'Courts', path: '/courts', roles: ['admin', 'player', 'coach', 'club', 'partner', 'state'] }
+      { label: 'Profile', path: '/profile', roles: ['admin', 'player', 'coach', 'club', 'partner', 'state'] }
     ]
 
     const roleSpecificItems: Record<UserRole, NavigationItem[]> = {
@@ -48,7 +51,7 @@ const Header: React.FC = () => {
         { label: 'Settings', path: '/admin/settings', roles: ['admin'] }
       ],
       player: [
-        { label: 'Find Players', path: '/player/connections', roles: ['player'] },
+        { label: 'Find Players', path: '/player/finder', roles: ['player'] },
         { label: 'My Matches', path: '/player/matches', roles: ['player'] },
         { label: 'Rankings', path: '/player/rankings', roles: ['player'] }
       ],
@@ -92,9 +95,8 @@ const Header: React.FC = () => {
     setIsUserMenuOpen(false)
   }
 
-  const navItems = isAuthenticated && user 
-    ? getPrivateNavItems(user.role)
-    : publicNavItems
+  const navItems = getPublicNavItems()
+  const dropdownItems = isAuthenticated && user ? getPrivateDropdownItems(user.role) : []
 
   const isActivePath = (path: string) => {
     return location.pathname === path || 
@@ -114,12 +116,37 @@ const Header: React.FC = () => {
               <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center">
                 <span className="text-white font-bold text-sm">PF</span>
               </div>
-              <span>Pickleball Federation</span>
+              <span>MPF</span>
             </button>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
+            {/* Home link */}
+            <button
+              onClick={() => handleNavigation('/')}
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:scale-105 ${
+                isActivePath('/')
+                  ? 'text-indigo-600 bg-indigo-50 border-b-2 border-indigo-600'
+                  : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'
+              }`}
+            >
+              Home
+            </button>
+            
+            {/* About link */}
+            <button
+              onClick={() => handleNavigation('/about')}
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:scale-105 ${
+                isActivePath('/about')
+                  ? 'text-indigo-600 bg-indigo-50 border-b-2 border-indigo-600'
+                  : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'
+              }`}
+            >
+              About
+            </button>
+            
+            {/* Public nav items */}
             {navItems.map((item) => (
               <button
                 key={item.path}
@@ -190,33 +217,46 @@ const Header: React.FC = () => {
                   </button>
 
                   {isUserMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
+                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
                       <div className="px-4 py-2 border-b border-gray-200">
                         <p className="text-sm text-gray-600">Signed in as</p>
                         <p className="text-sm font-medium text-gray-900">{user?.username}</p>
-                        <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
+                        <p className="text-xs text-gray-500 capitalize bg-gray-100 rounded px-2 py-1 mt-1 inline-block">{user?.role}</p>
                       </div>
                       
-                      <button
-                        onClick={() => handleNavigation('/profile')}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        Profile Settings
-                      </button>
+                      {/* Navigation Items from dropdown */}
+                      <div className="py-1 border-b border-gray-200">
+                        {dropdownItems.map((item) => (
+                          <button
+                            key={item.path}
+                            onClick={() => handleNavigation(item.path)}
+                            className={`block w-full text-left px-4 py-2 text-sm transition-colors duration-150 ${
+                              isActivePath(item.path)
+                                ? 'text-indigo-600 bg-indigo-50 font-medium'
+                                : 'text-gray-700 hover:bg-gray-100'
+                            }`}
+                          >
+                            {item.label}
+                          </button>
+                        ))}
+                      </div>
                       
-                      <button
-                        onClick={() => handleNavigation('/membership')}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        Membership
-                      </button>
-                      
-                      <button
-                        onClick={handleLogout}
-                        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                      >
-                        Sign Out
-                      </button>
+                      {/* Additional Options */}
+                      <div className="py-1">
+                        <button
+                          onClick={() => handleNavigation('/membership')}
+                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          Membership
+                        </button>
+                        
+                        <button
+                          onClick={handleLogout}
+                          className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium"
+                        >
+                          Sign Out
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -261,6 +301,27 @@ const Header: React.FC = () => {
         {isMenuOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 bg-white border-t border-gray-200">
+              {/* Public Navigation */}
+              <button
+                onClick={() => handleNavigation('/')}
+                className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                  isActivePath('/')
+                    ? 'text-indigo-600 bg-indigo-50'
+                    : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'
+                }`}
+              >
+                Home
+              </button>
+              <button
+                onClick={() => handleNavigation('/about')}
+                className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                  isActivePath('/about')
+                    ? 'text-indigo-600 bg-indigo-50'
+                    : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'
+                }`}
+              >
+                About
+              </button>
               {navItems.map((item) => (
                 <button
                   key={item.path}
@@ -274,6 +335,61 @@ const Header: React.FC = () => {
                   {item.label}
                 </button>
               ))}
+              
+              {/* Private Navigation for authenticated users */}
+              {isAuthenticated && user && (
+                <>
+                  <div className="my-2 border-t border-gray-200"></div>
+                  <div className="px-3 py-2">
+                    <p className="text-xs text-gray-500 uppercase tracking-wider">Account</p>
+                  </div>
+                  {dropdownItems.map((item) => (
+                    <button
+                      key={item.path}
+                      onClick={() => handleNavigation(item.path)}
+                      className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                        isActivePath(item.path)
+                          ? 'text-indigo-600 bg-indigo-50'
+                          : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => handleNavigation('/membership')}
+                    className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50"
+                  >
+                    Membership
+                  </button>
+                  <div className="my-2 border-t border-gray-200"></div>
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50"
+                  >
+                    Sign Out
+                  </button>
+                </>
+              )}
+              
+              {/* Login/Register for non-authenticated users */}
+              {!isAuthenticated && (
+                <>
+                  <div className="my-2 border-t border-gray-200"></div>
+                  <button
+                    onClick={() => handleNavigation('/login')}
+                    className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50"
+                  >
+                    Sign In
+                  </button>
+                  <button
+                    onClick={() => handleNavigation('/register')}
+                    className="block w-full text-left px-3 py-2 rounded-md text-base font-medium bg-indigo-600 text-white hover:bg-indigo-700"
+                  >
+                    Register
+                  </button>
+                </>
+              )}
             </div>
           </div>
         )}

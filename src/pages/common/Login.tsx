@@ -31,30 +31,34 @@ const LoginPage: React.FC = () => {
       return
     }
 
-    const response = await dispatch(login(formData))
-    
-    // Redirect based on user role
-    switch (response.user.role) {
-      case 'admin':
-        navigate('/admin/dashboard')
-        break
-      case 'player':
-        navigate('/player/dashboard')
-        break
-      case 'coach':
-        navigate('/coach/dashboard')
-        break
-      case 'club':
-        navigate('/club/dashboard')
-        break
-      case 'partner':
-        navigate('/partner/dashboard')
-        break
-      case 'state':
-        navigate('/state/dashboard')
-        break
-      default:
-        navigate('/dashboard')
+    try {
+      const response = await dispatch(login(formData))
+      
+      // Redirect based on user role
+      switch (response.user.role) {
+        case 'admin':
+          navigate('/admin/dashboard')
+          break
+        case 'player':
+          navigate('/player/dashboard')
+          break
+        case 'coach':
+          navigate('/coach/dashboard')
+          break
+        case 'club':
+          navigate('/club/dashboard')
+          break
+        case 'partner':
+          navigate('/partner/dashboard')
+          break
+        case 'state':
+          navigate('/state/dashboard')
+          break
+        default:
+          navigate('/dashboard')
+      }
+    } catch (error) {
+      console.error('Login failed:', error)
     }
     
   }
