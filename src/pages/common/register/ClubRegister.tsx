@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Layout } from '../../../components/layout'
 import { loginSuccess } from '../../../store/slices/authSlice'
 import { useDispatch as useReduxDispatch } from 'react-redux'
 import { AppDispatch } from '../../../store'
@@ -164,55 +163,53 @@ const ClubRegisterPage: React.FC = () => {
   }
 
   return (
-    <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 py-12">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <ClubRegisterHeader />
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 py-12">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <ClubRegisterHeader />
 
-          <div className="bg-white rounded-lg shadow-xl overflow-hidden">
-            <div className="bg-purple-600 text-white p-6">
-              <h2 className="text-xl font-semibold mb-2">Complete Your Club Profile</h2>
-              <p className="text-purple-100">Unite players and organize club activities</p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="p-8 space-y-8">
-              <AccountInfoSection 
-                formData={formData}
-                onInputChange={handleInputChange}
-              />
-
-              <ClubInfoSection 
-                formData={formData}
-                onInputChange={handleInputChange}
-                mexicanStates={mexicanStates}
-              />
-
-              <ClubTypeSection 
-                formData={formData}
-                onInputChange={handleInputChange}
-                clubTypes={clubTypes}
-              />
-
-              <LogoUploadSection 
-                logoPreview={logoPreview}
-                onLogoUpload={handleLogoUpload}
-                onLogoRemove={handleLogoRemove}
-              />
-
-              <PrivacyPolicySection 
-                formData={formData}
-                onInputChange={handleInputChange}
-              />
-
-              <ClubRegisterActions 
-                isLoading={false}
-                onBackToSelect={handleBackToSelect}
-              />
-            </form>
+        <div className="bg-white rounded-lg shadow-xl overflow-hidden">
+          <div className="bg-purple-600 text-white p-6">
+            <h2 className="text-xl font-semibold mb-2">Complete Your Club Profile</h2>
+            <p className="text-purple-100">Unite players and organize club activities</p>
           </div>
+
+          <form onSubmit={handleSubmit} className="p-8 space-y-8">
+            <AccountInfoSection 
+              formData={formData}
+              onInputChange={handleInputChange}
+            />
+
+            <ClubInfoSection 
+              formData={formData}
+              onInputChange={handleInputChange}
+              mexicanStates={mexicanStates}
+            />
+
+            <ClubTypeSection 
+              formData={formData}
+              onInputChange={handleInputChange}
+              clubTypes={clubTypes}
+            />
+
+            <LogoUploadSection 
+              logoPreview={logoPreview}
+              onLogoUpload={handleLogoUpload}
+              onLogoRemove={handleLogoRemove}
+            />
+
+            <PrivacyPolicySection 
+              formData={formData}
+              onInputChange={handleInputChange}
+            />
+
+            <ClubRegisterActions 
+              isLoading={false}
+              onBackToSelect={handleBackToSelect}
+            />
+          </form>
         </div>
       </div>
-    </Layout>
+    </div>
   )
 }
 

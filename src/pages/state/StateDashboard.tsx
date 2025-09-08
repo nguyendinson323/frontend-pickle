@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { Layout } from '../../components/layout'
 import { RootState } from '../../store'
 import { StateDashboard } from '../../types'
 import {
@@ -26,11 +25,9 @@ const StateDashboardPage: React.FC = () => {
 
   if (!user || user.role !== 'state' || !dashboard) {
     return (
-      <Layout>
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
-        </div>
-      </Layout>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+      </div>
     )
   }
 
@@ -41,39 +38,37 @@ const StateDashboardPage: React.FC = () => {
   const recentActivity = stateData.recentActivity || []
 
   return (
-    <Layout>
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <StateDashboardHeader profile={{
-            committeeName: profile.name,
-            stateCoverage: profile.state?.name || 'Unknown',
-            presidentName: profile.president_name || 'Unknown'
-          }} />
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <StateDashboardHeader profile={{
+          committeeName: profile.name,
+          stateCoverage: profile.state?.name || 'Unknown',
+          presidentName: profile.president_name || 'Unknown'
+        }} />
 
-          <StateStatsGrid stateData={stateData} />
+        <StateStatsGrid stateData={stateData} />
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <StateQuickActions />
-            <StatePendingApprovals pendingApprovals={pendingApprovals} />
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <StateUpcomingTournaments upcomingTournaments={upcomingTournaments.map(t => ({
-              id: t.id,
-              name: t.name,
-              location: t.venue_name || 'TBD',
-              date: t.start_date,
-              categories: 'All Categories',
-              registrations: 0
-            }))} />
-            <StateRecentActivity recentActivity={recentActivity} />
-          </div>
-
-          <StatePerformanceOverview stateData={stateData} />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <StateQuickActions />
+          <StatePendingApprovals pendingApprovals={pendingApprovals} />
         </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <StateUpcomingTournaments upcomingTournaments={upcomingTournaments.map(t => ({
+            id: t.id,
+            name: t.name,
+            location: t.venue_name || 'TBD',
+            date: t.start_date,
+            categories: 'All Categories',
+            registrations: 0
+          }))} />
+          <StateRecentActivity recentActivity={recentActivity} />
+        </div>
+
+        <StatePerformanceOverview stateData={stateData} />
       </div>
-    </Layout>
+    </div>
   )
 }
 

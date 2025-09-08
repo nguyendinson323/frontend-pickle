@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import { Layout } from '../../../components/layout'
 import { registerState } from '../../../store/slices/authSlice'
 import { StateRegisterRequest } from '../../../types'
 import { AppDispatch } from '../../../store'
@@ -84,56 +83,54 @@ const StateRegisterPage: React.FC = () => {
   }
 
   return (
-    <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-100 py-12">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <StateRegisterHeader />
+    <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-100 py-12">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <StateRegisterHeader />
 
-          <div className="bg-white rounded-lg shadow-xl overflow-hidden">
-            <div className="bg-red-600 text-white p-6">
-              <h2 className="text-xl font-semibold mb-2">Complete Your State Committee Profile</h2>
-              <p className="text-red-100">Manage and promote pickleball across your entire state</p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="p-8 space-y-8">
-
-              <StateAccountInfoSection
-                formData={formData}
-                onInputChange={handleInputChange}
-              />
-
-              <StateCommitteeInfoSection
-                formData={formData}
-                onInputChange={handleInputChange}
-              />
-
-              <StateInstitutionalDetailsSection
-                formData={formData}
-                onInputChange={handleInputChange}
-              />
-
-              <StateLogoUploadSection
-                formData={formData}
-                logoPreview={logoPreview}
-                onLogoUpload={handleLogoUpload}
-                onRemoveLogo={handleRemoveLogo}
-              />
-
-              <StateResponsibilitiesSection />
-
-              <StatePrivacyPolicySection
-                privacyAccepted={formData.privacyPolicyAccepted}
-                onPrivacyAcceptedChange={(accepted) => 
-                  setFormData(prev => ({ ...prev, privacyPolicyAccepted: accepted }))
-                }
-              />
-
-              <StateRegisterActions isLoading={false} />
-            </form>
+        <div className="bg-white rounded-lg shadow-xl overflow-hidden">
+          <div className="bg-red-600 text-white p-6">
+            <h2 className="text-xl font-semibold mb-2">Complete Your State Committee Profile</h2>
+            <p className="text-red-100">Manage and promote pickleball across your entire state</p>
           </div>
+
+          <form onSubmit={handleSubmit} className="p-8 space-y-8">
+
+            <StateAccountInfoSection
+              formData={formData}
+              onInputChange={handleInputChange}
+            />
+
+            <StateCommitteeInfoSection
+              formData={formData}
+              onInputChange={handleInputChange}
+            />
+
+            <StateInstitutionalDetailsSection
+              formData={formData}
+              onInputChange={handleInputChange}
+            />
+
+            <StateLogoUploadSection
+              formData={formData}
+              logoPreview={logoPreview}
+              onLogoUpload={handleLogoUpload}
+              onRemoveLogo={handleRemoveLogo}
+            />
+
+            <StateResponsibilitiesSection />
+
+            <StatePrivacyPolicySection
+              privacyAccepted={formData.privacyPolicyAccepted}
+              onPrivacyAcceptedChange={(accepted) => 
+                setFormData(prev => ({ ...prev, privacyPolicyAccepted: accepted }))
+              }
+            />
+
+            <StateRegisterActions isLoading={false} />
+          </form>
         </div>
       </div>
-    </Layout>
+    </div>
   )
 }
 

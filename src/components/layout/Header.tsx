@@ -41,7 +41,7 @@ const Header: React.FC = () => {
   const getPrivateDropdownItems = (role: UserRole): NavigationItem[] => {
     const baseItems: NavigationItem[] = [
       { label: 'Dashboard', path: '/dashboard', roles: ['admin', 'player', 'coach', 'club', 'partner', 'state'] },
-      { label: 'Profile', path: '/profile', roles: ['admin', 'player', 'coach', 'club', 'partner', 'state'] }
+      { label: 'Profile', path: `/${role}/profile`, roles: ['admin', 'player', 'coach', 'club', 'partner', 'state'] }
     ]
 
     const roleSpecificItems: Record<UserRole, NavigationItem[]> = {
@@ -52,7 +52,11 @@ const Header: React.FC = () => {
       ],
       player: [
         { label: 'Find Players', path: '/player/finder', roles: ['player'] },
-        { label: 'My Matches', path: '/player/matches', roles: ['player'] },
+        { label: 'Tournaments', path: '/player/tournaments', roles: ['player'] },
+        { label: 'Court Reservations', path: '/player/courts', roles: ['player'] },
+        { label: 'Coaching Sessions', path: '/player/coaching', roles: ['player'] },
+        { label: 'Messages', path: '/player/messages', roles: ['player'] },
+        { label: 'Digital Credentials', path: '/player/credentials', roles: ['player'] },
         { label: 'Rankings', path: '/player/rankings', roles: ['player'] }
       ],
       coach: [
@@ -89,6 +93,12 @@ const Header: React.FC = () => {
     setIsUserMenuOpen(false)
   }
 
+  const isActivePath = (path: string) => {
+    return location.pathname === path || 
+           (path !== '/' && location.pathname.startsWith(path))
+  }
+
+
   const handleLogout = () => {
     dispatch(logout())
     navigate('/')
@@ -97,11 +107,6 @@ const Header: React.FC = () => {
 
   const navItems = getPublicNavItems()
   const dropdownItems = isAuthenticated && user ? getPrivateDropdownItems(user.role) : []
-
-  const isActivePath = (path: string) => {
-    return location.pathname === path || 
-           (path !== '/' && location.pathname.startsWith(path))
-  }
 
   return (
     <header className="bg-white shadow-lg border-b border-gray-200">
@@ -121,7 +126,7 @@ const Header: React.FC = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center space-x-6">
             {/* Home link */}
             <button
               onClick={() => handleNavigation('/')}
@@ -301,7 +306,7 @@ const Header: React.FC = () => {
         {isMenuOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 bg-white border-t border-gray-200">
-              {/* Public Navigation */}
+              {/* Public navigation items - always visible */}
               <button
                 onClick={() => handleNavigation('/')}
                 className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${

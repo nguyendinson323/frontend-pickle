@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { Layout } from '../../../components/layout'
 import { registerCoach } from '../../../store/slices/authSlice'
 import { fetchCommonData } from '../../../store/slices/commonSlice'
 import { CoachRegisterRequest } from '../../../types'
@@ -98,51 +97,49 @@ const CoachRegisterPage: React.FC = () => {
   }
 
   return (
-    <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <CoachRegisterHeader />
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <CoachRegisterHeader />
 
-          <div className="bg-white rounded-lg shadow-xl overflow-hidden">
-            <div className="bg-blue-600 text-white p-6">
-              <h2 className="text-xl font-semibold mb-2">Complete Your Coach Profile</h2>
-              <p className="text-blue-100">Provide coaching qualifications and certification details</p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="p-8 space-y-8">
-
-              <CoachAccountInfoSection 
-                formData={formData}
-                onInputChange={handleInputChange}
-              />
-
-              <CoachPersonalInfoSection 
-                formData={formData}
-                onInputChange={handleInputChange}
-                states={states}
-              />
-
-
-              <CoachDocumentUploadsSection 
-                profilePhotoPreview={profilePhotoPreview}
-                idDocumentPreview={idDocumentPreview}
-                onFileUpload={handleFileUpload}
-              />
-
-              <CoachPrivacyPolicySection 
-                formData={formData}
-                onInputChange={handleInputChange}
-              />
-
-              <CoachRegisterActions 
-                isLoading={false}
-                onBackToSelect={handleBackToSelect}
-              />
-            </form>
+        <div className="bg-white rounded-lg shadow-xl overflow-hidden">
+          <div className="bg-blue-600 text-white p-6">
+            <h2 className="text-xl font-semibold mb-2">Complete Your Coach Profile</h2>
+            <p className="text-blue-100">Provide coaching qualifications and certification details</p>
           </div>
+
+          <form onSubmit={handleSubmit} className="p-8 space-y-8">
+
+            <CoachAccountInfoSection 
+              formData={formData}
+              onInputChange={handleInputChange}
+            />
+
+            <CoachPersonalInfoSection 
+              formData={formData}
+              onInputChange={handleInputChange}
+              states={states}
+            />
+
+
+            <CoachDocumentUploadsSection 
+              profilePhotoPreview={profilePhotoPreview}
+              idDocumentPreview={idDocumentPreview}
+              onFileUpload={handleFileUpload}
+            />
+
+            <CoachPrivacyPolicySection 
+              formData={formData}
+              onInputChange={handleInputChange}
+            />
+
+            <CoachRegisterActions 
+              isLoading={false}
+              onBackToSelect={handleBackToSelect}
+            />
+          </form>
         </div>
       </div>
-    </Layout>
+    </div>
   )
 }
 

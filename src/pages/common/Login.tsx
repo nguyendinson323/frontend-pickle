@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import { Layout } from '../../components/layout'
 import { login } from '../../store/slices/authSlice'
 import { LoginRequest } from '../../types'
 import { AppDispatch } from '../../store'
@@ -68,8 +67,7 @@ const LoginPage: React.FC = () => {
   }
 
   return (
-    <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           {/* Header */}
           <div className="text-center">
@@ -234,8 +232,7 @@ const LoginPage: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
-    </Layout>
+    </div>
   )
 }
 

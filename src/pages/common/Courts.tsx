@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Layout } from '../../components/layout'
 import { RootState, AppDispatch } from '../../store'
 import { fetchCommonData } from '../../store/slices/commonSlice'
 import { LoadingSpinner } from '../../components/common'
@@ -30,18 +29,16 @@ const CourtsPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Layout>
-        <div className="flex items-center justify-center min-h-screen">
-          <LoadingSpinner size="lg" message="Loading courts..." />
-        </div>
-      </Layout>
+      <div className="flex items-center justify-center min-h-screen">
+        <LoadingSpinner size="lg" message="Loading courts..." />
+      </div>
     )
   }
 
   const states = commonData?.states || []
 
   return (
-    <Layout>
+    <>
       <CourtsHero />
       
       {commonData?.federation_statistics && (
@@ -57,7 +54,7 @@ const CourtsPage: React.FC = () => {
       <CourtsListing />
       <CourtsFeatures />
       <CourtsCTA />
-    </Layout>
+    </>
   )
 }
 

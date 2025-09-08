@@ -4,6 +4,7 @@ import { UserRole } from './types'
 
 // Route components
 import { DashboardRedirect } from './routes/DashboardRedirect'
+import { ProfileRedirect } from './routes/ProfileRedirect'
 
 // Common pages
 import HomePage from './pages/common/Home'
@@ -28,8 +29,22 @@ import ClubDashboardPage from './pages/club/ClubDashboard'
 import PartnerDashboardPage from './pages/partner/PartnerDashboard'
 import StateDashboardPage from './pages/state/StateDashboard'
 
+// Profile pages
+import AdminProfilePage from './pages/admin/AdminProfile'
+import PlayerProfilePage from './pages/player/PlayerProfile'
+import CoachProfilePage from './pages/coach/CoachProfile'
+import ClubProfilePage from './pages/club/ClubProfile'
+import PartnerProfilePage from './pages/partner/PartnerProfile'
+import StateProfilePage from './pages/state/StateProfile'
+
 // Player pages
 import PlayerFinderPage from './pages/player/PlayerFinder'
+import TournamentBrowsePage from './pages/player/TournamentBrowse'
+import CourtReservationsPage from './pages/player/CourtReservations'
+import DigitalCredentialsPage from './pages/player/DigitalCredentials'
+import CoachingSessionsPage from './pages/player/CoachingSessions'
+import PlayerMessagesPage from './pages/player/PlayerMessages'
+import PlayerRankingsPage from './pages/player/PlayerRankings'
 
 // Types
 export interface RouteConfig {
@@ -135,6 +150,48 @@ const routes: RouteConfig[] = [
         requiredRoles: ['player']
     },
     {
+        path: "/player/tournaments",
+        key: "player-tournaments", 
+        public: false,
+        element: <TournamentBrowsePage />,
+        requiredRoles: ['player']
+    },
+    {
+        path: "/player/courts",
+        key: "player-courts", 
+        public: false,
+        element: <CourtReservationsPage />,
+        requiredRoles: ['player']
+    },
+    {
+        path: "/player/credentials",
+        key: "player-credentials", 
+        public: false,
+        element: <DigitalCredentialsPage />,
+        requiredRoles: ['player']
+    },
+    {
+        path: "/player/coaching",
+        key: "player-coaching", 
+        public: false,
+        element: <CoachingSessionsPage />,
+        requiredRoles: ['player']
+    },
+    {
+        path: "/player/messages",
+        key: "player-messages", 
+        public: false,
+        element: <PlayerMessagesPage />,
+        requiredRoles: ['player']
+    },
+    {
+        path: "/player/rankings",
+        key: "player-rankings", 
+        public: false,
+        element: <PlayerRankingsPage />,
+        requiredRoles: ['player']
+    },
+    {
         path: "/coach/dashboard",
         key: "coach-dashboard",
         public: false,
@@ -167,6 +224,59 @@ const routes: RouteConfig[] = [
         key: "dashboard-redirect",
         public: false,
         element: <DashboardRedirect />,
+        requiredRoles: ['player', 'coach', 'admin', 'state', 'club', 'partner']
+    },
+    
+    // ==================== PROFILE ROUTES ====================
+    {
+        path: "/admin/profile",
+        key: "admin-profile",
+        public: false,
+        element: <AdminProfilePage />,
+        requiredRoles: ['admin']
+    },
+    {
+        path: "/player/profile",
+        key: "player-profile",
+        public: false,
+        element: <PlayerProfilePage />,
+        requiredRoles: ['player']
+    },
+    {
+        path: "/coach/profile",
+        key: "coach-profile",
+        public: false,
+        element: <CoachProfilePage />,
+        requiredRoles: ['coach']
+    },
+    {
+        path: "/club/profile",
+        key: "club-profile",
+        public: false,
+        element: <ClubProfilePage />,
+        requiredRoles: ['club']
+    },
+    {
+        path: "/partner/profile",
+        key: "partner-profile",
+        public: false,
+        element: <PartnerProfilePage />,
+        requiredRoles: ['partner']
+    },
+    {
+        path: "/state/profile",
+        key: "state-profile",
+        public: false,
+        element: <StateProfilePage />,
+        requiredRoles: ['state']
+    },
+    
+    // ==================== LEGACY PROFILE ROUTE ====================
+    {
+        path: "/profile",
+        key: "profile-redirect",
+        public: false,
+        element: <ProfileRedirect />,
         requiredRoles: ['player', 'coach', 'admin', 'state', 'club', 'partner']
     }
 ]

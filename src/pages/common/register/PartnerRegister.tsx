@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Layout } from '../../../components/layout'
 import { useDispatch as useReduxDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../../../store'
 import { registerPartner } from '../../../store/slices/authSlice'
@@ -108,8 +107,7 @@ const PartnerRegisterPage: React.FC = () => {
   }
 
   return (
-    <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-100 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-100 py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <PartnerRegisterHeader />
@@ -159,8 +157,7 @@ const PartnerRegisterPage: React.FC = () => {
             </form>
           </div>
         </div>
-      </div>
-    </Layout>
+    </div>
   )
 }
 

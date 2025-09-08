@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Layout } from '../../components/layout'
 import { RootState, AppDispatch } from '../../store'
 import { fetchCommonData } from '../../store/slices/commonSlice'
 import {
@@ -24,7 +23,7 @@ const AboutPage: React.FC = () => {
   }, [dispatch, commonData])
 
   return (
-    <Layout>
+    <>
       <AboutHero />
       
       {commonData?.federation_statistics && (
@@ -36,7 +35,7 @@ const AboutPage: React.FC = () => {
       <TournamentOrganization />
       <DigitalCredentials />
       <AboutCTA />
-    </Layout>
+    </>
   )
 }
 

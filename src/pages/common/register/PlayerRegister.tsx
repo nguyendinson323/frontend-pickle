@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { Layout } from '../../../components/layout'
 import { registerPlayer } from '../../../store/slices/authSlice'
 import { fetchCommonData } from '../../../store/slices/commonSlice'
 import { PlayerRegisterRequest } from '../../../types'
@@ -103,44 +102,42 @@ const PlayerRegisterPage: React.FC = () => {
   }
 
   return (
-    <Layout>
-      <div className="min-h-screen bg-gray-50 py-12">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <PlayerRegisterHeader />
+    <div className="min-h-screen bg-gray-50 py-12">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <PlayerRegisterHeader />
 
-          <form onSubmit={handleSubmit} className="space-y-8">
+        <form onSubmit={handleSubmit} className="space-y-8">
 
-            <PlayerAccountInfoSection
-              formData={formData}
-              onInputChange={handleInputChange}
-            />
+          <PlayerAccountInfoSection
+            formData={formData}
+            onInputChange={handleInputChange}
+          />
 
-            <PlayerPersonalInfoSection
-              formData={formData}
-              onInputChange={handleInputChange}
-              states={states}
-            />
+          <PlayerPersonalInfoSection
+            formData={formData}
+            onInputChange={handleInputChange}
+            states={states}
+          />
 
-            <PlayerDocumentUploadsSection
-              formData={formData}
-              onFileUpload={handleFileUpload}
-            />
+          <PlayerDocumentUploadsSection
+            formData={formData}
+            onFileUpload={handleFileUpload}
+          />
 
-            <PlayerPrivacyPolicySection
-              privacyAccepted={formData.privacyPolicyAccepted}
-              onPrivacyAcceptedChange={(accepted) => 
-                setFormData(prev => ({ ...prev, privacyPolicyAccepted: accepted }))
-              }
-            />
+          <PlayerPrivacyPolicySection
+            privacyAccepted={formData.privacyPolicyAccepted}
+            onPrivacyAcceptedChange={(accepted) => 
+              setFormData(prev => ({ ...prev, privacyPolicyAccepted: accepted }))
+            }
+          />
 
-            <PlayerRegisterActions
-              isFormValid={isFormValid}
-              isLoading={false}
-            />
-          </form>
-        </div>
+          <PlayerRegisterActions
+            isFormValid={isFormValid}
+            isLoading={false}
+          />
+        </form>
       </div>
-    </Layout>
+    </div>
   )
 }
 

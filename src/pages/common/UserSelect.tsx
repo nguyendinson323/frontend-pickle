@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { Layout } from '../../components/layout'
 import { UserRole } from '../../types'
 import {
   UserSelectHeader,
@@ -141,29 +140,27 @@ const UserSelectPage: React.FC = () => {
   }
 
   return (
-    <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <UserSelectHeader />
-          
-          <UserTypeGrid 
-            userTypes={userTypes}
-            selectedType={selectedType}
-            onTypeSelect={handleTypeSelect}
-          />
-          
-          <UserSelectActions 
-            selectedType={selectedType}
-            userTypes={userTypes}
-          />
-          
-          <UserSelectDetails 
-            selectedType={selectedType}
-            userTypes={userTypes}
-          />
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <UserSelectHeader />
+        
+        <UserTypeGrid 
+          userTypes={userTypes}
+          selectedType={selectedType}
+          onTypeSelect={handleTypeSelect}
+        />
+        
+        <UserSelectActions 
+          selectedType={selectedType}
+          userTypes={userTypes}
+        />
+        
+        <UserSelectDetails 
+          selectedType={selectedType}
+          userTypes={userTypes}
+        />
       </div>
-    </Layout>
+    </div>
   )
 }
 

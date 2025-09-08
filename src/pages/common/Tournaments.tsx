@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Layout } from '../../components/layout'
 import { RootState, AppDispatch } from '../../store'
 import { fetchCommonData } from '../../store/slices/commonSlice'
 import { LoadingSpinner } from '../../components/common'
@@ -23,11 +22,9 @@ const TournamentsPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Layout>
-        <div className="flex items-center justify-center min-h-screen">
-          <LoadingSpinner size="lg" message="Loading tournaments..." />
-        </div>
-      </Layout>
+      <div className="flex items-center justify-center min-h-screen">
+        <LoadingSpinner size="lg" message="Loading tournaments..." />
+      </div>
     )
   }
 
@@ -35,7 +32,7 @@ const TournamentsPage: React.FC = () => {
   const recentTournaments = commonData?.recent_tournaments || []
 
   return (
-    <Layout>
+    <>
       <TournamentsHero />
       
       <TournamentsUpcoming tournaments={upcomingTournaments} />
@@ -43,7 +40,7 @@ const TournamentsPage: React.FC = () => {
       <TournamentsRecent tournaments={recentTournaments} />
       
       <TournamentsCTA />
-    </Layout>
+    </>
   )
 }
 

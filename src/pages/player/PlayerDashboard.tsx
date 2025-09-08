@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { Layout } from '../../components/layout'
 import { RootState } from '../../store'
 import { PlayerDashboard } from '../../types'
 import {
@@ -30,11 +29,9 @@ const PlayerDashboardPage: React.FC = () => {
 
   if (!user || user.role !== 'player' || !dashboard) {
     return (
-      <Layout>
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
-        </div>
-      </Layout>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+      </div>
     )
   }
 
@@ -44,8 +41,7 @@ const PlayerDashboardPage: React.FC = () => {
   const recentMatches = playerData.recentMatches || []
 
   return (
-    <Layout>
-      <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <PlayerDashboardHeader profile={{
@@ -85,8 +81,7 @@ const PlayerDashboardPage: React.FC = () => {
             currentRanking: playerData.currentRanking?.current_rank || 0
           }} user={user} />
         </div>
-      </div>
-    </Layout>
+    </div>
   )
 }
 

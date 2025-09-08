@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Layout } from '../../components/layout'
 import { RootState, AppDispatch } from '../../store'
 import { fetchCommonData } from '../../store/slices/commonSlice'
 import { LoadingSpinner } from '../../components/common'
@@ -24,16 +23,14 @@ const HomePage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Layout>
-        <div className="flex items-center justify-center min-h-screen">
-          <LoadingSpinner size="lg" message="Loading..." />
-        </div>
-      </Layout>
+      <div className="flex items-center justify-center min-h-screen">
+        <LoadingSpinner size="lg" message="Loading..." />
+      </div>
     )
   }
 
   return (
-    <Layout>
+    <>
       <HomeHero />
       
       {commonData?.federation_statistics && (
@@ -47,7 +44,7 @@ const HomePage: React.FC = () => {
       )}
       
       <HomeCTA />
-    </Layout>
+    </>
   )
 }
 
