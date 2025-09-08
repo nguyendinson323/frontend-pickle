@@ -11,7 +11,7 @@ import {
   PlayerRecentMatches,
   PlayerAchievements,
   PlayerCredentialPreview
-} from '../../components/player/PlayerDashboard'
+} from '../../components/player/dashboard'
 
 const PlayerDashboardPage: React.FC = () => {
   const navigate = useNavigate()

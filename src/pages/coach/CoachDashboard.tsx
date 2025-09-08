@@ -11,7 +11,7 @@ import {
   CoachRecentSessions,
   CoachStudentProgress,
   CoachCertifications
-} from '../../components/coach/CoachDashboard'
+} from '../../components/coach/dashboard'
 
 const CoachDashboardPage: React.FC = () => {
   const navigate = useNavigate()

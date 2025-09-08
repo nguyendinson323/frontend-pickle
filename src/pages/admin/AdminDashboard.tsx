@@ -10,7 +10,7 @@ import {
   AdminRecentActivity,
   AdminSystemStatus,
   AdminPendingApprovals
-} from '../../components/admin/AdminDashboard'
+} from '../../components/admin/dashboard'
 
 const AdminDashboardPage: React.FC = () => {
   const dispatch = useDispatch()

@@ -11,7 +11,7 @@ import {
   StateUpcomingTournaments,
   StateRecentActivity,
   StatePerformanceOverview
-} from '../../components/state/StateDashboard'
+} from '../../components/state/dashboard'
 
 const StateDashboardPage: React.FC = () => {
   const navigate = useNavigate()

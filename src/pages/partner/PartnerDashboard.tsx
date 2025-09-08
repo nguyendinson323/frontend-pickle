@@ -11,7 +11,7 @@ import {
   PartnerUpcomingEvents,
   PartnerPerformanceMetrics,
   PartnerBusinessOverview
-} from '../../components/partner/PartnerDashboard'
+} from '../../components/partner/dashboard'
 
 const PartnerDashboardPage: React.FC = () => {
   const navigate = useNavigate()

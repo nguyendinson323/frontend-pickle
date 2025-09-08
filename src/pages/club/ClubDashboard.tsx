@@ -11,7 +11,7 @@ import {
   ClubUpcomingTournaments,
   ClubCourtActivity,
   ClubPerformanceSection
-} from '../../components/club/ClubDashboard'
+} from '../../components/club/dashboard'
 
 const ClubDashboardPage: React.FC = () => {
   const navigate = useNavigate()
