@@ -1,0 +1,1 @@
+export { AdminApprovalCard } from './AdminApprovalCard'

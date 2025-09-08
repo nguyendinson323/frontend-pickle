@@ -1,252 +1,250 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { RootState, AppDispatch } from '../../store/index'
-import { logoutUser, getCurrentUser } from '../../store/slices/authSlice'
+import { RootState } from '../../store'
+import { logout } from '../../store/slices/authSlice'
+import { NavigationItem, UserRole } from '../../types'
 
 const Header: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
   const location = useLocation()
-  const { user, isAuthenticated, loading } = useSelector((state: RootState) => state.auth)
-  
+  const dispatch = useDispatch()
+  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth)
+  const { unreadCount: unreadNotifications } = useSelector((state: RootState) => state.notifications)
+  const { unreadCount: unreadMessages } = useSelector((state: RootState) => state.messages)
+
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isProfileOpen, setIsProfileOpen] = useState(false)
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
 
-  // Check for existing token on mount
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    if (token && !isAuthenticated && !loading) {
-      dispatch(getCurrentUser())
+    const handleClickOutside = () => {
+      setIsMenuOpen(false)
+      setIsUserMenuOpen(false)
     }
-  }, [dispatch, isAuthenticated, loading])
 
-  const handleLogout = () => {
-    dispatch(logoutUser())
-    navigate('/')
-    setIsProfileOpen(false)
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
+  }, [])
+
+  const publicNavItems: NavigationItem[] = [
+    { label: 'Home', path: '/' },
+    { label: 'About', path: '/about' },
+    { label: 'Tournaments', path: '/tournaments' },
+    { label: 'Courts', path: '/courts' }
+  ]
+
+  const getPrivateNavItems = (role: UserRole): NavigationItem[] => {
+    const baseItems: NavigationItem[] = [
+      { label: 'Dashboard', path: '/dashboard', roles: ['admin', 'player', 'coach', 'club', 'partner', 'state'] },
+      { label: 'Profile', path: '/profile', roles: ['admin', 'player', 'coach', 'club', 'partner', 'state'] },
+      { label: 'Tournaments', path: '/tournaments', roles: ['admin', 'player', 'coach', 'club', 'partner', 'state'] },
+      { label: 'Courts', path: '/courts', roles: ['admin', 'player', 'coach', 'club', 'partner', 'state'] }
+    ]
+
+    const roleSpecificItems: Record<UserRole, NavigationItem[]> = {
+      admin: [
+        { label: 'User Management', path: '/admin/users', roles: ['admin'] },
+        { label: 'System Reports', path: '/admin/reports', roles: ['admin'] },
+        { label: 'Settings', path: '/admin/settings', roles: ['admin'] }
+      ],
+      player: [
+        { label: 'Find Players', path: '/player/connections', roles: ['player'] },
+        { label: 'My Matches', path: '/player/matches', roles: ['player'] },
+        { label: 'Rankings', path: '/player/rankings', roles: ['player'] }
+      ],
+      coach: [
+        { label: 'My Sessions', path: '/coach/sessions', roles: ['coach'] },
+        { label: 'Certifications', path: '/coach/certifications', roles: ['coach'] },
+        { label: 'Students', path: '/coach/students', roles: ['coach'] }
+      ],
+      club: [
+        { label: 'My Courts', path: '/club/courts', roles: ['club'] },
+        { label: 'Members', path: '/club/members', roles: ['club'] },
+        { label: 'My Tournaments', path: '/club/tournaments', roles: ['club'] },
+        { label: 'Microsite', path: '/club/microsite', roles: ['club'] }
+      ],
+      partner: [
+        { label: 'My Courts', path: '/partner/courts', roles: ['partner'] },
+        { label: 'My Tournaments', path: '/partner/tournaments', roles: ['partner'] },
+        { label: 'Microsite', path: '/partner/microsite', roles: ['partner'] },
+        { label: 'Analytics', path: '/partner/analytics', roles: ['partner'] }
+      ],
+      state: [
+        { label: 'State Management', path: '/state/management', roles: ['state'] },
+        { label: 'State Tournaments', path: '/state/tournaments', roles: ['state'] },
+        { label: 'Microsite', path: '/state/microsite', roles: ['state'] },
+        { label: 'Reports', path: '/state/reports', roles: ['state'] }
+      ]
+    }
+
+    return [...baseItems, ...roleSpecificItems[role]]
   }
 
   const handleNavigation = (path: string) => {
     navigate(path)
     setIsMenuOpen(false)
-    setIsProfileOpen(false)
+    setIsUserMenuOpen(false)
   }
+
+  const handleLogout = () => {
+    dispatch(logout())
+    navigate('/')
+    setIsUserMenuOpen(false)
+  }
+
+  const navItems = isAuthenticated && user 
+    ? getPrivateNavItems(user.role)
+    : publicNavItems
 
   const isActivePath = (path: string) => {
-    return location.pathname === path || location.pathname.startsWith(path)
-  }
-
-  // Common navigation items for all visitors
-  const commonNavItems = [
-    { label: 'Home', path: '/' },
-    { label: 'Tournaments', path: '/tournaments' },
-    { label: 'Courts', path: '/courts' },
-    { label: 'National Ranking', path: '/ranking' },
-    { label: 'States', path: '/states' },
-    { label: 'Rules', path: '/rules' }
-  ]
-
-  // Private navigation items for logged-in users based on role (without duplicates from user menu)
-  const getPrivateNavItems = () => {
-    if (!user) return []
-
-    // Only return role-specific items, Dashboard will be in user menu
-    switch (user.role) {
-      case 'admin':
-        return [
-          { label: 'Admin Panel', path: '/admin' },
-          { label: 'User Management', path: '/admin/users' },
-          { label: 'Reports', path: '/admin/reports' }
-        ]
-      case 'player':
-        return [
-          { label: 'My Tournaments', path: '/player/tournaments' },
-          { label: 'Court Reservations', path: '/player/reservations' },
-          { label: 'Find Players', path: '/player/find' }
-        ]
-      case 'coach':
-        return [
-          { label: 'My Students', path: '/coach/students' },
-          { label: 'Certifications', path: '/coach/certifications' },
-          { label: 'Schedule', path: '/coach/schedule' }
-        ]
-      case 'club':
-        return [
-          { label: 'Manage Courts', path: '/club/courts' },
-          { label: 'Club Tournaments', path: '/club/tournaments' },
-          { label: 'Members', path: '/club/members' },
-          { label: 'Microsite', path: '/club/microsite' }
-        ]
-      case 'partner':
-        return [
-          { label: 'Manage Courts', path: '/partner/courts' },
-          { label: 'Partner Tournaments', path: '/partner/tournaments' },
-          { label: 'Reservations', path: '/partner/reservations' },
-          { label: 'Microsite', path: '/partner/microsite' }
-        ]
-      case 'state':
-        return [
-          { label: 'State Management', path: '/state/management' },
-          { label: 'State Tournaments', path: '/state/tournaments' },
-          { label: 'Affiliates', path: '/state/affiliates' },
-          { label: 'Microsite', path: '/state/microsite' }
-        ]
-      default:
-        return []
-    }
-  }
-
-  const privateNavItems = getPrivateNavItems()
-
-  const getRoleDisplayName = (role: string) => {
-    const roleNames = {
-      admin: 'Administrator',
-      player: 'Player',
-      coach: 'Coach',
-      club: 'Club',
-      partner: 'Partner', 
-      state: 'State Committee'
-    }
-    return roleNames[role as keyof typeof roleNames] || role
+    return location.pathname === path || 
+           (path !== '/' && location.pathname.startsWith(path))
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
-      <div className="container mx-auto px-4">
+    <header className="bg-white shadow-lg border-b border-gray-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <button
+            <button 
               onClick={() => handleNavigation('/')}
-              className="text-2xl font-bold text-green-600 hover:text-green-700 transition-colors"
+              className="flex items-center space-x-2 text-2xl font-bold text-indigo-600 hover:text-indigo-700 transition-colors duration-200"
             >
-              MPF
+              <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center">
+                <span className="text-white font-bold text-sm">PF</span>
+              </div>
+              <span>Pickleball Federation</span>
             </button>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            {/* Common Navigation */}
-            <div className="flex space-x-6">
-              {commonNavItems.map((item) => (
-                <button
-                  key={item.path}
-                  onClick={() => handleNavigation(item.path)}
-                  className={`text-sm font-medium transition-colors ${
-                    isActivePath(item.path)
-                      ? 'text-green-600 border-b-2 border-green-600'
-                      : 'text-gray-700 hover:text-green-600'
-                  }`}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
+            {navItems.map((item) => (
+              <button
+                key={item.path}
+                onClick={() => handleNavigation(item.path)}
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:scale-105 ${
+                  isActivePath(item.path)
+                    ? 'text-indigo-600 bg-indigo-50 border-b-2 border-indigo-600'
+                    : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
 
-            {/* Auth Section */}
-            <div className="flex items-center space-x-4">
-              {isAuthenticated ? (
+          {/* Right Side - Auth & Notifications */}
+          <div className="flex items-center space-x-4">
+            {isAuthenticated ? (
+              <div className="flex items-center space-x-4">
+                {/* Notifications */}
+                <button
+                  onClick={() => handleNavigation('/notifications')}
+                  className="relative p-2 text-gray-600 hover:text-indigo-600 transition-colors duration-200 hover:scale-110"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5h5m-5-5v5M7 7h10a2 2 0 012 2v6a2 2 0 01-2 2H7a2 2 0 01-2-2V9a2 2 0 012-2z" />
+                  </svg>
+                  {unreadNotifications > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+                      {unreadNotifications > 99 ? '99+' : unreadNotifications}
+                    </span>
+                  )}
+                </button>
+
+                {/* Messages */}
+                <button
+                  onClick={() => handleNavigation('/messages')}
+                  className="relative p-2 text-gray-600 hover:text-indigo-600 transition-colors duration-200 hover:scale-110"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                  {unreadMessages > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+                      {unreadMessages > 99 ? '99+' : unreadMessages}
+                    </span>
+                  )}
+                </button>
+
+                {/* User Menu */}
                 <div className="relative">
                   <button
-                    onClick={() => setIsProfileOpen(!isProfileOpen)}
-                    className="flex items-center space-x-2 text-sm font-medium text-gray-700 hover:text-green-600 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setIsUserMenuOpen(!isUserMenuOpen)
+                    }}
+                    className="flex items-center space-x-2 text-gray-700 hover:text-indigo-600 transition-colors duration-200"
                   >
-                    <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center">
-                      {user?.username?.[0]?.toUpperCase() || 'U'}
+                    <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center">
+                      <span className="text-white font-bold text-sm">
+                        {user?.username.charAt(0).toUpperCase()}
+                      </span>
                     </div>
-                    <div className="hidden lg:block">
-                      <div className="text-xs text-gray-500">{getRoleDisplayName(user?.role || '')}</div>
-                      <div>{user?.username}</div>
-                    </div>
-                    <span>▼</span>
+                    <span className="hidden md:block font-medium">{user?.username}</span>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
                   </button>
 
-                  {isProfileOpen && (
-                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg py-1 border z-50">
-                      {/* Main Actions */}
+                  {isUserMenuOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
+                      <div className="px-4 py-2 border-b border-gray-200">
+                        <p className="text-sm text-gray-600">Signed in as</p>
+                        <p className="text-sm font-medium text-gray-900">{user?.username}</p>
+                        <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
+                      </div>
+                      
                       <button
-                        onClick={(e) => {
-                          e.preventDefault()
-                          e.stopPropagation()
-                          handleNavigation('/dashboard')
-                        }}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 w-full text-left transition-colors duration-150"
+                        onClick={() => handleNavigation('/profile')}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       >
-                        Dashboard
+                        Profile Settings
                       </button>
                       
-                      {/* Role-specific navigation items */}
-                      {privateNavItems.length > 0 && (
-                        <>
-                          <hr className="my-1 border-gray-200" />
-                          <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                            {getRoleDisplayName(user?.role || '')} Menu
-                          </div>
-                          {privateNavItems.map((item) => (
-                            <button
-                              key={item.path}
-                              onClick={(e) => {
-                                e.preventDefault()
-                                e.stopPropagation()
-                                handleNavigation(item.path)
-                              }}
-                              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 w-full text-left transition-colors duration-150"
-                            >
-                              {item.label}
-                            </button>
-                          ))}
-                        </>
-                      )}
-                      
-                      <hr className="my-1 border-gray-200" />
                       <button
-                        onClick={(e) => {
-                          e.preventDefault()
-                          e.stopPropagation()
-                          handleNavigation('/settings')
-                        }}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 w-full text-left transition-colors duration-150"
+                        onClick={() => handleNavigation('/membership')}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       >
-                        Settings
+                        Membership
                       </button>
+                      
                       <button
-                        onClick={(e) => {
-                          e.preventDefault()
-                          e.stopPropagation()
-                          handleLogout()
-                        }}
-                        className="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 w-full text-left transition-colors duration-150"
+                        onClick={handleLogout}
+                        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                       >
-                        Logout
+                        Sign Out
                       </button>
                     </div>
                   )}
                 </div>
-              ) : (
-                <div className="flex space-x-4">
-                  <button
-                    onClick={() => handleNavigation('/login')}
-                    className="text-sm font-medium text-gray-700 hover:text-green-600 transition-colors"
-                  >
-                    Login
-                  </button>
-                  <button
-                    onClick={() => handleNavigation('/register')}
-                    className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors"
-                  >
-                    Register
-                  </button>
-                </div>
-              )}
-            </div>
-          </nav>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={() => handleNavigation('/login')}
+                  className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+                >
+                  Sign In
+                </button>
+                <button
+                  onClick={() => handleNavigation('/register')}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:scale-105 shadow-md"
+                >
+                  Register
+                </button>
+              </div>
+            )}
 
-          {/* Mobile Menu Button */}
-          <div className="md:hidden">
+            {/* Mobile menu button */}
             <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-gray-700 hover:text-green-600 transition-colors"
+              onClick={(e) => {
+                e.stopPropagation()
+                setIsMenuOpen(!isMenuOpen)
+              }}
+              className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-indigo-600 hover:bg-gray-100 transition-colors duration-200"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {isMenuOpen ? (
@@ -258,108 +256,28 @@ const Header: React.FC = () => {
             </button>
           </div>
         </div>
-      </div>
 
-      {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="md:hidden bg-white border-t border-gray-200">
-          <div className="px-4 py-2 space-y-1">
-            {/* Common Navigation */}
-            <div className="pb-2">
-              {commonNavItems.map((item) => (
+        {/* Mobile Navigation Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden">
+            <div className="px-2 pt-2 pb-3 space-y-1 bg-white border-t border-gray-200">
+              {navItems.map((item) => (
                 <button
                   key={item.path}
                   onClick={() => handleNavigation(item.path)}
-                  className={`block w-full text-left px-3 py-2 text-sm font-medium transition-colors ${
+                  className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
                     isActivePath(item.path)
-                      ? 'text-green-600 bg-green-50'
-                      : 'text-gray-700 hover:text-green-600 hover:bg-gray-50'
+                      ? 'text-indigo-600 bg-indigo-50'
+                      : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'
                   }`}
                 >
                   {item.label}
                 </button>
               ))}
             </div>
-
-            {/* Private Navigation */}
-            {isAuthenticated && (
-              <div className="border-t border-gray-200 pt-2">
-                <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase">
-                  {getRoleDisplayName(user?.role || '')} Menu
-                </div>
-                {privateNavItems.map((item) => (
-                  <button
-                    key={item.path}
-                    onClick={() => handleNavigation(item.path)}
-                    className={`block w-full text-left px-3 py-2 text-sm font-medium transition-colors ${
-                      isActivePath(item.path)
-                        ? 'text-green-600 bg-green-50'
-                        : 'text-gray-700 hover:text-green-600 hover:bg-gray-50'
-                    }`}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {/* Auth Section */}
-            <div className="border-t border-gray-200 pt-2">
-              {isAuthenticated ? (
-                <div>
-                  <div className="px-3 py-2 text-xs text-gray-500">
-                    Logged in as {user?.username}
-                  </div>
-                  <button
-                    onClick={() => handleNavigation('/dashboard')}
-                    className="block w-full text-left px-3 py-2 text-sm font-medium text-gray-700 hover:text-green-600 hover:bg-gray-50"
-                  >
-                    Dashboard
-                  </button>
-                  <button
-                    onClick={() => handleNavigation('/settings')}
-                    className="block w-full text-left px-3 py-2 text-sm font-medium text-gray-700 hover:text-green-600 hover:bg-gray-50"
-                  >
-                    Settings
-                  </button>
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full text-left px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
-                  >
-                    Logout
-                  </button>
-                </div>
-              ) : (
-                <div className="space-y-1">
-                  <button
-                    onClick={() => handleNavigation('/login')}
-                    className="block w-full text-left px-3 py-2 text-sm font-medium text-gray-700 hover:text-green-600 hover:bg-gray-50"
-                  >
-                    Login
-                  </button>
-                  <button
-                    onClick={() => handleNavigation('/register')}
-                    className="block w-full text-left px-3 py-2 text-sm font-medium bg-green-600 text-white hover:bg-green-700 rounded-lg mx-3"
-                  >
-                    Register
-                  </button>
-                </div>
-              )}
-            </div>
           </div>
-        </div>
-      )}
-
-      {/* Click outside to close dropdowns */}
-      {(isProfileOpen || isMenuOpen) && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => {
-            setIsProfileOpen(false)
-            setIsMenuOpen(false)
-          }}
-        />
-      )}
+        )}
+      </div>
     </header>
   )
 }

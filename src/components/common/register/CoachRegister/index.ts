@@ -1,0 +1,6 @@
+export { default as CoachRegisterHeader } from './CoachRegisterHeader'
+export { default as CoachAccountInfoSection } from './CoachAccountInfoSection'
+export { default as CoachPersonalInfoSection } from './CoachPersonalInfoSection'
+export { default as CoachDocumentUploadsSection } from './CoachDocumentUploadsSection'
+export { default as CoachPrivacyPolicySection } from './CoachPrivacyPolicySection'
+export { default as CoachRegisterActions } from './CoachRegisterActions'

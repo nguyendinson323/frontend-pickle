@@ -300,3 +300,86 @@ export interface AppDataState {
   error: string | null
   lastUpdated: string | null
 }
+
+// Common page specific types
+export interface FederationStatistics {
+  total_players: number
+  total_coaches: number
+  total_clubs: number
+  total_partners: number
+  total_state_committees: number
+  total_courts: number
+  active_tournaments: number
+  total_tournaments: number
+  total_matches_played: number
+  registered_this_month: number
+  total_states: number
+}
+
+export interface FederationInfo {
+  name: string
+  description: string
+  contact_email: string
+  contact_phone: string
+  address: string
+  website: string
+  social_media: {
+    facebook?: string
+    twitter?: string
+    instagram?: string
+    youtube?: string
+  }
+  president_name: string
+  president_title: string
+  mission: string
+  vision: string
+  founded_year: number
+}
+
+export interface PrivacyPolicy {
+  id: number
+  content: string
+  version: string
+  is_active: boolean
+  created_at: string
+}
+
+export interface FeaturedContent {
+  id: number
+  title: string
+  description: string
+  image_url: string
+  link_url: string
+  type: string
+  is_active: boolean
+  display_order: number
+  created_at: string
+}
+
+export interface NewsArticle {
+  id: number
+  title: string
+  content: string
+  author: string
+  image_url: string
+  published_at: string
+  is_featured: boolean
+  category: string
+}
+
+export interface CommonPageData {
+  states: State[]
+  federation_statistics: FederationStatistics
+  recent_tournaments: Tournament[]
+  upcoming_tournaments: Tournament[]
+  federation_info: FederationInfo
+  privacy_policy: PrivacyPolicy
+  featured_content: FeaturedContent[]
+  news_articles: NewsArticle[]
+}
+
+export interface CommonState {
+  data: CommonPageData | null
+  isLoading: boolean
+  lastFetched: string | null
+}

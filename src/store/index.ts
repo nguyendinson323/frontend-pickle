@@ -1,33 +1,31 @@
 import { configureStore } from '@reduxjs/toolkit'
-import authSlice from './slices/authSlice'
-import appDataSlice from './slices/appDataSlice'
-import dashboardSlice from './slices/dashboardSlice'
-import adminSlice from './slices/adminSlice'
-import playerSlice from './slices/playerSlice'
-import coachSlice from './slices/coachSlice'
-import clubSlice from './slices/clubSlice'
-import partnerSlice from './slices/partnerSlice'
-import stateSlice from './slices/stateSlice'
+import authReducer from './slices/authSlice'
+import tournamentsReducer from './slices/tournamentsSlice'
+import courtsReducer from './slices/courtsSlice'
+import messagesReducer from './slices/messagesSlice'
+import notificationsReducer from './slices/notificationsSlice'
+import commonReducer from './slices/commonSlice'
+import loadingReducer from './slices/loadingSlice'
 
 export const store = configureStore({
   reducer: {
-    auth: authSlice,
-    appData: appDataSlice,
-    dashboard: dashboardSlice, // Keep for backward compatibility, will remove later
-    admin: adminSlice,
-    player: playerSlice,
-    coach: coachSlice,
-    club: clubSlice,
-    partner: partnerSlice,
-    state: stateSlice,
+    auth: authReducer,
+    tournaments: tournamentsReducer,
+    courts: courtsReducer,
+    messages: messagesReducer,
+    notifications: notificationsReducer,
+    common: commonReducer,
+    loading: loadingReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ['persist/PERSIST'],
-      },
-    }),
+        ignoredActions: ['persist/PERSIST']
+      }
+    })
 })
 
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch
+
+export default store

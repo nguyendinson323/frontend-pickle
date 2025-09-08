@@ -1,0 +1,7 @@
+export { default as CoachDashboardHeader } from './CoachDashboardHeader'
+export { default as CoachStatsGrid } from './CoachStatsGrid'
+export { default as CoachQuickActions } from './CoachQuickActions'
+export { default as CoachUpcomingSessions } from './CoachUpcomingSessions'
+export { default as CoachRecentSessions } from './CoachRecentSessions'
+export { default as CoachStudentProgress } from './CoachStudentProgress'
+export { default as CoachCertifications } from './CoachCertifications'

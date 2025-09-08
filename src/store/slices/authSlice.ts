@@ -1,38 +1,80 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import api from '../../services/api'
 import { AppDispatch } from '../index'
+import { startLoading, stopLoading } from './loadingSlice'
+import axios from 'axios'
+import {
+  AuthState,
+  User,
+  Player,
+  Coach,
+  Club,
+  Partner,
+  StateCommittee,
+  PlayerDashboard,
+  CoachDashboard,
+  ClubDashboard,
+  PartnerDashboard,
+  StateDashboard,
+  AdminDashboard,
+  LoginResponse,
+  LoginRequest,
+  PlayerRegisterRequest,
+  CoachRegisterRequest,
+  StateRegisterRequest,
+  RegisterResponse
+} from '../../types/auth'
 
-interface User {
-  id: number
-  role: 'admin' | 'player' | 'coach' | 'club' | 'partner' | 'state'
-  username: string
-  email: string
-  phone?: string
-  is_active: boolean
-  is_verified: boolean
-  is_premium: boolean
-  is_searchable: boolean
-  last_login?: string
-  created_at: string
-  updated_at: string
-}
+const BASE_URL = 'http://localhost:5000'
 
-interface AuthState {
-  user: User | null
-  profile: any | null
-  token: string | null
-  isAuthenticated: boolean
-  loading: boolean
-  error: string | null
+const apiClient = axios.create({
+  baseURL: BASE_URL,
+  timeout: 30000,
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token')
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
+
+apiClient.interceptors.response.use(
+  (response) => {
+    return response
+  },
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token')
+      window.location.href = '/login'
+    }
+    return Promise.reject(error)
+  }
+)
+
+const setAuthToken = (token: string | null): void => {
+  if (token) {
+    apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`
+  } else {
+    delete apiClient.defaults.headers.common['Authorization']
+  }
 }
 
 const initialState: AuthState = {
   user: null,
   profile: null,
+  dashboard: null,
   token: localStorage.getItem('token'),
   isAuthenticated: false,
-  loading: false,
-  error: null,
+  isLoading: false
 }
 
 const authSlice = createSlice({
@@ -40,198 +82,238 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setLoading: (state, action: PayloadAction<boolean>) => {
-      state.loading = action.payload
+      state.isLoading = action.payload
     },
-    setError: (state, action: PayloadAction<string | null>) => {
-      state.error = action.payload
-    },
-    clearError: (state) => {
-      state.error = null
-    },
-    setCredentials: (state, action: PayloadAction<{ user: User; token: string; profile?: any }>) => {
+    loginSuccess: (state, action: PayloadAction<LoginResponse>) => {
       state.user = action.payload.user
+      state.dashboard = action.payload.dashboard
       state.token = action.payload.token
-      state.profile = action.payload.profile || null
       state.isAuthenticated = true
-      state.loading = false
-      state.error = null
+      state.isLoading = false
       localStorage.setItem('token', action.payload.token)
     },
-    setUser: (state, action: PayloadAction<User>) => {
-      state.user = action.payload
-      state.isAuthenticated = true
+    updateUser: (state, action: PayloadAction<Partial<User>>) => {
+      if (state.user) {
+        state.user = { ...state.user, ...action.payload }
+      }
     },
-    setProfile: (state, action: PayloadAction<any>) => {
-      state.profile = action.payload
+    updateDashboard: (state, action: PayloadAction<PlayerDashboard | CoachDashboard | ClubDashboard | PartnerDashboard | StateDashboard | AdminDashboard>) => {
+      state.dashboard = action.payload
     },
-    clearCredentials: (state) => {
+    logout: (state) => {
       state.user = null
-      state.token = null
       state.profile = null
+      state.dashboard = null
+      state.token = null
       state.isAuthenticated = false
-      state.loading = false
-      state.error = null
+      state.isLoading = false
       localStorage.removeItem('token')
     },
-    updateProfile: (state, action: PayloadAction<any>) => {
-      if (state.profile) {
-        state.profile = { ...state.profile, ...action.payload }
-      }
-    },
-  },
+    refreshDashboard: (state, action: PayloadAction<PlayerDashboard | CoachDashboard | ClubDashboard | PartnerDashboard | StateDashboard | AdminDashboard>) => {
+      state.dashboard = action.payload
+    }
+  }
 })
 
-export const { 
+export const {
   setLoading,
-  setError,
-  clearError, 
-  setCredentials, 
-  setUser,
-  setProfile,
-  clearCredentials,
-  updateProfile
+  loginSuccess,
+  updateUser,
+  updateDashboard,
+  logout,
+  refreshDashboard
 } = authSlice.actions
 
-// API function to login user (supports username or email)
-export const loginUser = (credentials: { login: string; password: string }) => {
-  return async (dispatch: AppDispatch) => {
-    try {
-      dispatch(setLoading(true))
-      dispatch(clearError())
-      
-      // Enhanced login API call that returns both user auth data AND dashboard data
-      const response = await api.post('/api/auth/login', credentials)
-      
-      const { user, token, profile, dashboardData } = response.data.data
-      
-      // Set authentication credentials
-      dispatch(setCredentials({
-        user,
-        token,
-        profile
-      }))
-      
-      // Dispatch user-type specific dashboard data to the appropriate slice
-      switch (user.role) {
-        case 'admin':
-          const { setAdminDashboardData } = await import('./adminSlice')
-          if (dashboardData) {
-            dispatch(setAdminDashboardData(dashboardData))
-          }
-          break
-          
-        case 'player':
-          const { setPlayerDashboardData } = await import('./playerSlice')
-          if (dashboardData) {
-            dispatch(setPlayerDashboardData(dashboardData))
-          }
-          break
-          
-        case 'coach':
-          const { setCoachDashboardData } = await import('./coachSlice')
-          if (dashboardData) {
-            dispatch(setCoachDashboardData(dashboardData))
-          }
-          break
-          
-        case 'club':
-          const { setClubDashboardData } = await import('./clubSlice')
-          if (dashboardData) {
-            dispatch(setClubDashboardData(dashboardData))
-          }
-          break
-          
-        case 'partner':
-          const { setPartnerDashboardData } = await import('./partnerSlice')
-          if (dashboardData) {
-            dispatch(setPartnerDashboardData(dashboardData))
-          }
-          break
-          
-        case 'state':
-          const { setStateDashboardData } = await import('./stateSlice')
-          if (dashboardData) {
-            dispatch(setStateDashboardData(dashboardData))
-          }
-          break
-          
-        default:
-          console.warn(`Unknown user role: ${user.role}`)
+// Login function that handles the backend request
+export const login = (credentials: LoginRequest) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Logging in...'))
+  
+  try {
+    const response = await apiClient.post<LoginResponse>('/api/auth/login', credentials)
+    dispatch(loginSuccess(response.data))
+    setAuthToken(response.data.token)
+    dispatch(stopLoading())
+    return response.data
+  } catch (error) {
+    dispatch(stopLoading())
+    throw error
+  }
+}
+
+// Register functions that handle backend requests
+export const registerPlayer = (formData: PlayerRegisterRequest) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Creating player account...'))
+  
+  try {
+    const registerData = {
+      userData: {
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        role: 'player' as const,
+        phone: formData.phoneNumber
+      },
+      profileData: {
+        full_name: formData.fullName,
+        birth_date: formData.birthDate,
+        gender: formData.gender === 'male' ? 'Male' : formData.gender === 'female' ? 'Female' : 'Other',
+        state_id: parseInt(formData.state),
+        curp: formData.curp,
+        nrtp_level: parseFloat(formData.nrtpLevel),
+        profile_photo_url: formData.profilePhotoUrl,
+        id_document_url: formData.idDocumentUrl,
+        nationality: formData.nationality
       }
-      
-      // Return user role for navigation routing
-      return { 
-        success: true, 
-        userRole: user.role,
-        redirectTo: getDashboardPath(user.role)
+    }
+    
+    const response = await apiClient.post<RegisterResponse>('/api/auth/register', registerData)
+    dispatch(loginSuccess(response.data))
+    setAuthToken(response.data.token)
+    dispatch(stopLoading())
+    return response.data
+  } catch (error) {
+    dispatch(stopLoading())
+    throw error
+  }
+}
+
+export const registerCoach = (formData: CoachRegisterRequest) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Creating coach account...'))
+  
+  try {
+    const registerData = {
+      userData: {
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        role: 'coach' as const,
+        phone: formData.phoneNumber
+      },
+      profileData: {
+        full_name: formData.fullName,
+        birth_date: formData.birthDate,
+        gender: formData.gender === 'male' ? 'Male' : formData.gender === 'female' ? 'Female' : 'Other',
+        state_id: parseInt(formData.state),
+        curp: formData.curp,
+        profile_photo_url: formData.profilePhotoUrl,
+        id_document_url: formData.idDocumentUrl
       }
-      
-    } catch (error: any) {
-      dispatch(setError(error.response?.data?.message || 'Login failed'))
-      dispatch(setLoading(false))
-      throw error
     }
+    
+    const response = await apiClient.post<RegisterResponse>('/api/auth/register', registerData)
+    dispatch(loginSuccess(response.data))
+    setAuthToken(response.data.token)
+    dispatch(stopLoading())
+    return response.data
+  } catch (error) {
+    dispatch(stopLoading())
+    throw error
   }
 }
 
-// Helper function to get dashboard path based on user role
-const getDashboardPath = (role: string): string => {
-  switch (role) {
-    case 'admin':
-      return '/admin/dashboard'
-    case 'player':
-      return '/player/dashboard'
-    case 'coach':
-      return '/coach/dashboard'
-    case 'club':
-      return '/club/dashboard'
-    case 'partner':
-      return '/partner/dashboard'
-    case 'state':
-      return '/state/dashboard'
-    default:
-      return '/dashboard' // fallback
+export const registerState = (formData: StateRegisterRequest) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Creating state committee account...'))
+  
+  try {
+    const registerData = {
+      userData: {
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        role: 'state' as const,
+        phone: formData.phoneNumber
+      },
+      profileData: {
+        name: formData.committeeName,
+        president_name: formData.presidentName,
+        president_title: 'President',
+        rfc: formData.rfc,
+        state_id: parseInt(formData.stateCoverage),
+        logo_url: formData.committeeLogoUrl,
+        institutional_email: formData.institutionalDetails,
+        phone: formData.phoneNumber
+      }
+    }
+    
+    const response = await apiClient.post<RegisterResponse>('/api/auth/register', registerData)
+    dispatch(loginSuccess(response.data))
+    setAuthToken(response.data.token)
+    dispatch(stopLoading())
+    return response.data
+  } catch (error) {
+    dispatch(stopLoading())
+    throw error
   }
 }
 
-// API function to logout user
-export const logoutUser = () => {
-  return async (dispatch: AppDispatch) => {
-    try {
-      await api.post('/api/auth/logout')
-      dispatch(clearCredentials())
-      
-      // Clear dashboard data on logout
-      const { clearDashboardData } = await import('./dashboardSlice')
-      dispatch(clearDashboardData())
-    } catch (error: any) {
-      // Even if logout fails on server, clear local credentials
-      dispatch(clearCredentials())
-      const { clearDashboardData } = await import('./dashboardSlice')
-      dispatch(clearDashboardData())
-    }
+// Update functions for all user types
+export const updatePlayerProfile = (profileData: Partial<Player>) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating player profile...'))
+  
+  try {
+    const response = await apiClient.put('/api/auth/profile/player', profileData)
+    dispatch(updateDashboard(response.data))
+    dispatch(stopLoading())
+    return response.data
+  } catch (error) {
+    dispatch(stopLoading())
+    throw error
   }
 }
 
-// API function to get current user
-export const getCurrentUser = () => {
-  return async (dispatch: AppDispatch) => {
-    try {
-      dispatch(setLoading(true))
-      dispatch(clearError())
-      
-      const response = await api.get('/api/auth/me')
-      
-      dispatch(setCredentials({
-        user: response.data.data.user,
-        token: response.data.data.token,
-        profile: response.data.data.profile
-      }))
-    } catch (error: any) {
-      dispatch(setError(error.response?.data?.message || 'Failed to get user'))
-      dispatch(clearCredentials())
-      dispatch(setLoading(false))
-    }
+export const updateCoachProfile = (profileData: Partial<Coach>) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating coach profile...'))
+  
+  try {
+    const response = await apiClient.put('/api/auth/profile/coach', profileData)
+    dispatch(updateDashboard(response.data))
+    dispatch(stopLoading())
+    return response.data
+  } catch (error) {
+    dispatch(stopLoading())
+    throw error
+  }
+}
+
+export const updateClubProfile = (profileData: Partial<Club>) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating club profile...'))
+  
+  try {
+    const response = await apiClient.put('/api/auth/profile/club', profileData)
+    dispatch(updateDashboard(response.data))
+    dispatch(stopLoading())
+    return response.data
+  } catch (error) {
+    dispatch(stopLoading())
+    throw error
+  }
+}
+
+export const updatePartnerProfile = (profileData: Partial<Partner>) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating partner profile...'))
+  
+  try {
+    const response = await apiClient.put('/api/auth/profile/partner', profileData)
+    dispatch(updateDashboard(response.data))
+    dispatch(stopLoading())
+    return response.data
+  } catch (error) {
+    dispatch(stopLoading())
+    throw error
+  }
+}
+
+export const updateStateProfile = (profileData: Partial<StateCommittee>) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating state committee profile...'))
+  
+  try {
+    const response = await apiClient.put('/api/auth/profile/state', profileData)
+    dispatch(updateDashboard(response.data))
+    dispatch(stopLoading())
+    return response.data
+  } catch (error) {
+    dispatch(stopLoading())
+    throw error
   }
 }
 

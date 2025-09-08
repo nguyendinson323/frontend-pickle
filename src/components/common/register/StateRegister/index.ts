@@ -1,0 +1,8 @@
+export { default as StateRegisterHeader } from './StateRegisterHeader'
+export { default as StateAccountInfoSection } from './StateAccountInfoSection'
+export { default as StateCommitteeInfoSection } from './StateCommitteeInfoSection'
+export { default as StateInstitutionalDetailsSection } from './StateInstitutionalDetailsSection'
+export { default as StateLogoUploadSection } from './StateLogoUploadSection'
+export { default as StateResponsibilitiesSection } from './StateResponsibilitiesSection'
+export { default as StatePrivacyPolicySection } from './StatePrivacyPolicySection'
+export { default as StateRegisterActions } from './StateRegisterActions'

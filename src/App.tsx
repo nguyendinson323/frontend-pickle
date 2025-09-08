@@ -1,70 +1,54 @@
-import React, { useEffect } from 'react'
-import { Routes, Route } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
-import { AppDispatch } from './store'
-import { fetchAllAppData } from './store/slices/appDataSlice'
-import Header from './components/layout/Header'
-import Footer from './components/layout/Footer'
-import Homepage from './pages/public/Homepage'
-import Tournaments from './pages/public/Tournaments'
-import Courts from './pages/public/Courts'
-import Ranking from './pages/public/Ranking'
-import States from './pages/public/States'
-import Rules from './pages/public/Rules'
-import RegisterSelect from './pages/public/RegisterSelect'
-import PlayerRegister from './pages/public/register/PlayerRegister'
-import CoachRegister from './pages/public/register/CoachRegister'
-import ClubRegister from './pages/public/register/ClubRegister'
-import PartnerRegister from './pages/public/register/PartnerRegister'
-import StateRegister from './pages/public/register/StateRegister'
-import Login from './pages/public/Login'
-import Dashboard from './pages/private/Dashboard'
-import AdminDashboard from './pages/admin/dashboard'
-import PlayerDashboard from './pages/player/dashboard'
-import CoachDashboard from './pages/coach/dashboard'
-import ClubDashboard from './pages/club/dashboard'
-import PartnerDashboard from './pages/partner/dashboard'
-import StateDashboard from './pages/state/dashboard'
+// import React from 'react'
+import { Routes, Route, Navigate } from 'react-router-dom'
+import { ProtectedRoute } from './routes'
+import { GlobalLoader } from './components/common/GlobalLoader'
+import routes from './Routelist'
 
 function App() {
-  const dispatch = useDispatch<AppDispatch>()
-
-  useEffect(() => {
-    dispatch(fetchAllAppData())
-  }, [dispatch])
-
   return (
     <div className="App">
-      <Header />
-      <main>
-        <Routes>
-        <Route path="/" element={<Homepage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
-        <Route path="/player/dashboard" element={<PlayerDashboard />} />
-        <Route path="/coach/dashboard" element={<CoachDashboard />} />
-        <Route path="/club/dashboard" element={<ClubDashboard />} />
-        <Route path="/partner/dashboard" element={<PartnerDashboard />} />
-        <Route path="/state/dashboard" element={<StateDashboard />} />
-        {/* Additional routes will be added here */}
-        <Route path="/register" element={<RegisterSelect />} />
-        <Route path="/register/player" element={<PlayerRegister />} />
-        <Route path="/register/coach" element={<CoachRegister />} />
-        <Route path="/register/club" element={<ClubRegister />} />
-        <Route path="/register/partner" element={<PartnerRegister />} />
-        <Route path="/register/state" element={<StateRegister />} />
-        <Route path="/info/:userType" element={<div className="min-h-screen flex items-center justify-center pt-16"><div className="text-center"><h2 className="text-2xl font-bold text-gray-800 mb-4">Information</h2><p className="text-gray-600">Coming Soon</p></div></div>} />
-        <Route path="/states" element={<States />} />
-        <Route path="/states/:stateId" element={<div className="min-h-screen flex items-center justify-center pt-16"><div className="text-center"><h2 className="text-2xl font-bold text-gray-800 mb-4">State Details</h2><p className="text-gray-600">Coming Soon</p></div></div>} />
-        <Route path="/tournaments" element={<Tournaments />} />
-        <Route path="/tournaments/:tournamentId" element={<div className="min-h-screen flex items-center justify-center pt-16"><div className="text-center"><h2 className="text-2xl font-bold text-gray-800 mb-4">Tournament Details</h2><p className="text-gray-600">Coming Soon</p></div></div>} />
-        <Route path="/ranking" element={<Ranking />} />
-        <Route path="/courts" element={<Courts />} />
-        <Route path="/rules" element={<Rules />} />
-        </Routes>
-      </main>
-      <Footer />
+      <GlobalLoader />
+      <Routes>
+        {routes.map((route) => (
+          <Route 
+            key={route.key}
+            path={route.path} 
+            element={
+              route.public ? (
+                route.element
+              ) : (
+                <ProtectedRoute allowedRoles={route.requiredRoles}>
+                  {route.element}
+                </ProtectedRoute>
+              )
+            } 
+          />
+        ))}
+        
+        {/* Redirect old registration paths */}
+        <Route path="/signup" element={<Navigate to="/register" replace />} />
+        <Route path="/register-player" element={<Navigate to="/register/player" replace />} />
+        <Route path="/register-coach" element={<Navigate to="/register/coach" replace />} />
+        <Route path="/register-club" element={<Navigate to="/register/club" replace />} />
+        <Route path="/register-partner" element={<Navigate to="/register/partner" replace />} />
+        <Route path="/register-state" element={<Navigate to="/register/state" replace />} />
+
+        {/* Role-based root redirects */}
+        <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+        <Route path="/player" element={<Navigate to="/player/dashboard" replace />} />
+        <Route path="/coach" element={<Navigate to="/coach/dashboard" replace />} />
+        <Route path="/club" element={<Navigate to="/club/dashboard" replace />} />
+        <Route path="/partner" element={<Navigate to="/partner/dashboard" replace />} />
+        <Route path="/state" element={<Navigate to="/state/dashboard" replace />} />
+
+        {/* Common alternative paths */}
+        <Route path="/home" element={<Navigate to="/" replace />} />
+        <Route path="/signin" element={<Navigate to="/login" replace />} />
+        <Route path="/sign-in" element={<Navigate to="/login" replace />} />
+
+        {/* 404 route */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </div>
   )
 }
