@@ -208,17 +208,31 @@ export interface PaymentHistory {
 }
 
 // Microsite Management Types
-export interface MicrositeInfo {
+export interface MicrositeAdmin {
   id: number
   owner_id: number
   owner_name: string
   owner_type: 'club' | 'partner' | 'state'
-  status: 'active' | 'inactive' | 'suspended'
+  status: 'active' | 'inactive' | 'suspended' | 'pending' | 'approved' | 'rejected'
   url: string
+  domain_name: string
+  title: string
+  description: string
   last_updated: string
+  created_at: string
   page_views: number
+  monthly_visitors: number
+  content_score: number
   has_inappropriate_content: boolean
   content_warnings: string[]
+  approval_status: 'pending' | 'approved' | 'rejected'
+  rejection_reason: string | null
+  visibility_status: 'public' | 'private' | 'restricted'
+  seo_score: number
+  performance_score: number
+  last_audit_date: string | null
+  contact_email: string
+  contact_phone: string
 }
 
 // Tournament Management Types

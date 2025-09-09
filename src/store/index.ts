@@ -34,6 +34,14 @@ import partnerMicrositeReducer from './slices/partnerMicrositeSlice'
 import partnerStatisticsReducer from './slices/partnerStatisticsSlice'
 import partnerDocumentsReducer from './slices/partnerDocumentsSlice'
 import partnerManagementReducer from './slices/partnerManagementSlice'
+import adminUserManagementReducer from './slices/adminUserManagementSlice'
+import adminMessagingReducer from './slices/adminMessagingSlice'
+import adminRankingsReducer from './slices/adminRankingsSlice'
+import adminCourtsReducer from './slices/adminCourtsSlice'
+import adminTournamentsReducer from './slices/adminTournamentsSlice'
+import adminMicrositesReducer from './slices/adminMicrositesSlice'
+import adminReportsReducer from './slices/adminReportsSlice'
+import adminPaymentsReducer from './slices/adminPaymentsSlice'
 
 export const store = configureStore({
   reducer: {
@@ -71,7 +79,15 @@ export const store = configureStore({
     partnerMicrosite: partnerMicrositeReducer,
     partnerStatistics: partnerStatisticsReducer,
     partnerDocuments: partnerDocumentsReducer,
-    partnerManagement: partnerManagementReducer
+    partnerManagement: partnerManagementReducer,
+    adminUserManagement: adminUserManagementReducer,
+    adminMessaging: adminMessagingReducer,
+    adminRankings: adminRankingsReducer,
+    adminCourts: adminCourtsReducer,
+    adminTournaments: adminTournamentsReducer,
+    adminMicrosites: adminMicrositesReducer,
+    adminReports: adminReportsReducer,
+    adminPayments: adminPaymentsReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

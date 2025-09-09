@@ -23,6 +23,14 @@ import StateRegisterPage from './pages/common/register/StateRegister'
 
 // Dashboard pages
 import AdminDashboardPage from './pages/admin/AdminDashboard'
+import AdminUserManagementPage from './pages/admin/AdminUserManagement'
+import AdminMessagingPage from './pages/admin/AdminMessaging'
+import AdminRankingsPage from './pages/admin/AdminRankings'
+import AdminCourtsPage from './pages/admin/AdminCourts'
+import AdminTournamentsPage from './pages/admin/AdminTournaments'
+import AdminMicrositesPage from './pages/admin/AdminMicrosites'
+import AdminReportsPage from './pages/admin/AdminReports'
+import AdminPaymentsPage from './pages/admin/AdminPayments'
 import PlayerDashboardPage from './pages/player/PlayerDashboard'
 import CoachDashboardPage from './pages/coach/CoachDashboard'
 import CoachSessionsPage from './pages/coach/CoachSessions'
@@ -159,6 +167,62 @@ const routes: RouteConfig[] = [
         key: "admin-dashboard",
         public: false,
         element: <AdminDashboardPage />,
+        requiredRoles: ['admin']
+    },
+    {
+        path: "/admin/users",
+        key: "admin-users",
+        public: false,
+        element: <AdminUserManagementPage />,
+        requiredRoles: ['admin']
+    },
+    {
+        path: "/admin/messaging",
+        key: "admin-messaging",
+        public: false,
+        element: <AdminMessagingPage />,
+        requiredRoles: ['admin']
+    },
+    {
+        path: "/admin/rankings",
+        key: "admin-rankings",
+        public: false,
+        element: <AdminRankingsPage />,
+        requiredRoles: ['admin']
+    },
+    {
+        path: "/admin/courts",
+        key: "admin-courts",
+        public: false,
+        element: <AdminCourtsPage />,
+        requiredRoles: ['admin']
+    },
+    {
+        path: "/admin/tournaments",
+        key: "admin-tournaments",
+        public: false,
+        element: <AdminTournamentsPage />,
+        requiredRoles: ['admin']
+    },
+    {
+        path: "/admin/microsites",
+        key: "admin-microsites",
+        public: false,
+        element: <AdminMicrositesPage />,
+        requiredRoles: ['admin']
+    },
+    {
+        path: "/admin/reports",
+        key: "admin-reports",
+        public: false,
+        element: <AdminReportsPage />,
+        requiredRoles: ['admin']
+    },
+    {
+        path: "/admin/payments",
+        key: "admin-payments",
+        public: false,
+        element: <AdminPaymentsPage />,
         requiredRoles: ['admin']
     },
     {
