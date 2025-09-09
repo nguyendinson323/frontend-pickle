@@ -37,7 +37,7 @@ const ClubMicrosite: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      await dispatch(fetchClubMicrositeData() as any)
+      await dispatch(fetchClubMicrositeData())
     } catch (error) {
       console.error('Error fetching microsite data:', error)
     }

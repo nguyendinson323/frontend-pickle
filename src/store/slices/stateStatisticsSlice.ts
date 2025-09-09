@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
+import api from '../../services/api'
+import { startLoading, stopLoading } from './loadingSlice'
+import { AppDispatch } from '../index'
 
 interface TournamentAnalytics {
   total_tournaments: number
@@ -252,9 +254,10 @@ export const {
 } = stateStatisticsSlice.actions
 
 // API Functions
-export const fetchStateStatisticsData = (dateRange?: { start_date: string, end_date: string }) => async (dispatch: any, getState: any) => {
+export const fetchStateStatisticsData = (dateRange?: { start_date: string, end_date: string }) => async (dispatch: AppDispatch, getState: any) => {
+  dispatch(startLoading('Loading statistics data...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
     const state = getState()
@@ -265,27 +268,37 @@ export const fetchStateStatisticsData = (dateRange?: { start_date: string, end_d
       dispatch(setDateRange(dateRange))
     }
     
-    const response = await axios.get('/api/state/statistics', {
+    const response = await api.get('/api/state/statistics', {
       params: {
         start_date: currentDateRange.start_date,
         end_date: currentDateRange.end_date
       }
     })
     
-    dispatch(setStatisticsData(response.data))
+    dispatch(setStatisticsData(response.data as {
+      tournamentAnalytics: TournamentAnalytics
+      playerAnalytics: PlayerAnalytics
+      courtAnalytics: CourtAnalytics
+      clubAnalytics: ClubAnalytics
+      partnerAnalytics: PartnerAnalytics
+      financialAnalytics: FinancialAnalytics
+      comparativeAnalytics: ComparativeAnalytics
+    }))
+    dispatch(stopLoading())
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to fetch statistics data'))
-  } finally {
-    dispatch(setLoading(false))
+    dispatch(stopLoading())
+    throw error
   }
 }
 
-export const exportStatisticsReport = (dateRange: { start_date: string, end_date: string }, format: 'pdf' | 'excel') => async (dispatch: any) => {
+export const exportStatisticsReport = (dateRange: { start_date: string, end_date: string }, format: 'pdf' | 'excel') => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Exporting statistics report...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    const response = await axios.get('/api/state/statistics/export', {
+    const response = await api.get('/api/state/statistics/export', {
       params: {
         start_date: dateRange.start_date,
         end_date: dateRange.end_date,
@@ -295,7 +308,7 @@ export const exportStatisticsReport = (dateRange: { start_date: string, end_date
     })
     
     // Create download link
-    const url = window.URL.createObjectURL(new Blob([response.data]))
+    const url = window.URL.createObjectURL(new Blob([response.data as BlobPart]))
     const link = document.createElement('a')
     link.href = url
     link.setAttribute('download', `state-statistics-${dateRange.start_date}-to-${dateRange.end_date}.${format === 'pdf' ? 'pdf' : 'xlsx'}`)
@@ -304,11 +317,11 @@ export const exportStatisticsReport = (dateRange: { start_date: string, end_date
     link.remove()
     window.URL.revokeObjectURL(url)
     
+    dispatch(stopLoading())
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to export statistics report'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 

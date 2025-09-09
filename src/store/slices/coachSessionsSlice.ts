@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
 import { AppDispatch } from '../index'
 import { startLoading, stopLoading } from './loadingSlice'
+import api from '../../services/api'
 
 interface CoachingSession {
   id: number
@@ -134,11 +134,11 @@ export const {
 // API Functions
 export const fetchCoachSessionsData = () => async (dispatch: AppDispatch) => {
   try {
-    dispatch(startLoading())
-    const response = await axios.get('/api/coach/sessions')
-    dispatch(setCoachSessions(response.data.sessions))
-    dispatch(setCoachAvailability(response.data.availability))
-    dispatch(setSessionStats(response.data.stats))
+    dispatch(startLoading('Loading sessions data...'))
+    const response = await api.get('/api/coach/sessions')
+    dispatch(setCoachSessions((response.data as { sessions: CoachingSession[], availability: CoachAvailability[], stats: SessionStats }).sessions))
+    dispatch(setCoachAvailability((response.data as { sessions: CoachingSession[], availability: CoachAvailability[], stats: SessionStats }).availability))
+    dispatch(setSessionStats((response.data as { sessions: CoachingSession[], availability: CoachAvailability[], stats: SessionStats }).stats))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(stopLoading())
@@ -148,11 +148,11 @@ export const fetchCoachSessionsData = () => async (dispatch: AppDispatch) => {
 
 export const updateCoachSessionStatus = (sessionId: number, status: string) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(startLoading())
-    const response = await axios.put(`/api/coach/sessions/${sessionId}/status`, { status })
+    dispatch(startLoading('Updating session status...'))
+    const response = await api.put(`/api/coach/sessions/${sessionId}/status`, { status })
     dispatch(updateSessionStatus({ sessionId, status }))
-    if (response.data.stats) {
-      dispatch(setSessionStats(response.data.stats))
+    if ((response.data as any).stats) {
+      dispatch(setSessionStats((response.data as { stats: SessionStats }).stats))
     }
     dispatch(stopLoading())
   } catch (error) {
@@ -163,9 +163,9 @@ export const updateCoachSessionStatus = (sessionId: number, status: string) => a
 
 export const addCoachAvailability = (availabilityData: Partial<CoachAvailability>) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(startLoading())
-    const response = await axios.post('/api/coach/availability', availabilityData)
-    dispatch(addAvailabilitySlot(response.data))
+    dispatch(startLoading('Adding availability slot...'))
+    const response = await api.post<CoachAvailability>('/api/coach/availability', availabilityData)
+    dispatch(addAvailabilitySlot(response.data as CoachAvailability))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(stopLoading())
@@ -175,8 +175,8 @@ export const addCoachAvailability = (availabilityData: Partial<CoachAvailability
 
 export const removeCoachAvailability = (availabilityId: number) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(startLoading())
-    await axios.delete(`/api/coach/availability/${availabilityId}`)
+    dispatch(startLoading('Removing availability slot...'))
+    await api.delete(`/api/coach/availability/${availabilityId}`)
     dispatch(removeAvailabilitySlot(availabilityId))
     dispatch(stopLoading())
   } catch (error) {

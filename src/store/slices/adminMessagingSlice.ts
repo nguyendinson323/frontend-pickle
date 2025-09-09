@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
+import api from '../../services/api'
+import { startLoading, stopLoading } from './loadingSlice'
+import { AppDispatch } from '../index'
 import { MessageTemplate, BroadcastMessage } from '../../types/admin'
 
 interface MessageFilter {
@@ -40,7 +42,6 @@ interface AdminMessagingState {
     smsSent: number
     inAppSent: number
   }
-  loading: boolean
   sendingMessage: boolean
   error: string | null
   broadcastForm: BroadcastMessage
@@ -66,7 +67,6 @@ const initialState: AdminMessagingState = {
     smsSent: 0,
     inAppSent: 0
   },
-  loading: false,
   sendingMessage: false,
   error: null,
   broadcastForm: {
@@ -84,9 +84,6 @@ const adminMessagingSlice = createSlice({
   name: 'adminMessaging',
   initialState,
   reducers: {
-    setLoading: (state, action: PayloadAction<boolean>) => {
-      state.loading = action.payload
-    },
     setSendingMessage: (state, action: PayloadAction<boolean>) => {
       state.sendingMessage = action.payload
     },
@@ -141,7 +138,6 @@ const adminMessagingSlice = createSlice({
 })
 
 export const {
-  setLoading,
   setSendingMessage,
   setError,
   setTemplates,
@@ -158,24 +154,27 @@ export const {
 } = adminMessagingSlice.actions
 
 // API Functions
-export const fetchTemplates = () => async (dispatch: any) => {
+export const fetchTemplates = () => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading message templates...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
 
-    const response = await axios.get('/api/admin/messaging/templates')
+    const response = await api.get('/api/admin/messaging/templates')
 
-    dispatch(setTemplates(response.data))
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to fetch message templates'))
-  } finally {
-    dispatch(setLoading(false))
+    dispatch(setTemplates(response.data as MessageTemplate[]))
+    dispatch(stopLoading())
+  } catch (error) {
+    dispatch(setError('Failed to fetch message templates'))
+    dispatch(stopLoading())
+    throw error
   }
 }
 
-export const fetchSentMessages = (filters?: Partial<MessageFilter>) => async (dispatch: any) => {
+export const fetchSentMessages = (filters?: Partial<MessageFilter>) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading sent messages...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
 
     const queryParams = new URLSearchParams()
@@ -185,115 +184,142 @@ export const fetchSentMessages = (filters?: Partial<MessageFilter>) => async (di
       })
     }
 
-    const response = await axios.get(`/api/admin/messaging/sent?${queryParams.toString()}`)
+    const response = await api.get(`/api/admin/messaging/sent?${queryParams.toString()}`)
+    const responseData = response.data as { messages: SentMessage[], stats: typeof initialState.messageStats }
 
-    dispatch(setSentMessages(response.data.messages))
-    dispatch(setMessageStats(response.data.stats))
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to fetch sent messages'))
-  } finally {
-    dispatch(setLoading(false))
-  }
-}
-
-export const createTemplate = (templateData: Omit<MessageTemplate, 'id' | 'created_at'>) => async (dispatch: any) => {
-  try {
-    dispatch(setError(null))
-
-    const response = await axios.post('/api/admin/messaging/templates', templateData)
-
-    dispatch(addTemplate(response.data))
-    return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to create message template'))
+    dispatch(setSentMessages(responseData.messages))
+    dispatch(setMessageStats(responseData.stats))
+    dispatch(stopLoading())
+  } catch (error) {
+    dispatch(setError('Failed to fetch sent messages'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const updateTemplateAction = (templateId: number, templateData: Partial<MessageTemplate>) => async (dispatch: any) => {
+export const createTemplate = (templateData: Omit<MessageTemplate, 'id' | 'created_at'>) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Creating template...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.put(`/api/admin/messaging/templates/${templateId}`, templateData)
+    const response = await api.post('/api/admin/messaging/templates', templateData)
 
-    dispatch(updateTemplate(response.data))
+    dispatch(addTemplate(response.data as MessageTemplate))
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to update message template'))
+  } catch (error) {
+    dispatch(setError('Failed to create message template'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const deleteTemplate = (templateId: number) => async (dispatch: any) => {
+export const updateTemplateAction = (templateId: number, templateData: Partial<MessageTemplate>) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating template...'))
+  
   try {
     dispatch(setError(null))
 
-    await axios.delete(`/api/admin/messaging/templates/${templateId}`)
+    const response = await api.put(`/api/admin/messaging/templates/${templateId}`, templateData)
+
+    dispatch(updateTemplate(response.data as MessageTemplate))
+    dispatch(stopLoading())
+    return response.data
+  } catch (error) {
+    dispatch(setError('Failed to update message template'))
+    dispatch(stopLoading())
+    throw error
+  }
+}
+
+export const deleteTemplate = (templateId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Deleting template...'))
+  
+  try {
+    dispatch(setError(null))
+
+    await api.delete(`/api/admin/messaging/templates/${templateId}`)
 
     dispatch(removeTemplate(templateId))
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to delete message template'))
+    dispatch(stopLoading())
+  } catch (error) {
+    dispatch(setError('Failed to delete message template'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const sendBroadcastMessage = (messageData: BroadcastMessage) => async (dispatch: any) => {
+export const sendBroadcastMessage = (messageData: BroadcastMessage) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Sending broadcast message...'))
+  
   try {
-    dispatch(setSendingMessage(true))
     dispatch(setError(null))
 
-    const response = await axios.post('/api/admin/messaging/broadcast', messageData)
+    const response = await api.post('/api/admin/messaging/broadcast', messageData)
 
-    dispatch(addSentMessage(response.data))
+    dispatch(addSentMessage(response.data as SentMessage))
     dispatch(resetBroadcastForm())
+    dispatch(stopLoading())
     
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to send broadcast message'))
+  } catch (error) {
+    dispatch(setError('Failed to send broadcast message'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setSendingMessage(false))
   }
 }
 
-export const getMessagePreview = (messageData: BroadcastMessage) => async (dispatch: any) => {
+export const getMessagePreview = (messageData: BroadcastMessage) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Generating preview...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.post('/api/admin/messaging/preview', messageData)
+    const response = await api.post('/api/admin/messaging/preview', messageData)
 
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to get message preview'))
+  } catch (error) {
+    dispatch(setError('Failed to get message preview'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const resendFailedMessage = (messageId: number) => async (dispatch: any) => {
+export const resendFailedMessage = (messageId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Resending message...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.post(`/api/admin/messaging/resend/${messageId}`)
+    const response = await api.post(`/api/admin/messaging/resend/${messageId}`)
 
     // Refresh sent messages
     dispatch(fetchSentMessages())
+    dispatch(stopLoading())
     
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to resend message'))
+  } catch (error) {
+    dispatch(setError('Failed to resend message'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const getMessageDeliveryReport = (messageId: number) => async (dispatch: any) => {
+export const getMessageDeliveryReport = (messageId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading delivery report...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.get(`/api/admin/messaging/delivery-report/${messageId}`)
+    const response = await api.get(`/api/admin/messaging/delivery-report/${messageId}`)
 
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to get delivery report'))
+  } catch (error) {
+    dispatch(setError('Failed to get delivery report'))
+    dispatch(stopLoading())
     throw error
   }
 }

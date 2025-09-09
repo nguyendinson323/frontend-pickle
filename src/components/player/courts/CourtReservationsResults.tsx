@@ -1,4 +1,5 @@
 import React from 'react'
+import CalendarView from './CalendarView'
 
 interface Court {
   id: number
@@ -106,39 +107,13 @@ const CourtReservationsResults: React.FC<CourtReservationsResultsProps> = ({
               Book {selectedCourt.name}
             </h3>
             
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Select Date
-              </label>
-              <input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => onDateChange(e.target.value)}
-                min={new Date().toISOString().split('T')[0]}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
-
-            <div className="mb-4">
-              <h4 className="text-sm font-medium text-gray-700 mb-2">Available Times</h4>
-              <div className="grid grid-cols-2 gap-2">
-                {availableTimeSlots.map((slot, index) => (
-                  <button
-                    key={index}
-                    onClick={() => onTimeSlotSelect(selectedCourt.id, slot)}
-                    disabled={!slot.available}
-                    className={`p-3 text-sm rounded-md border transition-colors ${
-                      slot.available
-                        ? 'border-green-300 bg-green-50 text-green-700 hover:bg-green-100'
-                        : 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
-                    }`}
-                  >
-                    <div>{formatTime(slot.start_time)} - {formatTime(slot.end_time)}</div>
-                    <div className="text-xs">${slot.price}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
+            <CalendarView
+              selectedDate={selectedDate}
+              onDateChange={onDateChange}
+              availableTimeSlots={availableTimeSlots}
+              onTimeSlotSelect={(timeSlot) => onTimeSlotSelect(selectedCourt.id, timeSlot)}
+              courtName={selectedCourt.name}
+            />
           </div>
         ) : (
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">

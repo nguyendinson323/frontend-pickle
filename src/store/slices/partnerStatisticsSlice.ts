@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
+import api from '../../services/api'
+import { startLoading, stopLoading } from './loadingSlice'
+import { AppDispatch } from '../index'
 
 interface RevenueData {
   month: string
@@ -60,7 +62,6 @@ interface PartnerStatisticsState {
   tournamentMetrics: TournamentMetrics | null
   customerMetrics: CustomerMetrics | null
   performanceMetrics: PerformanceMetrics | null
-  loading: boolean
   error: string | null
   dateRange: {
     startDate: string
@@ -74,7 +75,6 @@ const initialState: PartnerStatisticsState = {
   tournamentMetrics: null,
   customerMetrics: null,
   performanceMetrics: null,
-  loading: false,
   error: null,
   dateRange: {
     startDate: new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0], // Start of year
@@ -86,9 +86,6 @@ const partnerStatisticsSlice = createSlice({
   name: 'partnerStatistics',
   initialState,
   reducers: {
-    setLoading: (state, action: PayloadAction<boolean>) => {
-      state.loading = action.payload
-    },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload
     },
@@ -112,16 +109,16 @@ const partnerStatisticsSlice = createSlice({
 })
 
 export const {
-  setLoading,
   setError,
   setStatisticsData,
   setDateRange
 } = partnerStatisticsSlice.actions
 
 // API Functions
-export const fetchPartnerStatistics = (dateRange?: { startDate: string; endDate: string }) => async (dispatch: any, getState: any) => {
+export const fetchPartnerStatistics = (dateRange?: { startDate: string; endDate: string }) => async (dispatch: AppDispatch, getState: any) => {
+  dispatch(startLoading('Loading statistics...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
     const state = getState()
@@ -131,30 +128,38 @@ export const fetchPartnerStatistics = (dateRange?: { startDate: string; endDate:
       dispatch(setDateRange(dateRange))
     }
     
-    const response = await axios.get('/api/partner/statistics', {
+    const response = await api.get('/api/partner/statistics', {
       params: currentDateRange
     })
     
-    dispatch(setStatisticsData(response.data))
+    dispatch(setStatisticsData(response.data as {
+      revenueData: RevenueData[];
+      bookingMetrics: BookingMetrics;
+      tournamentMetrics: TournamentMetrics;
+      customerMetrics: CustomerMetrics;
+      performanceMetrics: PerformanceMetrics;
+    }))
+    dispatch(stopLoading())
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to fetch statistics'))
-  } finally {
-    dispatch(setLoading(false))
+    dispatch(stopLoading())
+    throw error
   }
 }
 
-export const exportStatisticsReport = (dateRange: { startDate: string; endDate: string }, format: 'csv' | 'pdf') => async (dispatch: any) => {
+export const exportStatisticsReport = (dateRange: { startDate: string; endDate: string }, format: 'csv' | 'pdf') => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Exporting statistics report...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    const response = await axios.get('/api/partner/statistics/export', {
+    const response = await api.get('/api/partner/statistics/export', {
       params: { ...dateRange, format },
       responseType: 'blob'
     })
     
     // Create download link
-    const url = window.URL.createObjectURL(new Blob([response.data]))
+    const url = window.URL.createObjectURL(new Blob([response.data as BlobPart]))
     const link = document.createElement('a')
     link.href = url
     link.setAttribute('download', `partner-statistics-${dateRange.startDate}-${dateRange.endDate}.${format}`)
@@ -163,12 +168,12 @@ export const exportStatisticsReport = (dateRange: { startDate: string; endDate: 
     link.remove()
     window.URL.revokeObjectURL(url)
     
+    dispatch(stopLoading())
     return response.data
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to export statistics'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 

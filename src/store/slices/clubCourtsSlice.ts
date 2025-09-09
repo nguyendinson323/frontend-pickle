@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
+import { AppDispatch } from '../index'
+import { startLoading, stopLoading } from './loadingSlice'
+import api from '../../services/api'
 
 interface Court {
   id: number
@@ -182,17 +184,15 @@ export const {
 } = clubCourtsSlice.actions
 
 // API Functions
-export const fetchClubCourtsData = () => async (dispatch: any) => {
+export const fetchClubCourtsData = () => async (dispatch: AppDispatch) => {
   try {
-    dispatch(setLoading(true))
-    dispatch(setError(null))
-    
-    const response = await axios.get('/api/club/courts')
-    dispatch(setCourtsData(response.data))
+    dispatch(startLoading('Loading courts data...'))
+    const response = await api.get('/api/club/courts')
+    dispatch(setCourtsData(response.data as { courts: Court[], courtSchedules: CourtSchedule[], reservations: CourtReservation[], maintenance: CourtMaintenance[], stats: { total_courts: number, total_reservations: number, monthly_revenue: number, occupancy_rate: number, upcoming_maintenance: number } | null }))
+    dispatch(stopLoading())
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to fetch courts data'))
-  } finally {
-    dispatch(setLoading(false))
+    dispatch(stopLoading())
   }
 }
 
@@ -206,52 +206,46 @@ export const createCourt = (courtData: {
   amenities: string
   description: string
   hourly_rate: number
-}) => async (dispatch: any) => {
+}) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(setLoading(true))
-    dispatch(setError(null))
-    
-    const response = await axios.post('/api/club/courts', courtData)
-    dispatch(addCourt(response.data.court))
+    dispatch(startLoading('Creating court...'))
+    const response = await api.post('/api/club/courts', courtData)
+    dispatch(addCourt((response.data as { court: Court }).court))
+    dispatch(stopLoading())
     
     return response.data
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to create court'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
-export const updateCourtInfo = (courtId: number, courtData: Partial<Court>) => async (dispatch: any) => {
+export const updateCourtInfo = (courtId: number, courtData: Partial<Court>) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(setLoading(true))
-    dispatch(setError(null))
-    
-    const response = await axios.put(`/api/club/courts/${courtId}`, courtData)
-    dispatch(updateCourt(response.data.court))
+    dispatch(startLoading('Updating court...'))
+    const response = await api.put(`/api/club/courts/${courtId}`, courtData)
+    dispatch(updateCourt((response.data as { court: Court }).court))
+    dispatch(stopLoading())
     
     return response.data
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to update court'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
-export const deleteCourtInfo = (courtId: number) => async (dispatch: any) => {
+export const deleteCourtInfo = (courtId: number) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(setLoading(true))
-    dispatch(setError(null))
-    
-    await axios.delete(`/api/club/courts/${courtId}`)
+    dispatch(startLoading('Deleting court...'))
+    await api.delete(`/api/club/courts/${courtId}`)
     dispatch(deleteCourt(courtId))
+    dispatch(stopLoading())
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to delete court'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
@@ -260,35 +254,31 @@ export const updateCourtScheduleInfo = (scheduleId: number, scheduleData: {
   open_time: string
   close_time: string
   is_closed: boolean
-}) => async (dispatch: any) => {
+}) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(setLoading(true))
-    dispatch(setError(null))
-    
-    const response = await axios.put(`/api/club/courts/schedules/${scheduleId}`, scheduleData)
-    dispatch(updateCourtSchedule(response.data.schedule))
+    dispatch(startLoading('Updating court schedule...'))
+    const response = await api.put(`/api/club/courts/schedules/${scheduleId}`, scheduleData)
+    dispatch(updateCourtSchedule((response.data as { schedule: CourtSchedule }).schedule))
+    dispatch(stopLoading())
     
     return response.data
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to update schedule'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
-export const updateReservationStatusInfo = (reservationId: number, status: string) => async (dispatch: any) => {
+export const updateReservationStatusInfo = (reservationId: number, status: string) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(setLoading(true))
-    dispatch(setError(null))
-    
-    await axios.put(`/api/club/courts/reservations/${reservationId}/status`, { status })
+    dispatch(startLoading('Updating reservation status...'))
+    await api.put(`/api/club/courts/reservations/${reservationId}/status`, { status })
     dispatch(updateReservationStatus({ id: reservationId, status }))
+    dispatch(stopLoading())
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to update reservation status'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
@@ -300,37 +290,33 @@ export const createCourtMaintenance = (maintenanceData: {
   end_date: string
   cost: number
   notes: string
-}) => async (dispatch: any) => {
+}) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(setLoading(true))
-    dispatch(setError(null))
-    
-    const response = await axios.post('/api/club/courts/maintenance', maintenanceData)
-    dispatch(addMaintenance(response.data.maintenance))
+    dispatch(startLoading('Creating maintenance record...'))
+    const response = await api.post('/api/club/courts/maintenance', maintenanceData)
+    dispatch(addMaintenance((response.data as { maintenance: CourtMaintenance }).maintenance))
+    dispatch(stopLoading())
     
     return response.data
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to create maintenance record'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
-export const updateMaintenanceInfo = (maintenanceId: number, maintenanceData: Partial<CourtMaintenance>) => async (dispatch: any) => {
+export const updateMaintenanceInfo = (maintenanceId: number, maintenanceData: Partial<CourtMaintenance>) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(setLoading(true))
-    dispatch(setError(null))
-    
-    const response = await axios.put(`/api/club/courts/maintenance/${maintenanceId}`, maintenanceData)
-    dispatch(updateMaintenance(response.data.maintenance))
+    dispatch(startLoading('Updating maintenance record...'))
+    const response = await api.put(`/api/club/courts/maintenance/${maintenanceId}`, maintenanceData)
+    dispatch(updateMaintenance((response.data as { maintenance: CourtMaintenance }).maintenance))
+    dispatch(stopLoading())
     
     return response.data
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to update maintenance'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 

@@ -10,11 +10,8 @@ import {
   verifyCredential,
   updateCredentialStatus,
   deleteCredential,
-  openQrCodeModal,
-  closeQrCodeModal,
   openCreateCredentialModal,
-  closeCreateCredentialModal,
-  updateCreateCredentialFormData
+  VerificationResult
 } from '../../store/slices/digitalCredentialsSlice'
 import { AppDispatch } from '../../store'
 import {
@@ -30,16 +27,12 @@ import {
 const DigitalCredentials: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
   const [activeTab, setActiveTab] = useState<'my-credentials' | 'create' | 'verify'>('my-credentials')
-  const [verifyQrCode, setVerifyQrCode] = useState('')
-  const [verificationResult, setVerificationResult] = useState<any>(null)
+  const [verificationResult, setVerificationResult] = useState<VerificationResult | null>(null)
 
   const {
     credentials,
-    selectedCredential,
-    playerProfile,
     templates,
     isLoading,
-    error,
     qrCodeModal,
     createCredentialModal
   } = useSelector((state: RootState) => state.digitalCredentials)
@@ -75,18 +68,16 @@ const DigitalCredentials: React.FC = () => {
     dispatch(generateCredentialQrCode(credentialId))
   }
 
-  const handleVerifyCredential = async () => {
-    if (verifyQrCode.trim()) {
-      try {
-        const result = await dispatch(verifyCredential(verifyQrCode.trim()))
-        setVerificationResult(result)
-      } catch (error) {
-        setVerificationResult({
-          valid: false,
-          credential: null,
-          message: 'Failed to verify credential'
-        })
-      }
+  const handleVerifyCredential = async (qrCodeData: string) => {
+    try {
+      const result = await dispatch(verifyCredential(qrCodeData))
+      setVerificationResult(result)
+    } catch (error) {
+      setVerificationResult({
+        valid: false,
+        credential: undefined,
+        message: 'Failed to verify credential'
+      })
     }
   }
 
@@ -104,7 +95,7 @@ const DigitalCredentials: React.FC = () => {
     return new Date(dateString).toLocaleDateString()
   }
 
-  const getStatusColor = (credential: any) => {
+  const getStatusColor = (credential: { is_active: boolean; expiry_date: string | null }) => {
     if (!credential.is_active) return 'bg-gray-100 text-gray-800'
     if (credential.expiry_date && new Date(credential.expiry_date) < new Date()) {
       return 'bg-red-100 text-red-800'
@@ -112,7 +103,7 @@ const DigitalCredentials: React.FC = () => {
     return 'bg-green-100 text-green-800'
   }
 
-  const getStatusText = (credential: any) => {
+  const getStatusText = (credential: { is_active: boolean; expiry_date: string | null }) => {
     if (!credential.is_active) return 'Inactive'
     if (credential.expiry_date && new Date(credential.expiry_date) < new Date()) {
       return 'Expired'

@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
+import api from '../../services/api'
+import { startLoading, stopLoading } from './loadingSlice'
+import { AppDispatch } from '../index'
 
 interface StateMessage {
   id: number
@@ -152,35 +154,43 @@ export const {
 } = stateInboxSlice.actions
 
 // API Functions
-export const fetchStateInboxData = () => async (dispatch: any) => {
+export const fetchStateInboxData = () => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading inbox data...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    const response = await axios.get('/api/state/inbox')
-    dispatch(setInboxData(response.data))
+    const response = await api.get('/api/state/inbox')
+    dispatch(setInboxData(response.data as {
+      messages: StateMessage[]
+      sentMessages: StateMessage[]
+      stats: StateInboxStats
+    }))
+    dispatch(stopLoading())
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to fetch inbox data'))
-  } finally {
-    dispatch(setLoading(false))
+    dispatch(stopLoading())
+    throw error
   }
 }
 
-export const fetchStateRecipients = (recipientType?: string) => async (dispatch: any) => {
+export const fetchStateRecipients = (recipientType?: string) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading recipients...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
     const url = recipientType 
       ? `/api/state/recipients?type=${recipientType}` 
       : '/api/state/recipients'
     
-    const response = await axios.get(url)
-    dispatch(setRecipients(response.data.recipients))
+    const response = await api.get(url)
+    dispatch(setRecipients((response.data as { recipients: MessageRecipient[] }).recipients))
+    dispatch(stopLoading())
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to fetch recipients'))
-  } finally {
-    dispatch(setLoading(false))
+    dispatch(stopLoading())
+    throw error
   }
 }
 
@@ -191,20 +201,21 @@ export const sendStateMessage = (messageData: {
   recipient_ids?: number[]
   is_announcement?: boolean
   schedule_at?: string
-}) => async (dispatch: any) => {
+}) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Sending message...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    const response = await axios.post('/api/state/messages', messageData)
-    dispatch(addMessage(response.data.message))
+    const response = await api.post('/api/state/messages', messageData)
+    dispatch(addMessage((response.data as { message: StateMessage }).message))
     
-    return response.data
+    dispatch(stopLoading())
+    return response.data as { message: StateMessage }
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to send message'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
@@ -214,53 +225,57 @@ export const sendBulkAnnouncement = (announcementData: {
   target_groups: string[]
   recipient_ids?: number[]
   schedule_at?: string
-}) => async (dispatch: any) => {
+}) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Sending announcement...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    const response = await axios.post('/api/state/announcements', announcementData)
-    dispatch(addMessage(response.data.announcement))
+    const response = await api.post('/api/state/announcements', announcementData)
+    dispatch(addMessage((response.data as { announcement: StateMessage }).announcement))
     
-    return response.data
+    dispatch(stopLoading())
+    return response.data as { announcement: StateMessage }
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to send announcement'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
-export const markStateMessageAsRead = (messageId: number) => async (dispatch: any) => {
+export const markStateMessageAsRead = (messageId: number) => async (dispatch: AppDispatch) => {
   try {
-    await axios.put(`/api/state/messages/${messageId}/read`)
+    await api.put(`/api/state/messages/${messageId}/read`)
     dispatch(markMessageAsRead(messageId))
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to mark message as read'))
+    throw error
   }
 }
 
-export const deleteStateMessage = (messageId: number) => async (dispatch: any) => {
+export const deleteStateMessage = (messageId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Deleting message...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    await axios.delete(`/api/state/messages/${messageId}`)
+    await api.delete(`/api/state/messages/${messageId}`)
     dispatch(deleteMessage(messageId))
+    dispatch(stopLoading())
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to delete message'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
-export const fetchMessageTemplates = () => async (dispatch: any) => {
+export const fetchMessageTemplates = () => async (dispatch: AppDispatch) => {
   try {
-    const response = await axios.get('/api/state/templates')
-    dispatch(setTemplates(response.data.templates))
+    const response = await api.get('/api/state/templates')
+    dispatch(setTemplates((response.data as { templates: AnnouncementTemplate[] }).templates))
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to fetch templates'))
+    throw error
   }
 }
 
@@ -269,52 +284,55 @@ export const createMessageTemplate = (templateData: {
   subject: string
   content: string
   target_audience: string
-}) => async (dispatch: any) => {
+}) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Creating template...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    const response = await axios.post('/api/state/templates', templateData)
-    dispatch(addTemplate(response.data.template))
+    const response = await api.post('/api/state/templates', templateData)
+    dispatch(addTemplate((response.data as { template: AnnouncementTemplate }).template))
     
-    return response.data
+    dispatch(stopLoading())
+    return response.data as { template: AnnouncementTemplate }
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to create template'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
-export const updateMessageTemplate = (templateId: number, templateData: Partial<AnnouncementTemplate>) => async (dispatch: any) => {
+export const updateMessageTemplate = (templateId: number, templateData: Partial<AnnouncementTemplate>) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating template...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    const response = await axios.put(`/api/state/templates/${templateId}`, templateData)
-    dispatch(updateTemplate(response.data.template))
+    const response = await api.put(`/api/state/templates/${templateId}`, templateData)
+    dispatch(updateTemplate((response.data as { template: AnnouncementTemplate }).template))
     
-    return response.data
+    dispatch(stopLoading())
+    return response.data as { template: AnnouncementTemplate }
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to update template'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
-export const deleteMessageTemplate = (templateId: number) => async (dispatch: any) => {
+export const deleteMessageTemplate = (templateId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Deleting template...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    await axios.delete(`/api/state/templates/${templateId}`)
+    await api.delete(`/api/state/templates/${templateId}`)
     dispatch(deleteTemplate(templateId))
+    dispatch(stopLoading())
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to delete template'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 

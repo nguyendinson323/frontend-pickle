@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
+import api from '../../services/api'
+import { startLoading, stopLoading } from './loadingSlice'
+import { AppDispatch } from '../index'
 
 interface PartnerMessage {
   id: number
@@ -46,7 +48,6 @@ interface PartnerInboxState {
   messages: PartnerMessage[]
   stats: PartnerInboxStats | null
   selectedMessage: PartnerMessage | null
-  loading: boolean
   error: string | null
   filters: {
     message_type: string
@@ -60,7 +61,6 @@ const initialState: PartnerInboxState = {
   messages: [],
   stats: null,
   selectedMessage: null,
-  loading: false,
   error: null,
   filters: {
     message_type: '',
@@ -74,9 +74,6 @@ const partnerInboxSlice = createSlice({
   name: 'partnerInbox',
   initialState,
   reducers: {
-    setLoading: (state, action: PayloadAction<boolean>) => {
-      state.loading = action.payload
-    },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload
     },
@@ -113,7 +110,6 @@ const partnerInboxSlice = createSlice({
 })
 
 export const {
-  setLoading,
   setError,
   setInboxData,
   setSelectedMessage,
@@ -123,9 +119,10 @@ export const {
 } = partnerInboxSlice.actions
 
 // API Functions
-export const fetchPartnerInboxData = (filters?: Partial<PartnerInboxState['filters']>) => async (dispatch: any, getState: any) => {
+export const fetchPartnerInboxData = (filters?: Partial<PartnerInboxState['filters']>) => async (dispatch: AppDispatch, getState: any) => {
+  dispatch(startLoading('Loading inbox data...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
     const state = getState()
@@ -135,42 +132,48 @@ export const fetchPartnerInboxData = (filters?: Partial<PartnerInboxState['filte
       dispatch(setFilters(filters))
     }
     
-    const response = await axios.get('/api/partner/inbox', {
+    const response = await api.get('/api/partner/inbox', {
       params: currentFilters
     })
     
-    dispatch(setInboxData(response.data))
+    dispatch(setInboxData(response.data as { messages: PartnerMessage[]; stats: PartnerInboxStats }))
+    dispatch(stopLoading())
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to fetch inbox data'))
-  } finally {
-    dispatch(setLoading(false))
+    dispatch(stopLoading())
+    throw error
   }
 }
 
-export const markPartnerMessageAsRead = (messageId: number) => async (dispatch: any) => {
+export const markPartnerMessageAsRead = (messageId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Marking message as read...'))
+  
   try {
     dispatch(setError(null))
     
-    await axios.put(`/api/partner/messages/${messageId}/read`)
+    await api.put(`/api/partner/messages/${messageId}/read`)
     dispatch(markMessageAsRead(messageId))
+    dispatch(stopLoading())
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to mark message as read'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const deletePartnerMessage = (messageId: number) => async (dispatch: any) => {
+export const deletePartnerMessage = (messageId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Deleting message...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    await axios.delete(`/api/partner/messages/${messageId}`)
+    await api.delete(`/api/partner/messages/${messageId}`)
     dispatch(deleteMessage(messageId))
+    dispatch(stopLoading())
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to delete message'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 

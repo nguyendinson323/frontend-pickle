@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppDispatch } from '..'
+import { startLoading, stopLoading } from './loadingSlice'
 import api from '../../services/api'
 
 export interface Payment {
@@ -75,7 +76,6 @@ export interface AdminPaymentsState {
   currentPage: number
   totalPages: number
   totalCount: number
-  loading: boolean
   error: string | null
   bulkActionLoading: boolean
 }
@@ -110,7 +110,6 @@ const initialState: AdminPaymentsState = {
   currentPage: 1,
   totalPages: 1,
   totalCount: 0,
-  loading: false,
   error: null,
   bulkActionLoading: false
 }
@@ -119,9 +118,6 @@ const adminPaymentsSlice = createSlice({
   name: 'adminPayments',
   initialState,
   reducers: {
-    setLoading: (state, action: PayloadAction<boolean>) => {
-      state.loading = action.payload
-    },
     setBulkActionLoading: (state, action: PayloadAction<boolean>) => {
       state.bulkActionLoading = action.payload
     },
@@ -184,7 +180,6 @@ const adminPaymentsSlice = createSlice({
 })
 
 export const {
-  setLoading,
   setBulkActionLoading,
   setError,
   setPayments,
@@ -202,10 +197,10 @@ export const {
 
 // Thunks
 export const fetchPayments = () => async (dispatch: AppDispatch, getState: any) => {
+  dispatch(startLoading('Loading payments...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
-
     const { paymentFilter, currentPage } = getState().adminPayments
     
     const params = new URLSearchParams({
@@ -223,67 +218,79 @@ export const fetchPayments = () => async (dispatch: AppDispatch, getState: any) 
     const response = await api.get(`/api/admin/payments?${params}`)
     
     dispatch(setPayments({
-      payments: response.data.payments,
-      totalCount: response.data.totalCount,
-      totalPages: response.data.totalPages
+      payments: (response.data as { payments: Payment[], totalCount: number, totalPages: number }).payments,
+      totalCount: (response.data as { payments: Payment[], totalCount: number, totalPages: number }).totalCount,
+      totalPages: (response.data as { payments: Payment[], totalCount: number, totalPages: number }).totalPages
     }))
+    dispatch(stopLoading())
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to fetch payments'))
-  } finally {
-    dispatch(setLoading(false))
+    dispatch(stopLoading())
   }
 }
 
 export const fetchPaymentStats = () => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading payment statistics...'))
+  
   try {
+    dispatch(setError(null))
     const response = await api.get('/api/admin/payments/stats')
-    dispatch(setPaymentStats(response.data))
+    dispatch(setPaymentStats(response.data as PaymentStats))
+    dispatch(stopLoading())
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to fetch payment statistics'))
+    dispatch(stopLoading())
   }
 }
 
 export const fetchPaymentMethods = () => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading payment methods...'))
+  
   try {
+    dispatch(setError(null))
     const response = await api.get('/api/admin/payment-methods')
-    dispatch(setPaymentMethods(response.data))
+    dispatch(setPaymentMethods(response.data as PaymentMethod[]))
+    dispatch(stopLoading())
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to fetch payment methods'))
+    dispatch(stopLoading())
   }
 }
 
 export const processRefund = (paymentId: number, amount?: number, reason?: string) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Processing refund...'))
+  
   try {
-    dispatch(setLoading(true))
-    
+    dispatch(setError(null))
     const response = await api.post(`/api/admin/payments/${paymentId}/refund`, {
       amount,
       reason
     })
     
-    dispatch(updatePayment(response.data))
+    dispatch(updatePayment(response.data as Payment))
+    dispatch(stopLoading())
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to process refund'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
 export const updatePaymentStatus = (paymentId: number, status: string) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating payment status...'))
+  
   try {
-    dispatch(setLoading(true))
-    
+    dispatch(setError(null))
     const response = await api.put(`/api/admin/payments/${paymentId}/status`, {
       status
     })
     
-    dispatch(updatePayment(response.data))
+    dispatch(updatePayment(response.data as Payment))
+    dispatch(stopLoading())
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to update payment status'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
@@ -308,9 +315,10 @@ export const bulkUpdatePaymentStatus = (paymentIds: number[], status: string) =>
 }
 
 export const exportPayments = () => async (dispatch: AppDispatch, getState: any) => {
+  dispatch(startLoading('Exporting payments...'))
+  
   try {
-    dispatch(setLoading(true))
-    
+    dispatch(setError(null))
     const { paymentFilter } = getState().adminPayments
     
     const params = new URLSearchParams({
@@ -328,7 +336,7 @@ export const exportPayments = () => async (dispatch: AppDispatch, getState: any)
     })
     
     // Create download link
-    const url = window.URL.createObjectURL(new Blob([response.data]))
+    const url = window.URL.createObjectURL(new Blob([response.data as BlobPart]))
     const link = document.createElement('a')
     link.href = url
     link.setAttribute('download', `payments-${new Date().toISOString().split('T')[0]}.csv`)
@@ -336,11 +344,11 @@ export const exportPayments = () => async (dispatch: AppDispatch, getState: any)
     link.click()
     link.remove()
     window.URL.revokeObjectURL(url)
+    dispatch(stopLoading())
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to export payments'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 

@@ -1,30 +1,23 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppDispatch } from '../index'
 import { startLoading, stopLoading } from './loadingSlice'
-import axios from 'axios'
+import api from '../../services/api'
 
-const BASE_URL = 'http://localhost:5000'
+export interface AvailabilitySlot {
+  start_time: string
+  end_time: string
+  is_available: boolean
+}
 
-const apiClient = axios.create({
-  baseURL: BASE_URL,
-  timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json'
-  }
-})
-
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token')
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
+export interface WeeklySchedule {
+  monday: AvailabilitySlot[]
+  tuesday: AvailabilitySlot[]
+  wednesday: AvailabilitySlot[]
+  thursday: AvailabilitySlot[]
+  friday: AvailabilitySlot[]
+  saturday: AvailabilitySlot[]
+  sunday: AvailabilitySlot[]
+}
 
 export interface Coach {
   id: number
@@ -38,7 +31,7 @@ export interface Coach {
   certifications: string[]
   rating: number
   total_reviews: number
-  availability_schedule: Record<string, any> | null
+  availability_schedule: WeeklySchedule | null
   club: {
     id: number
     name: string
@@ -344,11 +337,10 @@ export const {
 
 // Search coaching sessions based on filters
 export const searchCoachingSessions = (filters: Partial<SessionFilters>) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Searching sessions...'))
-  
   try {
-    const response = await apiClient.post<CoachingSession[]>('/api/coaching-sessions/search', filters)
-    dispatch(setAvailableSessions(response.data))
+    dispatch(startLoading('Searching sessions...'))
+    const response = await api.post<CoachingSession[]>('/api/coaching-sessions/search', filters)
+    dispatch(setAvailableSessions(response.data as CoachingSession[]))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(setError('Failed to search sessions'))
@@ -359,11 +351,10 @@ export const searchCoachingSessions = (filters: Partial<SessionFilters>) => asyn
 
 // Get available coaches
 export const fetchAvailableCoaches = () => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Loading coaches...'))
-  
   try {
-    const response = await apiClient.get<Coach[]>('/api/coaching-sessions/coaches')
-    dispatch(setCoaches(response.data))
+    dispatch(startLoading('Loading coaches...'))
+    const response = await api.get<Coach[]>('/api/coaching-sessions/coaches')
+    dispatch(setCoaches(response.data as Coach[]))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(setError('Failed to load coaches'))
@@ -377,7 +368,7 @@ export const fetchCoachDetails = (coachId: number) => async (dispatch: AppDispat
   dispatch(startLoading('Loading coach details...'))
   
   try {
-    const response = await apiClient.get<Coach>(`/api/coaching-sessions/coaches/${coachId}`)
+    const response = await api.get<Coach>(`/api/coaching-sessions/coaches/${coachId}`)
     dispatch(setSelectedCoach(response.data))
     dispatch(stopLoading())
   } catch (error) {
@@ -392,7 +383,7 @@ export const fetchMyBookings = () => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Loading your bookings...'))
   
   try {
-    const response = await apiClient.get<SessionBooking[]>('/api/coaching-sessions/my-bookings')
+    const response = await api.get<SessionBooking[]>('/api/coaching-sessions/my-bookings')
     dispatch(setMyBookings(response.data))
     dispatch(stopLoading())
   } catch (error) {
@@ -407,11 +398,10 @@ export const bookCoachingSession = (sessionData: {
   session_id: number
   payment_method: string
 }) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Booking session...'))
-  
   try {
-    const response = await apiClient.post<SessionBooking>('/api/coaching-sessions/book', sessionData)
-    dispatch(addBooking(response.data))
+    dispatch(startLoading('Booking session...'))
+    const response = await api.post<SessionBooking>('/api/coaching-sessions/book', sessionData)
+    dispatch(addBooking(response.data as SessionBooking))
     dispatch(closeBookingModal())
     dispatch(stopLoading())
     return response.data
@@ -424,11 +414,10 @@ export const bookCoachingSession = (sessionData: {
 
 // Cancel a session booking
 export const cancelSessionBooking = (bookingId: number) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Canceling booking...'))
-  
   try {
-    const response = await apiClient.put<SessionBooking>(`/api/coaching-sessions/bookings/${bookingId}/cancel`)
-    dispatch(updateBooking(response.data))
+    dispatch(startLoading('Canceling booking...'))
+    const response = await api.put<SessionBooking>(`/api/coaching-sessions/bookings/${bookingId}/cancel`)
+    dispatch(updateBooking(response.data as SessionBooking))
     dispatch(stopLoading())
     return response.data
   } catch (error) {
@@ -443,10 +432,9 @@ export const submitSessionReview = (sessionId: number, reviewData: {
   rating: number
   comment: string
 }) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Submitting review...'))
-  
   try {
-    const response = await apiClient.post(`/api/coaching-sessions/${sessionId}/review`, reviewData)
+    dispatch(startLoading('Submitting review...'))
+    const response = await api.post(`/api/coaching-sessions/${sessionId}/review`, reviewData)
     dispatch(closeReviewModal())
     // Refresh bookings to show updated review status
     dispatch(fetchMyBookings())
@@ -464,7 +452,7 @@ export const fetchSessionDetails = (sessionId: number) => async (dispatch: AppDi
   dispatch(startLoading('Loading session details...'))
   
   try {
-    const response = await apiClient.get<CoachingSession>(`/api/coaching-sessions/${sessionId}`)
+    const response = await api.get<CoachingSession>(`/api/coaching-sessions/${sessionId}`)
     dispatch(setSelectedSession(response.data))
     dispatch(stopLoading())
   } catch (error) {

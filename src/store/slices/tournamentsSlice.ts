@@ -7,6 +7,9 @@ import {
   TournamentCategory,
   PaginatedResponse
 } from '../../types'
+import { AppDispatch } from '../index'
+import { startLoading, stopLoading } from './loadingSlice'
+import api from '../../services/api'
 
 const initialState: TournamentsState = {
   tournaments: [],
@@ -115,5 +118,121 @@ export const {
   addTournamentCategory,
   clearTournaments
 } = tournamentsSlice.actions
+
+// Async thunks for API integration
+
+export const fetchTournaments = () => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading tournaments...'))
+  
+  try {
+    const response = await api.get('/api/tournaments')
+    dispatch(setTournaments(response.data as PaginatedResponse<Tournament>))
+  } catch (error) {
+    throw error
+  } finally {
+    dispatch(stopLoading())
+  }
+}
+
+export const fetchTournamentDetails = (tournamentId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading tournament details...'))
+  
+  try {
+    const [tournamentResponse, registrationsResponse, matchesResponse] = await Promise.all([
+      api.get(`/api/tournaments/${tournamentId}`),
+      api.get(`/api/tournaments/${tournamentId}/registrations`),
+      api.get(`/api/tournaments/${tournamentId}/matches`)
+    ])
+    
+    const tournament = tournamentResponse.data as Tournament
+    const registrations = registrationsResponse.data as TournamentRegistration[]
+    const matches = matchesResponse.data as TournamentMatch[]
+    
+    dispatch(setCurrentTournament({
+      tournament: tournament,
+      totalRegistrations: registrations.length
+    }))
+    dispatch(setTournamentRegistrations(registrations))
+    dispatch(setTournamentMatches(matches))
+  } catch (error) {
+    throw error
+  } finally {
+    dispatch(stopLoading())
+  }
+}
+
+export const generateTournamentBrackets = (tournamentId: number, categoryId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Generating brackets...'))
+  
+  try {
+    const response = await api.post(`/api/tournaments/${tournamentId}/categories/${categoryId}/generate-brackets`)
+    
+    dispatch(setTournamentMatches(response.data as TournamentMatch[]))
+    return response.data
+  } catch (error) {
+    throw error
+  } finally {
+    dispatch(stopLoading())
+  }
+}
+
+export const registerForTournament = (tournamentId: number, categoryId: number, partnerPlayerId?: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Registering for tournament...'))
+  
+  try {
+    const response = await api.post(`/api/tournaments/${tournamentId}/register`, {
+      categoryId,
+      partnerPlayerId
+    })
+    
+    dispatch(addTournamentRegistration(response.data as TournamentRegistration))
+    return response.data
+  } catch (error) {
+    throw error
+  } finally {
+    dispatch(stopLoading())
+  }
+}
+
+export const updateMatchResult = (matchId: number, updates: {
+  score: string
+  winner_side: 1 | 2
+  status: 'completed'
+}) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating match result...'))
+  
+  try {
+    const response = await api.put(`/api/tournaments/matches/${matchId}`, updates)
+    dispatch(updateTournamentMatch(response.data as TournamentMatch))
+    return response.data
+  } catch (error) {
+    throw error
+  } finally {
+    dispatch(stopLoading())
+  }
+}
+
+export const createTournamentCategory = (tournamentId: number, categoryData: {
+  name: string
+  min_age?: number
+  max_age?: number
+  gender?: 'Male' | 'Female' | 'Mixed'
+  min_skill_level?: number
+  max_skill_level?: number
+  format?: string
+  max_participants?: number
+}) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Creating tournament category...'))
+  
+  try {
+    const response = await api.post(`/api/tournaments/${tournamentId}/categories`, categoryData)
+    dispatch(addTournamentCategory(response.data as TournamentCategory))
+    return response.data
+  } catch (error) {
+    throw error
+  } finally {
+    dispatch(stopLoading())
+  }
+}
 
 export default tournamentsSlice.reducer

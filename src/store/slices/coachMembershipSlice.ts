@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
+import { AppDispatch } from '../index'
+import { startLoading, stopLoading } from './loadingSlice'
+import api from '../../services/api'
 
 interface SubscriptionPlan {
   id: number
@@ -115,102 +117,92 @@ export const {
 } = coachMembershipSlice.actions
 
 // API Functions
-export const fetchCoachMembershipData = () => async (dispatch: any) => {
+export const fetchCoachMembershipData = () => async (dispatch: AppDispatch) => {
   try {
-    dispatch(setLoading(true))
-    dispatch(setError(null))
-    
-    const response = await axios.get('/api/coach/membership')
-    dispatch(setMembershipData(response.data))
+    dispatch(startLoading('Loading membership data...'))
+    const response = await api.get('/api/coach/membership')
+    dispatch(setMembershipData(response.data as { currentSubscription: Subscription | null, availablePlans: SubscriptionPlan[], paymentHistory: Payment[], stats: CoachMembershipState['stats'] }))
+    dispatch(stopLoading())
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to fetch membership data'))
-  } finally {
-    dispatch(setLoading(false))
+    dispatch(stopLoading())
   }
 }
 
 export const subscribeToCoachPlan = (planId: number, paymentData: {
   payment_method: string
   billing_cycle: 'monthly' | 'yearly'
-}) => async (dispatch: any) => {
+}) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(setLoading(true))
-    dispatch(setError(null))
-    
-    const response = await axios.post('/api/coach/membership/subscribe', {
+    dispatch(startLoading('Subscribing to plan...'))
+    const response = await api.post('/api/coach/membership/subscribe', {
       plan_id: planId,
       ...paymentData
     })
     
-    dispatch(updateSubscription(response.data.subscription))
-    dispatch(addPayment(response.data.payment))
+    dispatch(updateSubscription((response.data as { subscription: Subscription, payment: Payment }).subscription))
+    dispatch(addPayment((response.data as { subscription: Subscription, payment: Payment }).payment))
+    dispatch(stopLoading())
     
     return response.data
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to subscribe to plan'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
-export const cancelCoachSubscription = () => async (dispatch: any) => {
+export const cancelCoachSubscription = () => async (dispatch: AppDispatch) => {
   try {
-    dispatch(setLoading(true))
-    dispatch(setError(null))
-    
-    await axios.post('/api/coach/membership/cancel')
+    dispatch(startLoading('Canceling subscription...'))
+    await api.post('/api/coach/membership/cancel')
     dispatch(cancelSubscription())
+    dispatch(stopLoading())
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to cancel subscription'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
 export const renewCoachSubscription = (planId: number, paymentData: {
   payment_method: string
   billing_cycle: 'monthly' | 'yearly'
-}) => async (dispatch: any) => {
+}) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(setLoading(true))
-    dispatch(setError(null))
-    
-    const response = await axios.post('/api/coach/membership/renew', {
+    dispatch(startLoading('Renewing subscription...'))
+    const response = await api.post('/api/coach/membership/renew', {
       plan_id: planId,
       ...paymentData
     })
     
-    dispatch(updateSubscription(response.data.subscription))
-    dispatch(addPayment(response.data.payment))
+    dispatch(updateSubscription((response.data as { subscription: Subscription, payment: Payment }).subscription))
+    dispatch(addPayment((response.data as { subscription: Subscription, payment: Payment }).payment))
+    dispatch(stopLoading())
     
     return response.data
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to renew subscription'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
 export const updateCoachPaymentMethod = (paymentMethodData: {
   payment_method: string
   stripe_payment_method_id?: string
-}) => async (dispatch: any) => {
+}) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(setLoading(true))
-    dispatch(setError(null))
-    
-    const response = await axios.put('/api/coach/membership/payment-method', paymentMethodData)
-    dispatch(updateSubscription(response.data.subscription))
+    dispatch(startLoading('Updating payment method...'))
+    const response = await api.put('/api/coach/membership/payment-method', paymentMethodData)
+    dispatch(updateSubscription((response.data as { subscription: Subscription }).subscription))
+    dispatch(stopLoading())
     
     return response.data
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to update payment method'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 

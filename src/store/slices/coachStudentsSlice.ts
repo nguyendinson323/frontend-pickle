@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
 import { AppDispatch } from '../index'
 import { startLoading, stopLoading } from './loadingSlice'
+import api from '../../services/api'
 
 interface Student {
   id: number
@@ -106,10 +106,10 @@ export const {
 // API Functions
 export const fetchCoachStudentsData = () => async (dispatch: AppDispatch) => {
   try {
-    dispatch(startLoading())
-    const response = await axios.get('/api/coach/students')
-    dispatch(setCoachStudents(response.data.students))
-    dispatch(setStudentsStats(response.data.stats))
+    dispatch(startLoading('Loading students data...'))
+    const response = await api.get('/api/coach/students')
+    dispatch(setCoachStudents((response.data as { students: Student[], stats: StudentsStats }).students))
+    dispatch(setStudentsStats((response.data as { students: Student[], stats: StudentsStats }).stats))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(stopLoading())
@@ -119,9 +119,9 @@ export const fetchCoachStudentsData = () => async (dispatch: AppDispatch) => {
 
 export const getStudentDetails = (studentId: number) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(startLoading())
-    const response = await axios.get(`/api/coach/students/${studentId}`)
-    dispatch(setSelectedStudent(response.data))
+    dispatch(startLoading('Loading student details...'))
+    const response = await api.get<Student>(`/api/coach/students/${studentId}`)
+    dispatch(setSelectedStudent(response.data as Student))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(stopLoading())
@@ -131,15 +131,15 @@ export const getStudentDetails = (studentId: number) => async (dispatch: AppDisp
 
 export const updateStudentLevel = (studentId: number, newLevel: number) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(startLoading())
-    const response = await axios.put(`/api/coach/students/${studentId}/level`, { 
+    dispatch(startLoading('Updating student level...'))
+    await api.put(`/api/coach/students/${studentId}/level`, { 
       nrtp_level: newLevel 
     })
     
     // Update the student in the list
-    const studentsResponse = await axios.get('/api/coach/students')
-    dispatch(setCoachStudents(studentsResponse.data.students))
-    dispatch(setStudentsStats(studentsResponse.data.stats))
+    const studentsResponse = await api.get('/api/coach/students')
+    dispatch(setCoachStudents((studentsResponse.data as { students: Student[], stats: StudentsStats }).students))
+    dispatch(setStudentsStats((studentsResponse.data as { students: Student[], stats: StudentsStats }).stats))
     
     dispatch(stopLoading())
   } catch (error) {
@@ -150,12 +150,12 @@ export const updateStudentLevel = (studentId: number, newLevel: number) => async
 
 export const addStudentNote = (studentId: number, note: string) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(startLoading())
-    await axios.post(`/api/coach/students/${studentId}/notes`, { note })
+    dispatch(startLoading('Adding student note...'))
+    await api.post(`/api/coach/students/${studentId}/notes`, { note })
     
     // Refresh student details
-    const response = await axios.get(`/api/coach/students/${studentId}`)
-    dispatch(setSelectedStudent(response.data))
+    const response = await api.get<Student>(`/api/coach/students/${studentId}`)
+    dispatch(setSelectedStudent(response.data as Student))
     
     dispatch(stopLoading())
   } catch (error) {

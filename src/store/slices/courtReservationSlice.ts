@@ -1,30 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppDispatch } from '../index'
 import { startLoading, stopLoading } from './loadingSlice'
-import axios from 'axios'
-
-const BASE_URL = 'http://localhost:5000'
-
-const apiClient = axios.create({
-  baseURL: BASE_URL,
-  timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json'
-  }
-})
-
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token')
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
+import api from '../../services/api'
 
 export interface CourtSchedule {
   id: number
@@ -299,8 +276,14 @@ export const searchCourts = (filters: Partial<CourtFilters>) => async (dispatch:
   dispatch(startLoading('Searching courts...'))
   
   try {
-    const response = await apiClient.post<Court[]>('/api/court-reservations/search', filters)
-    dispatch(setCourts(response.data))
+    const params = new URLSearchParams()
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== null && value !== undefined) {
+        params.append(key, String(value))
+      }
+    })
+    const response = await api.get(`/api/court-reservations/courts?${params.toString()}`)
+    dispatch(setCourts(response.data as Court[]))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(setError('Failed to search courts'))
@@ -314,8 +297,8 @@ export const getCourtAvailability = (courtId: number, date: string) => async (di
   dispatch(startLoading('Loading availability...'))
   
   try {
-    const response = await apiClient.get<TimeSlot[]>(`/api/court-reservations/courts/${courtId}/availability?date=${date}`)
-    dispatch(setAvailableTimeSlots(response.data))
+    const response = await api.get(`/api/court-reservations/courts/${courtId}/availability?date=${date}`)
+    dispatch(setAvailableTimeSlots(response.data as TimeSlot[]))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(setError('Failed to load availability'))
@@ -329,8 +312,8 @@ export const getCourtDetails = (courtId: number) => async (dispatch: AppDispatch
   dispatch(startLoading('Loading court details...'))
   
   try {
-    const response = await apiClient.get<Court>(`/api/court-reservations/courts/${courtId}`)
-    dispatch(setSelectedCourt(response.data))
+    const response = await api.get<Court>(`/api/court-reservations/courts/${courtId}`)
+    dispatch(setSelectedCourt(response.data as Court))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(setError('Failed to load court details'))
@@ -344,8 +327,8 @@ export const fetchUserReservations = () => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Loading your reservations...'))
   
   try {
-    const response = await apiClient.get<CourtReservation[]>('/api/court-reservations/reservations')
-    dispatch(setUserReservations(response.data))
+    const response = await api.get('/api/court-reservations/my-reservations')
+    dispatch(setUserReservations(response.data as CourtReservation[]))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(setError('Failed to load reservations'))
@@ -364,8 +347,8 @@ export const makeCourtReservation = (reservationData: {
   dispatch(startLoading('Making reservation...'))
   
   try {
-    const response = await apiClient.post<CourtReservation>('/api/court-reservations/reserve', reservationData)
-    dispatch(addReservation(response.data))
+    const response = await api.post('/api/court-reservations', reservationData)
+    dispatch(addReservation(response.data as CourtReservation))
     dispatch(closeReservationModal())
     dispatch(stopLoading())
     return response.data
@@ -381,8 +364,8 @@ export const cancelCourtReservation = (reservationId: number) => async (dispatch
   dispatch(startLoading('Canceling reservation...'))
   
   try {
-    const response = await apiClient.put<CourtReservation>(`/api/court-reservations/reservations/${reservationId}/cancel`)
-    dispatch(updateReservation(response.data))
+    const response = await api.put(`/api/court-reservations/${reservationId}/cancel`)
+    dispatch(updateReservation(response.data as CourtReservation))
     dispatch(stopLoading())
     return response.data
   } catch (error) {

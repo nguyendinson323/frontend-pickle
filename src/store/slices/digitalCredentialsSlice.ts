@@ -1,30 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppDispatch } from '../index'
 import { startLoading, stopLoading } from './loadingSlice'
-import axios from 'axios'
-
-const BASE_URL = 'http://localhost:5000'
-
-const apiClient = axios.create({
-  baseURL: BASE_URL,
-  timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json'
-  }
-})
-
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token')
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
+import api from '../../services/api'
 
 export interface DigitalCredential {
   id: number
@@ -36,41 +13,104 @@ export interface DigitalCredential {
   expiry_date: string | null
   qr_code_data: string
   qr_code_url: string | null
-  metadata: Record<string, any> | null
+  metadata: Record<string, string | number | boolean> | null
   is_active: boolean
+  verification_count: number
+  last_verified_at: string | null
   created_at: string
   updated_at: string
-  tournament?: {
+  tournament: {
     id: number
     name: string
-    level: string
+    tournament_type: string
   } | null
-  certification?: {
+  certification: {
     id: number
     name: string
     issuer: string
-    level: string
   } | null
 }
 
 export interface PlayerProfile {
   id: number
+  user_id: number
   full_name: string
-  email: string
-  skill_level: string
-  profile_image: string | null
+  nrtp_level: number | null
+  profile_photo_url: string | null
+  nationality: string
+  ranking_position: number | null
+  affiliation_expires_at: string | null
+  state: {
+    id: number
+    name: string
+    short_code: string
+  } | null
   club: {
     id: number
     name: string
   } | null
+  username: string
+  email: string
+  phone: string | null
+  is_premium: boolean
+  is_verified: boolean
 }
 
 export interface CredentialTemplate {
-  type: 'player_card' | 'tournament_badge' | 'certification' | 'membership_card'
+  id: number
   name: string
+  type: 'player_card' | 'tournament_badge' | 'certification' | 'membership_card'
   description: string
+  template_config: Record<string, string | number | boolean | object>
+  background_url: string | null
+  logo_url: string | null
+  design_elements: Record<string, string | number | boolean>
   required_fields: string[]
-  template_data: Record<string, any>
+}
+
+export interface CreateCredentialData {
+  credential_type: 'player_card' | 'tournament_badge' | 'certification' | 'membership_card'
+  title: string
+  description?: string
+  expiry_date?: string
+  tournament_id?: number
+  certification_id?: number
+  metadata?: Record<string, string | number | boolean>
+}
+
+export interface VerificationResult {
+  valid: boolean
+  message?: string
+  credential?: {
+    id: number
+    credential_type: string
+    title: string
+    description: string | null
+    issue_date: string
+    expiry_date: string | null
+    is_expired: boolean
+    verification_count: number
+    player: {
+      id: number
+      full_name: string
+      nrtp_level: number | null
+      profile_photo_url: string | null
+      nationality: string
+      ranking_position: number | null
+      state: string | null
+      club: string
+    }
+    tournament: {
+      name: string
+      tournament_type: string
+      start_date: string
+    } | null
+    certification: {
+      name: string
+      issuer: string
+      issue_date: string
+    } | null
+  }
 }
 
 export interface DigitalCredentialsState {
@@ -88,7 +128,7 @@ export interface DigitalCredentialsState {
   createCredentialModal: {
     isOpen: boolean
     selectedTemplate: CredentialTemplate | null
-    formData: Record<string, any>
+    formData: Record<string, string>
   }
 }
 
@@ -124,15 +164,6 @@ const digitalCredentialsSlice = createSlice({
     setCredentials: (state, action: PayloadAction<DigitalCredential[]>) => {
       state.credentials = action.payload
     },
-    setSelectedCredential: (state, action: PayloadAction<DigitalCredential | null>) => {
-      state.selectedCredential = action.payload
-    },
-    setPlayerProfile: (state, action: PayloadAction<PlayerProfile | null>) => {
-      state.playerProfile = action.payload
-    },
-    setTemplates: (state, action: PayloadAction<CredentialTemplate[]>) => {
-      state.templates = action.payload
-    },
     addCredential: (state, action: PayloadAction<DigitalCredential>) => {
       state.credentials.unshift(action.payload)
     },
@@ -145,10 +176,16 @@ const digitalCredentialsSlice = createSlice({
     removeCredential: (state, action: PayloadAction<number>) => {
       state.credentials = state.credentials.filter(cred => cred.id !== action.payload)
     },
-    openQrCodeModal: (state, action: PayloadAction<{
-      credentialId: number
-      qrCodeUrl: string
-    }>) => {
+    setSelectedCredential: (state, action: PayloadAction<DigitalCredential | null>) => {
+      state.selectedCredential = action.payload
+    },
+    setPlayerProfile: (state, action: PayloadAction<PlayerProfile | null>) => {
+      state.playerProfile = action.payload
+    },
+    setTemplates: (state, action: PayloadAction<CredentialTemplate[]>) => {
+      state.templates = action.payload
+    },
+    openQrCodeModal: (state, action: PayloadAction<{ credentialId: number; qrCodeUrl: string }>) => {
       state.qrCodeModal = {
         isOpen: true,
         credentialId: action.payload.credentialId,
@@ -176,27 +213,10 @@ const digitalCredentialsSlice = createSlice({
         formData: {}
       }
     },
-    updateCreateCredentialFormData: (state, action: PayloadAction<Record<string, any>>) => {
+    updateCreateCredentialFormData: (state, action: PayloadAction<Record<string, string>>) => {
       state.createCredentialModal.formData = {
         ...state.createCredentialModal.formData,
         ...action.payload
-      }
-    },
-    clearDigitalCredentials: (state) => {
-      state.credentials = []
-      state.selectedCredential = null
-      state.playerProfile = null
-      state.templates = []
-      state.error = null
-      state.qrCodeModal = {
-        isOpen: false,
-        credentialId: null,
-        qrCodeUrl: null
-      }
-      state.createCredentialModal = {
-        isOpen: false,
-        selectedTemplate: null,
-        formData: {}
       }
     }
   }
@@ -206,162 +226,154 @@ export const {
   setLoading,
   setError,
   setCredentials,
-  setSelectedCredential,
-  setPlayerProfile,
-  setTemplates,
   addCredential,
   updateCredential,
   removeCredential,
+  setSelectedCredential,
+  setPlayerProfile,
+  setTemplates,
   openQrCodeModal,
   closeQrCodeModal,
   openCreateCredentialModal,
   closeCreateCredentialModal,
-  updateCreateCredentialFormData,
-  clearDigitalCredentials
+  updateCreateCredentialFormData
 } = digitalCredentialsSlice.actions
 
-// Get player's digital credentials
+// Thunks
 export const fetchPlayerCredentials = () => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Loading credentials...'))
   
   try {
-    const response = await apiClient.get<DigitalCredential[]>('/api/digital-credentials/player')
-    dispatch(setCredentials(response.data))
+    dispatch(setError(null))
+    const response = await api.get('/api/digital-credentials/player')
+    dispatch(setCredentials(response.data as DigitalCredential[]))
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch credentials'
+    dispatch(setError(errorMessage))
+  } finally {
     dispatch(stopLoading())
-  } catch (error) {
-    dispatch(setError('Failed to load credentials'))
-    dispatch(stopLoading())
-    throw error
   }
 }
 
-// Get player profile for credential creation
 export const fetchPlayerProfile = () => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Loading profile...'))
+  dispatch(startLoading('Loading player profile...'))
   
   try {
-    const response = await apiClient.get<PlayerProfile>('/api/digital-credentials/profile')
-    dispatch(setPlayerProfile(response.data))
+    dispatch(setError(null))
+    const response = await api.get('/api/digital-credentials/profile')
+    dispatch(setPlayerProfile(response.data as PlayerProfile))
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch player profile'
+    dispatch(setError(errorMessage))
+  } finally {
     dispatch(stopLoading())
-  } catch (error) {
-    dispatch(setError('Failed to load profile'))
-    dispatch(stopLoading())
-    throw error
   }
 }
 
-// Get available credential templates
 export const fetchCredentialTemplates = () => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Loading templates...'))
   
   try {
-    const response = await apiClient.get<CredentialTemplate[]>('/api/digital-credentials/templates')
-    dispatch(setTemplates(response.data))
+    dispatch(setError(null))
+    const response = await api.get('/api/digital-credentials/templates')
+    dispatch(setTemplates(response.data as CredentialTemplate[]))
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch templates'
+    dispatch(setError(errorMessage))
+  } finally {
     dispatch(stopLoading())
-  } catch (error) {
-    dispatch(setError('Failed to load templates'))
-    dispatch(stopLoading())
-    throw error
   }
 }
 
-// Create a new digital credential
-export const createDigitalCredential = (credentialData: {
-  credential_type: string
-  title: string
-  description?: string
-  expiry_date?: string
-  metadata?: Record<string, any>
-}) => async (dispatch: AppDispatch) => {
+export const createDigitalCredential = (credentialData: CreateCredentialData) => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Creating credential...'))
   
   try {
-    const response = await apiClient.post<DigitalCredential>('/api/digital-credentials/create', credentialData)
-    dispatch(addCredential(response.data))
+    dispatch(setError(null))
+    const response = await api.post('/api/digital-credentials/create', credentialData)
+    dispatch(addCredential(response.data as DigitalCredential))
     dispatch(closeCreateCredentialModal())
-    dispatch(stopLoading())
-    return response.data
-  } catch (error) {
-    dispatch(setError('Failed to create credential'))
-    dispatch(stopLoading())
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to create credential'
+    dispatch(setError(errorMessage))
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
-// Generate QR code for a credential
 export const generateCredentialQrCode = (credentialId: number) => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Generating QR code...'))
   
   try {
-    const response = await apiClient.post<{qr_code_url: string}>(`/api/digital-credentials/${credentialId}/qr-code`)
-    
-    // Update the credential with the new QR code URL
-    const credentialsResponse = await apiClient.get<DigitalCredential[]>('/api/digital-credentials/player')
-    dispatch(setCredentials(credentialsResponse.data))
-    
+    dispatch(setError(null))
+    const response = await api.post(`/api/digital-credentials/${credentialId}/qr-code`)
+    const responseData = response.data as { credential_id: number; qr_code_url: string }
     dispatch(openQrCodeModal({
-      credentialId,
-      qrCodeUrl: response.data.qr_code_url
+      credentialId: responseData.credential_id,
+      qrCodeUrl: responseData.qr_code_url
     }))
-    dispatch(stopLoading())
-    return response.data.qr_code_url
-  } catch (error) {
-    dispatch(setError('Failed to generate QR code'))
-    dispatch(stopLoading())
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to generate QR code'
+    dispatch(setError(errorMessage))
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
-// Verify a credential using QR code
-export const verifyCredential = (qrCodeData: string) => async (dispatch: AppDispatch) => {
+export const verifyCredential = (qrCodeData: string) => async (dispatch: AppDispatch): Promise<VerificationResult> => {
   dispatch(startLoading('Verifying credential...'))
   
   try {
-    const response = await apiClient.post<{
-      valid: boolean
-      credential: DigitalCredential | null
-      message: string
-    }>('/api/digital-credentials/verify', { qr_code_data: qrCodeData })
-    
+    dispatch(setError(null))
+    const response = await api.get(`/api/digital-credentials/verify/${encodeURIComponent(qrCodeData)}`)
+    return response.data as VerificationResult
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to verify credential'
+    dispatch(setError(errorMessage))
+    return {
+      valid: false,
+      message: errorMessage
+    }
+  } finally {
     dispatch(stopLoading())
-    return response.data
-  } catch (error) {
-    dispatch(setError('Failed to verify credential'))
-    dispatch(stopLoading())
-    throw error
   }
 }
 
-// Update credential status (activate/deactivate)
 export const updateCredentialStatus = (credentialId: number, isActive: boolean) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Updating credential...'))
+  dispatch(startLoading('Updating credential status...'))
   
   try {
-    const response = await apiClient.put<DigitalCredential>(`/api/digital-credentials/${credentialId}/status`, {
+    dispatch(setError(null))
+    const response = await api.put(`/api/digital-credentials/${credentialId}/status`, {
       is_active: isActive
     })
-    dispatch(updateCredential(response.data))
-    dispatch(stopLoading())
-    return response.data
-  } catch (error) {
-    dispatch(setError('Failed to update credential'))
-    dispatch(stopLoading())
+    
+    const updatedCredential = { ...(response.data as DigitalCredential), is_active: isActive }
+    dispatch(updateCredential(updatedCredential))
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to update credential status'
+    dispatch(setError(errorMessage))
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
-// Delete a credential
 export const deleteCredential = (credentialId: number) => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Deleting credential...'))
   
   try {
-    await apiClient.delete(`/api/digital-credentials/${credentialId}`)
+    dispatch(setError(null))
+    await api.delete(`/api/digital-credentials/${credentialId}`)
     dispatch(removeCredential(credentialId))
-    dispatch(stopLoading())
-  } catch (error) {
-    dispatch(setError('Failed to delete credential'))
-    dispatch(stopLoading())
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to delete credential'
+    dispatch(setError(errorMessage))
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 

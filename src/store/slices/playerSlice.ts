@@ -1,31 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppDispatch } from '../index'
 import { startLoading, stopLoading } from './loadingSlice'
-import axios from 'axios'
+import api from '../../services/api'
 import { Player, State, User } from '../../types/auth'
-
-const BASE_URL = 'http://localhost:5000'
-
-const apiClient = axios.create({
-  baseURL: BASE_URL,
-  timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json'
-  }
-})
-
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token')
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
 
 export interface PlayerState {
   profileData: Player | null
@@ -84,8 +61,8 @@ export const fetchStates = () => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Loading states...'))
   
   try {
-    const response = await apiClient.get<State[]>('/api/player/states')
-    dispatch(setStatesList(response.data))
+    const response = await api.get<State[]>('/api/player/states')
+    dispatch(setStatesList(response.data as State[]))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(setError('Failed to load states'))
@@ -99,8 +76,8 @@ export const fetchPlayerProfile = () => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Loading profile...'))
   
   try {
-    const response = await apiClient.get<Player>('/api/player/profile')
-    dispatch(setProfileData(response.data))
+    const response = await api.get('/api/player/profile')
+    dispatch(setProfileData(response.data as Player))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(setError('Failed to load profile'))
@@ -114,8 +91,8 @@ export const updatePlayerProfile = (profileData: Partial<Player>) => async (disp
   dispatch(startLoading('Updating profile...'))
   
   try {
-    const response = await apiClient.put<Player>('/api/player/profile', profileData)
-    dispatch(setProfileData(response.data))
+    const response = await api.put('/api/player/profile', profileData)
+    dispatch(setProfileData(response.data as Player))
     dispatch(stopLoading())
     return response.data
   } catch (error) {
@@ -130,7 +107,7 @@ export const updateUserAccount = (userData: Partial<User>) => async (dispatch: A
   dispatch(startLoading('Updating account...'))
   
   try {
-    const response = await apiClient.put<User>('/api/player/account', userData)
+    const response = await api.put<User>('/api/player/account', userData)
     dispatch(stopLoading())
     return response.data
   } catch (error) {

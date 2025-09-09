@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
+import api from '../../services/api'
+import { startLoading, stopLoading } from './loadingSlice'
+import { AppDispatch } from '../index'
 
 interface StateDocument {
   id: number
@@ -206,9 +208,10 @@ export const {
 } = stateDocumentsSlice.actions
 
 // API Functions
-export const fetchStateDocumentsData = (filters?: Partial<StateDocumentsState['filters']>) => async (dispatch: any, getState: any) => {
+export const fetchStateDocumentsData = (filters?: Partial<StateDocumentsState['filters']>) => async (dispatch: AppDispatch, getState: any) => {
+  dispatch(startLoading('Loading documents data...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
     const state = getState()
@@ -218,68 +221,80 @@ export const fetchStateDocumentsData = (filters?: Partial<StateDocumentsState['f
       dispatch(setFilters(filters))
     }
     
-    const response = await axios.get('/api/state/documents', {
+    const response = await api.get('/api/state/documents', {
       params: currentFilters
     })
     
-    dispatch(setDocumentsData(response.data))
+    const responseData = response.data as {
+      documents: StateDocument[]
+      invoices: StateInvoice[]
+      templates: DocumentTemplate[]
+      stats: StateDocumentsStats
+    }
+    dispatch(setDocumentsData(responseData))
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to fetch documents data'))
+    throw error
   } finally {
-    dispatch(setLoading(false))
+    dispatch(stopLoading())
   }
 }
 
-export const uploadStateDocument = (documentData: FormData) => async (dispatch: any) => {
+export const uploadStateDocument = (documentData: FormData) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Uploading document...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    const response = await axios.post('/api/state/documents/upload', documentData, {
+    const response = await api.post('/api/state/documents/upload', documentData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     })
     
-    dispatch(addDocument(response.data.document))
+    const responseData = response.data as { document: StateDocument }
+    dispatch(addDocument(responseData.document))
     return response.data
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to upload document'))
     throw error
   } finally {
-    dispatch(setLoading(false))
+    dispatch(stopLoading())
   }
 }
 
-export const updateStateDocument = (documentId: number, documentData: Partial<StateDocument>) => async (dispatch: any) => {
+export const updateStateDocument = (documentId: number, documentData: Partial<StateDocument>) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating document...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    const response = await axios.put(`/api/state/documents/${documentId}`, documentData)
-    dispatch(updateDocument(response.data.document))
+    const response = await api.put(`/api/state/documents/${documentId}`, documentData)
+    const responseData = response.data as { document: StateDocument }
+    dispatch(updateDocument(responseData.document))
     
     return response.data
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to update document'))
     throw error
   } finally {
-    dispatch(setLoading(false))
+    dispatch(stopLoading())
   }
 }
 
-export const deleteStateDocument = (documentId: number) => async (dispatch: any) => {
+export const deleteStateDocument = (documentId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Deleting document...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    await axios.delete(`/api/state/documents/${documentId}`)
+    await api.delete(`/api/state/documents/${documentId}`)
     dispatch(deleteDocument(documentId))
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to delete document'))
     throw error
   } finally {
-    dispatch(setLoading(false))
+    dispatch(stopLoading())
   }
 }
 
@@ -292,52 +307,57 @@ export const createStateInvoice = (invoiceData: {
   tax_amount?: number
   due_date: string
   description?: string
-}) => async (dispatch: any) => {
+}) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Creating invoice...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    const response = await axios.post('/api/state/invoices', invoiceData)
-    dispatch(addInvoice(response.data.invoice))
+    const response = await api.post('/api/state/invoices', invoiceData)
+    const responseData = response.data as { invoice: StateInvoice }
+    dispatch(addInvoice(responseData.invoice))
     
     return response.data
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to create invoice'))
     throw error
   } finally {
-    dispatch(setLoading(false))
+    dispatch(stopLoading())
   }
 }
 
-export const updateStateInvoice = (invoiceId: number, invoiceData: Partial<StateInvoice>) => async (dispatch: any) => {
+export const updateStateInvoice = (invoiceId: number, invoiceData: Partial<StateInvoice>) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating invoice...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    const response = await axios.put(`/api/state/invoices/${invoiceId}`, invoiceData)
-    dispatch(updateInvoice(response.data.invoice))
+    const response = await api.put(`/api/state/invoices/${invoiceId}`, invoiceData)
+    const responseData = response.data as { invoice: StateInvoice }
+    dispatch(updateInvoice(responseData.invoice))
     
     return response.data
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to update invoice'))
     throw error
   } finally {
-    dispatch(setLoading(false))
+    dispatch(stopLoading())
   }
 }
 
-export const deleteStateInvoice = (invoiceId: number) => async (dispatch: any) => {
+export const deleteStateInvoice = (invoiceId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Deleting invoice...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    await axios.delete(`/api/state/invoices/${invoiceId}`)
+    await api.delete(`/api/state/invoices/${invoiceId}`)
     dispatch(deleteInvoice(invoiceId))
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to delete invoice'))
     throw error
   } finally {
-    dispatch(setLoading(false))
+    dispatch(stopLoading())
   }
 }
 
@@ -347,20 +367,22 @@ export const createDocumentTemplate = (templateData: {
   template_type: string
   template_content: string
   variables: string[]
-}) => async (dispatch: any) => {
+}) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Creating document template...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    const response = await axios.post('/api/state/document-templates', templateData)
-    dispatch(addTemplate(response.data.template))
+    const response = await api.post('/api/state/document-templates', templateData)
+    const responseData = response.data as { template: DocumentTemplate }
+    dispatch(addTemplate(responseData.template))
     
     return response.data
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to create template'))
     throw error
   } finally {
-    dispatch(setLoading(false))
+    dispatch(stopLoading())
   }
 }
 

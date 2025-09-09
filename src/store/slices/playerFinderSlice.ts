@@ -1,36 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppDispatch } from '../index'
+import api from '../../services/api'
 import { startLoading, stopLoading } from './loadingSlice'
-import axios from 'axios'
-
-const BASE_URL = 'http://localhost:5000'
-
-const apiClient = axios.create({
-  baseURL: BASE_URL,
-  timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json'
-  }
-})
-
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token')
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
 
 export interface PlayerFinderPlayer {
   id: number
   user_id: number
   full_name: string
-  birth_date: string
+  age: number
   gender: string
   state_id: number
   nrtp_level: number
@@ -51,10 +28,7 @@ export interface PlayerFinderPlayer {
   user: {
     id: number
     username: string
-    email: string
-    phone: string | null
     is_premium: boolean
-    is_searchable: boolean
   }
   distance?: number
 }
@@ -93,19 +67,56 @@ export interface PlayerFinderFilters {
   location_lng: number | null
 }
 
+export interface SearchPlayersParams {
+  filters: PlayerFinderFilters
+  page?: number
+  limit?: number
+}
+
+export interface SearchPlayersResponse {
+  players: PlayerFinderPlayer[]
+  pagination: {
+    currentPage: number
+    totalPages: number
+    totalCount: number
+    hasNext: boolean
+    hasPrev: boolean
+  }
+}
+
+export interface SendMatchRequestData {
+  receiver_id: number
+  preferred_date: string
+  preferred_time: string
+  message?: string
+  court_id?: number
+}
+
+export interface RespondToRequestData {
+  response: 'accepted' | 'rejected'
+  response_message?: string
+}
+
 export interface PlayerFinderState {
   players: PlayerFinderPlayer[]
   sentRequests: MatchRequest[]
   receivedRequests: MatchRequest[]
   filters: PlayerFinderFilters
+  searchPerformed: boolean
   isLoading: boolean
   error: string | null
-  searchPerformed: boolean
   userLocation: {
-    lat: number
-    lng: number
-  } | null
+    latitude: number | null
+    longitude: number | null
+  }
   locationPermission: 'granted' | 'denied' | 'prompt' | null
+  pagination: {
+    currentPage: number
+    totalPages: number
+    totalCount: number
+    hasNext: boolean
+    hasPrev: boolean
+  }
 }
 
 const initialState: PlayerFinderState = {
@@ -119,16 +130,26 @@ const initialState: PlayerFinderState = {
     gender: null,
     age_min: null,
     age_max: null,
-    distance_km: 25,
+    distance_km: null,
     has_premium: null,
     location_lat: null,
     location_lng: null
   },
+  searchPerformed: false,
   isLoading: false,
   error: null,
-  searchPerformed: false,
-  userLocation: null,
-  locationPermission: null
+  userLocation: {
+    latitude: null,
+    longitude: null
+  },
+  locationPermission: null,
+  pagination: {
+    currentPage: 1,
+    totalPages: 1,
+    totalCount: 0,
+    hasNext: false,
+    hasPrev: false
+  }
 }
 
 const playerFinderSlice = createSlice({
@@ -141,8 +162,9 @@ const playerFinderSlice = createSlice({
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload
     },
-    setPlayers: (state, action: PayloadAction<PlayerFinderPlayer[]>) => {
-      state.players = action.payload
+    setPlayers: (state, action: PayloadAction<SearchPlayersResponse>) => {
+      state.players = action.payload.players
+      state.pagination = action.payload.pagination
       state.searchPerformed = true
     },
     setSentRequests: (state, action: PayloadAction<MatchRequest[]>) => {
@@ -151,38 +173,42 @@ const playerFinderSlice = createSlice({
     setReceivedRequests: (state, action: PayloadAction<MatchRequest[]>) => {
       state.receivedRequests = action.payload
     },
-    setFilters: (state, action: PayloadAction<Partial<PlayerFinderFilters>>) => {
-      state.filters = { ...state.filters, ...action.payload }
-    },
-    setUserLocation: (state, action: PayloadAction<{lat: number, lng: number} | null>) => {
-      state.userLocation = action.payload
-      if (action.payload) {
-        state.filters.location_lat = action.payload.lat
-        state.filters.location_lng = action.payload.lng
-      }
-    },
-    setLocationPermission: (state, action: PayloadAction<'granted' | 'denied' | 'prompt' | null>) => {
-      state.locationPermission = action.payload
-    },
-    addMatchRequest: (state, action: PayloadAction<MatchRequest>) => {
-      state.sentRequests.unshift(action.payload)
-    },
-    updateMatchRequest: (state, action: PayloadAction<MatchRequest>) => {
+    updateSentRequest: (state, action: PayloadAction<MatchRequest>) => {
       const index = state.sentRequests.findIndex(req => req.id === action.payload.id)
       if (index !== -1) {
         state.sentRequests[index] = action.payload
       }
-      const receivedIndex = state.receivedRequests.findIndex(req => req.id === action.payload.id)
-      if (receivedIndex !== -1) {
-        state.receivedRequests[receivedIndex] = action.payload
+    },
+    updateReceivedRequest: (state, action: PayloadAction<MatchRequest>) => {
+      const index = state.receivedRequests.findIndex(req => req.id === action.payload.id)
+      if (index !== -1) {
+        state.receivedRequests[index] = action.payload
       }
     },
-    clearPlayerFinder: (state) => {
+    addSentRequest: (state, action: PayloadAction<MatchRequest>) => {
+      state.sentRequests.unshift(action.payload)
+    },
+    removeSentRequest: (state, action: PayloadAction<number>) => {
+      state.sentRequests = state.sentRequests.filter(req => req.id !== action.payload)
+    },
+    setFilters: (state, action: PayloadAction<Partial<PlayerFinderFilters>>) => {
+      state.filters = { ...state.filters, ...action.payload }
+    },
+    clearFilters: (state) => {
+      state.filters = initialState.filters
+    },
+    setUserLocation: (state, action: PayloadAction<{ latitude: number; longitude: number }>) => {
+      state.userLocation = action.payload
+      state.filters.location_lat = action.payload.latitude
+      state.filters.location_lng = action.payload.longitude
+    },
+    setLocationPermission: (state, action: PayloadAction<'granted' | 'denied' | 'prompt'>) => {
+      state.locationPermission = action.payload
+    },
+    clearSearch: (state) => {
       state.players = []
-      state.sentRequests = []
-      state.receivedRequests = []
-      state.error = null
       state.searchPerformed = false
+      state.pagination = initialState.pagination
     }
   }
 })
@@ -193,116 +219,142 @@ export const {
   setPlayers,
   setSentRequests,
   setReceivedRequests,
+  updateSentRequest,
+  updateReceivedRequest,
+  addSentRequest,
+  removeSentRequest,
   setFilters,
+  clearFilters,
   setUserLocation,
   setLocationPermission,
-  addMatchRequest,
-  updateMatchRequest,
-  clearPlayerFinder
+  clearSearch
 } = playerFinderSlice.actions
 
-// Search for players based on filters
-export const searchPlayers = (filters: Partial<PlayerFinderFilters>) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Searching for players...'))
-  
+// Thunks
+export const searchPlayers = (searchParams: SearchPlayersParams) => async (dispatch: AppDispatch) => {
   try {
-    const response = await apiClient.post<PlayerFinderPlayer[]>('/api/player-finder/search', filters)
-    dispatch(setPlayers(response.data))
-    dispatch(stopLoading())
-  } catch (error) {
-    dispatch(setError('Failed to search players'))
-    dispatch(stopLoading())
-    throw error
-  }
-}
-
-// Get current user's sent match requests
-export const fetchSentRequests = () => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Loading sent requests...'))
-  
-  try {
-    const response = await apiClient.get<MatchRequest[]>('/api/player-finder/requests/sent')
-    dispatch(setSentRequests(response.data))
-    dispatch(stopLoading())
-  } catch (error) {
-    dispatch(setError('Failed to load sent requests'))
-    dispatch(stopLoading())
-    throw error
-  }
-}
-
-// Get current user's received match requests
-export const fetchReceivedRequests = () => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Loading received requests...'))
-  
-  try {
-    const response = await apiClient.get<MatchRequest[]>('/api/player-finder/requests/received')
-    dispatch(setReceivedRequests(response.data))
-    dispatch(stopLoading())
-  } catch (error) {
-    dispatch(setError('Failed to load received requests'))
-    dispatch(stopLoading())
-    throw error
-  }
-}
-
-// Send a match request to a player
-export const sendMatchRequest = (requestData: {
-  receiver_id: number
-  preferred_date: string
-  preferred_time: string
-  message?: string
-  court_id?: number
-}) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Sending match request...'))
-  
-  try {
-    const response = await apiClient.post<MatchRequest>('/api/player-finder/requests', requestData)
-    dispatch(addMatchRequest(response.data))
-    dispatch(stopLoading())
-    return response.data
-  } catch (error) {
-    dispatch(setError('Failed to send match request'))
-    dispatch(stopLoading())
-    throw error
-  }
-}
-
-// Respond to a match request (accept/reject)
-export const respondToMatchRequest = (requestId: number, response: {
-  status: 'accepted' | 'rejected'
-  response_message?: string
-  court_id?: number
-}) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Responding to request...'))
-  
-  try {
-    const apiResponse = await apiClient.put<MatchRequest>(`/api/player-finder/requests/${requestId}`, response)
-    dispatch(updateMatchRequest(apiResponse.data))
-    dispatch(stopLoading())
-    return apiResponse.data
-  } catch (error) {
-    dispatch(setError('Failed to respond to request'))
-    dispatch(stopLoading())
-    throw error
-  }
-}
-
-// Cancel a sent match request
-export const cancelMatchRequest = (requestId: number) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Canceling request...'))
-  
-  try {
-    const response = await apiClient.put<MatchRequest>(`/api/player-finder/requests/${requestId}`, {
-      status: 'canceled'
+    dispatch(startLoading('Searching players...'))
+    const response = await api.post<SearchPlayersResponse>('/api/player-finder/search', {
+      ...searchParams.filters,
+      page: searchParams.page || 1,
+      limit: searchParams.limit || 20
     })
-    dispatch(updateMatchRequest(response.data))
+    
+    dispatch(setPlayers(response.data as SearchPlayersResponse))
     dispatch(stopLoading())
-    return response.data
-  } catch (error) {
-    dispatch(setError('Failed to cancel request'))
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to search players'
+    dispatch(setError(errorMessage))
+    dispatch(stopLoading())
+  }
+}
+
+export const fetchSentRequests = () => async (dispatch: AppDispatch) => {
+  try {
+    dispatch(startLoading('Loading sent requests...'))
+    const response = await api.get<MatchRequest[]>('/api/player-finder/sent-requests')
+    dispatch(setSentRequests(response.data as MatchRequest[]))
+    dispatch(stopLoading())
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch sent requests'
+    dispatch(setError(errorMessage))
+    dispatch(stopLoading())
+  }
+}
+
+export const fetchReceivedRequests = () => async (dispatch: AppDispatch) => {
+  try {
+    dispatch(startLoading('Loading received requests...'))
+    const response = await api.get<MatchRequest[]>('/api/player-finder/received-requests')
+    dispatch(setReceivedRequests(response.data as MatchRequest[]))
+    dispatch(stopLoading())
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch received requests'
+    dispatch(setError(errorMessage))
+    dispatch(stopLoading())
+  }
+}
+
+export const sendMatchRequest = (requestData: SendMatchRequestData) => async (dispatch: AppDispatch) => {
+  try {
+    dispatch(startLoading('Sending match request...'))
+    const response = await api.post<MatchRequest>('/api/player-finder/send-request', requestData)
+    dispatch(addSentRequest(response.data as MatchRequest))
+    dispatch(stopLoading())
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to send match request'
+    dispatch(setError(errorMessage))
     dispatch(stopLoading())
     throw error
+  }
+}
+
+export const respondToMatchRequest = (requestId: number, responseData: RespondToRequestData) => async (dispatch: AppDispatch) => {
+  try {
+    dispatch(startLoading('Responding to match request...'))
+    const response = await api.post<MatchRequest>(`/api/player-finder/respond/${requestId}`, responseData)
+    dispatch(updateReceivedRequest(response.data as MatchRequest))
+    dispatch(stopLoading())
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to respond to match request'
+    dispatch(setError(errorMessage))
+    dispatch(stopLoading())
+    throw error
+  }
+}
+
+export const cancelMatchRequest = (requestId: number) => async (dispatch: AppDispatch) => {
+  try {
+    dispatch(startLoading('Canceling match request...'))
+    await api.delete(`/api/player-finder/cancel/${requestId}`)
+    dispatch(removeSentRequest(requestId))
+    dispatch(stopLoading())
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to cancel match request'
+    dispatch(setError(errorMessage))
+    dispatch(stopLoading())
+    throw error
+  }
+}
+
+export const updatePlayerSearchability = (isSearchable: boolean) => async (dispatch: AppDispatch) => {
+  try {
+    dispatch(startLoading('Updating searchability...'))
+    await api.put('/api/player-finder/searchability', {
+      is_searchable: isSearchable
+    })
+    dispatch(stopLoading())
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to update searchability'
+    dispatch(setError(errorMessage))
+    dispatch(stopLoading())
+    throw error
+  }
+}
+
+export const getUserLocation = () => async (dispatch: AppDispatch) => {
+  try {
+    if (!navigator.geolocation) {
+      dispatch(setLocationPermission('denied'))
+      return
+    }
+
+    const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject, {
+        timeout: 10000,
+        enableHighAccuracy: true
+      })
+    })
+
+    dispatch(setUserLocation({
+      latitude: position.coords.latitude,
+      longitude: position.coords.longitude
+    }))
+    dispatch(setLocationPermission('granted'))
+  } catch (error) {
+    console.error('Geolocation error:', error)
+    dispatch(setLocationPermission('denied'))
+    dispatch(setError('Failed to get your location. You can still search by state.'))
   }
 }
 

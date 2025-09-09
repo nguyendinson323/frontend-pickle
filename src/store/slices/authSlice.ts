@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppDispatch } from '../index'
 import { startLoading, stopLoading } from './loadingSlice'
-import axios from 'axios'
+import api from '../../services/api'
 import {
   AuthState,
   User,
@@ -25,50 +25,6 @@ import {
   StateRegisterRequest,
   RegisterResponse
 } from '../../types/auth'
-
-const BASE_URL = 'http://localhost:5000'
-
-const apiClient = axios.create({
-  baseURL: BASE_URL,
-  timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json'
-  }
-})
-
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token')
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
-
-apiClient.interceptors.response.use(
-  (response) => {
-    return response
-  },
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token')
-      window.location.href = '/login'
-    }
-    return Promise.reject(error)
-  }
-)
-
-const setAuthToken = (token: string | null): void => {
-  if (token) {
-    apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`
-  } else {
-    delete apiClient.defaults.headers.common['Authorization']
-  }
-}
 
 const initialState: AuthState = {
   user: null,
@@ -138,14 +94,13 @@ export const login = (credentials: LoginRequest) => async (dispatch: AppDispatch
   dispatch(startLoading('Logging in...'))
   
   try {
-    const response = await apiClient.post<LoginResponse>('/api/auth/login', credentials)
-    dispatch(loginSuccess(response.data))
-    setAuthToken(response.data.token)
-    dispatch(stopLoading())
+    const response = await api.post('/api/auth/login', credentials)
+    dispatch(loginSuccess(response.data as LoginResponse))
     return response.data
   } catch (error) {
-    dispatch(stopLoading())
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
@@ -175,14 +130,13 @@ export const registerPlayer = (formData: PlayerRegisterRequest) => async (dispat
       }
     }
     
-    const response = await apiClient.post<RegisterResponse>('/api/auth/register', registerData)
-    dispatch(loginSuccess(response.data))
-    setAuthToken(response.data.token)
-    dispatch(stopLoading())
+    const response = await api.post('/api/auth/register', registerData)
+    dispatch(loginSuccess(response.data as LoginResponse))
     return response.data
   } catch (error) {
-    dispatch(stopLoading())
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
@@ -209,14 +163,13 @@ export const registerCoach = (formData: CoachRegisterRequest) => async (dispatch
       }
     }
     
-    const response = await apiClient.post<RegisterResponse>('/api/auth/register', registerData)
-    dispatch(loginSuccess(response.data))
-    setAuthToken(response.data.token)
-    dispatch(stopLoading())
+    const response = await api.post('/api/auth/register', registerData)
+    dispatch(loginSuccess(response.data as LoginResponse))
     return response.data
   } catch (error) {
-    dispatch(stopLoading())
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
@@ -243,14 +196,13 @@ export const registerClub = (formData: ClubRegisterRequest) => async (dispatch: 
       }
     }
     
-    const response = await apiClient.post<RegisterResponse>('/api/auth/register', registerData)
-    dispatch(loginSuccess(response.data))
-    setAuthToken(response.data.token)
-    dispatch(stopLoading())
+    const response = await api.post('/api/auth/register', registerData)
+    dispatch(loginSuccess(response.data as LoginResponse))
     return response.data
   } catch (error) {
-    dispatch(stopLoading())
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
@@ -277,14 +229,13 @@ export const registerPartner = (formData: PartnerRegisterRequest) => async (disp
       }
     }
     
-    const response = await apiClient.post<RegisterResponse>('/api/auth/register', registerData)
-    dispatch(loginSuccess(response.data))
-    setAuthToken(response.data.token)
-    dispatch(stopLoading())
+    const response = await api.post('/api/auth/register', registerData)
+    dispatch(loginSuccess(response.data as LoginResponse))
     return response.data
   } catch (error) {
-    dispatch(stopLoading())
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
@@ -312,14 +263,13 @@ export const registerState = (formData: StateRegisterRequest) => async (dispatch
       }
     }
     
-    const response = await apiClient.post<RegisterResponse>('/api/auth/register', registerData)
-    dispatch(loginSuccess(response.data))
-    setAuthToken(response.data.token)
-    dispatch(stopLoading())
+    const response = await api.post('/api/auth/register', registerData)
+    dispatch(loginSuccess(response.data as LoginResponse))
     return response.data
   } catch (error) {
-    dispatch(stopLoading())
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
@@ -328,13 +278,13 @@ export const updatePlayerProfile = (profileData: Partial<Player>) => async (disp
   dispatch(startLoading('Updating player profile...'))
   
   try {
-    const response = await apiClient.put('/api/auth/profile/player', profileData)
-    dispatch(updateDashboard(response.data))
-    dispatch(stopLoading())
+    const response = await api.put('/api/auth/profile/player', profileData)
+    dispatch(updateDashboard(response.data as PlayerDashboard))
     return response.data
   } catch (error) {
-    dispatch(stopLoading())
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
@@ -342,13 +292,13 @@ export const updateCoachProfile = (profileData: Partial<Coach>) => async (dispat
   dispatch(startLoading('Updating coach profile...'))
   
   try {
-    const response = await apiClient.put('/api/auth/profile/coach', profileData)
-    dispatch(updateDashboard(response.data))
-    dispatch(stopLoading())
+    const response = await api.put('/api/auth/profile/coach', profileData)
+    dispatch(updateDashboard(response.data as CoachDashboard))
     return response.data
   } catch (error) {
-    dispatch(stopLoading())
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
@@ -356,13 +306,13 @@ export const updateClubProfile = (profileData: Partial<Club>) => async (dispatch
   dispatch(startLoading('Updating club profile...'))
   
   try {
-    const response = await apiClient.put('/api/auth/profile/club', profileData)
-    dispatch(updateDashboard(response.data))
-    dispatch(stopLoading())
+    const response = await api.put('/api/auth/profile/club', profileData)
+    dispatch(updateDashboard(response.data as ClubDashboard))
     return response.data
   } catch (error) {
-    dispatch(stopLoading())
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
@@ -370,13 +320,13 @@ export const updatePartnerProfile = (profileData: Partial<Partner>) => async (di
   dispatch(startLoading('Updating partner profile...'))
   
   try {
-    const response = await apiClient.put('/api/auth/profile/partner', profileData)
-    dispatch(updateDashboard(response.data))
-    dispatch(stopLoading())
+    const response = await api.put('/api/auth/profile/partner', profileData)
+    dispatch(updateDashboard(response.data as PartnerDashboard))
     return response.data
   } catch (error) {
-    dispatch(stopLoading())
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
@@ -384,13 +334,13 @@ export const updateStateProfile = (profileData: Partial<StateCommittee>) => asyn
   dispatch(startLoading('Updating state committee profile...'))
   
   try {
-    const response = await apiClient.put('/api/auth/profile/state', profileData)
-    dispatch(updateDashboard(response.data))
-    dispatch(stopLoading())
+    const response = await api.put('/api/auth/profile/state', profileData)
+    dispatch(updateDashboard(response.data as StateDashboard))
     return response.data
   } catch (error) {
-    dispatch(stopLoading())
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 

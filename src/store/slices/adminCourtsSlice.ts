@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
+import api from '../../services/api'
+import { startLoading, stopLoading } from './loadingSlice'
+import { AppDispatch } from '../index'
 import { CourtInfo } from '../../types/admin'
 
 interface CourtReservation {
@@ -45,7 +47,6 @@ interface AdminCourtsState {
     topPerformingCourt: string
     pendingApprovals: number
   }
-  loading: boolean
   error: string | null
   selectedReservations: number[]
 }
@@ -77,7 +78,6 @@ const initialState: AdminCourtsState = {
     topPerformingCourt: '',
     pendingApprovals: 0
   },
-  loading: false,
   error: null,
   selectedReservations: []
 }
@@ -86,9 +86,6 @@ const adminCourtsSlice = createSlice({
   name: 'adminCourts',
   initialState,
   reducers: {
-    setLoading: (state, action: PayloadAction<boolean>) => {
-      state.loading = action.payload
-    },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload
     },
@@ -137,7 +134,6 @@ const adminCourtsSlice = createSlice({
 })
 
 export const {
-  setLoading,
   setError,
   setCourts,
   setReservations,
@@ -153,9 +149,10 @@ export const {
 } = adminCourtsSlice.actions
 
 // API Functions
-export const fetchCourts = (filters?: Partial<CourtFilter>) => async (dispatch: any) => {
+export const fetchCourts = (filters?: Partial<CourtFilter>) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading courts...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
 
     const queryParams = new URLSearchParams()
@@ -165,20 +162,23 @@ export const fetchCourts = (filters?: Partial<CourtFilter>) => async (dispatch: 
       })
     }
 
-    const response = await axios.get(`/api/admin/courts?${queryParams.toString()}`)
+    const response = await api.get(`/api/admin/courts?${queryParams.toString()}`)
+    const responseData = response.data as { courts: CourtInfo[], stats: typeof initialState.courtStats }
 
-    dispatch(setCourts(response.data.courts))
-    dispatch(setCourtStats(response.data.stats))
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to fetch courts'))
-  } finally {
-    dispatch(setLoading(false))
+    dispatch(setCourts(responseData.courts))
+    dispatch(setCourtStats(responseData.stats))
+    dispatch(stopLoading())
+  } catch (error) {
+    dispatch(setError('Failed to fetch courts'))
+    dispatch(stopLoading())
+    throw error
   }
 }
 
-export const fetchReservations = (filters?: any) => async (dispatch: any) => {
+export const fetchReservations = (filters?: Record<string, string | number>) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading reservations...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
 
     const queryParams = new URLSearchParams()
@@ -188,114 +188,136 @@ export const fetchReservations = (filters?: any) => async (dispatch: any) => {
       })
     }
 
-    const response = await axios.get(`/api/admin/courts/reservations?${queryParams.toString()}`)
+    const response = await api.get(`/api/admin/courts/reservations?${queryParams.toString()}`)
 
-    dispatch(setReservations(response.data))
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to fetch reservations'))
-  } finally {
-    dispatch(setLoading(false))
+    dispatch(setReservations(response.data as CourtReservation[]))
+    dispatch(stopLoading())
+  } catch (error) {
+    dispatch(setError('Failed to fetch reservations'))
+    dispatch(stopLoading())
+    throw error
   }
 }
 
-export const getCourtDetails = (courtId: number) => async (dispatch: any) => {
+export const getCourtDetails = (courtId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading court details...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
 
-    const response = await axios.get(`/api/admin/courts/${courtId}`)
+    const response = await api.get(`/api/admin/courts/${courtId}`)
 
-    dispatch(setSelectedCourt(response.data))
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to fetch court details'))
-  } finally {
-    dispatch(setLoading(false))
+    dispatch(setSelectedCourt(response.data as CourtInfo))
+    dispatch(stopLoading())
+  } catch (error) {
+    dispatch(setError('Failed to fetch court details'))
+    dispatch(stopLoading())
+    throw error
   }
 }
 
-export const updateCourtStatusAction = (courtId: number, status: 'available' | 'occupied' | 'maintenance', reason?: string) => async (dispatch: any) => {
+export const updateCourtStatusAction = (courtId: number, status: 'available' | 'occupied' | 'maintenance', reason?: string) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating court status...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.put(`/api/admin/courts/${courtId}/status`, { status, reason })
+    const response = await api.put(`/api/admin/courts/${courtId}/status`, { status, reason })
 
     dispatch(updateCourtStatus({ courtId, status }))
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to update court status'))
+  } catch (error) {
+    dispatch(setError('Failed to update court status'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const approveCourt = (courtId: number) => async (dispatch: any) => {
+export const approveCourt = (courtId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Approving court...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.post(`/api/admin/courts/${courtId}/approve`)
+    const response = await api.post(`/api/admin/courts/${courtId}/approve`)
 
-    // Refresh courts list
+    dispatch(stopLoading())
+    // Refresh courts list after stopping loading to avoid conflicts
     dispatch(fetchCourts())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to approve court'))
+  } catch (error) {
+    dispatch(setError('Failed to approve court'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const rejectCourt = (courtId: number, reason: string) => async (dispatch: any) => {
+export const rejectCourt = (courtId: number, reason: string) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Rejecting court...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.post(`/api/admin/courts/${courtId}/reject`, { reason })
+    const response = await api.post(`/api/admin/courts/${courtId}/reject`, { reason })
 
-    // Refresh courts list
+    dispatch(stopLoading())
+    // Refresh courts list after stopping loading to avoid conflicts
     dispatch(fetchCourts())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to reject court'))
+  } catch (error) {
+    dispatch(setError('Failed to reject court'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const updateReservationStatusAction = (reservationId: number, status: 'active' | 'completed' | 'cancelled' | 'no_show', reason?: string) => async (dispatch: any) => {
+export const updateReservationStatusAction = (reservationId: number, status: 'active' | 'completed' | 'cancelled' | 'no_show', reason?: string) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating reservation status...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.put(`/api/admin/courts/reservations/${reservationId}/status`, { status, reason })
+    const response = await api.put(`/api/admin/courts/reservations/${reservationId}/status`, { status, reason })
 
     dispatch(updateReservationStatus({ reservationId, status }))
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to update reservation status'))
+  } catch (error) {
+    dispatch(setError('Failed to update reservation status'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const bulkUpdateReservations = (reservationIds: number[], action: string, data?: any) => async (dispatch: any) => {
+export const bulkUpdateReservations = (reservationIds: number[], action: string, data?: Record<string, unknown>) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating reservations...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
 
-    const response = await axios.post('/api/admin/courts/reservations/bulk-update', {
+    const response = await api.post('/api/admin/courts/reservations/bulk-update', {
       reservationIds,
       action,
       data
     })
 
-    // Refresh reservations list
-    dispatch(fetchReservations())
     dispatch(clearSelectedReservations())
+    dispatch(stopLoading())
+    // Refresh reservations list after stopping loading to avoid conflicts
+    dispatch(fetchReservations())
 
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to update reservations'))
+  } catch (error) {
+    dispatch(setError('Failed to update reservations'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
-export const exportCourts = (filters: Partial<CourtFilter>, format: 'csv' | 'excel' | 'pdf') => async (dispatch: any) => {
+export const exportCourts = (filters: Partial<CourtFilter>, format: 'csv' | 'excel' | 'pdf') => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Exporting courts...'))
+  
   try {
     dispatch(setError(null))
 
@@ -305,11 +327,11 @@ export const exportCourts = (filters: Partial<CourtFilter>, format: 'csv' | 'exc
     })
     queryParams.append('format', format)
 
-    const response = await axios.get(`/api/admin/courts/export?${queryParams.toString()}`, {
+    const response = await api.get(`/api/admin/courts/export?${queryParams.toString()}`, {
       responseType: 'blob'
     })
 
-    const url = window.URL.createObjectURL(new Blob([response.data]))
+    const url = window.URL.createObjectURL(new Blob([response.data as BlobPart]))
     const link = document.createElement('a')
     link.href = url
     link.setAttribute('download', `courts-export-${new Date().toISOString().split('T')[0]}.${format}`)
@@ -318,23 +340,29 @@ export const exportCourts = (filters: Partial<CourtFilter>, format: 'csv' | 'exc
     link.remove()
     window.URL.revokeObjectURL(url)
 
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to export courts'))
+  } catch (error) {
+    dispatch(setError('Failed to export courts'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const getCourtUtilizationReport = (courtId?: number) => async (dispatch: any) => {
+export const getCourtUtilizationReport = (courtId?: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading utilization report...'))
+  
   try {
     dispatch(setError(null))
 
     const url = courtId ? `/api/admin/courts/${courtId}/utilization` : '/api/admin/courts/utilization'
-    const response = await axios.get(url)
+    const response = await api.get(url)
 
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to get utilization report'))
+  } catch (error) {
+    dispatch(setError('Failed to get utilization report'))
+    dispatch(stopLoading())
     throw error
   }
 }

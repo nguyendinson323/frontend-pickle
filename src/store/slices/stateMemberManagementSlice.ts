@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
+import api from '../../services/api'
+import { startLoading, stopLoading } from './loadingSlice'
+import { AppDispatch, RootState } from '../index'
 
 interface StatePlayer {
   id: number
@@ -227,9 +229,10 @@ export const {
 } = stateMemberManagementSlice.actions
 
 // API Functions
-export const fetchStateMemberData = (filters?: Partial<StateMemberManagementState['filters']>) => async (dispatch: any, getState: any) => {
+export const fetchStateMemberData = (filters?: Partial<StateMemberManagementState['filters']>) => async (dispatch: AppDispatch, getState: () => RootState) => {
+  dispatch(startLoading('Loading member data...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
     const state = getState()
@@ -239,83 +242,99 @@ export const fetchStateMemberData = (filters?: Partial<StateMemberManagementStat
       dispatch(setFilters(filters))
     }
     
-    const response = await axios.get('/api/state/members', {
+    const response = await api.get('/api/state/members', {
       params: currentFilters
     })
     
-    dispatch(setMemberData(response.data))
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to fetch member data'))
-  } finally {
-    dispatch(setLoading(false))
+    dispatch(setMemberData(response.data as {
+      players: StatePlayer[]
+      coaches: StateCoach[]
+      clubs: StateClub[]
+      partners: StatePartner[]
+      stats: MemberStats
+    }))
+    dispatch(stopLoading())
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch member data'
+    dispatch(setError(errorMessage))
+    dispatch(stopLoading())
+    throw error
   }
 }
 
-export const updatePlayerStatus = (playerId: number, status: string) => async (dispatch: any) => {
+export const updatePlayerStatus = (playerId: number, status: string) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating player status...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    const response = await axios.put(`/api/state/players/${playerId}/status`, { status })
-    dispatch(updatePlayer(response.data.player))
+    const response = await api.put(`/api/state/players/${playerId}/status`, { status })
+    dispatch(updatePlayer((response.data as { player: StatePlayer }).player))
     
-    return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to update player status'))
+    dispatch(stopLoading())
+    return response.data as { player: StatePlayer }
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to update player status'
+    dispatch(setError(errorMessage))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
-export const updateCoachVerification = (coachId: number, verified: boolean) => async (dispatch: any) => {
+export const updateCoachVerification = (coachId: number, verified: boolean) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating coach verification...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    const response = await axios.put(`/api/state/coaches/${coachId}/verify`, { verified })
-    dispatch(updateCoach(response.data.coach))
+    const response = await api.put(`/api/state/coaches/${coachId}/verify`, { verified })
+    dispatch(updateCoach((response.data as { coach: StateCoach }).coach))
     
-    return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to update coach verification'))
+    dispatch(stopLoading())
+    return response.data as { coach: StateCoach }
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to update coach verification'
+    dispatch(setError(errorMessage))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
-export const updateClubStatus = (clubId: number, status: boolean) => async (dispatch: any) => {
+export const updateClubStatus = (clubId: number, status: boolean) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating club status...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    const response = await axios.put(`/api/state/clubs/${clubId}/status`, { is_active: status })
-    dispatch(updateClub(response.data.club))
+    const response = await api.put(`/api/state/clubs/${clubId}/status`, { is_active: status })
+    dispatch(updateClub((response.data as { club: StateClub }).club))
     
-    return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to update club status'))
+    dispatch(stopLoading())
+    return response.data as { club: StateClub }
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to update club status'
+    dispatch(setError(errorMessage))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
-export const updatePartnerStatus = (partnerId: number, status: boolean) => async (dispatch: any) => {
+export const updatePartnerStatus = (partnerId: number, status: boolean) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating partner status...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    const response = await axios.put(`/api/state/partners/${partnerId}/status`, { is_active: status })
-    dispatch(updatePartner(response.data.partner))
+    const response = await api.put(`/api/state/partners/${partnerId}/status`, { is_active: status })
+    dispatch(updatePartner((response.data as { partner: StatePartner }).partner))
     
-    return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to update partner status'))
+    dispatch(stopLoading())
+    return response.data as { partner: StatePartner }
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to update partner status'
+    dispatch(setError(errorMessage))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 

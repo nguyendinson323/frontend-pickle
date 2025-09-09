@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '../../store'
+import socketService from '../../services/socketService'
 import { 
   fetchConversations,
   fetchMessages,
@@ -52,6 +53,13 @@ const PlayerMessages: React.FC = () => {
   } = useSelector((state: RootState) => state.playerMessages)
 
   useEffect(() => {
+    const token = localStorage.getItem('token')
+    
+    // Initialize socket connection
+    if (token && !socketService.isSocketConnected()) {
+      socketService.connect(token)
+    }
+    
     dispatch(fetchConversations())
     dispatch(fetchContacts())
     dispatch(updateOnlineStatus(true))
@@ -64,6 +72,7 @@ const PlayerMessages: React.FC = () => {
     // Set offline when page unloads
     const handleUnload = () => {
       dispatch(updateOnlineStatus(false))
+      socketService.disconnect()
     }
     
     window.addEventListener('beforeunload', handleUnload)
@@ -77,8 +86,16 @@ const PlayerMessages: React.FC = () => {
 
   useEffect(() => {
     if (activeConversation) {
+      // Join the chat room for real-time updates
+      socketService.joinChat(activeConversation.id)
+      
       dispatch(fetchMessages(activeConversation.id))
       dispatch(markMessagesAsRead(activeConversation.id))
+      
+      return () => {
+        // Leave chat room when switching conversations
+        socketService.leaveChat(activeConversation.id)
+      }
     }
   }, [activeConversation, dispatch])
 

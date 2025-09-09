@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
+import { AppDispatch } from '../index'
+import { startLoading, stopLoading } from './loadingSlice'
+import api from '../../services/api'
 
 interface ClubMember {
   id: number
@@ -98,66 +100,58 @@ export const {
 } = clubMembersSlice.actions
 
 // API Functions
-export const fetchClubMembersData = () => async (dispatch: any) => {
+export const fetchClubMembersData = () => async (dispatch: AppDispatch) => {
   try {
-    dispatch(setLoading(true))
-    dispatch(setError(null))
-    
-    const response = await axios.get('/api/club/members')
-    dispatch(setMembersData(response.data))
+    dispatch(startLoading('Loading members data...'))
+    const response = await api.get('/api/club/members')
+    dispatch(setMembersData(response.data as { members: ClubMember[], stats: MembershipStats }))
+    dispatch(stopLoading())
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to fetch members data'))
-  } finally {
-    dispatch(setLoading(false))
+    dispatch(stopLoading())
   }
 }
 
-export const updateMemberActiveStatus = (memberId: number, isActive: boolean) => async (dispatch: any) => {
+export const updateMemberActiveStatus = (memberId: number, isActive: boolean) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(setLoading(true))
-    dispatch(setError(null))
-    
-    await axios.put(`/api/club/members/${memberId}/status`, { is_active: isActive })
+    dispatch(startLoading('Updating member status...'))
+    await api.put(`/api/club/members/${memberId}/status`, { is_active: isActive })
     dispatch(updateMemberStatus({ id: memberId, is_active: isActive }))
+    dispatch(stopLoading())
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to update member status'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
-export const removeMemberFromClub = (memberId: number) => async (dispatch: any) => {
+export const removeMemberFromClub = (memberId: number) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(setLoading(true))
-    dispatch(setError(null))
-    
-    await axios.delete(`/api/club/members/${memberId}`)
+    dispatch(startLoading('Removing member...'))
+    await api.delete(`/api/club/members/${memberId}`)
     dispatch(removeMember(memberId))
+    dispatch(stopLoading())
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to remove member'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
-export const extendMembershipExpiry = (memberId: number, expiryDate: string) => async (dispatch: any) => {
+export const extendMembershipExpiry = (memberId: number, expiryDate: string) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(setLoading(true))
-    dispatch(setError(null))
-    
-    const response = await axios.put(`/api/club/members/${memberId}/extend`, { 
+    dispatch(startLoading('Extending membership...'))
+    const response = await api.put(`/api/club/members/${memberId}/extend`, { 
       affiliation_expires_at: expiryDate 
     })
-    dispatch(updateMemberInfo(response.data.member))
+    dispatch(updateMemberInfo((response.data as { member: ClubMember }).member))
+    dispatch(stopLoading())
     
     return response.data
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to extend membership'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
@@ -166,44 +160,40 @@ export const inviteNewMember = (inviteData: {
   full_name: string
   phone?: string
   message?: string
-}) => async (dispatch: any) => {
+}) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(setLoading(true))
-    dispatch(setError(null))
-    
-    const response = await axios.post('/api/club/members/invite', inviteData)
+    dispatch(startLoading('Sending invitation...'))
+    const response = await api.post('/api/club/members/invite', inviteData)
+    dispatch(stopLoading())
     
     return response.data
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to send invitation'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
 export const bulkUpdateMembers = (memberIds: number[], updateData: {
   action: 'activate' | 'deactivate' | 'extend_membership'
   expiry_date?: string
-}) => async (dispatch: any) => {
+}) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(setLoading(true))
-    dispatch(setError(null))
-    
-    const response = await axios.put('/api/club/members/bulk-update', {
+    dispatch(startLoading('Updating members...'))
+    const response = await api.put('/api/club/members/bulk-update', {
       member_ids: memberIds,
       ...updateData
     })
     
     // Refresh data after bulk update
     dispatch(fetchClubMembersData())
+    dispatch(stopLoading())
     
     return response.data
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to update members'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 

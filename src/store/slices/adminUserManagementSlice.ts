@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
+import api from '../../services/api'
+import { startLoading, stopLoading } from './loadingSlice'
+import { AppDispatch } from '../index'
 import { UserListItem, PlayerDetail, CoachDetail, ClubDetail, PartnerDetail, StateDetail } from '../../types/admin'
 
 interface UserFilter {
@@ -145,9 +147,10 @@ export const {
 } = adminUserManagementSlice.actions
 
 // API Functions
-export const fetchUsers = (filters?: Partial<UserFilter>) => async (dispatch: any) => {
+export const fetchUsers = (filters?: Partial<UserFilter>) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading users...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
 
     const queryParams = new URLSearchParams()
@@ -157,93 +160,114 @@ export const fetchUsers = (filters?: Partial<UserFilter>) => async (dispatch: an
       })
     }
 
-    const response = await axios.get(`/api/admin/users?${queryParams.toString()}`)
+    const response = await api.get(`/api/admin/users?${queryParams.toString()}`)
 
-    dispatch(setUsers(response.data.users))
-    dispatch(setUserStats(response.data.stats))
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to fetch users'))
-  } finally {
-    dispatch(setLoading(false))
+    const responseData = response.data as { users: UserListItem[], stats: typeof initialState.userStats }
+    dispatch(setUsers(responseData.users))
+    dispatch(setUserStats(responseData.stats))
+    dispatch(stopLoading())
+  } catch (error) {
+    dispatch(setError('Failed to fetch users'))
+    dispatch(stopLoading())
+    throw error
   }
 }
 
-export const fetchUserDetails = (userId: number) => async (dispatch: any) => {
+export const fetchUserDetails = (userId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading user details...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
 
-    const response = await axios.get(`/api/admin/users/${userId}`)
+    const response = await api.get(`/api/admin/users/${userId}`)
 
-    dispatch(setSelectedUser(response.data))
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to fetch user details'))
-  } finally {
-    dispatch(setLoading(false))
+    dispatch(setSelectedUser(response.data as PlayerDetail | CoachDetail | ClubDetail | PartnerDetail | StateDetail))
+    dispatch(stopLoading())
+  } catch (error) {
+    dispatch(setError('Failed to fetch user details'))
+    dispatch(stopLoading())
+    throw error
   }
 }
 
-export const updateUserStatusAction = (userId: number, status: 'active' | 'inactive' | 'suspended', reason?: string) => async (dispatch: any) => {
+export const updateUserStatusAction = (userId: number, status: 'active' | 'inactive' | 'suspended', reason?: string) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating user status...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.put(`/api/admin/users/${userId}/status`, { status, reason })
+    const response = await api.put(`/api/admin/users/${userId}/status`, { status, reason })
 
     dispatch(updateUserStatus({ userId, status }))
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to update user status'))
+  } catch (error) {
+    dispatch(setError('Failed to update user status'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const updateUserVerificationAction = (userId: number, verified: boolean) => async (dispatch: any) => {
+export const updateUserVerificationAction = (userId: number, verified: boolean) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating user verification...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.put(`/api/admin/users/${userId}/verification`, { verified })
+    const response = await api.put(`/api/admin/users/${userId}/verification`, { verified })
 
     dispatch(updateUserVerification({ userId, verified }))
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to update user verification'))
+  } catch (error) {
+    dispatch(setError('Failed to update user verification'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const updateUserPremiumAction = (userId: number, premium: boolean, duration?: number) => async (dispatch: any) => {
+export const updateUserPremiumAction = (userId: number, premium: boolean, duration?: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating user premium status...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.put(`/api/admin/users/${userId}/premium`, { premium, duration })
+    const response = await api.put(`/api/admin/users/${userId}/premium`, { premium, duration })
 
     dispatch(updateUserPremium({ userId, premium }))
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to update user premium status'))
+  } catch (error) {
+    dispatch(setError('Failed to update user premium status'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const resetUserPassword = (userId: number) => async (dispatch: any) => {
+export const resetUserPassword = (userId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Resetting user password...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.post(`/api/admin/users/${userId}/reset-password`)
+    const response = await api.post(`/api/admin/users/${userId}/reset-password`)
 
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to reset user password'))
+  } catch (error) {
+    dispatch(setError('Failed to reset user password'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const bulkUpdateUsers = (userIds: number[], action: string, data?: any) => async (dispatch: any) => {
+export const bulkUpdateUsers = (userIds: number[], action: string, data?: any) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating users...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
 
-    const response = await axios.post('/api/admin/users/bulk-update', {
+    const response = await api.post('/api/admin/users/bulk-update', {
       userIds,
       action,
       data
@@ -252,19 +276,20 @@ export const bulkUpdateUsers = (userIds: number[], action: string, data?: any) =
     // Refresh users list
     dispatch(fetchUsers())
     dispatch(clearSelectedUsers())
+    dispatch(stopLoading())
 
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to update users'))
+  } catch (error) {
+    dispatch(setError('Failed to update users'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
-export const exportUsers = (filters: Partial<UserFilter>, format: 'csv' | 'excel' | 'pdf') => async (dispatch: any) => {
+export const exportUsers = (filters: Partial<UserFilter>, format: 'csv' | 'excel' | 'pdf') => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Exporting users...'))
+  
   try {
-    dispatch(setExportLoading(true))
     dispatch(setError(null))
 
     const queryParams = new URLSearchParams()
@@ -273,11 +298,11 @@ export const exportUsers = (filters: Partial<UserFilter>, format: 'csv' | 'excel
     })
     queryParams.append('format', format)
 
-    const response = await axios.get(`/api/admin/users/export?${queryParams.toString()}`, {
+    const response = await api.get(`/api/admin/users/export?${queryParams.toString()}`, {
       responseType: 'blob'
     })
 
-    const url = window.URL.createObjectURL(new Blob([response.data]))
+    const url = window.URL.createObjectURL(new Blob([response.data as BlobPart]))
     const link = document.createElement('a')
     link.href = url
     link.setAttribute('download', `users-export-${new Date().toISOString().split('T')[0]}.${format}`)
@@ -286,28 +311,32 @@ export const exportUsers = (filters: Partial<UserFilter>, format: 'csv' | 'excel
     link.remove()
     window.URL.revokeObjectURL(url)
 
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to export users'))
+  } catch (error) {
+    dispatch(setError('Failed to export users'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setExportLoading(false))
   }
 }
 
-export const sendUserNotification = (userIds: number[], subject: string, message: string) => async (dispatch: any) => {
+export const sendUserNotification = (userIds: number[], subject: string, message: string) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Sending notification...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.post('/api/admin/users/notify', {
+    const response = await api.post('/api/admin/users/notify', {
       userIds,
       subject,
       message
     })
 
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to send notification'))
+  } catch (error) {
+    dispatch(setError('Failed to send notification'))
+    dispatch(stopLoading())
     throw error
   }
 }

@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
+import api from '../../services/api'
+import { startLoading, stopLoading } from './loadingSlice'
+import { AppDispatch } from '../index'
 
 interface Court {
   id: number
@@ -65,7 +67,6 @@ interface PartnerManagementState {
   courts: Court[]
   tournaments: Tournament[]
   stats: ManagementStats | null
-  loading: boolean
   error: string | null
   courtFilter: {
     status: string
@@ -83,7 +84,6 @@ const initialState: PartnerManagementState = {
   courts: [],
   tournaments: [],
   stats: null,
-  loading: false,
   error: null,
   courtFilter: {
     status: '',
@@ -101,9 +101,6 @@ const partnerManagementSlice = createSlice({
   name: 'partnerManagement',
   initialState,
   reducers: {
-    setLoading: (state, action: PayloadAction<boolean>) => {
-      state.loading = action.payload
-    },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload
     },
@@ -156,7 +153,6 @@ const partnerManagementSlice = createSlice({
 })
 
 export const {
-  setLoading,
   setError,
   setCourts,
   setTournaments,
@@ -174,130 +170,165 @@ export const {
 } = partnerManagementSlice.actions
 
 // API Functions
-export const fetchPartnerManagementData = () => async (dispatch: any) => {
+export const fetchPartnerManagementData = () => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading management data...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
 
-    const response = await axios.get('/api/partner/management')
+    const response = await api.get('/api/partner/management')
+    const responseData = response.data as { courts: Court[], tournaments: Tournament[], stats: ManagementStats }
     
-    dispatch(setCourts(response.data.courts))
-    dispatch(setTournaments(response.data.tournaments))
-    dispatch(setStats(response.data.stats))
+    dispatch(setCourts(responseData.courts))
+    dispatch(setTournaments(responseData.tournaments))
+    dispatch(setStats(responseData.stats))
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to fetch management data'))
+    throw error
   } finally {
-    dispatch(setLoading(false))
+    dispatch(stopLoading())
   }
 }
 
-export const createCourt = (courtData: Partial<Court>) => async (dispatch: any) => {
+export const createCourt = (courtData: Partial<Court>) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Creating court...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.post('/api/partner/courts', courtData)
+    const response = await api.post('/api/partner/courts', courtData)
     
-    dispatch(addCourt(response.data))
+    dispatch(addCourt(response.data as Court))
     return response.data
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to create court'))
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
-export const updatePartnerCourt = (courtId: number, courtData: Partial<Court>) => async (dispatch: any) => {
+export const updatePartnerCourt = (courtId: number, courtData: Partial<Court>) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating court...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.put(`/api/partner/courts/${courtId}`, courtData)
+    const response = await api.put(`/api/partner/courts/${courtId}`, courtData)
     
-    dispatch(updateCourt(response.data))
+    dispatch(updateCourt(response.data as Court))
     return response.data
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to update court'))
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
-export const deletePartnerCourt = (courtId: number) => async (dispatch: any) => {
+export const deletePartnerCourt = (courtId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Deleting court...'))
+  
   try {
     dispatch(setError(null))
 
-    await axios.delete(`/api/partner/courts/${courtId}`)
+    await api.delete(`/api/partner/courts/${courtId}`)
     
     dispatch(removeCourt(courtId))
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to delete court'))
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
-export const createTournament = (tournamentData: Partial<Tournament>) => async (dispatch: any) => {
+export const createTournament = (tournamentData: Partial<Tournament>) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Creating tournament...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.post('/api/partner/tournaments', tournamentData)
+    const response = await api.post('/api/partner/tournaments', tournamentData)
     
-    dispatch(addTournament(response.data))
+    dispatch(addTournament(response.data as Tournament))
     return response.data
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to create tournament'))
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
-export const updatePartnerTournament = (tournamentId: number, tournamentData: Partial<Tournament>) => async (dispatch: any) => {
+export const updatePartnerTournament = (tournamentId: number, tournamentData: Partial<Tournament>) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating tournament...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.put(`/api/partner/tournaments/${tournamentId}`, tournamentData)
+    const response = await api.put(`/api/partner/tournaments/${tournamentId}`, tournamentData)
     
-    dispatch(updateTournament(response.data))
+    dispatch(updateTournament(response.data as Tournament))
     return response.data
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to update tournament'))
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
-export const deletePartnerTournament = (tournamentId: number) => async (dispatch: any) => {
+export const deletePartnerTournament = (tournamentId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Deleting tournament...'))
+  
   try {
     dispatch(setError(null))
 
-    await axios.delete(`/api/partner/tournaments/${tournamentId}`)
+    await api.delete(`/api/partner/tournaments/${tournamentId}`)
     
     dispatch(removeTournament(tournamentId))
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to delete tournament'))
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
-export const publishTournament = (tournamentId: number) => async (dispatch: any) => {
+export const publishTournament = (tournamentId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Publishing tournament...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.post(`/api/partner/tournaments/${tournamentId}/publish`)
+    const response = await api.post(`/api/partner/tournaments/${tournamentId}/publish`)
     
-    dispatch(updateTournament(response.data))
+    dispatch(updateTournament(response.data as Tournament))
     return response.data
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to publish tournament'))
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
-export const cancelTournament = (tournamentId: number) => async (dispatch: any) => {
+export const cancelTournament = (tournamentId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Canceling tournament...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.post(`/api/partner/tournaments/${tournamentId}/cancel`)
+    const response = await api.post(`/api/partner/tournaments/${tournamentId}/cancel`)
     
-    dispatch(updateTournament(response.data))
+    dispatch(updateTournament(response.data as Tournament))
     return response.data
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to cancel tournament'))
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 

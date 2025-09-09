@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
+import { AppDispatch } from '../index'
+import { startLoading, stopLoading } from './loadingSlice'
+import api from '../../services/api'
 
 interface ClubMicrositeData {
   id: number
@@ -37,7 +39,6 @@ interface MicrositeStats {
 interface ClubMicrositeState {
   micrositeData: ClubMicrositeData | null
   stats: MicrositeStats | null
-  loading: boolean
   error: string | null
   previewMode: boolean
 }
@@ -45,7 +46,6 @@ interface ClubMicrositeState {
 const initialState: ClubMicrositeState = {
   micrositeData: null,
   stats: null,
-  loading: false,
   error: null,
   previewMode: false
 }
@@ -54,9 +54,6 @@ const clubMicrositeSlice = createSlice({
   name: 'clubMicrosite',
   initialState,
   reducers: {
-    setLoading: (state, action: PayloadAction<boolean>) => {
-      state.loading = action.payload
-    },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload
     },
@@ -79,7 +76,6 @@ const clubMicrositeSlice = createSlice({
 })
 
 export const {
-  setLoading,
   setError,
   setMicrositeData,
   updateMicrositeData,
@@ -87,17 +83,18 @@ export const {
 } = clubMicrositeSlice.actions
 
 // API Functions
-export const fetchClubMicrositeData = () => async (dispatch: any) => {
+export const fetchClubMicrositeData = () => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading club microsite...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
-    
-    const response = await axios.get('/api/club/microsite')
-    dispatch(setMicrositeData(response.data))
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to fetch microsite data'))
-  } finally {
-    dispatch(setLoading(false))
+    const response = await api.get('/api/club/microsite')
+    dispatch(setMicrositeData(response.data as { micrositeData: ClubMicrositeData, stats: MicrositeStats }))
+    dispatch(stopLoading())
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch microsite data'
+    dispatch(setError(errorMessage))
+    dispatch(stopLoading())
   }
 }
 
@@ -109,58 +106,58 @@ export const updateClubMicrositeData = (micrositeData: {
   website?: string
   social_media?: string
   logo_url?: string
-}) => async (dispatch: any) => {
+}) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating club microsite...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
-    
-    const response = await axios.put('/api/club/microsite', micrositeData)
-    dispatch(updateMicrositeData(response.data.micrositeData))
-    
+    const response = await api.put('/api/club/microsite', micrositeData)
+    dispatch(updateMicrositeData((response.data as { micrositeData: ClubMicrositeData }).micrositeData))
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to update microsite data'))
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to update microsite data'
+    dispatch(setError(errorMessage))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
-export const uploadClubLogo = (formData: FormData) => async (dispatch: any) => {
+export const uploadClubLogo = (formData: FormData) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Uploading club logo...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
-    
-    const response = await axios.post('/api/club/microsite/logo', formData, {
+    const response = await api.post('/api/club/microsite/logo', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     })
     
-    dispatch(updateMicrositeData({ logo_url: response.data.logo_url }))
-    
+    dispatch(updateMicrositeData({ logo_url: (response.data as { logo_url: string }).logo_url }))
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to upload logo'))
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to upload logo'
+    dispatch(setError(errorMessage))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
-export const publishMicrosite = () => async (dispatch: any) => {
+export const publishMicrosite = () => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Publishing microsite...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
-    
-    const response = await axios.post('/api/club/microsite/publish')
-    
+    const response = await api.post('/api/club/microsite/publish')
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to publish microsite'))
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to publish microsite'
+    dispatch(setError(errorMessage))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 

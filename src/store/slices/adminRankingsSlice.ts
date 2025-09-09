@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
+import api from '../../services/api'
+import { startLoading, stopLoading } from './loadingSlice'
+import { AppDispatch } from '../index'
 import { RankingChange } from '../../types/admin'
 
 interface PlayerRanking {
@@ -41,7 +43,6 @@ interface AdminRankingsState {
     mostActiveState: string
     totalTournamentsConsidered: number
   }
-  loading: boolean
   error: string | null
   recalculatingRankings: boolean
 }
@@ -67,7 +68,6 @@ const initialState: AdminRankingsState = {
     mostActiveState: '',
     totalTournamentsConsidered: 0
   },
-  loading: false,
   error: null,
   recalculatingRankings: false
 }
@@ -76,9 +76,6 @@ const adminRankingsSlice = createSlice({
   name: 'adminRankings',
   initialState,
   reducers: {
-    setLoading: (state, action: PayloadAction<boolean>) => {
-      state.loading = action.payload
-    },
     setRecalculatingRankings: (state, action: PayloadAction<boolean>) => {
       state.recalculatingRankings = action.payload
     },
@@ -120,7 +117,6 @@ const adminRankingsSlice = createSlice({
 })
 
 export const {
-  setLoading,
   setRecalculatingRankings,
   setError,
   setPlayerRankings,
@@ -133,9 +129,10 @@ export const {
 } = adminRankingsSlice.actions
 
 // API Functions
-export const fetchPlayerRankings = (filters?: Partial<RankingFilter>) => async (dispatch: any) => {
+export const fetchPlayerRankings = (filters?: Partial<RankingFilter>) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading player rankings...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
 
     const queryParams = new URLSearchParams()
@@ -145,20 +142,23 @@ export const fetchPlayerRankings = (filters?: Partial<RankingFilter>) => async (
       })
     }
 
-    const response = await axios.get(`/api/admin/rankings/players?${queryParams.toString()}`)
+    const response = await api.get(`/api/admin/rankings/players?${queryParams.toString()}`)
+    const responseData = response.data as { rankings: PlayerRanking[], stats: typeof initialState.rankingStats }
 
-    dispatch(setPlayerRankings(response.data.rankings))
-    dispatch(setRankingStats(response.data.stats))
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to fetch player rankings'))
-  } finally {
-    dispatch(setLoading(false))
+    dispatch(setPlayerRankings(responseData.rankings))
+    dispatch(setRankingStats(responseData.stats))
+    dispatch(stopLoading())
+  } catch (error) {
+    dispatch(setError('Failed to fetch player rankings'))
+    dispatch(stopLoading())
+    throw error
   }
 }
 
-export const fetchRankingChanges = (filters?: Partial<RankingFilter>) => async (dispatch: any) => {
+export const fetchRankingChanges = (filters?: Partial<RankingFilter>) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading ranking changes...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
 
     const queryParams = new URLSearchParams()
@@ -168,21 +168,24 @@ export const fetchRankingChanges = (filters?: Partial<RankingFilter>) => async (
       })
     }
 
-    const response = await axios.get(`/api/admin/rankings/changes?${queryParams.toString()}`)
+    const response = await api.get(`/api/admin/rankings/changes?${queryParams.toString()}`)
 
-    dispatch(setRankingChanges(response.data))
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to fetch ranking changes'))
-  } finally {
-    dispatch(setLoading(false))
+    dispatch(setRankingChanges(response.data as RankingChange[]))
+    dispatch(stopLoading())
+  } catch (error) {
+    dispatch(setError('Failed to fetch ranking changes'))
+    dispatch(stopLoading())
+    throw error
   }
 }
 
-export const manualRankingAdjustment = (playerId: number, newPosition: number, newPoints: number, reason: string) => async (dispatch: any) => {
+export const manualRankingAdjustment = (playerId: number, newPosition: number, newPoints: number, reason: string) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Adjusting player ranking...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.post('/api/admin/rankings/adjust', {
+    const response = await api.post('/api/admin/rankings/adjust', {
       playerId,
       newPosition,
       newPoints,
@@ -190,53 +193,62 @@ export const manualRankingAdjustment = (playerId: number, newPosition: number, n
     })
 
     dispatch(updatePlayerRanking({ playerId, newPosition, newPoints }))
-    dispatch(addRankingChange(response.data.change))
+    dispatch(addRankingChange((response.data as { change: RankingChange }).change))
+    dispatch(stopLoading())
     
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to adjust player ranking'))
+  } catch (error) {
+    dispatch(setError('Failed to adjust player ranking'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const recalculateRankings = (stateId?: number) => async (dispatch: any) => {
+export const recalculateRankings = (stateId?: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Recalculating rankings...'))
+  
   try {
-    dispatch(setRecalculatingRankings(true))
     dispatch(setError(null))
 
     const payload = stateId ? { stateId } : {}
-    const response = await axios.post('/api/admin/rankings/recalculate', payload)
+    const response = await api.post('/api/admin/rankings/recalculate', payload)
 
     // Refresh rankings after recalculation
     dispatch(fetchPlayerRankings())
     dispatch(fetchRankingChanges())
+    dispatch(stopLoading())
     
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to recalculate rankings'))
+  } catch (error) {
+    dispatch(setError('Failed to recalculate rankings'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setRecalculatingRankings(false))
   }
 }
 
-export const freezeRankings = (freeze: boolean, reason?: string) => async (dispatch: any) => {
+export const freezeRankings = (freeze: boolean, reason?: string) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating ranking freeze status...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.post('/api/admin/rankings/freeze', {
+    const response = await api.post('/api/admin/rankings/freeze', {
       freeze,
       reason
     })
 
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to update ranking freeze status'))
+  } catch (error) {
+    dispatch(setError('Failed to update ranking freeze status'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const exportRankings = (filters: Partial<RankingFilter>, format: 'csv' | 'excel' | 'pdf') => async (dispatch: any) => {
+export const exportRankings = (filters: Partial<RankingFilter>, format: 'csv' | 'excel' | 'pdf') => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Exporting rankings...'))
+  
   try {
     dispatch(setError(null))
 
@@ -246,11 +258,11 @@ export const exportRankings = (filters: Partial<RankingFilter>, format: 'csv' | 
     })
     queryParams.append('format', format)
 
-    const response = await axios.get(`/api/admin/rankings/export?${queryParams.toString()}`, {
+    const response = await api.get(`/api/admin/rankings/export?${queryParams.toString()}`, {
       responseType: 'blob'
     })
 
-    const url = window.URL.createObjectURL(new Blob([response.data]))
+    const url = window.URL.createObjectURL(new Blob([response.data as BlobPart]))
     const link = document.createElement('a')
     link.href = url
     link.setAttribute('download', `rankings-export-${new Date().toISOString().split('T')[0]}.${format}`)
@@ -259,22 +271,28 @@ export const exportRankings = (filters: Partial<RankingFilter>, format: 'csv' | 
     link.remove()
     window.URL.revokeObjectURL(url)
 
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to export rankings'))
+  } catch (error) {
+    dispatch(setError('Failed to export rankings'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const getPlayerRankingHistory = (playerId: number) => async (dispatch: any) => {
+export const getPlayerRankingHistory = (playerId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading player ranking history...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.get(`/api/admin/rankings/player/${playerId}/history`)
+    const response = await api.get(`/api/admin/rankings/player/${playerId}/history`)
 
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to fetch player ranking history'))
+  } catch (error) {
+    dispatch(setError('Failed to fetch player ranking history'))
+    dispatch(stopLoading())
     throw error
   }
 }

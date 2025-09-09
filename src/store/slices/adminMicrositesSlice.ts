@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
+import api from '../../services/api'
+import { startLoading, stopLoading } from './loadingSlice'
+import { AppDispatch } from '../index'
 import { MicrositeAdmin } from '../../types/admin'
 
 interface MicrositeFilter {
@@ -84,7 +86,7 @@ const adminMicrositesSlice = createSlice({
     setMicrositeStats: (state, action: PayloadAction<typeof initialState.micrositeStats>) => {
       state.micrositeStats = action.payload
     },
-    updateMicrositeStatus: (state, action: PayloadAction<{ micrositeId: number; status: string }>) => {
+    updateMicrositeStatus: (state, action: PayloadAction<{ micrositeId: number; status: 'active' | 'inactive' | 'suspended' | 'pending' | 'approved' | 'rejected' }>) => {
       const micrositeIndex = state.microsites.findIndex(m => m.id === action.payload.micrositeId)
       if (micrositeIndex !== -1) {
         state.microsites[micrositeIndex].status = action.payload.status
@@ -104,9 +106,10 @@ export const {
 } = adminMicrositesSlice.actions
 
 // API Functions
-export const fetchMicrosites = (filters?: Partial<MicrositeFilter>) => async (dispatch: any) => {
+export const fetchMicrosites = (filters?: Partial<MicrositeFilter>) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading microsites...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
 
     const queryParams = new URLSearchParams()
@@ -116,89 +119,110 @@ export const fetchMicrosites = (filters?: Partial<MicrositeFilter>) => async (di
       })
     }
 
-    const response = await axios.get(`/api/admin/microsites?${queryParams.toString()}`)
+    const response = await api.get(`/api/admin/microsites?${queryParams.toString()}`)
 
-    dispatch(setMicrosites(response.data.microsites))
+    dispatch(setMicrosites(response.data.microsites as MicrositeAdmin[]))
     dispatch(setMicrositeStats(response.data.stats))
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to fetch microsites'))
-  } finally {
-    dispatch(setLoading(false))
+    dispatch(stopLoading())
+  } catch (error) {
+    dispatch(setError('Failed to fetch microsites'))
+    dispatch(stopLoading())
+    throw error
   }
 }
 
-export const getMicrositeDetails = (micrositeId: number) => async (dispatch: any) => {
+export const getMicrositeDetails = (micrositeId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading microsite details...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
 
-    const response = await axios.get(`/api/admin/microsites/${micrositeId}`)
+    const response = await api.get(`/api/admin/microsites/${micrositeId}`)
 
-    dispatch(setSelectedMicrosite(response.data))
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to fetch microsite details'))
-  } finally {
-    dispatch(setLoading(false))
+    dispatch(setSelectedMicrosite(response.data as MicrositeAdmin))
+    dispatch(stopLoading())
+  } catch (error) {
+    dispatch(setError('Failed to fetch microsite details'))
+    dispatch(stopLoading())
+    throw error
   }
 }
 
-export const updateMicrositeStatusAction = (micrositeId: number, status: string, reason?: string) => async (dispatch: any) => {
+export const updateMicrositeStatusAction = (micrositeId: number, status: 'active' | 'inactive' | 'suspended' | 'pending' | 'approved' | 'rejected', reason?: string) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating microsite status...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.put(`/api/admin/microsites/${micrositeId}/status`, { status, reason })
+    const response = await api.put(`/api/admin/microsites/${micrositeId}/status`, { status, reason })
 
     dispatch(updateMicrositeStatus({ micrositeId, status }))
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to update microsite status'))
+  } catch (error) {
+    dispatch(setError('Failed to update microsite status'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const approveMicrosite = (micrositeId: number) => async (dispatch: any) => {
+export const approveMicrosite = (micrositeId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Approving microsite...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.post(`/api/admin/microsites/${micrositeId}/approve`)
+    const response = await api.post(`/api/admin/microsites/${micrositeId}/approve`)
 
     dispatch(fetchMicrosites())
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to approve microsite'))
+  } catch (error) {
+    dispatch(setError('Failed to approve microsite'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const rejectMicrosite = (micrositeId: number, reason: string) => async (dispatch: any) => {
+export const rejectMicrosite = (micrositeId: number, reason: string) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Rejecting microsite...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.post(`/api/admin/microsites/${micrositeId}/reject`, { reason })
+    const response = await api.post(`/api/admin/microsites/${micrositeId}/reject`, { reason })
 
     dispatch(fetchMicrosites())
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to reject microsite'))
+  } catch (error) {
+    dispatch(setError('Failed to reject microsite'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const suspendMicrosite = (micrositeId: number, reason: string) => async (dispatch: any) => {
+export const suspendMicrosite = (micrositeId: number, reason: string) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Suspending microsite...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.post(`/api/admin/microsites/${micrositeId}/suspend`, { reason })
+    const response = await api.post(`/api/admin/microsites/${micrositeId}/suspend`, { reason })
 
     dispatch(updateMicrositeStatus({ micrositeId, status: 'suspended' }))
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to suspend microsite'))
+  } catch (error) {
+    dispatch(setError('Failed to suspend microsite'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const exportMicrosites = (filters: Partial<MicrositeFilter>, format: 'csv' | 'excel' | 'pdf') => async (dispatch: any) => {
+export const exportMicrosites = (filters: Partial<MicrositeFilter>, format: 'csv' | 'excel' | 'pdf') => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Exporting microsites...'))
+  
   try {
     dispatch(setError(null))
 
@@ -208,7 +232,7 @@ export const exportMicrosites = (filters: Partial<MicrositeFilter>, format: 'csv
     })
     queryParams.append('format', format)
 
-    const response = await axios.get(`/api/admin/microsites/export?${queryParams.toString()}`, {
+    const response = await api.get(`/api/admin/microsites/export?${queryParams.toString()}`, {
       responseType: 'blob'
     })
 
@@ -221,65 +245,83 @@ export const exportMicrosites = (filters: Partial<MicrositeFilter>, format: 'csv
     link.remove()
     window.URL.revokeObjectURL(url)
 
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to export microsites'))
+  } catch (error) {
+    dispatch(setError('Failed to export microsites'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const generateMicrositeReport = (micrositeId: number) => async (dispatch: any) => {
+export const generateMicrositeReport = (micrositeId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Generating microsite report...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.get(`/api/admin/microsites/${micrositeId}/report`)
+    const response = await api.get(`/api/admin/microsites/${micrositeId}/report`)
 
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to generate microsite report'))
+  } catch (error) {
+    dispatch(setError('Failed to generate microsite report'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const sendMicrositeNotification = (micrositeId: number, subject: string, message: string, recipients: string[]) => async (dispatch: any) => {
+export const sendMicrositeNotification = (micrositeId: number, subject: string, message: string, recipients: string[]) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Sending microsite notification...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.post(`/api/admin/microsites/${micrositeId}/notify`, {
+    const response = await api.post(`/api/admin/microsites/${micrositeId}/notify`, {
       subject,
       message,
       recipients
     })
 
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to send microsite notification'))
+  } catch (error) {
+    dispatch(setError('Failed to send microsite notification'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const getMicrositeAnalytics = (micrositeId: number, period: string) => async (dispatch: any) => {
+export const getMicrositeAnalytics = (micrositeId: number, period: string) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading microsite analytics...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.get(`/api/admin/microsites/${micrositeId}/analytics?period=${period}`)
+    const response = await api.get(`/api/admin/microsites/${micrositeId}/analytics?period=${period}`)
 
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to fetch microsite analytics'))
+  } catch (error) {
+    dispatch(setError('Failed to fetch microsite analytics'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const performContentAudit = (micrositeId: number) => async (dispatch: any) => {
+export const performContentAudit = (micrositeId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Performing content audit...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.post(`/api/admin/microsites/${micrositeId}/audit`)
+    const response = await api.post(`/api/admin/microsites/${micrositeId}/audit`)
 
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to perform content audit'))
+  } catch (error) {
+    dispatch(setError('Failed to perform content audit'))
+    dispatch(stopLoading())
     throw error
   }
 }

@@ -1,30 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppDispatch } from '../index'
 import { startLoading, stopLoading } from './loadingSlice'
-import axios from 'axios'
-
-const BASE_URL = 'http://localhost:5000'
-
-const apiClient = axios.create({
-  baseURL: BASE_URL,
-  timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json'
-  }
-})
-
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token')
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
+import api from '../../services/api'
 
 export interface PlayerStats {
   player_id: number
@@ -380,8 +357,9 @@ export const fetchPlayerStats = (timeframe?: string) => async (dispatch: AppDisp
   dispatch(startLoading('Loading player statistics...'))
   
   try {
-    const response = await apiClient.get<PlayerStats>(`/api/player-rankings/stats?timeframe=${timeframe || '30d'}`)
-    dispatch(setPlayerStats(response.data))
+    const params = timeframe ? `?timeframe=${timeframe}` : ''
+    const response = await api.get(`/api/player-rankings/stats${params}`)
+    dispatch(setPlayerStats(response.data as PlayerStats))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(setError('Failed to load player statistics'))
@@ -395,8 +373,8 @@ export const fetchPlayerRankings = () => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Loading rankings...'))
   
   try {
-    const response = await apiClient.get<PlayerRanking[]>('/api/player-rankings/my-rankings')
-    dispatch(setPlayerRankings(response.data))
+    const response = await api.get('/api/player-rankings')
+    dispatch(setPlayerRankings(response.data as PlayerRanking[]))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(setError('Failed to load rankings'))
@@ -410,8 +388,8 @@ export const fetchRecentMatches = (limit: number = 10) => async (dispatch: AppDi
   dispatch(startLoading('Loading recent matches...'))
   
   try {
-    const response = await apiClient.get<MatchResult[]>(`/api/player-rankings/recent-matches?limit=${limit}`)
-    dispatch(setRecentMatches(response.data))
+    const response = await api.get<MatchResult[]>(`/api/player-rankings/recent-matches?limit=${limit}`)
+    dispatch(setRecentMatches(response.data as MatchResult[]))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(setError('Failed to load recent matches'))
@@ -425,8 +403,8 @@ export const fetchTournamentHistory = (timeframe?: string) => async (dispatch: A
   dispatch(startLoading('Loading tournament history...'))
   
   try {
-    const response = await apiClient.get<TournamentPerformance[]>(`/api/player-rankings/tournaments?timeframe=${timeframe || '1y'}`)
-    dispatch(setTournamentHistory(response.data))
+    const response = await api.get<TournamentPerformance[]>(`/api/player-rankings/tournaments?timeframe=${timeframe || '1y'}`)
+    dispatch(setTournamentHistory(response.data as TournamentPerformance[]))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(setError('Failed to load tournament history'))
@@ -440,8 +418,8 @@ export const fetchPerformanceMetrics = (timeframe?: string) => async (dispatch: 
   dispatch(startLoading('Loading performance metrics...'))
   
   try {
-    const response = await apiClient.get<PerformanceMetrics>(`/api/player-rankings/performance?timeframe=${timeframe || '30d'}`)
-    dispatch(setPerformanceMetrics(response.data))
+    const response = await api.get<PerformanceMetrics>(`/api/player-rankings/performance?timeframe=${timeframe || '30d'}`)
+    dispatch(setPerformanceMetrics(response.data as PerformanceMetrics))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(setError('Failed to load performance metrics'))
@@ -455,7 +433,7 @@ export const fetchLeaderboard = (rankingType: 'overall' | 'state' | 'club' | 'ag
   dispatch(startLoading('Loading leaderboard...'))
   
   try {
-    const response = await apiClient.get<PlayerRanking[]>(`/api/player-rankings/leaderboard/${rankingType}?limit=${limit}`)
+    const response = await api.get<PlayerRanking[]>(`/api/player-rankings/leaderboard/${rankingType}?limit=${limit}`)
     dispatch(setLeaderboards({
       type: rankingType,
       data: response.data
@@ -471,7 +449,7 @@ export const fetchLeaderboard = (rankingType: 'overall' | 'state' | 'club' | 'ag
 // Search players for comparison
 export const searchPlayersForComparison = (query: string) => async (dispatch: AppDispatch) => {
   try {
-    const response = await apiClient.get<PlayerRanking[]>(`/api/player-rankings/search?q=${encodeURIComponent(query)}`)
+    const response = await api.get<PlayerRanking[]>(`/api/player-rankings/search?q=${encodeURIComponent(query)}`)
     return response.data
   } catch (error) {
     throw error
@@ -483,7 +461,7 @@ export const getPlayerComparison = (player1Id: number, player2Id: number, timefr
   dispatch(startLoading('Loading comparison data...'))
   
   try {
-    const response = await apiClient.get(`/api/player-rankings/compare/${player1Id}/${player2Id}?timeframe=${timeframe || '1y'}`)
+    const response = await api.get(`/api/player-rankings/compare/${player1Id}/${player2Id}?timeframe=${timeframe || '1y'}`)
     dispatch(stopLoading())
     return response.data
   } catch (error) {

@@ -1,43 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { CommonState, CommonPageData } from '../../types/common'
 import { startLoading, stopLoading } from './loadingSlice'
-import axios from 'axios'
-
-const BASE_URL = 'http://localhost:5000'
-
-const apiClient = axios.create({
-  baseURL: BASE_URL,
-  timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json'
-  }
-})
-
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token')
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
-
-apiClient.interceptors.response.use(
-  (response) => {
-    return response
-  },
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token')
-      window.location.href = '/login'
-    }
-    return Promise.reject(error)
-  }
-)
+import { AppDispatch } from '../index'
+import api from '../../services/api'
 
 const initialState: CommonState = {
   data: null,
@@ -67,12 +32,12 @@ const commonSlice = createSlice({
 
 export const { setLoading, setCommonData, clearCommonData } = commonSlice.actions
 
-export const fetchCommonData = () => async (dispatch: any) => {
+export const fetchCommonData = () => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Loading data...'))
   
   try {
-    const response = await apiClient.get<CommonPageData>('/api/common/data')
-    dispatch(setCommonData(response.data))
+    const response = await api.get('/api/common/data')
+    dispatch(setCommonData(response.data as CommonPageData))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(stopLoading())
@@ -80,11 +45,11 @@ export const fetchCommonData = () => async (dispatch: any) => {
   }
 }
 
-export const fetchPrivacyPolicy = () => async (dispatch: any) => {
+export const fetchPrivacyPolicy = () => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Loading privacy policy...'))
   
   try {
-    const response = await apiClient.get('/api/common/privacy-policy')
+    const response = await api.get('/api/common/privacy-policy')
     dispatch(stopLoading())
     return response.data
   } catch (error) {

@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
+import api from '../../services/api'
+import { startLoading, stopLoading } from './loadingSlice'
+import { AppDispatch } from '../index'
 
 interface PartnerMicrositeInfo {
   id: number
@@ -80,7 +82,6 @@ interface PartnerMicrositeState {
   tournaments: PartnerTournament[]
   pages: MicrositePage[]
   stats: MicrositeStats | null
-  loading: boolean
   error: string | null
   isPublicView: boolean
 }
@@ -91,7 +92,6 @@ const initialState: PartnerMicrositeState = {
   tournaments: [],
   pages: [],
   stats: null,
-  loading: false,
   error: null,
   isPublicView: false
 }
@@ -100,9 +100,6 @@ const partnerMicrositeSlice = createSlice({
   name: 'partnerMicrosite',
   initialState,
   reducers: {
-    setLoading: (state, action: PayloadAction<boolean>) => {
-      state.loading = action.payload
-    },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload
     },
@@ -140,7 +137,6 @@ const partnerMicrositeSlice = createSlice({
 })
 
 export const {
-  setLoading,
   setError,
   setMicrositeData,
   updateMicrositeInfo,
@@ -150,91 +146,103 @@ export const {
 } = partnerMicrositeSlice.actions
 
 // API Functions
-export const fetchPartnerMicrositeData = (partnerId?: string) => async (dispatch: any) => {
+export const fetchPartnerMicrositeData = (partnerId?: string) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading partner microsite data...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
     const url = partnerId 
       ? `/api/partner/microsite/${partnerId}`
       : '/api/partner/microsite'
     
-    const response = await axios.get(url)
+    const response = await api.get(url)
     
     dispatch(setMicrositeData({
-      ...response.data,
+      ...(response.data as {
+        micrositeInfo: PartnerMicrositeInfo
+        courts: PartnerCourt[]
+        tournaments: PartnerTournament[]
+        pages: MicrositePage[]
+        stats: MicrositeStats
+      }),
       isPublicView: !!partnerId
     }))
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to fetch microsite data'))
-  } finally {
-    dispatch(setLoading(false))
+    dispatch(stopLoading())
+  } catch (error: unknown) {
+    dispatch(setError('Failed to fetch partner microsite data'))
+    dispatch(stopLoading())
+    throw error
   }
 }
 
-export const updatePartnerMicrositeInfo = (data: Partial<PartnerMicrositeInfo>) => async (dispatch: any) => {
+export const updatePartnerMicrositeInfo = (data: Partial<PartnerMicrositeInfo>) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating partner microsite info...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    const response = await axios.put('/api/partner/microsite', data)
-    dispatch(updateMicrositeInfo(response.data.micrositeInfo))
+    const response = await api.put('/api/partner/microsite', data)
+    dispatch(updateMicrositeInfo((response.data as any).micrositeInfo as PartnerMicrositeInfo))
+    dispatch(stopLoading())
     
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to update microsite'))
+  } catch (error: unknown) {
+    dispatch(setError('Failed to update microsite'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
-export const createMicrositePage = (pageData: Partial<MicrositePage>) => async (dispatch: any) => {
+export const createMicrositePage = (pageData: Partial<MicrositePage>) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Creating microsite page...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    const response = await axios.post('/api/partner/microsite/pages', pageData)
-    dispatch(addPage(response.data.page))
+    const response = await api.post('/api/partner/microsite/pages', pageData)
+    dispatch(addPage((response.data as any).page as MicrositePage))
+    dispatch(stopLoading())
     
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to create page'))
+  } catch (error: unknown) {
+    dispatch(setError('Failed to create page'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
-export const updateMicrositePage = (pageId: number, pageData: Partial<MicrositePage>) => async (dispatch: any) => {
+export const updateMicrositePage = (pageId: number, pageData: Partial<MicrositePage>) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating microsite page...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    const response = await axios.put(`/api/partner/microsite/pages/${pageId}`, pageData)
-    dispatch(updatePage(response.data.page))
+    const response = await api.put(`/api/partner/microsite/pages/${pageId}`, pageData)
+    dispatch(updatePage((response.data as any).page as MicrositePage))
+    dispatch(stopLoading())
     
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to update page'))
+  } catch (error: unknown) {
+    dispatch(setError('Failed to update page'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
-export const deleteMicrositePage = (pageId: number) => async (dispatch: any) => {
+export const deleteMicrositePage = (pageId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Deleting microsite page...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    await axios.delete(`/api/partner/microsite/pages/${pageId}`)
+    await api.delete(`/api/partner/microsite/pages/${pageId}`)
     dispatch(deletePage(pageId))
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to delete page'))
+    dispatch(stopLoading())
+  } catch (error: unknown) {
+    dispatch(setError('Failed to delete page'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 

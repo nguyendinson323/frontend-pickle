@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
+import { VerificationResult } from '../../../store/slices/digitalCredentialsSlice'
 
 interface CredentialVerificationProps {
   onVerifyCredential: (qrCodeData: string) => void
-  verificationResult: any
+  verificationResult: VerificationResult | null
   isLoading: boolean
   formatDate: (dateString: string) => string
 }

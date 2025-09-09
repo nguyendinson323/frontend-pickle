@@ -1,30 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppDispatch } from '../index'
 import { startLoading, stopLoading } from './loadingSlice'
-import axios from 'axios'
-
-const BASE_URL = 'http://localhost:5000'
-
-const apiClient = axios.create({
-  baseURL: BASE_URL,
-  timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json'
-  }
-})
-
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token')
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
+import api from '../../services/api'
 
 export interface Message {
   id: number
@@ -287,6 +264,81 @@ const playerMessagesSlice = createSlice({
         }
       }
     },
+    updateTypingStatus: (state, action: PayloadAction<{
+      chatRoomId: number
+      userId: number
+      isTyping: boolean
+      username?: string
+    }>) => {
+      if (state.activeConversation?.id === action.payload.chatRoomId) {
+        state.typing.conversationId = action.payload.chatRoomId
+        state.typing.isTyping = action.payload.isTyping
+        
+        if (action.payload.username) {
+          if (action.payload.isTyping) {
+            if (!state.typing.typingUsers.includes(action.payload.username)) {
+              state.typing.typingUsers.push(action.payload.username)
+            }
+          } else {
+            state.typing.typingUsers = state.typing.typingUsers.filter(
+              user => user !== action.payload.username
+            )
+          }
+        }
+      }
+    },
+    updateConversationLastMessage: (state, action: PayloadAction<{
+      chatRoomId: number
+      lastMessage: {
+        content: string
+        sentAt: string
+        senderName: string
+      }
+    }>) => {
+      const conversation = state.conversations.find(c => c.id === action.payload.chatRoomId)
+      if (conversation) {
+        conversation.last_message = {
+          id: Date.now(),
+          conversation_id: action.payload.chatRoomId,
+          sender_id: 0,
+          receiver_id: 0,
+          content: action.payload.lastMessage.content,
+          message_type: 'text',
+          attachment_url: null,
+          is_read: false,
+          sent_at: action.payload.lastMessage.sentAt,
+          edited_at: null,
+          sender: {
+            id: 0,
+            full_name: action.payload.lastMessage.senderName,
+            profile_image: null,
+            skill_level: null,
+            is_online: true,
+            last_seen: null
+          }
+        }
+        conversation.updated_at = action.payload.lastMessage.sentAt
+        
+        const index = state.conversations.indexOf(conversation)
+        if (index > 0) {
+          state.conversations.splice(index, 1)
+          state.conversations.unshift(conversation)
+        }
+      }
+    },
+    markMessagesAsRead: (state, action: PayloadAction<{
+      chatRoomId: number
+      userId: number
+      messageId: number
+    }>) => {
+      if (state.activeConversation?.id === action.payload.chatRoomId) {
+        state.messages.forEach(message => {
+          if (message.id <= action.payload.messageId && message.sender_id !== action.payload.userId) {
+            message.is_read = true
+          }
+        })
+      }
+    },
     openNewConversationModal: (state, action: PayloadAction<number | null>) => {
       state.newConversationModal = {
         isOpen: true,
@@ -348,6 +400,7 @@ export const {
   addMessage,
   markMessageAsRead,
   markConversationAsRead,
+  markMessagesAsRead,
   setContacts,
   setSelectedContact,
   setMessageInput,
@@ -355,6 +408,8 @@ export const {
   setSearchResults,
   setIsSearching,
   setTyping,
+  updateTypingStatus,
+  updateConversationLastMessage,
   openNewConversationModal,
   closeNewConversationModal,
   openImagePreviewModal,
@@ -368,13 +423,14 @@ export const fetchConversations = () => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Loading conversations...'))
   
   try {
-    const response = await apiClient.get<Conversation[]>('/api/player-messages/conversations')
-    dispatch(setConversations(response.data))
-    dispatch(stopLoading())
+    dispatch(setError(null))
+    const response = await api.get('/api/player-messages/conversations')
+    dispatch(setConversations(response.data as Conversation[]))
   } catch (error) {
     dispatch(setError('Failed to load conversations'))
-    dispatch(stopLoading())
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
@@ -383,26 +439,24 @@ export const fetchMessages = (conversationId: number, page: number = 1) => async
   dispatch(startLoading('Loading messages...'))
   
   try {
-    const response = await apiClient.get<{
-      messages: Message[]
-      total_count: number
-      has_more: boolean
-    }>(`/api/player-messages/conversations/${conversationId}/messages?page=${page}&limit=50`)
+    dispatch(setError(null))
+    const response = await api.get(`/api/player-messages/conversations/${conversationId}/messages`, {
+      params: { page, limit: 50 }
+    })
     
+    const responseData = response.data as { messages: Message[], has_more: boolean }
     dispatch(setMessages({
-      messages: response.data.messages,
+      messages: responseData.messages,
       append: page > 1,
-      hasMore: response.data.has_more
+      hasMore: responseData.has_more
     }))
     
-    // Mark conversation as read
     dispatch(markConversationAsRead(conversationId))
-    
-    dispatch(stopLoading())
   } catch (error) {
     dispatch(setError('Failed to load messages'))
-    dispatch(stopLoading())
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
@@ -417,15 +471,24 @@ export const sendMessage = (messageData: {
   dispatch(startLoading('Sending message...'))
   
   try {
-    const response = await apiClient.post<Message>('/api/player-messages/send', messageData)
-    dispatch(addMessage(response.data))
+    dispatch(setError(null))
+    const backendData = {
+      chat_room_id: messageData.conversation_id,
+      receiver_id: messageData.receiver_id,
+      content: messageData.content,
+      message_type: messageData.message_type,
+      attachment_url: messageData.attachment_url
+    }
+    
+    const response = await api.post('/api/player-messages/send', backendData)
+    dispatch(addMessage(response.data as Message))
     dispatch(setMessageInput(''))
-    dispatch(stopLoading())
     return response.data
   } catch (error) {
     dispatch(setError('Failed to send message'))
-    dispatch(stopLoading())
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
@@ -434,20 +497,22 @@ export const startConversation = (receiverId: number, initialMessage?: string) =
   dispatch(startLoading('Starting conversation...'))
   
   try {
-    const response = await apiClient.post<Conversation>('/api/player-messages/conversations', {
+    dispatch(setError(null))
+    const response = await api.post('/api/player-messages/conversations', {
       receiver_id: receiverId,
       initial_message: initialMessage
     })
     
-    dispatch(addConversation(response.data))
-    dispatch(setActiveConversation(response.data))
+    const conversationData = response.data as Conversation
+    dispatch(addConversation(conversationData))
+    dispatch(setActiveConversation(conversationData))
     dispatch(closeNewConversationModal())
-    dispatch(stopLoading())
     return response.data
   } catch (error) {
     dispatch(setError('Failed to start conversation'))
-    dispatch(stopLoading())
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
@@ -456,13 +521,16 @@ export const searchPlayers = (query: string) => async (dispatch: AppDispatch) =>
   dispatch(setIsSearching(true))
   
   try {
-    const response = await apiClient.get<PlayerContact[]>(`/api/player-messages/search?q=${encodeURIComponent(query)}`)
-    dispatch(setSearchResults(response.data))
-    dispatch(setIsSearching(false))
+    dispatch(setError(null))
+    const response = await api.get('/api/player-messages/search-players', {
+      params: { query }
+    })
+    dispatch(setSearchResults(response.data as PlayerContact[]))
   } catch (error) {
     dispatch(setError('Failed to search players'))
-    dispatch(setIsSearching(false))
     throw error
+  } finally {
+    dispatch(setIsSearching(false))
   }
 }
 
@@ -471,20 +539,21 @@ export const fetchContacts = () => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Loading contacts...'))
   
   try {
-    const response = await apiClient.get<PlayerContact[]>('/api/player-messages/contacts')
-    dispatch(setContacts(response.data))
-    dispatch(stopLoading())
+    dispatch(setError(null))
+    const response = await api.get('/api/player-messages/contacts')
+    dispatch(setContacts(response.data as PlayerContact[]))
   } catch (error) {
     dispatch(setError('Failed to load contacts'))
-    dispatch(stopLoading())
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
 // Mark messages as read
-export const markMessagesAsRead = (conversationId: number) => async (dispatch: AppDispatch) => {
+export const markMessagesAsReadAction = (conversationId: number) => async (dispatch: AppDispatch) => {
   try {
-    await apiClient.put(`/api/player-messages/conversations/${conversationId}/mark-read`)
+    await api.post(`/api/player-messages/conversations/${conversationId}/read`)
     dispatch(markConversationAsRead(conversationId))
   } catch (error) {
     console.error('Failed to mark messages as read:', error)
@@ -496,20 +565,20 @@ export const deleteMessage = (messageId: number) => async (dispatch: AppDispatch
   dispatch(startLoading('Deleting message...'))
   
   try {
-    await apiClient.delete(`/api/player-messages/messages/${messageId}`)
-    // Remove message from state or mark as deleted
-    dispatch(stopLoading())
+    dispatch(setError(null))
+    await api.delete(`/api/player-messages/messages/${messageId}`)
   } catch (error) {
     dispatch(setError('Failed to delete message'))
-    dispatch(stopLoading())
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
 // Update online status
 export const updateOnlineStatus = (isOnline: boolean) => async (dispatch: AppDispatch) => {
   try {
-    await apiClient.put('/api/player-messages/status', { is_online: isOnline })
+    await api.post('/api/player-messages/online-status', { is_online: isOnline })
     dispatch(updateLastActiveTime())
   } catch (error) {
     console.error('Failed to update online status:', error)

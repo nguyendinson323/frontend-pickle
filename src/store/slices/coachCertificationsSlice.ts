@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
 import { AppDispatch } from '../index'
 import { startLoading, stopLoading } from './loadingSlice'
+import api from '../../services/api'
 
 interface CoachCertification {
   id: number
@@ -93,10 +93,10 @@ export const {
 // API Functions
 export const fetchCoachCertificationsData = () => async (dispatch: AppDispatch) => {
   try {
-    dispatch(startLoading())
-    const response = await axios.get('/api/coach/certifications')
-    dispatch(setCoachCertifications(response.data.certifications))
-    dispatch(setCertificationStats(response.data.stats))
+    dispatch(startLoading('Loading certifications data...'))
+    const response = await api.get('/api/coach/certifications')
+    dispatch(setCoachCertifications((response.data as { certifications: CoachCertification[], stats: CertificationStats }).certifications))
+    dispatch(setCertificationStats((response.data as { certifications: CoachCertification[], stats: CertificationStats }).stats))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(stopLoading())
@@ -106,12 +106,9 @@ export const fetchCoachCertificationsData = () => async (dispatch: AppDispatch) 
 
 export const addCoachCertification = (certificationData: Partial<CoachCertification>) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(startLoading())
-    const response = await axios.post('/api/coach/certifications', certificationData)
-    dispatch(addCertification(response.data))
-    if (response.data.stats) {
-      dispatch(setCertificationStats(response.data.stats))
-    }
+    dispatch(startLoading('Adding certification...'))
+    const response = await api.post('/api/coach/certifications', certificationData)
+    dispatch(addCertification((response.data as { certification: CoachCertification }).certification))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(stopLoading())
@@ -121,12 +118,9 @@ export const addCoachCertification = (certificationData: Partial<CoachCertificat
 
 export const updateCoachCertification = (certificationId: number, certificationData: Partial<CoachCertification>) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(startLoading())
-    const response = await axios.put(`/api/coach/certifications/${certificationId}`, certificationData)
-    dispatch(updateCertification(response.data))
-    if (response.data.stats) {
-      dispatch(setCertificationStats(response.data.stats))
-    }
+    dispatch(startLoading('Updating certification...'))
+    const response = await api.put(`/api/coach/certifications/${certificationId}`, certificationData)
+    dispatch(updateCertification((response.data as { certification: CoachCertification }).certification))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(stopLoading())
@@ -136,8 +130,8 @@ export const updateCoachCertification = (certificationId: number, certificationD
 
 export const deleteCoachCertification = (certificationId: number) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(startLoading())
-    await axios.delete(`/api/coach/certifications/${certificationId}`)
+    dispatch(startLoading('Deleting certification...'))
+    await api.delete(`/api/coach/certifications/${certificationId}`)
     dispatch(removeCertification(certificationId))
     dispatch(stopLoading())
   } catch (error) {
@@ -148,13 +142,13 @@ export const deleteCoachCertification = (certificationId: number) => async (disp
 
 export const downloadCertificate = (certificationId: number) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(startLoading())
-    const response = await axios.get(`/api/coach/certifications/${certificationId}/download`, {
+    dispatch(startLoading('Downloading certificate...'))
+    const response = await api.get(`/api/coach/certifications/${certificationId}/download`, {
       responseType: 'blob'
     })
     
     // Create download link
-    const blob = new Blob([response.data], { type: 'application/pdf' })
+    const blob = new Blob([response.data as BlobPart], { type: 'application/pdf' })
     const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url

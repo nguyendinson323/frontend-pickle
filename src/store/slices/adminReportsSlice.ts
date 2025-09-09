@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
+import api from '../../services/api'
+import { startLoading, stopLoading } from './loadingSlice'
+import { AppDispatch } from '../index'
 
 interface ReportFilter {
   reportType: string
@@ -179,19 +181,22 @@ export const {
 } = adminReportsSlice.actions
 
 // API Functions
-export const fetchReports = () => async (dispatch: any) => {
+export const fetchReports = () => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading reports...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
 
-    const response = await axios.get('/api/admin/reports')
+    const response = await api.get('/api/admin/reports')
+    const responseData = response.data as { reports: ReportData[], stats: typeof initialState.reportStats }
 
-    dispatch(setReports(response.data.reports))
-    dispatch(setReportStats(response.data.stats))
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to fetch reports'))
-  } finally {
-    dispatch(setLoading(false))
+    dispatch(setReports(responseData.reports))
+    dispatch(setReportStats(responseData.stats))
+    dispatch(stopLoading())
+  } catch (error) {
+    dispatch(setError('Failed to fetch reports'))
+    dispatch(stopLoading())
+    throw error
   }
 }
 
@@ -201,29 +206,36 @@ export const generateReport = (reportConfig: {
   filters: any
   fields: string[]
   format: string
-}) => async (dispatch: any) => {
+}) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Generating report...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.post('/api/admin/reports/generate', reportConfig)
+    const response = await api.post('/api/admin/reports/generate', reportConfig)
 
-    dispatch(addReport(response.data.report))
+    const responseData = response.data as { report: ReportData }
+    dispatch(addReport(responseData.report))
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to generate report'))
+  } catch (error) {
+    dispatch(setError('Failed to generate report'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const downloadReport = (reportId: string) => async (dispatch: any) => {
+export const downloadReport = (reportId: string) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Downloading report...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.get(`/api/admin/reports/${reportId}/download`, {
+    const response = await api.get(`/api/admin/reports/${reportId}/download`, {
       responseType: 'blob'
     })
 
-    const url = window.URL.createObjectURL(new Blob([response.data]))
+    const url = window.URL.createObjectURL(new Blob([response.data as BlobPart]))
     const link = document.createElement('a')
     link.href = url
     
@@ -238,41 +250,57 @@ export const downloadReport = (reportId: string) => async (dispatch: any) => {
     link.remove()
     window.URL.revokeObjectURL(url)
 
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to download report'))
+  } catch (error) {
+    dispatch(setError('Failed to download report'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const deleteReport = (reportId: string) => async (dispatch: any) => {
+export const deleteReport = (reportId: string) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Deleting report...'))
+  
   try {
     dispatch(setError(null))
 
-    await axios.delete(`/api/admin/reports/${reportId}`)
+    await api.delete(`/api/admin/reports/${reportId}`)
 
     dispatch(removeReport(reportId))
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to delete report'))
+    dispatch(stopLoading())
+  } catch (error) {
+    dispatch(setError('Failed to delete report'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const getReportStatus = (reportId: string) => async (dispatch: any) => {
+export const getReportStatus = (reportId: string) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Checking report status...'))
+  
   try {
-    const response = await axios.get(`/api/admin/reports/${reportId}/status`)
+    const response = await api.get(`/api/admin/reports/${reportId}/status`)
 
+    const reportData = response.data as {
+      status: string
+      downloadUrl: string
+      fileSize: number
+      recordCount: number
+    }
+    
     dispatch(updateReportStatus({
       reportId,
-      status: response.data.status,
-      downloadUrl: response.data.downloadUrl,
-      fileSize: response.data.fileSize,
-      recordCount: response.data.recordCount
+      status: reportData.status,
+      downloadUrl: reportData.downloadUrl,
+      fileSize: reportData.fileSize,
+      recordCount: reportData.recordCount
     }))
 
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    console.error('Failed to fetch report status:', error)
+  } catch (error) {
+    dispatch(stopLoading())
     throw error
   }
 }
@@ -290,26 +318,34 @@ export const scheduleReport = (reportConfig: {
     time: string
   }
   recipients: string[]
-}) => async (dispatch: any) => {
+}) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Scheduling report...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.post('/api/admin/reports/schedule', reportConfig)
+    const response = await api.post('/api/admin/reports/schedule', reportConfig)
 
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to schedule report'))
+  } catch (error) {
+    dispatch(setError('Failed to schedule report'))
+    dispatch(stopLoading())
     throw error
   }
 }
 
-export const getScheduledReports = () => async (dispatch: any) => {
+export const getScheduledReports = () => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading scheduled reports...'))
+  
   try {
-    const response = await axios.get('/api/admin/reports/scheduled')
+    const response = await api.get('/api/admin/reports/scheduled')
 
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to fetch scheduled reports'))
+  } catch (error) {
+    dispatch(setError('Failed to fetch scheduled reports'))
+    dispatch(stopLoading())
     throw error
   }
 }
@@ -319,15 +355,19 @@ export const getReportPreview = (reportConfig: {
   filters: any
   fields: string[]
   limit: number
-}) => async (dispatch: any) => {
+}) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Generating report preview...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.post('/api/admin/reports/preview', reportConfig)
+    const response = await api.post('/api/admin/reports/preview', reportConfig)
 
+    dispatch(stopLoading())
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to generate report preview'))
+  } catch (error) {
+    dispatch(setError('Failed to generate report preview'))
+    dispatch(stopLoading())
     throw error
   }
 }

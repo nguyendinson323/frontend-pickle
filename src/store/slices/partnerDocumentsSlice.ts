@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
+import api from '../../services/api'
+import { startLoading, stopLoading } from './loadingSlice'
+import { AppDispatch } from '../index'
 
 interface PartnerDocument {
   id: number
@@ -54,7 +56,6 @@ interface PartnerDocumentsState {
   documents: PartnerDocument[]
   invoices: PartnerInvoice[]
   stats: DocumentsStats | null
-  loading: boolean
   error: string | null
   documentFilter: {
     type: string
@@ -72,7 +73,6 @@ const initialState: PartnerDocumentsState = {
   documents: [],
   invoices: [],
   stats: null,
-  loading: false,
   error: null,
   documentFilter: {
     type: '',
@@ -90,9 +90,6 @@ const partnerDocumentsSlice = createSlice({
   name: 'partnerDocuments',
   initialState,
   reducers: {
-    setLoading: (state, action: PayloadAction<boolean>) => {
-      state.loading = action.payload
-    },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload
     },
@@ -136,7 +133,6 @@ const partnerDocumentsSlice = createSlice({
 })
 
 export const {
-  setLoading,
   setError,
   setDocuments,
   setInvoices,
@@ -151,70 +147,82 @@ export const {
 } = partnerDocumentsSlice.actions
 
 // API Functions
-export const fetchPartnerDocuments = () => async (dispatch: any) => {
+export const fetchPartnerDocuments = () => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading documents...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
 
-    const response = await axios.get('/api/partner/documents')
+    const response = await api.get('/api/partner/documents')
+    const responseData = response.data as { documents: PartnerDocument[], invoices: PartnerInvoice[], stats: DocumentsStats }
     
-    dispatch(setDocuments(response.data.documents))
-    dispatch(setInvoices(response.data.invoices))
-    dispatch(setStats(response.data.stats))
+    dispatch(setDocuments(responseData.documents))
+    dispatch(setInvoices(responseData.invoices))
+    dispatch(setStats(responseData.stats))
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to fetch documents'))
+    throw error
   } finally {
-    dispatch(setLoading(false))
+    dispatch(stopLoading())
   }
 }
 
-export const uploadPartnerDocument = (formData: FormData) => async (dispatch: any) => {
+export const uploadPartnerDocument = (formData: FormData) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Uploading document...'))
+  dispatch(setUploadingFile(true))
+  
   try {
-    dispatch(setUploadingFile(true))
     dispatch(setError(null))
 
-    const response = await axios.post('/api/partner/documents/upload', formData, {
+    const response = await api.post('/api/partner/documents/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     })
 
-    dispatch(addDocument(response.data))
+    dispatch(addDocument(response.data as PartnerDocument))
     return response.data
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to upload document'))
     throw error
   } finally {
     dispatch(setUploadingFile(false))
+    dispatch(stopLoading())
   }
 }
 
-export const signPartnerDocument = (documentId: number) => async (dispatch: any) => {
+export const signPartnerDocument = (documentId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Signing document...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.post(`/api/partner/documents/${documentId}/sign`)
+    const response = await api.post(`/api/partner/documents/${documentId}/sign`)
     
-    dispatch(updateDocument(response.data))
+    dispatch(updateDocument(response.data as PartnerDocument))
     return response.data
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to sign document'))
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
-export const downloadPartnerDocument = (documentId: number) => async (dispatch: any) => {
+export const downloadPartnerDocument = (documentId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Downloading document...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.get(`/api/partner/documents/${documentId}/download`, {
+    const response = await api.get(`/api/partner/documents/${documentId}/download`, {
       responseType: 'blob'
     })
 
-    const document = await axios.get(`/api/partner/documents/${documentId}`)
-    const documentName = document.data.document_name
+    const documentResponse = await api.get(`/api/partner/documents/${documentId}`)
+    const documentName = (documentResponse.data as PartnerDocument).document_name
     
-    const url = window.URL.createObjectURL(new Blob([response.data]))
+    const url = window.URL.createObjectURL(new Blob([response.data as BlobPart]))
     const link = document.createElement('a')
     link.href = url
     link.setAttribute('download', documentName)
@@ -227,34 +235,42 @@ export const downloadPartnerDocument = (documentId: number) => async (dispatch: 
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to download document'))
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
-export const deletePartnerDocument = (documentId: number) => async (dispatch: any) => {
+export const deletePartnerDocument = (documentId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Deleting document...'))
+  
   try {
     dispatch(setError(null))
 
-    await axios.delete(`/api/partner/documents/${documentId}`)
+    await api.delete(`/api/partner/documents/${documentId}`)
     
     dispatch(removeDocument(documentId))
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to delete document'))
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
-export const downloadPartnerInvoice = (invoiceId: number) => async (dispatch: any) => {
+export const downloadPartnerInvoice = (invoiceId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Downloading invoice...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.get(`/api/partner/invoices/${invoiceId}/download`, {
+    const response = await api.get(`/api/partner/invoices/${invoiceId}/download`, {
       responseType: 'blob'
     })
 
-    const invoice = await axios.get(`/api/partner/invoices/${invoiceId}`)
-    const invoiceNumber = invoice.data.invoice_number
+    const invoiceResponse = await api.get(`/api/partner/invoices/${invoiceId}`)
+    const invoiceNumber = (invoiceResponse.data as PartnerInvoice).invoice_number
     
-    const url = window.URL.createObjectURL(new Blob([response.data]))
+    const url = window.URL.createObjectURL(new Blob([response.data as BlobPart]))
     const link = document.createElement('a')
     link.href = url
     link.setAttribute('download', `invoice-${invoiceNumber}.pdf`)
@@ -267,20 +283,26 @@ export const downloadPartnerInvoice = (invoiceId: number) => async (dispatch: an
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to download invoice'))
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 
-export const markInvoiceAsPaid = (invoiceId: number, paymentData: { payment_method: string; payment_date: string }) => async (dispatch: any) => {
+export const markInvoiceAsPaid = (invoiceId: number, paymentData: { payment_method: string; payment_date: string }) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating invoice payment...'))
+  
   try {
     dispatch(setError(null))
 
-    const response = await axios.post(`/api/partner/invoices/${invoiceId}/pay`, paymentData)
+    const response = await api.post(`/api/partner/invoices/${invoiceId}/pay`, paymentData)
     
-    dispatch(updateInvoice(response.data))
+    dispatch(updateInvoice(response.data as PartnerInvoice))
     return response.data
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to mark invoice as paid'))
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 

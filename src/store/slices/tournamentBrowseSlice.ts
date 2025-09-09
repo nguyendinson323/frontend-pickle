@@ -1,30 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppDispatch } from '../index'
 import { startLoading, stopLoading } from './loadingSlice'
-import axios from 'axios'
-
-const BASE_URL = 'http://localhost:5000'
-
-const apiClient = axios.create({
-  baseURL: BASE_URL,
-  timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json'
-  }
-})
-
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token')
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
+import api from '../../services/api'
 
 export interface TournamentCategory {
   id: number
@@ -270,8 +247,14 @@ export const searchTournaments = (filters: Partial<TournamentFilters>) => async 
   dispatch(startLoading('Searching tournaments...'))
   
   try {
-    const response = await apiClient.post<Tournament[]>('/api/tournament-browse/search', filters)
-    dispatch(setTournaments(response.data))
+    const params = new URLSearchParams()
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== null && value !== undefined) {
+        params.append(key, String(value))
+      }
+    })
+    const response = await api.get(`/api/tournament-browse?${params.toString()}`)
+    dispatch(setTournaments(response.data as Tournament[]))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(setError('Failed to search tournaments'))
@@ -285,8 +268,8 @@ export const getTournamentDetails = (tournamentId: number) => async (dispatch: A
   dispatch(startLoading('Loading tournament details...'))
   
   try {
-    const response = await apiClient.get<Tournament>(`/api/tournament-browse/tournaments/${tournamentId}`)
-    dispatch(setSelectedTournament(response.data))
+    const response = await api.get(`/api/tournament-browse/${tournamentId}`)
+    dispatch(setSelectedTournament(response.data as Tournament))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(setError('Failed to load tournament details'))
@@ -300,7 +283,7 @@ export const fetchUserRegistrations = () => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Loading your registrations...'))
   
   try {
-    const response = await apiClient.get<TournamentRegistration[]>('/api/tournament-browse/registrations')
+    const response = await api.get<TournamentRegistration[]>('/api/tournament-browse/registrations')
     dispatch(setUserRegistrations(response.data))
     dispatch(stopLoading())
   } catch (error) {
@@ -319,8 +302,11 @@ export const registerForTournament = (registrationData: {
   dispatch(startLoading('Registering for tournament...'))
   
   try {
-    const response = await apiClient.post<TournamentRegistration>('/api/tournament-browse/register', registrationData)
-    dispatch(addTournamentRegistration(response.data))
+    const response = await api.post(`/api/tournament-browse/${registrationData.tournament_id}/register`, {
+      categoryId: registrationData.category_id,
+      partnerPlayerId: registrationData.partner_player_id
+    })
+    dispatch(addTournamentRegistration(response.data as TournamentRegistration))
     dispatch(closeRegistrationModal())
     dispatch(stopLoading())
     return response.data
@@ -336,8 +322,8 @@ export const withdrawFromTournament = (registrationId: number) => async (dispatc
   dispatch(startLoading('Withdrawing from tournament...'))
   
   try {
-    const response = await apiClient.put<TournamentRegistration>(`/api/tournament-browse/registrations/${registrationId}/withdraw`)
-    dispatch(updateTournamentRegistration(response.data))
+    const response = await api.put(`/api/tournament-browse/registrations/${registrationId}/withdraw`)
+    dispatch(updateTournamentRegistration(response.data as TournamentRegistration))
     dispatch(stopLoading())
     return response.data
   } catch (error) {

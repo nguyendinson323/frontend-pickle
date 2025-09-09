@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
+import api from '../../services/api'
+import { startLoading, stopLoading } from './loadingSlice'
+import { AppDispatch } from '../index'
 
 interface StateMicrositeInfo {
   id: number
@@ -85,7 +87,6 @@ interface StateMicrositeState {
   upcomingEvents: StateMicrositeEvent[]
   clubs: StateMicrositeClub[]
   news: StateMicrositeNews[]
-  loading: boolean
   error: string | null
 }
 
@@ -95,7 +96,6 @@ const initialState: StateMicrositeState = {
   upcomingEvents: [],
   clubs: [],
   news: [],
-  loading: false,
   error: null
 }
 
@@ -103,9 +103,6 @@ const stateMicrositeSlice = createSlice({
   name: 'stateMicrosite',
   initialState,
   reducers: {
-    setLoading: (state, action: PayloadAction<boolean>) => {
-      state.loading = action.payload
-    },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload
     },
@@ -141,7 +138,6 @@ const stateMicrositeSlice = createSlice({
 })
 
 export const {
-  setLoading,
   setError,
   setMicrositeData,
   updateMicrositeInfo,
@@ -151,38 +147,47 @@ export const {
 } = stateMicrositeSlice.actions
 
 // API Functions
-export const fetchStateMicrositeData = (stateId?: string) => async (dispatch: any) => {
+export const fetchStateMicrositeData = (stateId?: string) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading state microsite data...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
     const url = stateId 
       ? `/api/state/microsite/${stateId}` 
       : '/api/state/microsite'
     
-    const response = await axios.get(url)
-    dispatch(setMicrositeData(response.data))
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to fetch microsite data'))
-  } finally {
-    dispatch(setLoading(false))
+    const response = await api.get(url)
+    dispatch(setMicrositeData(response.data as {
+      micrositeInfo: StateMicrositeInfo
+      stats: StateMicrositeStats
+      upcomingEvents: StateMicrositeEvent[]
+      clubs: StateMicrositeClub[]
+      news: StateMicrositeNews[]
+    }))
+    dispatch(stopLoading())
+  } catch (error: unknown) {
+    dispatch(setError('Failed to fetch state microsite data'))
+    dispatch(stopLoading())
+    throw error
   }
 }
 
-export const updateStateMicrositeInfo = (micrositeData: Partial<StateMicrositeInfo>) => async (dispatch: any) => {
+export const updateStateMicrositeInfo = (micrositeData: Partial<StateMicrositeInfo>) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating state microsite info...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    const response = await axios.put('/api/state/microsite', micrositeData)
-    dispatch(updateMicrositeInfo(response.data.micrositeInfo))
+    const response = await api.put('/api/state/microsite', micrositeData)
+    dispatch(updateMicrositeInfo((response.data as any).micrositeInfo as StateMicrositeInfo))
+    dispatch(stopLoading())
     
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to update microsite info'))
+  } catch (error: unknown) {
+    dispatch(setError('Failed to update microsite info'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
@@ -191,52 +196,55 @@ export const createStateMicrositeNews = (newsData: {
   content: string
   is_featured?: boolean
   image_url?: string
-}) => async (dispatch: any) => {
+}) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Creating news article...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    const response = await axios.post('/api/state/microsite/news', newsData)
-    dispatch(addNews(response.data.news))
+    const response = await api.post('/api/state/microsite/news', newsData)
+    dispatch(addNews((response.data as any).news as StateMicrositeNews))
+    dispatch(stopLoading())
     
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to create news'))
+  } catch (error: unknown) {
+    dispatch(setError('Failed to create news'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
-export const updateStateMicrositeNews = (newsId: number, newsData: Partial<StateMicrositeNews>) => async (dispatch: any) => {
+export const updateStateMicrositeNews = (newsId: number, newsData: Partial<StateMicrositeNews>) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating news article...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    const response = await axios.put(`/api/state/microsite/news/${newsId}`, newsData)
-    dispatch(updateNews(response.data.news))
+    const response = await api.put(`/api/state/microsite/news/${newsId}`, newsData)
+    dispatch(updateNews((response.data as any).news as StateMicrositeNews))
+    dispatch(stopLoading())
     
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to update news'))
+  } catch (error: unknown) {
+    dispatch(setError('Failed to update news'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
-export const deleteStateMicrositeNews = (newsId: number) => async (dispatch: any) => {
+export const deleteStateMicrositeNews = (newsId: number) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Deleting news article...'))
+  
   try {
-    dispatch(setLoading(true))
     dispatch(setError(null))
     
-    await axios.delete(`/api/state/microsite/news/${newsId}`)
+    await api.delete(`/api/state/microsite/news/${newsId}`)
     dispatch(deleteNews(newsId))
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to delete news'))
+    dispatch(stopLoading())
+  } catch (error: unknown) {
+    dispatch(setError('Failed to delete news'))
+    dispatch(stopLoading())
     throw error
-  } finally {
-    dispatch(setLoading(false))
   }
 }
 
