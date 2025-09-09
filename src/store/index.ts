@@ -14,6 +14,9 @@ import digitalCredentialsReducer from './slices/digitalCredentialsSlice'
 import coachingSessionsReducer from './slices/coachingSessionsSlice'
 import playerMessagesReducer from './slices/playerMessagesSlice'
 import playerRankingsReducer from './slices/playerRankingsSlice'
+import coachSessionsReducer from './slices/coachSessionsSlice'
+import coachCertificationsReducer from './slices/coachCertificationsSlice'
+import coachStudentsReducer from './slices/coachStudentsSlice'
 
 export const store = configureStore({
   reducer: {
@@ -31,7 +34,10 @@ export const store = configureStore({
     digitalCredentials: digitalCredentialsReducer,
     coachingSessions: coachingSessionsReducer,
     playerMessages: playerMessagesReducer,
-    playerRankings: playerRankingsReducer
+    playerRankings: playerRankingsReducer,
+    coachSessions: coachSessionsReducer,
+    coachCertifications: coachCertificationsReducer,
+    coachStudents: coachStudentsReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

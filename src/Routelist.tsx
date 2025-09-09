@@ -25,6 +25,9 @@ import StateRegisterPage from './pages/common/register/StateRegister'
 import AdminDashboardPage from './pages/admin/AdminDashboard'
 import PlayerDashboardPage from './pages/player/PlayerDashboard'
 import CoachDashboardPage from './pages/coach/CoachDashboard'
+import CoachSessionsPage from './pages/coach/CoachSessions'
+import CoachCertificationsPage from './pages/coach/CoachCertifications'
+import CoachStudentsPage from './pages/coach/CoachStudents'
 import ClubDashboardPage from './pages/club/ClubDashboard'
 import PartnerDashboardPage from './pages/partner/PartnerDashboard'
 import StateDashboardPage from './pages/state/StateDashboard'
@@ -196,6 +199,27 @@ const routes: RouteConfig[] = [
         key: "coach-dashboard",
         public: false,
         element: <CoachDashboardPage />,
+        requiredRoles: ['coach']
+    },
+    {
+        path: "/coach/sessions",
+        key: "coach-sessions",
+        public: false,
+        element: <CoachSessionsPage />,
+        requiredRoles: ['coach']
+    },
+    {
+        path: "/coach/certifications",
+        key: "coach-certifications",
+        public: false,
+        element: <CoachCertificationsPage />,
+        requiredRoles: ['coach']
+    },
+    {
+        path: "/coach/students",
+        key: "coach-students",
+        public: false,
+        element: <CoachStudentsPage />,
         requiredRoles: ['coach']
     },
     {
