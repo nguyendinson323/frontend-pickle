@@ -29,6 +29,11 @@ import stateMicrositeReducer from './slices/stateMicrositeSlice'
 import stateStatisticsReducer from './slices/stateStatisticsSlice'
 import stateDocumentsReducer from './slices/stateDocumentsSlice'
 import stateMemberManagementReducer from './slices/stateMemberManagementSlice'
+import partnerInboxReducer from './slices/partnerInboxSlice'
+import partnerMicrositeReducer from './slices/partnerMicrositeSlice'
+import partnerStatisticsReducer from './slices/partnerStatisticsSlice'
+import partnerDocumentsReducer from './slices/partnerDocumentsSlice'
+import partnerManagementReducer from './slices/partnerManagementSlice'
 
 export const store = configureStore({
   reducer: {
@@ -61,7 +66,12 @@ export const store = configureStore({
     stateMicrosite: stateMicrositeReducer,
     stateStatistics: stateStatisticsReducer,
     stateDocuments: stateDocumentsReducer,
-    stateMemberManagement: stateMemberManagementReducer
+    stateMemberManagement: stateMemberManagementReducer,
+    partnerInbox: partnerInboxReducer,
+    partnerMicrosite: partnerMicrositeReducer,
+    partnerStatistics: partnerStatisticsReducer,
+    partnerDocuments: partnerDocumentsReducer,
+    partnerManagement: partnerManagementReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

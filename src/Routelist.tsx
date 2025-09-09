@@ -41,6 +41,11 @@ import StateStatisticsPage from './pages/state/StateStatistics'
 import StateDocumentsPage from './pages/state/StateDocuments'
 import StateMemberManagementPage from './pages/state/StateMemberManagement'
 import PartnerDashboardPage from './pages/partner/PartnerDashboard'
+import PartnerInboxPage from './pages/partner/PartnerInbox'
+import PartnerMicrositePage from './pages/partner/PartnerMicrosite'
+import PartnerStatisticsPage from './pages/partner/PartnerStatistics'
+import PartnerDocumentsPage from './pages/partner/PartnerDocuments'
+import PartnerManagementPage from './pages/partner/PartnerManagement'
 import StateDashboardPage from './pages/state/StateDashboard'
 
 // Profile pages
@@ -387,6 +392,47 @@ const routes: RouteConfig[] = [
         key: "partner-profile",
         public: false,
         element: <PartnerProfilePage />,
+        requiredRoles: ['partner']
+    },
+    {
+        path: "/partner/inbox",
+        key: "partner-inbox",
+        public: false,
+        element: <PartnerInboxPage />,
+        requiredRoles: ['partner']
+    },
+    {
+        path: "/partner/microsite",
+        key: "partner-microsite",
+        public: false,
+        element: <PartnerMicrositePage />,
+        requiredRoles: ['partner']
+    },
+    {
+        path: "/partner/microsite/:partnerId",
+        key: "partner-microsite-public",
+        public: true,
+        element: <PartnerMicrositePage />
+    },
+    {
+        path: "/partner/statistics",
+        key: "partner-statistics",
+        public: false,
+        element: <PartnerStatisticsPage />,
+        requiredRoles: ['partner']
+    },
+    {
+        path: "/partner/documents",
+        key: "partner-documents",
+        public: false,
+        element: <PartnerDocumentsPage />,
+        requiredRoles: ['partner']
+    },
+    {
+        path: "/partner/management",
+        key: "partner-management",
+        public: false,
+        element: <PartnerManagementPage />,
         requiredRoles: ['partner']
     },
     {
