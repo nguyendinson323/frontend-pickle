@@ -40,7 +40,7 @@ const PlayerComparison: React.FC<PlayerComparisonProps> = ({
               <div
                 key={player.player_id}
                 onClick={() => onComparePlayer(player)}
-                className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-md cursor-pointer"
+                className="flex items-center space-x-3 p-3 hover: rounded-md cursor-pointer"
               >
                 <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">
                   <span className="text-white font-medium text-sm">

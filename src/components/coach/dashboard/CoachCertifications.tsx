@@ -22,7 +22,7 @@ const CoachCertifications: React.FC<CoachCertificationsProps> = ({ certification
               <p className="text-sm text-gray-600">Active certification</p>
             </div>
           </div>
-          <div className="text-sm text-gray-700 bg-gray-50 p-3 rounded">
+          <div className="text-sm text-gray-700  p-3 rounded">
             Level 2 Certified Pickleball Coach
           </div>
         </div>

@@ -142,7 +142,7 @@ const CoachSessionsList: React.FC<CoachSessionsListProps> = ({
 
       <div className="divide-y divide-gray-200">
         {filteredSessions.map((session) => (
-          <div key={session.id} className="p-6 hover:bg-gray-50 transition-colors duration-200">
+          <div key={session.id} className="p-6 hover: transition-colors duration-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 {/* Player Photo */}

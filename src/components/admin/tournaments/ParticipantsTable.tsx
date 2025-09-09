@@ -116,7 +116,7 @@ const ParticipantsTable: React.FC = () => {
 
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+          <thead className="">
             <tr>
               <th className="px-6 py-3 text-left">
                 <input
@@ -154,7 +154,7 @@ const ParticipantsTable: React.FC = () => {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {participants.map((participant) => (
-              <tr key={participant.id} className="hover:bg-gray-50">
+              <tr key={participant.id} className="hover:">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <input
                     type="checkbox"

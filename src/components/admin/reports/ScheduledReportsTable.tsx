@@ -169,7 +169,7 @@ const ScheduledReportsTable: React.FC = () => {
 
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+            <thead className="">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Report Name
@@ -193,7 +193,7 @@ const ScheduledReportsTable: React.FC = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {scheduledReports.map((report, index) => (
-                <tr key={report.id || index} className="hover:bg-gray-50">
+                <tr key={report.id || index} className="hover:">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {report.name}
                   </td>
@@ -398,7 +398,7 @@ const ScheduledReportsTable: React.FC = () => {
             <div className="flex justify-end space-x-3 mt-8">
               <button
                 onClick={() => setShowScheduleModal(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover: focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
                 Cancel
               </button>

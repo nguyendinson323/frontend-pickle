@@ -138,7 +138,7 @@ const MicrositeAnalyticsModal: React.FC<MicrositeAnalyticsModalProps> = ({ micro
                 
                 <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                    <thead className="">
                       <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Date
@@ -159,7 +159,7 @@ const MicrositeAnalyticsModal: React.FC<MicrositeAnalyticsModalProps> = ({ micro
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       {analytics.analytics.slice(0, 15).map((day: any, index: number) => (
-                        <tr key={index} className="hover:bg-gray-50">
+                        <tr key={index} className="hover:">
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                             {formatDate(day.date)}
                           </td>
@@ -191,7 +191,7 @@ const MicrositeAnalyticsModal: React.FC<MicrositeAnalyticsModalProps> = ({ micro
 
             {/* Performance Insights */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+              <div className=" border border-gray-200 rounded-lg p-6">
                 <h4 className="text-lg font-semibold text-gray-900 mb-4">Traffic Trends</h4>
                 
                 <div className="space-y-3">
@@ -218,7 +218,7 @@ const MicrositeAnalyticsModal: React.FC<MicrositeAnalyticsModalProps> = ({ micro
                 </div>
               </div>
 
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+              <div className=" border border-gray-200 rounded-lg p-6">
                 <h4 className="text-lg font-semibold text-gray-900 mb-4">Overall Performance</h4>
                 
                 <div className="space-y-3">
@@ -283,7 +283,7 @@ const MicrositeAnalyticsModal: React.FC<MicrositeAnalyticsModalProps> = ({ micro
         <div className="mt-8 flex justify-end">
           <button
             onClick={onClose}
-            className="px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover: focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
             Close
           </button>

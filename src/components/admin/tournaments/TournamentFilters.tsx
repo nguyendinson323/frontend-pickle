@@ -39,7 +39,7 @@ const TournamentFilters: React.FC = () => {
         <h3 className="text-lg font-medium text-gray-900">Tournament Filters</h3>
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className="inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover: focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
           {isExpanded ? 'Collapse' : 'Expand'}
           <svg
@@ -191,7 +191,7 @@ const TournamentFilters: React.FC = () => {
       <div className="flex justify-end space-x-3">
         <button
           onClick={handleReset}
-          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover: focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
           Reset
         </button>

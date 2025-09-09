@@ -81,7 +81,7 @@ const RankingStats: React.FC = () => {
         {/* Additional Info */}
         <div className="mt-6 pt-6 border-t border-gray-200">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-gray-50 rounded-lg p-4">
+            <div className=" rounded-lg p-4">
               <h4 className="font-semibold text-gray-900 mb-2">Ranking System Status</h4>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
@@ -99,7 +99,7 @@ const RankingStats: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-gray-50 rounded-lg p-4">
+            <div className=" rounded-lg p-4">
               <h4 className="font-semibold text-gray-900 mb-2">Quick Stats</h4>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">

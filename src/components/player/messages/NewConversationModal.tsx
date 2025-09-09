@@ -54,7 +54,7 @@ const NewConversationModal: React.FC<NewConversationModalProps> = ({
                     <div
                       key={player.id}
                       onClick={() => onStartConversation(player.id)}
-                      className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-md cursor-pointer"
+                      className="flex items-center space-x-3 p-3 hover: rounded-md cursor-pointer"
                     >
                       <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
                         <span className="text-white font-medium text-sm">
@@ -79,7 +79,7 @@ const NewConversationModal: React.FC<NewConversationModalProps> = ({
                     <div
                       key={contact.id}
                       onClick={() => onStartConversation(contact.id)}
-                      className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-md cursor-pointer"
+                      className="flex items-center space-x-3 p-3 hover: rounded-md cursor-pointer"
                     >
                       <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
                         <span className="text-white font-medium text-sm">

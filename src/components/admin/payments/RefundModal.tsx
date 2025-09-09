@@ -48,7 +48,7 @@ const RefundModal: React.FC<RefundModalProps> = ({ payment, onClose, onRefund })
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Payment Info */}
-          <div className="bg-gray-50 rounded-lg p-4">
+          <div className=" rounded-lg p-4">
             <h4 className="font-semibold text-gray-900 mb-2">Payment Details</h4>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
@@ -167,7 +167,7 @@ const RefundModal: React.FC<RefundModalProps> = ({ payment, onClose, onRefund })
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover: focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               disabled={processing}
             >
               Cancel

@@ -198,7 +198,7 @@ const MicrositeStatusModal: React.FC<MicrositeStatusModalProps> = ({ microsite, 
           )}
 
           {/* Microsite Info */}
-          <div className="bg-gray-50 rounded-md p-4">
+          <div className=" rounded-md p-4">
             <h4 className="text-sm font-medium text-gray-900 mb-2">Microsite Details</h4>
             <div className="text-sm text-gray-700 space-y-1">
               <div>Domain: {microsite.domain_name}</div>
@@ -237,7 +237,7 @@ const MicrositeStatusModal: React.FC<MicrositeStatusModalProps> = ({ microsite, 
           <button
             onClick={onClose}
             disabled={loading}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover: focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
           >
             Cancel
           </button>

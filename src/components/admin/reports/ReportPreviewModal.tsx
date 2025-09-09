@@ -53,7 +53,7 @@ const ReportPreviewModal: React.FC<ReportPreviewModalProps> = ({ data, reportTyp
         {data.preview.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+              <thead className="">
                 <tr>
                   {data.fields.slice(0, 10).map((field) => (
                     <th 
@@ -72,7 +72,7 @@ const ReportPreviewModal: React.FC<ReportPreviewModalProps> = ({ data, reportTyp
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {data.preview.map((row, index) => (
-                  <tr key={index} className="hover:bg-gray-50">
+                  <tr key={index} className="hover:">
                     {data.fields.slice(0, 10).map((field) => (
                       <td key={field} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         <div className="max-w-xs truncate" title={formatValue(row[field])}>
@@ -137,7 +137,7 @@ const ReportPreviewModal: React.FC<ReportPreviewModalProps> = ({ data, reportTyp
           </div>
           <button
             onClick={onClose}
-            className="px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover: focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
             Close Preview
           </button>

@@ -20,28 +20,28 @@ const StatePerformanceOverview: React.FC<StatePerformanceOverviewProps> = ({ sta
       <h3 className="text-xl font-semibold text-gray-900 mb-6">State Performance Overview</h3>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
         
-        <div className="text-center p-4 bg-gray-50 rounded-lg">
+        <div className="text-center p-4  rounded-lg">
           <div className="text-3xl mb-2">📈</div>
           <h4 className="font-semibold text-gray-900 mb-1">Player Growth</h4>
           <p className="text-2xl font-bold text-green-600">+{stateData.playerGrowth || 0}%</p>
           <p className="text-sm text-gray-600">This year</p>
         </div>
 
-        <div className="text-center p-4 bg-gray-50 rounded-lg">
+        <div className="text-center p-4  rounded-lg">
           <div className="text-3xl mb-2">🏢</div>
           <h4 className="font-semibold text-gray-900 mb-1">New Clubs</h4>
           <p className="text-2xl font-bold text-purple-600">{stateData.newClubs || 0}</p>
           <p className="text-sm text-gray-600">This quarter</p>
         </div>
 
-        <div className="text-center p-4 bg-gray-50 rounded-lg">
+        <div className="text-center p-4  rounded-lg">
           <div className="text-3xl mb-2">🏆</div>
           <h4 className="font-semibold text-gray-900 mb-1">Tournament Success</h4>
           <p className="text-2xl font-bold text-yellow-600">{stateData.tournamentParticipation || 0}%</p>
           <p className="text-sm text-gray-600">Participation rate</p>
         </div>
 
-        <div className="text-center p-4 bg-gray-50 rounded-lg">
+        <div className="text-center p-4  rounded-lg">
           <div className="text-3xl mb-2">⭐</div>
           <h4 className="font-semibold text-gray-900 mb-1">National Ranking</h4>
           <p className="text-2xl font-bold text-red-600">#{stateData.nationalRanking || 0}</p>

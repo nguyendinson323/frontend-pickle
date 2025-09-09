@@ -141,7 +141,7 @@ const MicrositesTable: React.FC<MicrositesTableProps> = ({ onMicrositeSelect }) 
             <div className="relative inline-block text-left">
               <select
                 onChange={(e) => handleExport(e.target.value as 'csv' | 'excel' | 'pdf')}
-                className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover: focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 defaultValue=""
               >
                 <option value="" disabled>Export</option>
@@ -156,7 +156,7 @@ const MicrositesTable: React.FC<MicrositesTableProps> = ({ onMicrositeSelect }) 
 
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+          <thead className="">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Site Details
@@ -186,7 +186,7 @@ const MicrositesTable: React.FC<MicrositesTableProps> = ({ onMicrositeSelect }) 
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {microsites.map((microsite) => (
-              <tr key={microsite.id} className="hover:bg-gray-50">
+              <tr key={microsite.id} className="hover:">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div>
                     <div className="text-sm font-medium text-gray-900">{microsite.title}</div>

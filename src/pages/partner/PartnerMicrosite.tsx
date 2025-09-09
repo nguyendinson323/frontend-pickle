@@ -59,7 +59,7 @@ const PartnerMicrosite: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen  py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="animate-pulse">
             <div className="h-64 bg-gray-200 rounded-lg mb-6"></div>
@@ -73,7 +73,7 @@ const PartnerMicrosite: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen  py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-red-50 border border-red-200 rounded-lg p-8 text-center">
             <svg className="mx-auto h-12 w-12 text-red-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -94,7 +94,7 @@ const PartnerMicrosite: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen  py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <MicrositeHeader
           micrositeInfo={micrositeInfo}
@@ -182,7 +182,7 @@ const PartnerMicrosite: React.FC = () => {
               <div className="flex justify-end mt-6">
                 <button
                   onClick={() => setShowEditModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover: transition-colors"
                 >
                   Close
                 </button>

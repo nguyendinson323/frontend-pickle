@@ -109,7 +109,7 @@ const SessionDetailsModal: React.FC<SessionDetailsModalProps> = ({
           {/* Student Information */}
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Student Information</h3>
-            <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+            <div className="flex items-center space-x-4 p-4  rounded-lg">
               <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
                 {session.player.profile_photo_url ? (
                   <img 
@@ -134,23 +134,23 @@ const SessionDetailsModal: React.FC<SessionDetailsModalProps> = ({
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Session Details</h3>
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 bg-gray-50 rounded-lg">
+              <div className="p-4  rounded-lg">
                 <div className="text-sm text-gray-600">Date</div>
                 <div className="font-medium text-gray-900">{formatDate(session.session_date)}</div>
               </div>
-              <div className="p-4 bg-gray-50 rounded-lg">
+              <div className="p-4  rounded-lg">
                 <div className="text-sm text-gray-600">Time</div>
                 <div className="font-medium text-gray-900">
                   {formatTime(session.start_time)} - {formatTime(session.end_time)}
                 </div>
               </div>
-              <div className="p-4 bg-gray-50 rounded-lg">
+              <div className="p-4  rounded-lg">
                 <div className="text-sm text-gray-600">Status</div>
                 <span className={`inline-flex px-2 py-1 text-sm font-semibold rounded-full ${getStatusBadge(session.status)}`}>
                   {session.status}
                 </span>
               </div>
-              <div className="p-4 bg-gray-50 rounded-lg">
+              <div className="p-4  rounded-lg">
                 <div className="text-sm text-gray-600">Payment Status</div>
                 <span className={`inline-flex px-2 py-1 text-sm font-semibold rounded-full ${getPaymentStatusBadge(session.payment_status)}`}>
                   {session.payment_status}
@@ -163,7 +163,7 @@ const SessionDetailsModal: React.FC<SessionDetailsModalProps> = ({
           {session.court && (
             <div className="mb-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-3">Court Information</h3>
-              <div className="p-4 bg-gray-50 rounded-lg">
+              <div className="p-4  rounded-lg">
                 <div className="font-medium text-gray-900">{session.court.name}</div>
                 <div className="text-sm text-gray-600">{session.court.address}</div>
               </div>
@@ -174,12 +174,12 @@ const SessionDetailsModal: React.FC<SessionDetailsModalProps> = ({
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Payment Information</h3>
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 bg-gray-50 rounded-lg">
+              <div className="p-4  rounded-lg">
                 <div className="text-sm text-gray-600">Session Price</div>
                 <div className="text-xl font-bold text-green-600">${session.price}</div>
               </div>
               {session.stripe_payment_id && (
-                <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="p-4  rounded-lg">
                   <div className="text-sm text-gray-600">Payment ID</div>
                   <div className="text-sm font-mono text-gray-900">{session.stripe_payment_id}</div>
                 </div>
@@ -191,7 +191,7 @@ const SessionDetailsModal: React.FC<SessionDetailsModalProps> = ({
           {session.rating && (
             <div className="mb-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-3">Student Rating</h3>
-              <div className="p-4 bg-gray-50 rounded-lg">
+              <div className="p-4  rounded-lg">
                 <div className="text-2xl text-yellow-500">
                   {'★'.repeat(session.rating)}{'☆'.repeat(5 - session.rating)}
                 </div>
@@ -229,7 +229,7 @@ const SessionDetailsModal: React.FC<SessionDetailsModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-gray-200 bg-gray-50">
+        <div className="p-6 border-t border-gray-200 ">
           <div className="flex justify-end">
             <button
               onClick={onClose}

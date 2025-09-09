@@ -305,7 +305,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
               type="button"
               onClick={handleClose}
               disabled={loading}
-              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover: transition-colors disabled:opacity-50"
             >
               Cancel
             </button>

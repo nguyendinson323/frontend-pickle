@@ -97,7 +97,7 @@ const MessagesList: React.FC<MessagesListProps> = ({
         {messages.map((message) => (
           <div
             key={message.id}
-            className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${
+            className={`p-4 hover: cursor-pointer transition-colors ${
               !message.recipient?.is_read ? 'bg-blue-50' : ''
             }`}
             onClick={() => onMessageClick(message)}

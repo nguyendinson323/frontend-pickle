@@ -48,7 +48,7 @@ export const EventCard: React.FC<EventCardProps> = ({
   return (
     <div
       className={`p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow duration-200 ${
-        onClick ? 'cursor-pointer hover:bg-gray-50' : ''
+        onClick ? 'cursor-pointer hover:' : ''
       }`}
       onClick={onClick}
     >

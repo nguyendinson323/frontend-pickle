@@ -62,7 +62,7 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({ tournament, onClose
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column - Basic Info */}
           <div className="space-y-6">
-            <div className="bg-gray-50 rounded-lg p-6">
+            <div className=" rounded-lg p-6">
               <h4 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h4>
               
               <div className="space-y-4">
@@ -107,7 +107,7 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({ tournament, onClose
             </div>
 
             {/* Organizer Info */}
-            <div className="bg-gray-50 rounded-lg p-6">
+            <div className=" rounded-lg p-6">
               <h4 className="text-lg font-semibold text-gray-900 mb-4">Organizer Information</h4>
               
               <div className="space-y-4">
@@ -133,7 +133,7 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({ tournament, onClose
 
           {/* Right Column - Tournament Stats */}
           <div className="space-y-6">
-            <div className="bg-gray-50 rounded-lg p-6">
+            <div className=" rounded-lg p-6">
               <h4 className="text-lg font-semibold text-gray-900 mb-4">Tournament Statistics</h4>
               
               <div className="grid grid-cols-2 gap-4">
@@ -160,7 +160,7 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({ tournament, onClose
             </div>
 
             {/* Additional Details */}
-            <div className="bg-gray-50 rounded-lg p-6">
+            <div className=" rounded-lg p-6">
               <h4 className="text-lg font-semibold text-gray-900 mb-4">Additional Details</h4>
               
               <div className="space-y-4">
@@ -203,7 +203,7 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({ tournament, onClose
         <div className="mt-8 flex justify-end">
           <button
             onClick={onClose}
-            className="px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover: focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
             Close
           </button>

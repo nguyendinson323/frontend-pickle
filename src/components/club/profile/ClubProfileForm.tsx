@@ -266,7 +266,7 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
           <button
             type="button"
             onClick={onCancel}
-            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover: focus:outline-none focus:ring-2 focus:ring-purple-500"
           >
             Cancel
           </button>

@@ -50,7 +50,7 @@ const PaymentDetailsModal: React.FC<PaymentDetailsModalProps> = ({ payment, onCl
 
         <div className="space-y-6">
           {/* Basic Payment Info */}
-          <div className="bg-gray-50 rounded-lg p-6">
+          <div className=" rounded-lg p-6">
             <h4 className="text-lg font-semibold text-gray-900 mb-4">Transaction Information</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -180,7 +180,7 @@ const PaymentDetailsModal: React.FC<PaymentDetailsModalProps> = ({ payment, onCl
         <div className="mt-8 flex justify-end">
           <button
             onClick={onClose}
-            className="px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover: focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
             Close
           </button>

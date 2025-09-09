@@ -173,7 +173,7 @@ const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors duration-200"
+              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover: transition-colors duration-200"
             >
               Cancel
             </button>

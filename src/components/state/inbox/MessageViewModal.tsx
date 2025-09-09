@@ -121,7 +121,7 @@ const MessageViewModal: React.FC<MessageViewModalProps> = ({
             </div>
 
             {message.is_announcement && message.announcement_stats && (
-              <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+              <div className="mt-4 p-3  rounded-lg">
                 <h4 className="text-sm font-medium text-gray-900 mb-2">Announcement Statistics</h4>
                 <div className="grid grid-cols-3 gap-4 text-sm">
                   <div>
@@ -143,7 +143,7 @@ const MessageViewModal: React.FC<MessageViewModalProps> = ({
 
           {/* Message Content */}
           <div className="mb-6">
-            <div className="bg-gray-50 p-4 rounded-lg">
+            <div className=" p-4 rounded-lg">
               <div className="whitespace-pre-wrap text-gray-900 leading-relaxed">
                 {message.message}
               </div>
@@ -201,7 +201,7 @@ const MessageViewModal: React.FC<MessageViewModalProps> = ({
 
               <button
                 onClick={onClose}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:"
               >
                 Close
               </button>

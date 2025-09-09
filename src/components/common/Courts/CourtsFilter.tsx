@@ -9,7 +9,7 @@ interface CourtsFilterProps {
 
 const CourtsFilter: React.FC<CourtsFilterProps> = ({ states, selectedState, onStateFilter }) => {
   return (
-    <section className="py-12 bg-gray-50">
+    <section className="py-12 ">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Find Courts by State</h3>

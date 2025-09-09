@@ -22,7 +22,7 @@ export const QuickActionCard: React.FC<QuickActionCardProps> = ({
       case 'secondary':
         return 'border-purple-300 hover:border-purple-500 hover:shadow-lg bg-purple-50 hover:bg-purple-100'
       default:
-        return 'border-gray-300 hover:border-gray-400 hover:shadow-md bg-white hover:bg-gray-50'
+        return 'border-gray-300 hover:border-gray-400 hover:shadow-md bg-white hover:'
     }
   }
 

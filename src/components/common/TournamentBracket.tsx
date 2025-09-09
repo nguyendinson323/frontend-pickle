@@ -109,7 +109,7 @@ const TournamentBracket: React.FC<TournamentBracketProps> = ({ matches, onMatchU
                     <div 
                       className={`p-2 rounded border ${
                         match.winner_side === 1 ? 'bg-green-100 border-green-300 font-semibold' : 
-                        'bg-gray-50 border-gray-200'
+                        ' border-gray-200'
                       }`}
                     >
                       <div className="text-sm font-medium">
@@ -122,7 +122,7 @@ const TournamentBracket: React.FC<TournamentBracketProps> = ({ matches, onMatchU
                     <div 
                       className={`p-2 rounded border ${
                         match.winner_side === 2 ? 'bg-green-100 border-green-300 font-semibold' : 
-                        'bg-gray-50 border-gray-200'
+                        ' border-gray-200'
                       }`}
                     >
                       <div className="text-sm font-medium">

@@ -104,7 +104,7 @@ const RankingsTable: React.FC<RankingsTableProps> = ({ onPlayerSelect }) => {
 
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+            <thead className="">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Rank
@@ -134,7 +134,7 @@ const RankingsTable: React.FC<RankingsTableProps> = ({ onPlayerSelect }) => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {playerRankings.map((player) => (
-                <tr key={player.player_id} className="hover:bg-gray-50">
+                <tr key={player.player_id} className="hover:">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="text-lg font-bold text-gray-900">

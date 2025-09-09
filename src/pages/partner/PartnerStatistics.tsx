@@ -48,7 +48,7 @@ const PartnerStatistics: React.FC = () => {
 
   if (loading && !revenueData.length) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen  py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="animate-pulse space-y-6">
             <div className="h-32 bg-gray-200 rounded-lg"></div>
@@ -66,7 +66,7 @@ const PartnerStatistics: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen  py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-red-50 border border-red-200 rounded-lg p-8 text-center">
             <svg className="mx-auto h-12 w-12 text-red-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -89,7 +89,7 @@ const PartnerStatistics: React.FC = () => {
   const hasData = revenueData.length > 0 || bookingMetrics || tournamentMetrics || customerMetrics || performanceMetrics
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen  py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <StatisticsHeader
           dateRange={dateRange}
@@ -139,7 +139,7 @@ const PartnerStatistics: React.FC = () => {
               </button>
               <button
                 onClick={() => dispatch(fetchPartnerStatistics() as any)}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover: transition-colors"
               >
                 Refresh Data
               </button>

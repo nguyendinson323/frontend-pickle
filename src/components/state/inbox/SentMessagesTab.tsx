@@ -103,7 +103,7 @@ const SentMessagesTab: React.FC<SentMessagesTabProps> = ({
                 </div>
 
                 {message.is_announcement && message.announcement_stats && (
-                  <div className="mb-3 p-2 bg-gray-50 rounded-lg">
+                  <div className="mb-3 p-2  rounded-lg">
                     <p className="text-xs text-gray-600">
                       Announcement Stats: {message.announcement_stats.total_recipients} recipients, {message.announcement_stats.delivered} delivered, {message.announcement_stats.read} read
                     </p>

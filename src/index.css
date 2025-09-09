@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Reset default backgrounds and ensure white background */
+@layer base {
+  html {
+    @apply bg-white;
+  }
+  
+  body {
+    @apply bg-white;
+  }
+  
+  #root {
+    @apply bg-white min-h-screen;
+  }
+}
+
 /* Additional global styles */
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',

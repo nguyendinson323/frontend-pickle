@@ -60,7 +60,7 @@ const FederationFunctions: React.FC = () => {
           {federationFunctions.map((func, index) => (
             <div
               key={func.title}
-              className={`bg-gray-50 p-6 rounded-lg hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 animate-fade-in-up animation-delay-${index * 100}`}
+              className={` p-6 rounded-lg hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 animate-fade-in-up animation-delay-${index * 100}`}
             >
               <div className="text-4xl mb-4">{func.icon}</div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">

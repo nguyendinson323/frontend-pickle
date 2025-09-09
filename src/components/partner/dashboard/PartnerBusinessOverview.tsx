@@ -18,21 +18,21 @@ const PartnerBusinessOverview: React.FC<PartnerBusinessOverviewProps> = ({ partn
       <h3 className="text-xl font-semibold text-gray-900 mb-6">Business Overview</h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         
-        <div className="text-center p-4 bg-gray-50 rounded-lg">
+        <div className="text-center p-4  rounded-lg">
           <div className="text-3xl mb-2">📈</div>
           <h4 className="font-semibold text-gray-900 mb-1">Revenue Growth</h4>
           <p className="text-2xl font-bold text-green-600">+{partnerData.revenueGrowth || 0}%</p>
           <p className="text-sm text-gray-600">vs last quarter</p>
         </div>
 
-        <div className="text-center p-4 bg-gray-50 rounded-lg">
+        <div className="text-center p-4  rounded-lg">
           <div className="text-3xl mb-2">📅</div>
           <h4 className="font-semibold text-gray-900 mb-1">Booking Trends</h4>
           <p className="text-2xl font-bold text-blue-600">+{partnerData.bookingTrend || 0}%</p>
           <p className="text-sm text-gray-600">vs last month</p>
         </div>
 
-        <div className="text-center p-4 bg-gray-50 rounded-lg">
+        <div className="text-center p-4  rounded-lg">
           <div className="text-3xl mb-2">🎁</div>
           <h4 className="font-semibold text-gray-900 mb-1">Partner Benefits</h4>
           <p className="text-sm text-orange-600 font-medium">Premium Plan</p>

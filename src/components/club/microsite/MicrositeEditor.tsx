@@ -255,7 +255,7 @@ const MicrositeEditor: React.FC<MicrositeEditorProps> = ({
 
         {/* Club Statistics Display */}
         {micrositeData && (
-          <div className="bg-gray-50 rounded-lg p-4">
+          <div className=" rounded-lg p-4">
             <h3 className="text-sm font-medium text-gray-900 mb-3">Club Statistics (Auto-generated)</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
               <div>
@@ -294,7 +294,7 @@ const MicrositeEditor: React.FC<MicrositeEditorProps> = ({
               }
             }}
             disabled={loading || !hasChanges}
-            className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover: disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Reset Changes
           </button>

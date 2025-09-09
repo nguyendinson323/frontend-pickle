@@ -103,7 +103,7 @@ const MicrositeDetail: React.FC<MicrositeDetailProps> = ({ microsite, onClose })
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Basic Info */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-gray-50 rounded-lg p-6">
+            <div className=" rounded-lg p-6">
               <h4 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h4>
               
               <div className="space-y-4">
@@ -176,7 +176,7 @@ const MicrositeDetail: React.FC<MicrositeDetailProps> = ({ microsite, onClose })
             </div>
 
             {/* Owner Information */}
-            <div className="bg-gray-50 rounded-lg p-6">
+            <div className=" rounded-lg p-6">
               <h4 className="text-lg font-semibold text-gray-900 mb-4">Owner Information</h4>
               
               <div className="space-y-4">
@@ -217,7 +217,7 @@ const MicrositeDetail: React.FC<MicrositeDetailProps> = ({ microsite, onClose })
 
           {/* Right Column - Performance & Analytics */}
           <div className="space-y-6">
-            <div className="bg-gray-50 rounded-lg p-6">
+            <div className=" rounded-lg p-6">
               <h4 className="text-lg font-semibold text-gray-900 mb-4">Performance Scores</h4>
               
               <div className="space-y-4">
@@ -250,7 +250,7 @@ const MicrositeDetail: React.FC<MicrositeDetailProps> = ({ microsite, onClose })
               </div>
             </div>
 
-            <div className="bg-gray-50 rounded-lg p-6">
+            <div className=" rounded-lg p-6">
               <h4 className="text-lg font-semibold text-gray-900 mb-4">Analytics</h4>
               
               <div className="space-y-4">
@@ -267,7 +267,7 @@ const MicrositeDetail: React.FC<MicrositeDetailProps> = ({ microsite, onClose })
             </div>
 
             {/* Content Status */}
-            <div className="bg-gray-50 rounded-lg p-6">
+            <div className=" rounded-lg p-6">
               <h4 className="text-lg font-semibold text-gray-900 mb-4">Content Status</h4>
               
               <div className="space-y-4">
@@ -304,7 +304,7 @@ const MicrositeDetail: React.FC<MicrositeDetailProps> = ({ microsite, onClose })
         <div className="mt-8 flex justify-end">
           <button
             onClick={onClose}
-            className="px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover: focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
             Close
           </button>

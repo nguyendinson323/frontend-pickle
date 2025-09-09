@@ -54,7 +54,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
               Are you sure you want to delete this certification? This action cannot be undone.
             </p>
             
-            <div className="bg-gray-50 rounded-lg p-4">
+            <div className=" rounded-lg p-4">
               <div className="text-sm">
                 <div className="font-medium text-gray-900">{certification.name}</div>
                 <div className="text-gray-600">Issued by: {certification.issuer}</div>

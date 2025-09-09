@@ -110,7 +110,7 @@ const CourtsTable: React.FC<CourtsTableProps> = ({ onCourtSelect }) => {
 
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+            <thead className="">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Court
@@ -140,7 +140,7 @@ const CourtsTable: React.FC<CourtsTableProps> = ({ onCourtSelect }) => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {courts.map((court) => (
-                <tr key={court.id} className="hover:bg-gray-50">
+                <tr key={court.id} className="hover:">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">{court.name}</div>
                     <div className="text-sm text-gray-500">ID: {court.id}</div>

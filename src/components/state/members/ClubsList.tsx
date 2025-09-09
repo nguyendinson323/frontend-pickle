@@ -56,7 +56,7 @@ const ClubsList: React.FC<ClubsListProps> = ({
     <div className="bg-white rounded-lg shadow border border-gray-200">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+          <thead className="">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Club
@@ -86,7 +86,7 @@ const ClubsList: React.FC<ClubsListProps> = ({
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {clubs.map((club) => (
-              <tr key={club.id} className="hover:bg-gray-50">
+              <tr key={club.id} className="hover:">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div>
                     <div className="text-sm font-medium text-gray-900">{club.name}</div>

@@ -27,7 +27,7 @@ const MicrositeStats: React.FC = () => {
       value: micrositeStats.inactiveMicrosites,
       icon: '⭕',
       color: 'text-gray-600',
-      bgColor: 'bg-gray-50',
+      bgColor: '',
       borderColor: 'border-gray-200'
     },
     {

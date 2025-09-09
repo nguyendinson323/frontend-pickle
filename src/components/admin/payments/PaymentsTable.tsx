@@ -132,7 +132,7 @@ const PaymentsTable: React.FC = () => {
             )}
             <button
               onClick={handleExport}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover: focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
               Export
             </button>
@@ -143,7 +143,7 @@ const PaymentsTable: React.FC = () => {
       {/* Table */}
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+          <thead className="">
             <tr>
               <th className="w-4 px-6 py-3">
                 <input
@@ -178,7 +178,7 @@ const PaymentsTable: React.FC = () => {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {payments.map((payment) => (
-              <tr key={payment.id} className="hover:bg-gray-50">
+              <tr key={payment.id} className="hover:">
                 <td className="px-6 py-4">
                   <input
                     type="checkbox"
@@ -305,14 +305,14 @@ const PaymentsTable: React.FC = () => {
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover: disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Previous
               </button>
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover: disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Next
               </button>

@@ -160,14 +160,14 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
         <div className="grid grid-cols-7 gap-px bg-gray-200">
           {dayNames.map(day => (
-            <div key={day} className="bg-gray-50 p-2 text-center text-sm font-medium text-gray-500">
+            <div key={day} className=" p-2 text-center text-sm font-medium text-gray-500">
               {day}
             </div>
           ))}
           {days.map((day, index) => (
             <div
               key={index}
-              className={`bg-white p-2 h-12 flex items-center justify-center text-sm cursor-pointer hover:bg-gray-50 ${
+              className={`bg-white p-2 h-12 flex items-center justify-center text-sm cursor-pointer hover: ${
                 day && isPastDate(day) ? 'text-gray-300 cursor-not-allowed' : ''
               } ${
                 day && isSelected(day) ? 'bg-green-100 text-green-800 font-semibold' : ''
@@ -219,7 +219,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
           {weekDays.map((day, index) => (
             <div
               key={index}
-              className={`bg-white p-4 min-h-32 cursor-pointer hover:bg-gray-50 ${
+              className={`bg-white p-4 min-h-32 cursor-pointer hover: ${
                 isPastDate(day) ? 'text-gray-300 cursor-not-allowed' : ''
               } ${
                 isSelected(day) ? 'bg-green-100 text-green-800' : ''

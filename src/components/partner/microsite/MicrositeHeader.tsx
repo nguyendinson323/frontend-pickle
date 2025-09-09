@@ -36,7 +36,7 @@ const MicrositeHeader: React.FC<MicrositeHeaderProps> = ({
             alt="Banner"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-black bg-opacity-30"></div>
+          <div className="absolute inset-0 bg-black bg-opacity-30 z-0"></div>
         </div>
       )}
       

@@ -140,7 +140,7 @@ const PartnersTab: React.FC<PartnersTabProps> = ({
               </div>
 
               {partner.premium_expires_at && (
-                <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                <div className="mb-4 p-3  rounded-lg">
                   <div>
                     <div className="text-sm text-gray-500">Premium Expires</div>
                     <div className="font-medium">{new Date(partner.premium_expires_at).toLocaleDateString()}</div>

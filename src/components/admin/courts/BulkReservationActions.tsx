@@ -43,7 +43,7 @@ const BulkReservationActions: React.FC = () => {
 
   if (selectedReservations.length === 0) {
     return (
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+      <div className=" border border-gray-200 rounded-lg p-4 mb-6">
         <p className="text-gray-600 text-center">Select reservations to perform bulk actions</p>
       </div>
     )

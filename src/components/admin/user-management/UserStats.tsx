@@ -24,7 +24,7 @@ const UserStats: React.FC = () => {
       label: 'Inactive Users', 
       value: userStats.inactiveUsers, 
       color: 'text-gray-600',
-      bgColor: 'bg-gray-50',
+      bgColor: '',
       borderColor: 'border-gray-200'
     },
     { 

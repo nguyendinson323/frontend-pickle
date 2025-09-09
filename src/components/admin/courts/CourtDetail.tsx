@@ -60,7 +60,7 @@ const CourtDetail: React.FC<CourtDetailProps> = ({ court, onClose }) => {
 
         <div className="space-y-6">
           {/* Basic Information */}
-          <div className="bg-gray-50 rounded-lg p-6">
+          <div className=" rounded-lg p-6">
             <h4 className="text-lg font-medium text-gray-900 mb-4">Basic Information</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-3">
@@ -116,7 +116,7 @@ const CourtDetail: React.FC<CourtDetailProps> = ({ court, onClose }) => {
           </div>
 
           {/* Performance Metrics */}
-          <div className="bg-gray-50 rounded-lg p-6">
+          <div className=" rounded-lg p-6">
             <h4 className="text-lg font-medium text-gray-900 mb-4">Performance Metrics</h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="bg-white rounded-lg p-4 text-center">
@@ -142,7 +142,7 @@ const CourtDetail: React.FC<CourtDetailProps> = ({ court, onClose }) => {
 
           {/* Utilization Report */}
           {utilizationData && (
-            <div className="bg-gray-50 rounded-lg p-6">
+            <div className=" rounded-lg p-6">
               <h4 className="text-lg font-medium text-gray-900 mb-4">Utilization Report (Last 30 Days)</h4>
               {loadingUtilization ? (
                 <div className="flex items-center justify-center py-8">
@@ -181,7 +181,7 @@ const CourtDetail: React.FC<CourtDetailProps> = ({ court, onClose }) => {
 
           {/* Recent Reservations */}
           {selectedCourt?.recent_reservations && selectedCourt.recent_reservations.length > 0 && (
-            <div className="bg-gray-50 rounded-lg p-6">
+            <div className=" rounded-lg p-6">
               <h4 className="text-lg font-medium text-gray-900 mb-4">Recent Reservations</h4>
               <div className="space-y-2">
                 {selectedCourt.recent_reservations.map((reservation: any, index: number) => (
@@ -205,7 +205,7 @@ const CourtDetail: React.FC<CourtDetailProps> = ({ court, onClose }) => {
           )}
 
           {/* Map placeholder */}
-          <div className="bg-gray-50 rounded-lg p-6">
+          <div className=" rounded-lg p-6">
             <h4 className="text-lg font-medium text-gray-900 mb-4">Location</h4>
             <div className="bg-gray-200 rounded h-48 flex items-center justify-center">
               <div className="text-center text-gray-500">

@@ -83,7 +83,7 @@ const DocumentsList: React.FC<DocumentsListProps> = ({
     <div className="bg-white rounded-lg shadow border border-gray-200">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+          <thead className="">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Document
@@ -113,7 +113,7 @@ const DocumentsList: React.FC<DocumentsListProps> = ({
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {documents.map((document) => (
-              <tr key={document.id} className="hover:bg-gray-50">
+              <tr key={document.id} className="hover:">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div>
                     <div className="text-sm font-medium text-gray-900">{document.title}</div>

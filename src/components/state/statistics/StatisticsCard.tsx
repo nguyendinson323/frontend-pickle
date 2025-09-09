@@ -57,7 +57,7 @@ export const MetricDisplay: React.FC<MetricDisplayProps> = ({
   change,
   colorClass = 'text-blue-600'
 }) => (
-  <div className="text-center p-4 bg-gray-50 rounded-lg">
+  <div className="text-center p-4  rounded-lg">
     <div className={`text-2xl font-bold ${colorClass}`}>
       {typeof value === 'number' ? value.toLocaleString() : value}
     </div>

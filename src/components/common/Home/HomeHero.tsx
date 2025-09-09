@@ -6,8 +6,8 @@ const HomeHero: React.FC = () => {
 
   return (
     <section className="relative bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white overflow-hidden">
-      <div className="absolute inset-0 bg-black/20"></div>
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+      <div className="absolute inset-0 bg-black/20 z-0"></div>
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 animate-fade-in-up">
             Welcome to the Official
@@ -39,7 +39,7 @@ const HomeHero: React.FC = () => {
       </div>
       
       {/* Decorative Elements */}
-      <div className="absolute top-0 left-0 w-full h-full">
+      <div className="absolute top-0 left-0 w-full h-full z-0 pointer-events-none">
         <div className="absolute top-10 left-10 w-20 h-20 bg-yellow-400/20 rounded-full animate-pulse"></div>
         <div className="absolute bottom-10 right-10 w-16 h-16 bg-purple-400/20 rounded-full animate-pulse animation-delay-300"></div>
         <div className="absolute top-1/2 left-1/4 w-12 h-12 bg-indigo-400/20 rounded-full animate-pulse animation-delay-600"></div>

@@ -123,21 +123,21 @@ const MicrositeAuditModal: React.FC<MicrositeAuditModalProps> = ({ microsite, on
 
             {/* Audit Categories */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+              <div className=" border border-gray-200 rounded-lg p-4">
                 <h4 className="font-medium text-gray-900 mb-2">Content Quality</h4>
                 <div className={`text-2xl font-bold ${getScoreColor(microsite.content_score)}`}>
                   {microsite.content_score}/100
                 </div>
               </div>
 
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+              <div className=" border border-gray-200 rounded-lg p-4">
                 <h4 className="font-medium text-gray-900 mb-2">SEO Performance</h4>
                 <div className={`text-2xl font-bold ${getScoreColor(microsite.seo_score)}`}>
                   {microsite.seo_score}/100
                 </div>
               </div>
 
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+              <div className=" border border-gray-200 rounded-lg p-4">
                 <h4 className="font-medium text-gray-900 mb-2">Performance</h4>
                 <div className={`text-2xl font-bold ${getScoreColor(microsite.performance_score)}`}>
                   {microsite.performance_score}/100
@@ -215,7 +215,7 @@ const MicrositeAuditModal: React.FC<MicrositeAuditModalProps> = ({ microsite, on
             )}
 
             {/* Audit Summary */}
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <div className=" border border-gray-200 rounded-lg p-4">
               <h4 className="font-medium text-gray-900 mb-2">Audit Summary</h4>
               <div className="text-sm text-gray-700 space-y-1">
                 <div>Audit completed on: {new Date().toLocaleString()}</div>
@@ -247,7 +247,7 @@ const MicrositeAuditModal: React.FC<MicrositeAuditModalProps> = ({ microsite, on
           )}
           <button
             onClick={onClose}
-            className="px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover: focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
             Close
           </button>

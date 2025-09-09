@@ -28,7 +28,7 @@ const CoachMembershipHeader: React.FC<CoachMembershipHeaderProps> = ({
       case 'canceled':
         return 'bg-yellow-50 text-yellow-600'
       default:
-        return 'bg-gray-50 text-gray-600'
+        return ' text-gray-600'
     }
   }
 

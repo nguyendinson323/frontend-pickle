@@ -139,7 +139,7 @@ ${tournament.rejection_reason ? `Rejection Reason: ${tournament.rejection_reason
           </button>
         </div>
 
-        <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+        <div className="mb-6 p-4  rounded-lg">
           <h4 className="text-lg font-semibold text-gray-900 mb-2">{tournament.name}</h4>
           <p className="text-sm text-gray-600">Generated on: {new Date().toLocaleString()}</p>
         </div>

@@ -54,7 +54,7 @@ const CourtReservationModal: React.FC<CourtReservationModalProps> = ({
           </h3>
           
           {reservationModal.selectedSlot && (
-            <div className="text-left bg-gray-50 p-4 rounded-md mb-4">
+            <div className="text-left  p-4 rounded-md mb-4">
               <p className="text-sm text-gray-600 mb-1">Court: {selectedCourt?.name}</p>
               <p className="text-sm text-gray-600 mb-1">
                 Date: {reservationModal.selectedDate ? new Date(reservationModal.selectedDate).toLocaleDateString() : ''}

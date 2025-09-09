@@ -116,7 +116,7 @@ const CertificationsList: React.FC<CertificationsListProps> = ({
         {filteredCertifications.map((cert) => {
           const status = getStatusBadge(cert)
           return (
-            <div key={cert.id} className="p-6 hover:bg-gray-50 transition-colors duration-200">
+            <div key={cert.id} className="p-6 hover: transition-colors duration-200">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-2">

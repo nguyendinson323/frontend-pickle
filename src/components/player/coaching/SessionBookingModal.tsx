@@ -32,7 +32,7 @@ const SessionBookingModal: React.FC<SessionBookingModalProps> = ({
             Book Session
           </h3>
           
-          <div className="bg-gray-50 p-4 rounded-md mb-4">
+          <div className=" p-4 rounded-md mb-4">
             <h4 className="font-medium text-gray-900 mb-2">
               {selectedSession.title}
             </h4>

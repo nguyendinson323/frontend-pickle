@@ -135,7 +135,7 @@ const Header: React.FC = () => {
               className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:scale-105 ${
                 isActivePath('/')
                   ? 'text-indigo-600 bg-indigo-50 border-b-2 border-indigo-600'
-                  : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'
+                  : 'text-gray-700 hover:text-indigo-600 hover:'
               }`}
             >
               Home
@@ -147,7 +147,7 @@ const Header: React.FC = () => {
               className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:scale-105 ${
                 isActivePath('/about')
                   ? 'text-indigo-600 bg-indigo-50 border-b-2 border-indigo-600'
-                  : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'
+                  : 'text-gray-700 hover:text-indigo-600 hover:'
               }`}
             >
               About
@@ -161,7 +161,7 @@ const Header: React.FC = () => {
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:scale-105 ${
                   isActivePath(item.path)
                     ? 'text-indigo-600 bg-indigo-50 border-b-2 border-indigo-600'
-                    : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'
+                    : 'text-gray-700 hover:text-indigo-600 hover:'
                 }`}
               >
                 {item.label}
@@ -314,7 +314,7 @@ const Header: React.FC = () => {
                 className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
                   isActivePath('/')
                     ? 'text-indigo-600 bg-indigo-50'
-                    : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'
+                    : 'text-gray-700 hover:text-indigo-600 hover:'
                 }`}
               >
                 Home
@@ -324,7 +324,7 @@ const Header: React.FC = () => {
                 className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
                   isActivePath('/about')
                     ? 'text-indigo-600 bg-indigo-50'
-                    : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'
+                    : 'text-gray-700 hover:text-indigo-600 hover:'
                 }`}
               >
                 About
@@ -336,7 +336,7 @@ const Header: React.FC = () => {
                   className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
                     isActivePath(item.path)
                       ? 'text-indigo-600 bg-indigo-50'
-                      : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'
+                      : 'text-gray-700 hover:text-indigo-600 hover:'
                   }`}
                 >
                   {item.label}
@@ -357,7 +357,7 @@ const Header: React.FC = () => {
                       className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
                         isActivePath(item.path)
                           ? 'text-indigo-600 bg-indigo-50'
-                          : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'
+                          : 'text-gray-700 hover:text-indigo-600 hover:'
                       }`}
                     >
                       {item.label}
@@ -365,7 +365,7 @@ const Header: React.FC = () => {
                   ))}
                   <button
                     onClick={() => handleNavigation('/membership')}
-                    className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50"
+                    className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:"
                   >
                     Membership
                   </button>
@@ -385,7 +385,7 @@ const Header: React.FC = () => {
                   <div className="my-2 border-t border-gray-200"></div>
                   <button
                     onClick={() => handleNavigation('/login')}
-                    className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50"
+                    className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:"
                   >
                     Sign In
                   </button>

@@ -93,7 +93,7 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({
 
       {/* Add Availability Form */}
       {isAdding && (
-        <div className="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
+        <div className="mb-6 p-4 border border-gray-200 rounded-lg ">
           <h4 className="text-md font-medium text-gray-900 mb-4">Add New Availability</h4>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -99,18 +99,18 @@ export const DigitalCredentialCard: React.FC<DigitalCredentialCardProps> = ({
       <div className="p-6">
         <div className="grid grid-cols-2 gap-4 mb-4">
           {nrtpLevel && (
-            <div className="text-center p-3 bg-gray-50 rounded-lg">
+            <div className="text-center p-3  rounded-lg">
               <p className="text-sm text-gray-600">NRTP Level</p>
               <p className="text-lg font-bold text-gray-900">{nrtpLevel}</p>
             </div>
           )}
           {ranking && (
-            <div className="text-center p-3 bg-gray-50 rounded-lg">
+            <div className="text-center p-3  rounded-lg">
               <p className="text-sm text-gray-600">Ranking</p>
               <p className="text-lg font-bold text-gray-900">#{ranking}</p>
             </div>
           )}
-          <div className="text-center p-3 bg-gray-50 rounded-lg col-span-2">
+          <div className="text-center p-3  rounded-lg col-span-2">
             <p className="text-sm text-gray-600">Member Since</p>
             <p className="text-lg font-bold text-gray-900">{memberSince}</p>
           </div>
