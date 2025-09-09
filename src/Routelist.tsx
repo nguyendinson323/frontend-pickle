@@ -28,7 +28,18 @@ import CoachDashboardPage from './pages/coach/CoachDashboard'
 import CoachSessionsPage from './pages/coach/CoachSessions'
 import CoachCertificationsPage from './pages/coach/CoachCertifications'
 import CoachStudentsPage from './pages/coach/CoachStudents'
+import CoachMembershipPage from './pages/coach/CoachMembership'
 import ClubDashboardPage from './pages/club/ClubDashboard'
+import ClubCourtsPage from './pages/club/ClubCourts'
+import ClubMembersPage from './pages/club/ClubMembers'
+import ClubTournamentsPage from './pages/club/ClubTournaments'
+import ClubMicrositePage from './pages/club/ClubMicrosite'
+import StateManagementPage from './pages/state/StateManagement'
+import StateInboxPage from './pages/state/StateInbox'
+import StateMicrositePage from './pages/state/StateMicrosite'
+import StateStatisticsPage from './pages/state/StateStatistics'
+import StateDocumentsPage from './pages/state/StateDocuments'
+import StateMemberManagementPage from './pages/state/StateMemberManagement'
 import PartnerDashboardPage from './pages/partner/PartnerDashboard'
 import StateDashboardPage from './pages/state/StateDashboard'
 
@@ -48,6 +59,7 @@ import DigitalCredentialsPage from './pages/player/DigitalCredentials'
 import CoachingSessionsPage from './pages/player/CoachingSessions'
 import PlayerMessagesPage from './pages/player/PlayerMessages'
 import PlayerRankingsPage from './pages/player/PlayerRankings'
+import PlayerMembershipPage from './pages/player/PlayerMembership'
 
 // Types
 export interface RouteConfig {
@@ -96,6 +108,12 @@ const routes: RouteConfig[] = [
         key: "courts",
         public: true,
         element: <CourtsPage />
+    },
+    {
+        path: "/state/:stateId",
+        key: "public-state-microsite",
+        public: true,
+        element: <StateMicrositePage />
     },
     
     // ==================== REGISTRATION ROUTES ====================
@@ -195,6 +213,13 @@ const routes: RouteConfig[] = [
         requiredRoles: ['player']
     },
     {
+        path: "/player/membership",
+        key: "player-membership", 
+        public: false,
+        element: <PlayerMembershipPage />,
+        requiredRoles: ['player']
+    },
+    {
         path: "/coach/dashboard",
         key: "coach-dashboard",
         public: false,
@@ -223,10 +248,45 @@ const routes: RouteConfig[] = [
         requiredRoles: ['coach']
     },
     {
+        path: "/coach/membership",
+        key: "coach-membership",
+        public: false,
+        element: <CoachMembershipPage />,
+        requiredRoles: ['coach']
+    },
+    {
         path: "/club/dashboard",
         key: "club-dashboard",
         public: false,
         element: <ClubDashboardPage />,
+        requiredRoles: ['club']
+    },
+    {
+        path: "/club/courts",
+        key: "club-courts",
+        public: false,
+        element: <ClubCourtsPage />,
+        requiredRoles: ['club']
+    },
+    {
+        path: "/club/members",
+        key: "club-members",
+        public: false,
+        element: <ClubMembersPage />,
+        requiredRoles: ['club']
+    },
+    {
+        path: "/club/tournaments",
+        key: "club-tournaments",
+        public: false,
+        element: <ClubTournamentsPage />,
+        requiredRoles: ['club']
+    },
+    {
+        path: "/club/microsite",
+        key: "club-microsite",
+        public: false,
+        element: <ClubMicrositePage />,
         requiredRoles: ['club']
     },
     {
@@ -241,6 +301,48 @@ const routes: RouteConfig[] = [
         key: "state-dashboard",
         public: false,
         element: <StateDashboardPage />,
+        requiredRoles: ['state']
+    },
+    {
+        path: "/state/management",
+        key: "state-management",
+        public: false,
+        element: <StateManagementPage />,
+        requiredRoles: ['state']
+    },
+    {
+        path: "/state/inbox",
+        key: "state-inbox",
+        public: false,
+        element: <StateInboxPage />,
+        requiredRoles: ['state']
+    },
+    {
+        path: "/state/microsite",
+        key: "state-microsite",
+        public: false,
+        element: <StateMicrositePage />,
+        requiredRoles: ['state']
+    },
+    {
+        path: "/state/statistics",
+        key: "state-statistics",
+        public: false,
+        element: <StateStatisticsPage />,
+        requiredRoles: ['state']
+    },
+    {
+        path: "/state/documents",
+        key: "state-documents",
+        public: false,
+        element: <StateDocumentsPage />,
+        requiredRoles: ['state']
+    },
+    {
+        path: "/state/members",
+        key: "state-members",
+        public: false,
+        element: <StateMemberManagementPage />,
         requiredRoles: ['state']
     },
     {

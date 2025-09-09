@@ -3,9 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState, AppDispatch } from '../../store'
 import { 
   fetchCoachStudentsData, 
-  getStudentDetails,
-  updateStudentLevel,
-  addStudentNote
+  updateStudentLevel
 } from '../../store/slices/coachStudentsSlice'
 import { 
   StudentsHeader,
@@ -54,7 +52,6 @@ const CoachStudentsPage: React.FC = () => {
   })
   
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
-  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
 
   useEffect(() => {
     dispatch(fetchCoachStudentsData())
@@ -76,11 +73,9 @@ const CoachStudentsPage: React.FC = () => {
 
   const handleViewDetails = (student: Student) => {
     setSelectedStudent(student)
-    setIsDetailsModalOpen(true)
   }
 
   const handleCloseDetails = () => {
-    setIsDetailsModalOpen(false)
     setSelectedStudent(null)
   }
 

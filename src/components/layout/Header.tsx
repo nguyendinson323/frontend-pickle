@@ -57,12 +57,14 @@ const Header: React.FC = () => {
         { label: 'Coaching Sessions', path: '/player/coaching', roles: ['player'] },
         { label: 'Messages', path: '/player/messages', roles: ['player'] },
         { label: 'Digital Credentials', path: '/player/credentials', roles: ['player'] },
-        { label: 'Rankings', path: '/player/rankings', roles: ['player'] }
+        { label: 'Rankings', path: '/player/rankings', roles: ['player'] },
+        { label: 'Membership', path: '/player/membership', roles: ['player'] }
       ],
       coach: [
         { label: 'My Sessions', path: '/coach/sessions', roles: ['coach'] },
         { label: 'Certifications', path: '/coach/certifications', roles: ['coach'] },
-        { label: 'Students', path: '/coach/students', roles: ['coach'] }
+        { label: 'Students', path: '/coach/students', roles: ['coach'] },
+        { label: 'Membership', path: '/coach/membership', roles: ['coach'] }
       ],
       club: [
         { label: 'My Courts', path: '/club/courts', roles: ['club'] },

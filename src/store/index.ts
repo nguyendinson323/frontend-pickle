@@ -17,6 +17,18 @@ import playerRankingsReducer from './slices/playerRankingsSlice'
 import coachSessionsReducer from './slices/coachSessionsSlice'
 import coachCertificationsReducer from './slices/coachCertificationsSlice'
 import coachStudentsReducer from './slices/coachStudentsSlice'
+import playerMembershipReducer from './slices/playerMembershipSlice'
+import coachMembershipReducer from './slices/coachMembershipSlice'
+import clubCourtsReducer from './slices/clubCourtsSlice'
+import clubMembersReducer from './slices/clubMembersSlice'
+import clubTournamentsReducer from './slices/clubTournamentsSlice'
+import clubMicrositeReducer from './slices/clubMicrositeSlice'
+import stateManagementReducer from './slices/stateManagementSlice'
+import stateInboxReducer from './slices/stateInboxSlice'
+import stateMicrositeReducer from './slices/stateMicrositeSlice'
+import stateStatisticsReducer from './slices/stateStatisticsSlice'
+import stateDocumentsReducer from './slices/stateDocumentsSlice'
+import stateMemberManagementReducer from './slices/stateMemberManagementSlice'
 
 export const store = configureStore({
   reducer: {
@@ -37,7 +49,19 @@ export const store = configureStore({
     playerRankings: playerRankingsReducer,
     coachSessions: coachSessionsReducer,
     coachCertifications: coachCertificationsReducer,
-    coachStudents: coachStudentsReducer
+    coachStudents: coachStudentsReducer,
+    playerMembership: playerMembershipReducer,
+    coachMembership: coachMembershipReducer,
+    clubCourts: clubCourtsReducer,
+    clubMembers: clubMembersReducer,
+    clubTournaments: clubTournamentsReducer,
+    clubMicrosite: clubMicrositeReducer,
+    stateManagement: stateManagementReducer,
+    stateInbox: stateInboxReducer,
+    stateMicrosite: stateMicrositeReducer,
+    stateStatistics: stateStatisticsReducer,
+    stateDocuments: stateDocumentsReducer,
+    stateMemberManagement: stateMemberManagementReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
