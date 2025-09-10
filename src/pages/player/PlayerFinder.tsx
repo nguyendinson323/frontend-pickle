@@ -10,8 +10,6 @@ import {
   respondToMatchRequest,
   cancelMatchRequest,
   setFilters,
-  setUserLocation,
-  setLocationPermission,
   PlayerFinderFilters
 } from '../../store/slices/playerFinderSlice'
 import { fetchStates } from '../../store/slices/playerSlice'
@@ -35,9 +33,7 @@ const PlayerFinderPage: React.FC = () => {
     sentRequests, 
     receivedRequests, 
     filters, 
-    searchPerformed,
-    userLocation,
-    locationPermission 
+    searchPerformed 
   } = useSelector((state: RootState) => state.playerFinder)
   const { statesList } = useSelector((state: RootState) => state.player)
 
@@ -61,37 +57,15 @@ const PlayerFinderPage: React.FC = () => {
     dispatch(fetchSentRequests())
     dispatch(fetchReceivedRequests())
     
-    // Request location permission
-    handleLocationRequest()
   }, [user, navigate, dispatch])
 
-  const handleLocationRequest = () => {
-    if (!navigator.geolocation) {
-      dispatch(setLocationPermission('denied'))
-      return
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        dispatch(setUserLocation({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude
-        }))
-        dispatch(setLocationPermission('granted'))
-      },
-      (error) => {
-        console.log('Location permission denied:', error)
-        dispatch(setLocationPermission('denied'))
-      }
-    )
-  }
 
   const handleFilterChange = (key: keyof PlayerFinderFilters, value: string | number | null) => {
     dispatch(setFilters({ [key]: value }))
   }
 
   const handleSearch = () => {
-    dispatch(searchPlayers(filters))
+    dispatch(searchPlayers({ filters }))
   }
 
   const handleSendMatchRequest = (playerId: number) => {
@@ -120,7 +94,7 @@ const PlayerFinderPage: React.FC = () => {
 
   const handleRespondToRequest = (requestId: number, status: 'accepted' | 'rejected', responseMessage?: string) => {
     dispatch(respondToMatchRequest(requestId, { 
-      status, 
+      response: status, 
       response_message: responseMessage 
     }))
   }
@@ -157,11 +131,11 @@ const PlayerFinderPage: React.FC = () => {
               isPremium={user.is_premium}
               filters={filters}
               statesList={statesList}
-              userLocation={userLocation}
-              locationPermission={locationPermission}
+              userLocation={null}
+              locationPermission={null}
               onFilterChange={handleFilterChange}
               onSearch={handleSearch}
-              onLocationRequest={handleLocationRequest}
+              onLocationRequest={() => {}}
             />
 
             <PlayerFinderResults

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
+import { AppDispatch } from '../../../store'
 import { MicrositeAdmin } from '../../../types/admin'
 import { sendMicrositeNotification } from '../../../store/slices/adminMicrositesSlice'
 
@@ -9,7 +10,7 @@ interface MicrositeNotificationModalProps {
 }
 
 const MicrositeNotificationModal: React.FC<MicrositeNotificationModalProps> = ({ microsite, onClose }) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const [subject, setSubject] = useState('')
   const [message, setMessage] = useState('')
   const [recipients, setRecipients] = useState<string[]>(['owner'])
@@ -74,7 +75,7 @@ const MicrositeNotificationModal: React.FC<MicrositeNotificationModalProps> = ({
 
     setLoading(true)
     try {
-      await dispatch(sendMicrositeNotification(microsite.id, subject, message, recipients) as any)
+      await dispatch(sendMicrositeNotification(microsite.id, subject, message, recipients))
       onClose()
     } catch (error) {
       console.error('Failed to send notification:', error)

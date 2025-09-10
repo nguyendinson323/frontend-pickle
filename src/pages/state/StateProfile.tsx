@@ -1,22 +1,29 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { RootState } from '../../store'
-import { StateDashboard } from '../../types'
+import { RootState, AppDispatch } from '../../store'
+import { fetchStateDashboard } from '../../store/slices/stateDashboardSlice'
 import { StateProfileView, StateProfileForm } from '../../components/state/profile'
 
 const StateProfilePage: React.FC = () => {
   const navigate = useNavigate()
-  const { user, dashboard } = useSelector((state: RootState) => state.auth)
+  const dispatch = useDispatch<AppDispatch>()
+  const { user } = useSelector((state: RootState) => state.auth)
+  const { dashboardData, isLoading, error } = useSelector((state: RootState) => state.stateDashboard)
   const [isEditing, setIsEditing] = useState(false)
 
   useEffect(() => {
     if (!user || user.role !== 'state') {
       navigate('/login')
+      return
     }
-  }, [user, navigate])
+    
+    if (!dashboardData) {
+      dispatch(fetchStateDashboard())
+    }
+  }, [user, navigate, dispatch, dashboardData])
 
-  if (!user || user.role !== 'state' || !dashboard) {
+  if (!user || user.role !== 'state') {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-red-600"></div>
@@ -24,8 +31,31 @@ const StateProfilePage: React.FC = () => {
     )
   }
 
-  const stateData = dashboard as StateDashboard
-  const profile = stateData.profile
+  if (isLoading || !dashboardData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-red-600"></div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-600 text-lg font-medium">{error}</div>
+          <button 
+            onClick={() => dispatch(fetchStateDashboard())} 
+            className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  const profile = dashboardData.profile
 
   const handleEdit = () => {
     setIsEditing(true)

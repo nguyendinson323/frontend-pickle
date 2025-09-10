@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { RootState } from '../../store'
+import { RootState, AppDispatch } from '../../store'
 import { MicrositeAdmin } from '../../types/admin'
 import { fetchMicrosites } from '../../store/slices/adminMicrositesSlice'
 import {
@@ -12,7 +12,7 @@ import {
 } from '../../components/admin/microsites'
 
 const AdminMicrosites: React.FC = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
   const { user } = useSelector((state: RootState) => state.auth)
   const { micrositeFilter, error } = useSelector((state: RootState) => state.adminMicrosites)
@@ -26,12 +26,12 @@ const AdminMicrosites: React.FC = () => {
     }
 
     // Fetch initial data
-    dispatch(fetchMicrosites(micrositeFilter) as any)
+    dispatch(fetchMicrosites(micrositeFilter))
   }, [dispatch, user, navigate])
 
   useEffect(() => {
     // Refresh data when filters change
-    dispatch(fetchMicrosites(micrositeFilter) as any)
+    dispatch(fetchMicrosites(micrositeFilter))
   }, [dispatch, micrositeFilter])
 
   const handleMicrositeSelect = (microsite: MicrositeAdmin) => {

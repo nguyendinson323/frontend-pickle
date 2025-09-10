@@ -161,24 +161,28 @@ export interface BroadcastMessage {
 export interface CourtInfo {
   id: number
   name: string
-  club_id: number | null
-  club_name: string | null
-  partner_id: number | null
-  partner_name: string | null
+  owner_type: 'club' | 'partner'
+  owner_id: number
+  owner_name: string | null
+  owner_details: any
+  address: string
+  state_id: number
+  state_name: string
+  court_count: number
   surface_type: string
-  lighting: boolean
   indoor: boolean
-  status: 'available' | 'occupied' | 'maintenance'
-  hourly_rate: number
-  location: {
-    address: string
-    city: string
-    state: string
-    latitude: number
-    longitude: number
-  }
-  total_reservations: number
-  revenue_generated: number
+  lights: boolean
+  amenities: string | null
+  description: string | null
+  latitude: number | null
+  longitude: number | null
+  status: 'active' | 'maintenance' | 'inactive' | 'pending'
+  hourly_rate?: number
+  total_reservations?: number
+  revenue_generated?: number
+  recent_reservations?: any[]
+  created_at: string
+  updated_at: string
 }
 
 // Payment & Membership Types

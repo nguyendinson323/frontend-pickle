@@ -1,10 +1,10 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../../store'
+import { RootState, AppDispatch } from '../../../store'
 import { setCourtFilter, exportCourts } from '../../../store/slices/adminCourtsSlice'
 
 const CourtFilters: React.FC = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { courtFilter, loading } = useSelector((state: RootState) => state.adminCourts)
 
   const handleFilterChange = (field: string, value: string) => {
@@ -12,7 +12,7 @@ const CourtFilters: React.FC = () => {
   }
 
   const handleExport = (format: 'csv' | 'excel' | 'pdf') => {
-    dispatch(exportCourts(courtFilter, format) as any)
+    dispatch(exportCourts(courtFilter, format))
   }
 
   const handleClearFilters = () => {
@@ -99,9 +99,10 @@ const CourtFilters: React.FC = () => {
             className="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
           >
             <option value="">All Status</option>
-            <option value="available">Available</option>
-            <option value="occupied">Occupied</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
             <option value="maintenance">Maintenance</option>
+            <option value="pending">Pending</option>
           </select>
         </div>
       </div>

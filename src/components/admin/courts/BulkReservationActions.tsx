@@ -1,10 +1,10 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../../store'
+import { RootState, AppDispatch } from '../../../store'
 import { bulkUpdateReservations, clearSelectedReservations } from '../../../store/slices/adminCourtsSlice'
 
 const BulkReservationActions: React.FC = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { selectedReservations, loading } = useSelector((state: RootState) => state.adminCourts)
 
   const handleBulkAction = async (action: string) => {
@@ -29,7 +29,7 @@ const BulkReservationActions: React.FC = () => {
 
     if (confirmed) {
       try {
-        await dispatch(bulkUpdateReservations(selectedReservations, action) as any)
+        await dispatch(bulkUpdateReservations(selectedReservations, action))
         alert(`Successfully updated ${selectedReservations.length} reservations`)
       } catch (error) {
         console.error('Failed to update reservations:', error)

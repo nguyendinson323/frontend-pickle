@@ -6,9 +6,11 @@ const PaymentStats: React.FC = () => {
   const { paymentStats } = useSelector((state: RootState) => state.adminPayments)
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('es-MX', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'MXN',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(amount)
   }
 

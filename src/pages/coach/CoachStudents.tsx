@@ -40,8 +40,7 @@ interface Student {
 
 const CoachStudentsPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
-  const { students, stats } = useSelector((state: RootState) => state.coachStudents)
-  const { isLoading } = useSelector((state: RootState) => state.loading)
+  const { students, stats, isLoading } = useSelector((state: RootState) => state.coachStudents)
   
   const [filters, setFilters] = useState({
     search: '',

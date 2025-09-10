@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../../store'
+import { RootState, AppDispatch } from '../../../store'
 import { 
   setBroadcastForm,
   sendBroadcastMessage,
@@ -9,7 +9,7 @@ import {
 } from '../../../store/slices/adminMessagingSlice'
 
 const BroadcastComposer: React.FC = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { broadcastForm, selectedTemplate, sendingMessage } = useSelector((state: RootState) => state.adminMessaging)
   
   const [showPreview, setShowPreview] = useState(false)
@@ -52,7 +52,7 @@ const BroadcastComposer: React.FC = () => {
     }
 
     try {
-      const preview = await dispatch(getMessagePreview(broadcastForm) as any)
+      const preview = await dispatch(getMessagePreview(broadcastForm))
       setPreviewData(preview)
       setShowPreview(true)
     } catch (error) {
@@ -77,7 +77,7 @@ const BroadcastComposer: React.FC = () => {
 
     if (confirmed) {
       try {
-        await dispatch(sendBroadcastMessage(broadcastForm) as any)
+        await dispatch(sendBroadcastMessage(broadcastForm))
         alert('Message sent successfully!')
       } catch (error) {
         console.error('Failed to send message:', error)

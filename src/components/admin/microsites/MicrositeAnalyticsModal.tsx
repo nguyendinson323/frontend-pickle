@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
+import { AppDispatch } from '../../../store'
 import { MicrositeAdmin } from '../../../types/admin'
 import { getMicrositeAnalytics } from '../../../store/slices/adminMicrositesSlice'
 
@@ -9,7 +10,7 @@ interface MicrositeAnalyticsModalProps {
 }
 
 const MicrositeAnalyticsModal: React.FC<MicrositeAnalyticsModalProps> = ({ microsite, onClose }) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const [analytics, setAnalytics] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [period, setPeriod] = useState('30')
@@ -18,7 +19,7 @@ const MicrositeAnalyticsModal: React.FC<MicrositeAnalyticsModalProps> = ({ micro
     const fetchAnalytics = async () => {
       setLoading(true)
       try {
-        const result = await dispatch(getMicrositeAnalytics(microsite.id, period) as any)
+        const result = await dispatch(getMicrositeAnalytics(microsite.id, period))
         setAnalytics(result.payload || result)
       } catch (error) {
         console.error('Failed to fetch analytics:', error)

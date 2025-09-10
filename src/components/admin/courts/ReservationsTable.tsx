@@ -1,6 +1,6 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../../store'
+import { RootState, AppDispatch } from '../../../store'
 import { 
   updateReservationStatusAction,
   addSelectedReservation,
@@ -8,12 +8,12 @@ import {
 } from '../../../store/slices/adminCourtsSlice'
 
 const ReservationsTable: React.FC = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { reservations, selectedReservations, loading } = useSelector((state: RootState) => state.adminCourts)
 
-  const handleStatusChange = async (reservationId: number, status: 'active' | 'completed' | 'cancelled' | 'no_show') => {
+  const handleStatusChange = async (reservationId: number, status: 'pending' | 'confirmed' | 'canceled' | 'completed' | 'active' | 'cancelled' | 'no_show') => {
     try {
-      await dispatch(updateReservationStatusAction(reservationId, status) as any)
+      await dispatch(updateReservationStatusAction(reservationId, status))
     } catch (error) {
       console.error('Failed to update reservation status:', error)
     }
@@ -29,10 +29,13 @@ const ReservationsTable: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800'
+      case 'active':
+      case 'confirmed': return 'bg-green-100 text-green-800'
       case 'completed': return 'bg-blue-100 text-blue-800'
-      case 'cancelled': return 'bg-red-100 text-red-800'
+      case 'cancelled':
+      case 'canceled': return 'bg-red-100 text-red-800'
       case 'no_show': return 'bg-gray-100 text-gray-800'
+      case 'pending': return 'bg-yellow-100 text-yellow-800'
       default: return 'bg-gray-100 text-gray-800'
     }
   }
@@ -91,7 +94,7 @@ const ReservationsTable: React.FC = () => {
                   <input
                     type="checkbox"
                     className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    onChange={(e) => {
+                    onChange={(_e) => {
                       // Toggle all reservations selection logic could be added here
                     }}
                   />
@@ -132,13 +135,14 @@ const ReservationsTable: React.FC = () => {
                       />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{reservation.user_name}</div>
+                      <div className="text-sm font-medium text-gray-900">{reservation.player_name}</div>
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRoleColor(reservation.user_type)}`}>
                         {reservation.user_type.charAt(0).toUpperCase() + reservation.user_type.slice(1)}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">Court #{reservation.court_id}</div>
+                      <div className="text-sm text-gray-900">{reservation.court_name}</div>
+                      <div className="text-sm text-gray-500">Court #{reservation.court_id}</div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="text-sm text-gray-900">{startDateTime.date}</div>
@@ -149,25 +153,28 @@ const ReservationsTable: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <select
                         value={reservation.status}
-                        onChange={(e) => handleStatusChange(reservation.id, e.target.value as 'active' | 'completed' | 'cancelled' | 'no_show')}
+                        onChange={(e) => handleStatusChange(reservation.id, e.target.value as 'pending' | 'confirmed' | 'canceled' | 'completed' | 'active' | 'cancelled' | 'no_show')}
                         className={`text-xs font-semibold rounded-full px-2 py-1 border-none focus:ring-2 focus:ring-indigo-200 ${getStatusColor(reservation.status)}`}
                       >
+                        <option value="pending">Pending</option>
+                        <option value="confirmed">Confirmed</option>
                         <option value="active">Active</option>
                         <option value="completed">Completed</option>
                         <option value="cancelled">Cancelled</option>
+                        <option value="canceled">Canceled</option>
                         <option value="no_show">No Show</option>
                       </select>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
-                        ${reservation.amount_paid}
+                        ${reservation.amount}
                       </div>
                       <div className={`text-xs font-medium ${getPaymentStatusColor(reservation.payment_status)}`}>
                         {reservation.payment_status.charAt(0).toUpperCase() + reservation.payment_status.slice(1)}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                      {reservation.status === 'active' && (
+                      {(reservation.status === 'active' || reservation.status === 'confirmed') && (
                         <>
                           <button
                             onClick={() => handleStatusChange(reservation.id, 'completed')}
@@ -183,7 +190,7 @@ const ReservationsTable: React.FC = () => {
                           </button>
                         </>
                       )}
-                      {reservation.status === 'cancelled' && reservation.payment_status === 'paid' && (
+                      {(reservation.status === 'cancelled' || reservation.status === 'canceled') && reservation.payment_status === 'paid' && (
                         <span className="text-blue-600">Refund Processed</span>
                       )}
                     </td>

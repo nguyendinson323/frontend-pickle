@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from '../../store'
+import { RootState, AppDispatch } from '../../store'
 import {
   fetchPartnerInboxData,
   markPartnerMessageAsRead,
@@ -17,7 +17,7 @@ import MessageViewModal from '../../components/partner/inbox/MessageViewModal'
 
 const PartnerInbox: React.FC = () => {
   const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth)
   const {
@@ -45,7 +45,7 @@ const PartnerInbox: React.FC = () => {
       return
     }
 
-    dispatch(fetchPartnerInboxData() as any)
+    dispatch(fetchPartnerInboxData())
   }, [dispatch, isAuthenticated, user, navigate])
 
   useEffect(() => {
@@ -57,7 +57,7 @@ const PartnerInbox: React.FC = () => {
     }
 
     const debounceTimer = setTimeout(() => {
-      dispatch(fetchPartnerInboxData(filters) as any)
+      dispatch(fetchPartnerInboxData(filters))
     }, 300)
 
     return () => clearTimeout(debounceTimer)

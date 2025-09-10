@@ -61,10 +61,7 @@ export interface PlayerFinderFilters {
   gender: string | null
   age_min: number | null
   age_max: number | null
-  distance_km: number | null
   has_premium: boolean | null
-  location_lat: number | null
-  location_lng: number | null
 }
 
 export interface SearchPlayersParams {
@@ -105,11 +102,6 @@ export interface PlayerFinderState {
   searchPerformed: boolean
   isLoading: boolean
   error: string | null
-  userLocation: {
-    latitude: number | null
-    longitude: number | null
-  }
-  locationPermission: 'granted' | 'denied' | 'prompt' | null
   pagination: {
     currentPage: number
     totalPages: number
@@ -130,19 +122,11 @@ const initialState: PlayerFinderState = {
     gender: null,
     age_min: null,
     age_max: null,
-    distance_km: null,
-    has_premium: null,
-    location_lat: null,
-    location_lng: null
+    has_premium: null
   },
   searchPerformed: false,
   isLoading: false,
   error: null,
-  userLocation: {
-    latitude: null,
-    longitude: null
-  },
-  locationPermission: null,
   pagination: {
     currentPage: 1,
     totalPages: 1,
@@ -197,14 +181,6 @@ const playerFinderSlice = createSlice({
     clearFilters: (state) => {
       state.filters = initialState.filters
     },
-    setUserLocation: (state, action: PayloadAction<{ latitude: number; longitude: number }>) => {
-      state.userLocation = action.payload
-      state.filters.location_lat = action.payload.latitude
-      state.filters.location_lng = action.payload.longitude
-    },
-    setLocationPermission: (state, action: PayloadAction<'granted' | 'denied' | 'prompt'>) => {
-      state.locationPermission = action.payload
-    },
     clearSearch: (state) => {
       state.players = []
       state.searchPerformed = false
@@ -225,8 +201,6 @@ export const {
   removeSentRequest,
   setFilters,
   clearFilters,
-  setUserLocation,
-  setLocationPermission,
   clearSearch
 } = playerFinderSlice.actions
 
@@ -252,7 +226,7 @@ export const searchPlayers = (searchParams: SearchPlayersParams) => async (dispa
 export const fetchSentRequests = () => async (dispatch: AppDispatch) => {
   try {
     dispatch(startLoading('Loading sent requests...'))
-    const response = await api.get<MatchRequest[]>('/api/player-finder/sent-requests')
+    const response = await api.get<MatchRequest[]>('/api/player-finder/requests/sent')
     dispatch(setSentRequests(response.data as MatchRequest[]))
     dispatch(stopLoading())
   } catch (error: unknown) {
@@ -265,7 +239,7 @@ export const fetchSentRequests = () => async (dispatch: AppDispatch) => {
 export const fetchReceivedRequests = () => async (dispatch: AppDispatch) => {
   try {
     dispatch(startLoading('Loading received requests...'))
-    const response = await api.get<MatchRequest[]>('/api/player-finder/received-requests')
+    const response = await api.get<MatchRequest[]>('/api/player-finder/requests/received')
     dispatch(setReceivedRequests(response.data as MatchRequest[]))
     dispatch(stopLoading())
   } catch (error: unknown) {
@@ -278,7 +252,7 @@ export const fetchReceivedRequests = () => async (dispatch: AppDispatch) => {
 export const sendMatchRequest = (requestData: SendMatchRequestData) => async (dispatch: AppDispatch) => {
   try {
     dispatch(startLoading('Sending match request...'))
-    const response = await api.post<MatchRequest>('/api/player-finder/send-request', requestData)
+    const response = await api.post<MatchRequest>('/api/player-finder/requests', requestData)
     dispatch(addSentRequest(response.data as MatchRequest))
     dispatch(stopLoading())
   } catch (error: unknown) {
@@ -292,7 +266,7 @@ export const sendMatchRequest = (requestData: SendMatchRequestData) => async (di
 export const respondToMatchRequest = (requestId: number, responseData: RespondToRequestData) => async (dispatch: AppDispatch) => {
   try {
     dispatch(startLoading('Responding to match request...'))
-    const response = await api.post<MatchRequest>(`/api/player-finder/respond/${requestId}`, responseData)
+    const response = await api.put<MatchRequest>(`/api/player-finder/requests/${requestId}`, responseData)
     dispatch(updateReceivedRequest(response.data as MatchRequest))
     dispatch(stopLoading())
   } catch (error: unknown) {
@@ -306,7 +280,7 @@ export const respondToMatchRequest = (requestId: number, responseData: RespondTo
 export const cancelMatchRequest = (requestId: number) => async (dispatch: AppDispatch) => {
   try {
     dispatch(startLoading('Canceling match request...'))
-    await api.delete(`/api/player-finder/cancel/${requestId}`)
+    await api.put(`/api/player-finder/requests/${requestId}`, { action: 'cancel' })
     dispatch(removeSentRequest(requestId))
     dispatch(stopLoading())
   } catch (error: unknown) {
@@ -332,30 +306,5 @@ export const updatePlayerSearchability = (isSearchable: boolean) => async (dispa
   }
 }
 
-export const getUserLocation = () => async (dispatch: AppDispatch) => {
-  try {
-    if (!navigator.geolocation) {
-      dispatch(setLocationPermission('denied'))
-      return
-    }
-
-    const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(resolve, reject, {
-        timeout: 10000,
-        enableHighAccuracy: true
-      })
-    })
-
-    dispatch(setUserLocation({
-      latitude: position.coords.latitude,
-      longitude: position.coords.longitude
-    }))
-    dispatch(setLocationPermission('granted'))
-  } catch (error) {
-    console.error('Geolocation error:', error)
-    dispatch(setLocationPermission('denied'))
-    dispatch(setError('Failed to get your location. You can still search by state.'))
-  }
-}
 
 export default playerFinderSlice.reducer

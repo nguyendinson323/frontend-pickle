@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../../store'
+import { RootState, AppDispatch } from '../../../store'
 import { updatePaymentFilter, clearFilters, fetchPayments } from '../../../store/slices/adminPaymentsSlice'
 
 const PaymentFilters: React.FC = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { paymentFilter } = useSelector((state: RootState) => state.adminPayments)
   const [showAdvanced, setShowAdvanced] = useState(false)
 

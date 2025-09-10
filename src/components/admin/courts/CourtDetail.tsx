@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../../store'
+import { RootState, AppDispatch } from '../../../store'
 import { CourtInfo } from '../../../types/admin'
 import { getCourtUtilizationReport } from '../../../store/slices/adminCourtsSlice'
 
@@ -10,7 +10,7 @@ interface CourtDetailProps {
 }
 
 const CourtDetail: React.FC<CourtDetailProps> = ({ court, onClose }) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { selectedCourt } = useSelector((state: RootState) => state.adminCourts)
   
   const [utilizationData, setUtilizationData] = useState<any>(null)
@@ -20,7 +20,7 @@ const CourtDetail: React.FC<CourtDetailProps> = ({ court, onClose }) => {
     const fetchUtilization = async () => {
       setLoadingUtilization(true)
       try {
-        const data = await dispatch(getCourtUtilizationReport(court.id) as any)
+        const data = await dispatch(getCourtUtilizationReport(court.id))
         setUtilizationData(data)
       } catch (error) {
         console.error('Failed to fetch utilization data:', error)
@@ -34,9 +34,10 @@ const CourtDetail: React.FC<CourtDetailProps> = ({ court, onClose }) => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'available': return 'bg-green-100 text-green-800'
-      case 'occupied': return 'bg-yellow-100 text-yellow-800'
+      case 'active': return 'bg-green-100 text-green-800'
+      case 'pending': return 'bg-yellow-100 text-yellow-800'
       case 'maintenance': return 'bg-red-100 text-red-800'
+      case 'inactive': return 'bg-gray-100 text-gray-800'
       default: return 'bg-gray-100 text-gray-800'
     }
   }
@@ -71,7 +72,7 @@ const CourtDetail: React.FC<CourtDetailProps> = ({ court, onClose }) => {
                 <div>
                   <span className="font-medium text-gray-700">Owner:</span>
                   <span className="ml-2 text-gray-900">
-                    {courtData.club_name || courtData.partner_name || 'Independent'}
+                    {courtData.owner_name || 'Independent'}
                   </span>
                 </div>
                 <div>
@@ -80,7 +81,7 @@ const CourtDetail: React.FC<CourtDetailProps> = ({ court, onClose }) => {
                 </div>
                 <div>
                   <span className="font-medium text-gray-700">Hourly Rate:</span>
-                  <span className="ml-2 text-gray-900 font-semibold">${courtData.hourly_rate}/hour</span>
+                  <span className="ml-2 text-gray-900 font-semibold">${courtData.hourly_rate || 'N/A'}/hour</span>
                 </div>
               </div>
               <div className="space-y-3">
@@ -93,13 +94,13 @@ const CourtDetail: React.FC<CourtDetailProps> = ({ court, onClose }) => {
                 <div>
                   <span className="font-medium text-gray-700">Features:</span>
                   <div className="ml-2 flex space-x-2 mt-1">
-                    {courtData.lighting && (
+                    {courtData.lights && (
                       <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded">Lit</span>
                     )}
                     {courtData.indoor && (
                       <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">Indoor</span>
                     )}
-                    {!courtData.lighting && !courtData.indoor && (
+                    {!courtData.lights && !courtData.indoor && (
                       <span className="text-gray-500 text-xs">No special features</span>
                     )}
                   </div>
@@ -107,8 +108,8 @@ const CourtDetail: React.FC<CourtDetailProps> = ({ court, onClose }) => {
                 <div>
                   <span className="font-medium text-gray-700">Location:</span>
                   <div className="ml-2 text-gray-900">
-                    <div>{courtData.location.address}</div>
-                    <div>{courtData.location.city}, {courtData.location.state}</div>
+                    <div>{courtData.address}</div>
+                    <div>{courtData.state_name}</div>
                   </div>
                 </div>
               </div>
@@ -121,13 +122,13 @@ const CourtDetail: React.FC<CourtDetailProps> = ({ court, onClose }) => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="bg-white rounded-lg p-4 text-center">
                 <div className="text-2xl font-bold text-blue-600">
-                  {courtData.total_reservations}
+                  {courtData.total_reservations || 0}
                 </div>
                 <div className="text-sm text-gray-600">Total Reservations</div>
               </div>
               <div className="bg-white rounded-lg p-4 text-center">
                 <div className="text-2xl font-bold text-green-600">
-                  ${courtData.revenue_generated.toLocaleString()}
+                  ${(courtData.revenue_generated || 0).toLocaleString()}
                 </div>
                 <div className="text-sm text-gray-600">Revenue Generated</div>
               </div>
@@ -215,8 +216,8 @@ const CourtDetail: React.FC<CourtDetailProps> = ({ court, onClose }) => {
                 </svg>
                 <div>Map View</div>
                 <div className="text-sm">
-                  {courtData.location.latitude && courtData.location.longitude 
-                    ? `${courtData.location.latitude}, ${courtData.location.longitude}`
+                  {courtData.latitude && courtData.longitude 
+                    ? `${courtData.latitude}, ${courtData.longitude}`
                     : 'Coordinates not available'}
                 </div>
               </div>

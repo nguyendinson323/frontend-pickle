@@ -116,15 +116,28 @@ export const {
   cancelSubscription
 } = coachMembershipSlice.actions
 
+// Define response interfaces
+interface MembershipDataResponse {
+  currentSubscription: Subscription | null
+  availablePlans: SubscriptionPlan[]
+  paymentHistory: Payment[]
+  stats: CoachMembershipState['stats']
+}
+
+interface SubscriptionResponse {
+  subscription: Subscription
+  payment: Payment
+}
+
 // API Functions
 export const fetchCoachMembershipData = () => async (dispatch: AppDispatch) => {
   try {
     dispatch(startLoading('Loading membership data...'))
-    const response = await api.get('/api/coach/membership')
-    dispatch(setMembershipData(response.data as { currentSubscription: Subscription | null, availablePlans: SubscriptionPlan[], paymentHistory: Payment[], stats: CoachMembershipState['stats'] }))
+    const response = await api.get<MembershipDataResponse>('/api/coach/membership')
+    dispatch(setMembershipData(response.data))
     dispatch(stopLoading())
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to fetch membership data'))
+  } catch (error: unknown) {
+    dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch membership data'))
     dispatch(stopLoading())
   }
 }
@@ -135,18 +148,18 @@ export const subscribeToCoachPlan = (planId: number, paymentData: {
 }) => async (dispatch: AppDispatch) => {
   try {
     dispatch(startLoading('Subscribing to plan...'))
-    const response = await api.post('/api/coach/membership/subscribe', {
+    const response = await api.post<SubscriptionResponse>('/api/coach/membership/subscribe', {
       plan_id: planId,
       ...paymentData
     })
     
-    dispatch(updateSubscription((response.data as { subscription: Subscription, payment: Payment }).subscription))
-    dispatch(addPayment((response.data as { subscription: Subscription, payment: Payment }).payment))
+    dispatch(updateSubscription(response.data.subscription))
+    dispatch(addPayment(response.data.payment))
     dispatch(stopLoading())
     
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to subscribe to plan'))
+  } catch (error: unknown) {
+    dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to subscribe to plan'))
     dispatch(stopLoading())
     throw error
   }
@@ -158,8 +171,8 @@ export const cancelCoachSubscription = () => async (dispatch: AppDispatch) => {
     await api.post('/api/coach/membership/cancel')
     dispatch(cancelSubscription())
     dispatch(stopLoading())
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to cancel subscription'))
+  } catch (error: unknown) {
+    dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to cancel subscription'))
     dispatch(stopLoading())
     throw error
   }
@@ -171,18 +184,18 @@ export const renewCoachSubscription = (planId: number, paymentData: {
 }) => async (dispatch: AppDispatch) => {
   try {
     dispatch(startLoading('Renewing subscription...'))
-    const response = await api.post('/api/coach/membership/renew', {
+    const response = await api.post<SubscriptionResponse>('/api/coach/membership/renew', {
       plan_id: planId,
       ...paymentData
     })
     
-    dispatch(updateSubscription((response.data as { subscription: Subscription, payment: Payment }).subscription))
-    dispatch(addPayment((response.data as { subscription: Subscription, payment: Payment }).payment))
+    dispatch(updateSubscription(response.data.subscription))
+    dispatch(addPayment(response.data.payment))
     dispatch(stopLoading())
     
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to renew subscription'))
+  } catch (error: unknown) {
+    dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to renew subscription'))
     dispatch(stopLoading())
     throw error
   }
@@ -194,13 +207,13 @@ export const updateCoachPaymentMethod = (paymentMethodData: {
 }) => async (dispatch: AppDispatch) => {
   try {
     dispatch(startLoading('Updating payment method...'))
-    const response = await api.put('/api/coach/membership/payment-method', paymentMethodData)
-    dispatch(updateSubscription((response.data as { subscription: Subscription }).subscription))
+    const response = await api.put<{ subscription: Subscription }>('/api/coach/membership/payment-method', paymentMethodData)
+    dispatch(updateSubscription(response.data.subscription))
     dispatch(stopLoading())
     
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to update payment method'))
+  } catch (error: unknown) {
+    dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to update payment method'))
     dispatch(stopLoading())
     throw error
   }

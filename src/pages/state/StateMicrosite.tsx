@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../store'
+import { RootState, AppDispatch } from '../../store'
 import {
   fetchStateMicrositeData,
   updateStateMicrositeInfo,
@@ -21,7 +21,7 @@ import CreateNewsModal from '../../components/state/microsite/CreateNewsModal'
 
 const StateMicrosite: React.FC = () => {
   const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { stateId } = useParams<{ stateId?: string }>()
   
   const { micrositeInfo, stats, upcomingEvents, clubs, news, loading, error } = useSelector((state: RootState) => state.stateMicrosite)
@@ -52,7 +52,7 @@ const StateMicrosite: React.FC = () => {
 
   const fetchData = async (publicStateId?: string) => {
     try {
-      await dispatch(fetchStateMicrositeData(publicStateId) as any)
+      await dispatch(fetchStateMicrositeData(publicStateId))
     } catch (error) {
       console.error('Error fetching state microsite data:', error)
     }
@@ -60,7 +60,7 @@ const StateMicrosite: React.FC = () => {
 
   const handleUpdateMicrosite = async (micrositeData: Partial<StateMicrositeInfo>) => {
     try {
-      await dispatch(updateStateMicrositeInfo(micrositeData) as any)
+      await dispatch(updateStateMicrositeInfo(micrositeData))
     } catch (error) {
       console.error('Error updating microsite:', error)
       throw error
@@ -74,7 +74,7 @@ const StateMicrosite: React.FC = () => {
     image_url?: string
   }) => {
     try {
-      await dispatch(createStateMicrositeNews(newsData) as any)
+      await dispatch(createStateMicrositeNews(newsData))
     } catch (error) {
       console.error('Error creating news:', error)
       throw error
@@ -83,7 +83,7 @@ const StateMicrosite: React.FC = () => {
 
   const handleUpdateNews = async (newsId: number, newsData: Partial<StateMicrositeNews>) => {
     try {
-      await dispatch(updateStateMicrositeNews(newsId, newsData) as any)
+      await dispatch(updateStateMicrositeNews(newsId, newsData))
       setEditNews(null)
     } catch (error) {
       console.error('Error updating news:', error)
@@ -93,7 +93,7 @@ const StateMicrosite: React.FC = () => {
 
   const handleDeleteNews = async (newsId: number) => {
     try {
-      await dispatch(deleteStateMicrositeNews(newsId) as any)
+      await dispatch(deleteStateMicrositeNews(newsId))
     } catch (error) {
       console.error('Error deleting news:', error)
     }

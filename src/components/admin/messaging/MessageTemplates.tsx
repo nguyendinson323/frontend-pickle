@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../../store'
+import { RootState, AppDispatch } from '../../../store'
 import { MessageTemplate } from '../../../types/admin'
 import { 
   createTemplate,
@@ -10,7 +10,7 @@ import {
 } from '../../../store/slices/adminMessagingSlice'
 
 const MessageTemplates: React.FC = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { templates, selectedTemplate, loading } = useSelector((state: RootState) => state.adminMessaging)
   
   const [showModal, setShowModal] = useState(false)
@@ -45,9 +45,9 @@ const MessageTemplates: React.FC = () => {
 
     try {
       if (editingTemplate) {
-        await dispatch(updateTemplateAction(editingTemplate.id, templateForm) as any)
+        await dispatch(updateTemplateAction(editingTemplate.id, templateForm))
       } else {
-        await dispatch(createTemplate(templateForm) as any)
+        await dispatch(createTemplate(templateForm))
       }
       setShowModal(false)
       setTemplateForm({ name: '', subject: '', body: '' })
@@ -60,7 +60,7 @@ const MessageTemplates: React.FC = () => {
     const confirmed = window.confirm('Are you sure you want to delete this template?')
     if (confirmed) {
       try {
-        await dispatch(deleteTemplate(templateId) as any)
+        await dispatch(deleteTemplate(templateId))
       } catch (error) {
         console.error('Failed to delete template:', error)
       }

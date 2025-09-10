@@ -5,12 +5,12 @@ const PlayerQuickActions: React.FC = () => {
   const navigate = useNavigate()
 
   const quickActions = [
-    { title: 'Find Courts', description: 'Search for available courts near you', icon: '🎾', href: '/player/courts' },
-    { title: 'Join Tournament', description: 'Register for upcoming tournaments', icon: '🏆', href: '/player/tournaments' },
-    { title: 'Find Players', description: 'Connect with other players', icon: '👥', href: '/player/connections' },
+    { title: 'Find Courts', description: 'Search for available courts near you', icon: '🎾', href: '/player/court-reservations' },
+    { title: 'Join Tournament', description: 'Register for upcoming tournaments', icon: '🏆', href: '/player/tournament-browse' },
+    { title: 'Find Players', description: 'Connect with other players', icon: '👥', href: '/player/finder' },
     { title: 'My Profile', description: 'Update your player information', icon: '👤', href: '/player/profile' },
     { title: 'Rankings', description: 'View your ranking history', icon: '📈', href: '/player/rankings' },
-    { title: 'Digital Credential', description: 'View your official credentials', icon: '🎫', href: '/player/credential' }
+    { title: 'Digital Credential', description: 'View your official credentials', icon: '🎫', href: '/player/digital-credentials' }
   ]
 
   return (

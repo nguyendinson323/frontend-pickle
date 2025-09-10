@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from '../../store'
+import { RootState, AppDispatch } from '../../store'
 import {
   fetchStateDocumentsData,
   uploadStateDocument,
@@ -26,7 +26,7 @@ import InvoiceModal from '../../components/state/documents/InvoiceModal'
 
 const StateDocuments: React.FC = () => {
   const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth)
   const {
@@ -54,12 +54,12 @@ const StateDocuments: React.FC = () => {
       return
     }
 
-    dispatch(fetchStateDocumentsData() as any)
+    dispatch(fetchStateDocumentsData())
   }, [dispatch, isAuthenticated, user, navigate])
 
   const handleUploadDocument = async (formData: FormData) => {
     try {
-      await dispatch(uploadStateDocument(formData) as any)
+      await dispatch(uploadStateDocument(formData))
       setShowUploadModal(false)
     } catch (error) {
       console.error('Failed to upload document:', error)
@@ -70,14 +70,14 @@ const StateDocuments: React.FC = () => {
     // For now, just show an alert. In a real app, you'd open an edit modal
     const newTitle = prompt('Enter new title:', document.title)
     if (newTitle && newTitle !== document.title) {
-      dispatch(updateStateDocument(document.id, { title: newTitle }) as any)
+      dispatch(updateStateDocument(document.id, { title: newTitle }))
     }
   }
 
   const handleDeleteDocument = async (documentId: number) => {
     if (window.confirm('Are you sure you want to delete this document?')) {
       try {
-        await dispatch(deleteStateDocument(documentId) as any)
+        await dispatch(deleteStateDocument(documentId))
       } catch (error) {
         console.error('Failed to delete document:', error)
       }
@@ -97,9 +97,9 @@ const StateDocuments: React.FC = () => {
   const handleSaveInvoice = async (invoiceData: any) => {
     try {
       if (editingInvoice) {
-        await dispatch(updateStateInvoice(editingInvoice.id, invoiceData) as any)
+        await dispatch(updateStateInvoice(editingInvoice.id, invoiceData))
       } else {
-        await dispatch(createStateInvoice(invoiceData) as any)
+        await dispatch(createStateInvoice(invoiceData))
       }
       setShowInvoiceModal(false)
       setEditingInvoice(null)
@@ -111,7 +111,7 @@ const StateDocuments: React.FC = () => {
   const handleDeleteInvoice = async (invoiceId: number) => {
     if (window.confirm('Are you sure you want to delete this invoice?')) {
       try {
-        await dispatch(deleteStateInvoice(invoiceId) as any)
+        await dispatch(deleteStateInvoice(invoiceId))
       } catch (error) {
         console.error('Failed to delete invoice:', error)
       }
@@ -129,7 +129,7 @@ const StateDocuments: React.FC = () => {
         template_content: 'Template content here',
         variables: ['recipient_name', 'amount', 'due_date']
       }
-      dispatch(createDocumentTemplate(templateData) as any)
+      dispatch(createDocumentTemplate(templateData))
     }
   }
 

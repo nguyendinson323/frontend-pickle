@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { RootState } from '../../store'
+import { RootState, AppDispatch } from '../../store'
 import { 
   fetchTemplates,
   fetchSentMessages
@@ -15,7 +15,7 @@ import {
 } from '../../components/admin/messaging'
 
 const AdminMessaging: React.FC = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
   const { user } = useSelector((state: RootState) => state.auth)
   const { messageFilter, error } = useSelector((state: RootState) => state.adminMessaging)
@@ -29,14 +29,14 @@ const AdminMessaging: React.FC = () => {
     }
 
     // Fetch initial data
-    dispatch(fetchTemplates() as any)
-    dispatch(fetchSentMessages(messageFilter) as any)
+    dispatch(fetchTemplates())
+    dispatch(fetchSentMessages(messageFilter))
   }, [dispatch, user, navigate])
 
   useEffect(() => {
     // Refresh sent messages when filters change
     if (activeTab === 'sent') {
-      dispatch(fetchSentMessages(messageFilter) as any)
+      dispatch(fetchSentMessages(messageFilter))
     }
   }, [dispatch, messageFilter, activeTab])
 

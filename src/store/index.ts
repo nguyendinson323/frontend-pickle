@@ -19,10 +19,13 @@ import coachCertificationsReducer from './slices/coachCertificationsSlice'
 import coachStudentsReducer from './slices/coachStudentsSlice'
 import playerMembershipReducer from './slices/playerMembershipSlice'
 import coachMembershipReducer from './slices/coachMembershipSlice'
+import coachDashboardReducer from './slices/coachDashboardSlice'
+import clubDashboardReducer from './slices/clubDashboardSlice'
 import clubCourtsReducer from './slices/clubCourtsSlice'
 import clubMembersReducer from './slices/clubMembersSlice'
 import clubTournamentsReducer from './slices/clubTournamentsSlice'
 import clubMicrositeReducer from './slices/clubMicrositeSlice'
+import stateDashboardReducer from './slices/stateDashboardSlice'
 import stateManagementReducer from './slices/stateManagementSlice'
 import stateInboxReducer from './slices/stateInboxSlice'
 import stateMicrositeReducer from './slices/stateMicrositeSlice'
@@ -34,6 +37,7 @@ import partnerMicrositeReducer from './slices/partnerMicrositeSlice'
 import partnerStatisticsReducer from './slices/partnerStatisticsSlice'
 import partnerDocumentsReducer from './slices/partnerDocumentsSlice'
 import partnerManagementReducer from './slices/partnerManagementSlice'
+import partnerDashboardReducer from './slices/partnerDashboardSlice'
 import adminUserManagementReducer from './slices/adminUserManagementSlice'
 import adminMessagingReducer from './slices/adminMessagingSlice'
 import adminRankingsReducer from './slices/adminRankingsSlice'
@@ -42,6 +46,7 @@ import adminTournamentsReducer from './slices/adminTournamentsSlice'
 import adminMicrositesReducer from './slices/adminMicrositesSlice'
 import adminReportsReducer from './slices/adminReportsSlice'
 import adminPaymentsReducer from './slices/adminPaymentsSlice'
+import adminDashboardReducer from './slices/adminDashboardSlice'
 
 export const store = configureStore({
   reducer: {
@@ -65,10 +70,13 @@ export const store = configureStore({
     coachStudents: coachStudentsReducer,
     playerMembership: playerMembershipReducer,
     coachMembership: coachMembershipReducer,
+    coachDashboard: coachDashboardReducer,
+    clubDashboard: clubDashboardReducer,
     clubCourts: clubCourtsReducer,
     clubMembers: clubMembersReducer,
     clubTournaments: clubTournamentsReducer,
     clubMicrosite: clubMicrositeReducer,
+    stateDashboard: stateDashboardReducer,
     stateManagement: stateManagementReducer,
     stateInbox: stateInboxReducer,
     stateMicrosite: stateMicrositeReducer,
@@ -80,6 +88,7 @@ export const store = configureStore({
     partnerStatistics: partnerStatisticsReducer,
     partnerDocuments: partnerDocumentsReducer,
     partnerManagement: partnerManagementReducer,
+    partnerDashboard: partnerDashboardReducer,
     adminUserManagement: adminUserManagementReducer,
     adminMessaging: adminMessagingReducer,
     adminRankings: adminRankingsReducer,
@@ -87,7 +96,8 @@ export const store = configureStore({
     adminTournaments: adminTournamentsReducer,
     adminMicrosites: adminMicrositesReducer,
     adminReports: adminReportsReducer,
-    adminPayments: adminPaymentsReducer
+    adminPayments: adminPaymentsReducer,
+    adminDashboard: adminDashboardReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

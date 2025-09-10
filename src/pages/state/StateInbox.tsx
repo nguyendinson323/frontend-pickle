@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../store'
+import { RootState, AppDispatch } from '../../store'
 import {
   fetchStateInboxData,
   fetchStateRecipients,
@@ -30,7 +30,7 @@ import MessageViewModal from '../../components/state/inbox/MessageViewModal'
 
 const StateInbox: React.FC = () => {
   const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   
   const { messages, sentMessages, recipients, templates, stats, selectedMessage, loading, error } = useSelector((state: RootState) => state.stateInbox)
   const { user } = useSelector((state: RootState) => state.auth)
@@ -52,8 +52,8 @@ const StateInbox: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      await dispatch(fetchStateInboxData() as any)
-      await dispatch(fetchMessageTemplates() as any)
+      await dispatch(fetchStateInboxData())
+      await dispatch(fetchMessageTemplates())
     } catch (error) {
       console.error('Error fetching state inbox data:', error)
     }
@@ -68,7 +68,7 @@ const StateInbox: React.FC = () => {
     schedule_at?: string
   }) => {
     try {
-      await dispatch(sendStateMessage(messageData) as any)
+      await dispatch(sendStateMessage(messageData))
       setShowComposeModal(false)
     } catch (error) {
       console.error('Error sending message:', error)
@@ -84,7 +84,7 @@ const StateInbox: React.FC = () => {
     schedule_at?: string
   }) => {
     try {
-      await dispatch(sendBulkAnnouncement(announcementData) as any)
+      await dispatch(sendBulkAnnouncement(announcementData))
       setShowAnnouncementModal(false)
     } catch (error) {
       console.error('Error sending announcement:', error)
@@ -99,7 +99,7 @@ const StateInbox: React.FC = () => {
 
   const handleMarkAsRead = async (messageId: number) => {
     try {
-      await dispatch(markStateMessageAsRead(messageId) as any)
+      await dispatch(markStateMessageAsRead(messageId))
     } catch (error) {
       console.error('Error marking message as read:', error)
     }
@@ -107,7 +107,7 @@ const StateInbox: React.FC = () => {
 
   const handleDeleteMessage = async (messageId: number) => {
     try {
-      await dispatch(deleteStateMessage(messageId) as any)
+      await dispatch(deleteStateMessage(messageId))
     } catch (error) {
       console.error('Error deleting message:', error)
     }
@@ -115,7 +115,7 @@ const StateInbox: React.FC = () => {
 
   const handleLoadRecipients = async (type?: string) => {
     try {
-      await dispatch(fetchStateRecipients(type) as any)
+      await dispatch(fetchStateRecipients(type))
     } catch (error) {
       console.error('Error loading recipients:', error)
     }
@@ -128,7 +128,7 @@ const StateInbox: React.FC = () => {
     target_audience: string
   }) => {
     try {
-      await dispatch(createMessageTemplate(templateData) as any)
+      await dispatch(createMessageTemplate(templateData))
     } catch (error) {
       console.error('Error creating template:', error)
       throw error
@@ -137,7 +137,7 @@ const StateInbox: React.FC = () => {
 
   const handleUpdateTemplate = async (templateId: number, templateData: Partial<AnnouncementTemplate>) => {
     try {
-      await dispatch(updateMessageTemplate(templateId, templateData) as any)
+      await dispatch(updateMessageTemplate(templateId, templateData))
       setEditTemplate(null)
     } catch (error) {
       console.error('Error updating template:', error)
@@ -147,7 +147,7 @@ const StateInbox: React.FC = () => {
 
   const handleDeleteTemplate = async (templateId: number) => {
     try {
-      await dispatch(deleteMessageTemplate(templateId) as any)
+      await dispatch(deleteMessageTemplate(templateId))
     } catch (error) {
       console.error('Error deleting template:', error)
     }

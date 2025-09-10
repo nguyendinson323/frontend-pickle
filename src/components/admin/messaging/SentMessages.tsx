@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../../store'
+import { RootState, AppDispatch } from '../../../store'
 import { 
   resendFailedMessage,
   getMessageDeliveryReport
 } from '../../../store/slices/adminMessagingSlice'
 
 const SentMessages: React.FC = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { sentMessages, loading } = useSelector((state: RootState) => state.adminMessaging)
   
   const [selectedMessage, setSelectedMessage] = useState(null)
@@ -18,7 +18,7 @@ const SentMessages: React.FC = () => {
     const confirmed = window.confirm('Are you sure you want to resend failed messages?')
     if (confirmed) {
       try {
-        await dispatch(resendFailedMessage(messageId) as any)
+        await dispatch(resendFailedMessage(messageId))
         alert('Failed messages have been queued for resending')
       } catch (error) {
         console.error('Failed to resend message:', error)
@@ -28,7 +28,7 @@ const SentMessages: React.FC = () => {
 
   const handleViewDeliveryReport = async (messageId: number) => {
     try {
-      const report = await dispatch(getMessageDeliveryReport(messageId) as any)
+      const report = await dispatch(getMessageDeliveryReport(messageId))
       setDeliveryReport(report)
       setShowDeliveryReport(true)
     } catch (error) {

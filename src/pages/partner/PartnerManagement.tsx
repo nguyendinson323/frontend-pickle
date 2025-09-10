@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from '../../store'
+import { RootState, AppDispatch } from '../../store'
 import {
   fetchPartnerManagementData,
   createCourt,
@@ -24,7 +24,7 @@ import CourtModal from '../../components/partner/management/CourtModal'
 import TournamentModal from '../../components/partner/management/TournamentModal'
 
 const PartnerManagement: React.FC = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const {
     courts,
     tournaments,
@@ -42,7 +42,7 @@ const PartnerManagement: React.FC = () => {
   const [showTournamentModal, setShowTournamentModal] = useState(false)
 
   useEffect(() => {
-    dispatch(fetchPartnerManagementData() as any)
+    dispatch(fetchPartnerManagementData())
   }, [dispatch])
 
   const handleAddCourt = () => {
@@ -58,9 +58,9 @@ const PartnerManagement: React.FC = () => {
   const handleSaveCourt = async (courtData: any) => {
     try {
       if (selectedCourt) {
-        await dispatch(updatePartnerCourt(selectedCourt.id, courtData) as any)
+        await dispatch(updatePartnerCourt(selectedCourt.id, courtData))
       } else {
-        await dispatch(createCourt(courtData) as any)
+        await dispatch(createCourt(courtData))
       }
       setShowCourtModal(false)
       dispatch(setSelectedCourt(null))
@@ -166,7 +166,7 @@ const PartnerManagement: React.FC = () => {
             <h3 className="text-lg font-medium text-red-900 mb-2">Error Loading Management Data</h3>
             <p className="text-red-700 mb-4">{error}</p>
             <button
-              onClick={() => dispatch(fetchPartnerManagementData() as any)}
+              onClick={() => dispatch(fetchPartnerManagementData())}
               className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
             >
               Retry

@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router-dom'
 
 interface Member {
   id: number
-  name: string
-  profilePhoto?: string
-  nrtpLevel: number
-  joinedDate: string
+  full_name: string
+  profile_photo_url: string | null
+  nrtp_level: number
+  created_at: string
 }
 
 interface ClubRecentMembersProps {
@@ -15,6 +15,18 @@ interface ClubRecentMembersProps {
 
 const ClubRecentMembers: React.FC<ClubRecentMembersProps> = ({ members }) => {
   const navigate = useNavigate()
+
+  const formatJoinedDate = (dateString: string) => {
+    const date = new Date(dateString)
+    const now = new Date()
+    const diffTime = Math.abs(now.getTime() - date.getTime())
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    
+    if (diffDays === 1) return '1 day ago'
+    if (diffDays < 7) return `${diffDays} days ago`
+    if (diffDays < 30) return `${Math.ceil(diffDays / 7)} weeks ago`
+    return `${Math.ceil(diffDays / 30)} months ago`
+  }
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
@@ -25,19 +37,19 @@ const ClubRecentMembers: React.FC<ClubRecentMembersProps> = ({ members }) => {
             <div key={member.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
               <div className="flex items-center">
                 <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-3">
-                  {member.profilePhoto ? (
-                    <img src={member.profilePhoto} alt="Member" className="w-10 h-10 rounded-full object-cover" />
+                  {member.profile_photo_url ? (
+                    <img src={member.profile_photo_url} alt="Member" className="w-10 h-10 rounded-full object-cover" />
                   ) : (
                     <span className="text-purple-600 text-sm">👤</span>
                   )}
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">{member.name}</p>
-                  <p className="text-sm text-gray-600">NRTP Level {member.nrtpLevel}</p>
+                  <p className="font-medium text-gray-900">{member.full_name}</p>
+                  <p className="text-sm text-gray-600">NRTP Level {member.nrtp_level}</p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-xs text-gray-500">{member.joinedDate}</p>
+                <p className="text-xs text-gray-500">{formatJoinedDate(member.created_at)}</p>
               </div>
             </div>
           ))}

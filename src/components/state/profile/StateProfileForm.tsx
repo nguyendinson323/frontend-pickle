@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState, AppDispatch } from '../../../store'
 import { updateStateProfile } from '../../../store/slices/authSlice'
-import { StateCommittee, User, StateDashboard } from '../../../types/auth'
+import { StateCommittee, User } from '../../../types/auth'
 
 interface StateProfileFormProps {
   stateCommittee: StateCommittee
@@ -14,6 +14,7 @@ interface StateProfileFormProps {
 const StateProfileForm: React.FC<StateProfileFormProps> = ({ stateCommittee, user, onCancel }) => {
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
+  const { isLoading } = useSelector((state: RootState) => state.loading)
   
   const [userData, setUserData] = useState({
     username: user.username,
@@ -33,6 +34,9 @@ const StateProfileForm: React.FC<StateProfileFormProps> = ({ stateCommittee, use
     phone: stateCommittee.phone || ''
   })
 
+  const [error, setError] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+
   const handleUserInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setUserData(prev => ({ ...prev, [name]: value }))
@@ -45,14 +49,25 @@ const StateProfileForm: React.FC<StateProfileFormProps> = ({ stateCommittee, use
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError(null)
+    setSuccessMessage(null)
     
-    const updateData = {
-      ...stateData,
-      user_data: userData
-    }
+    try {
+      const updateData = {
+        ...stateData,
+        user_data: userData
+      }
 
-    dispatch(updateStateProfile(updateData))
-    navigate('/state/profile')
+      await dispatch(updateStateProfile(updateData))
+      setSuccessMessage('Profile updated successfully!')
+      
+      // Navigate back to profile view after a short delay
+      setTimeout(() => {
+        onCancel() // This will switch back to view mode
+      }, 1500)
+    } catch (error) {
+      setError((error as { message?: string }).message || 'Failed to update profile')
+    }
   }
 
   return (
@@ -61,6 +76,19 @@ const StateProfileForm: React.FC<StateProfileFormProps> = ({ stateCommittee, use
         <h2 className="text-xl font-semibold mb-2">Edit Profile</h2>
         <p className="text-red-100">Update your state committee information</p>
       </div>
+
+      {/* Error and Success Messages */}
+      {error && (
+        <div className="mx-8 mt-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+          {error}
+        </div>
+      )}
+      
+      {successMessage && (
+        <div className="mx-8 mt-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
+          {successMessage}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="p-8 space-y-8">
         {/* User Account Info Section */}
@@ -238,15 +266,23 @@ const StateProfileForm: React.FC<StateProfileFormProps> = ({ stateCommittee, use
           <button
             type="button"
             onClick={onCancel}
-            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover: focus:outline-none focus:ring-2 focus:ring-red-500"
+            disabled={isLoading}
+            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+            disabled={isLoading}
+            className="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
           >
-            Save Changes
+            {isLoading && (
+              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            )}
+            {isLoading ? 'Saving...' : 'Save Changes'}
           </button>
         </div>
       </form>

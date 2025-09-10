@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../store'
+import { RootState, AppDispatch } from '../../store'
 import {
   fetchClubMembersData,
   updateMemberActiveStatus,
@@ -21,7 +21,7 @@ import ExtendMembershipModal from '../../components/club/members/ExtendMembershi
 
 const ClubMembers: React.FC = () => {
   const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   
   const { members, stats, loading, error } = useSelector((state: RootState) => state.clubMembers)
   const { user } = useSelector((state: RootState) => state.auth)
@@ -42,7 +42,7 @@ const ClubMembers: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      await dispatch(fetchClubMembersData() as any)
+      await dispatch(fetchClubMembersData())
     } catch (error) {
       console.error('Error fetching members data:', error)
     }
@@ -71,7 +71,7 @@ const ClubMembers: React.FC = () => {
 
   const handleToggleStatus = async (memberId: number, currentStatus: boolean) => {
     try {
-      await dispatch(updateMemberActiveStatus(memberId, !currentStatus) as any)
+      await dispatch(updateMemberActiveStatus(memberId, !currentStatus))
     } catch (error) {
       console.error('Error updating member status:', error)
     }
@@ -80,7 +80,7 @@ const ClubMembers: React.FC = () => {
   const handleRemoveMember = async (memberId: number) => {
     if (window.confirm('Are you sure you want to remove this member from the club?')) {
       try {
-        await dispatch(removeMemberFromClub(memberId) as any)
+        await dispatch(removeMemberFromClub(memberId))
         setSelectedMembers(prev => prev.filter(id => id !== memberId))
       } catch (error) {
         console.error('Error removing member:', error)
@@ -95,7 +95,7 @@ const ClubMembers: React.FC = () => {
 
   const handleExtendMembershipSubmit = async (memberId: number, expiryDate: string) => {
     try {
-      await dispatch(extendMembershipExpiry(memberId, expiryDate) as any)
+      await dispatch(extendMembershipExpiry(memberId, expiryDate))
     } catch (error) {
       console.error('Error extending membership:', error)
     }
@@ -108,13 +108,13 @@ const ClubMembers: React.FC = () => {
     message?: string
   }) => {
     try {
-      const result = await dispatch(inviteNewMember(inviteData) as any)
+      const result = await dispatch(inviteNewMember(inviteData))
       
-      if (result.type === 'direct_add') {
+      if (result.payload?.type === 'direct_add') {
         await fetchData()
       }
       
-      return result
+      return result.payload
     } catch (error) {
       console.error('Error inviting member:', error)
       throw error
@@ -123,7 +123,7 @@ const ClubMembers: React.FC = () => {
 
   const handleBulkAction = async (action: 'activate' | 'deactivate' | 'extend_membership', expiryDate?: string) => {
     try {
-      await dispatch(bulkUpdateMembers(selectedMembers, { action, expiry_date: expiryDate }) as any)
+      await dispatch(bulkUpdateMembers(selectedMembers, { action, expiry_date: expiryDate }))
       setSelectedMembers([])
     } catch (error) {
       console.error('Error performing bulk action:', error)

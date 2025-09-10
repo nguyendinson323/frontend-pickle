@@ -31,8 +31,7 @@ interface CoachCertification {
 
 const CoachCertificationsPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
-  const { certifications, stats, selectedCertification, filters } = useSelector((state: RootState) => state.coachCertifications)
-  const { isLoading } = useSelector((state: RootState) => state.loading)
+  const { certifications, stats, selectedCertification, filters, isLoading } = useSelector((state: RootState) => state.coachCertifications)
   
   const [isFormModalOpen, setIsFormModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from '../../store'
+import { RootState, AppDispatch } from '../../store'
 import {
   fetchPartnerMicrositeData,
   updatePartnerMicrositeInfo,
@@ -14,7 +14,7 @@ import TournamentsSection from '../../components/partner/microsite/TournamentsSe
 
 const PartnerMicrosite: React.FC = () => {
   const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { partnerId } = useParams<{ partnerId?: string }>()
   
   const { user } = useSelector((state: RootState) => state.auth)
@@ -36,7 +36,7 @@ const PartnerMicrosite: React.FC = () => {
   useEffect(() => {
     if (partnerId) {
       // Public view - fetch by partner ID
-      dispatch(fetchPartnerMicrositeData(partnerId) as any)
+      dispatch(fetchPartnerMicrositeData(partnerId))
     } else if (user) {
       if (user.role === 'partner') {
         // Authenticated partner - fetch their own data
@@ -50,7 +50,7 @@ const PartnerMicrosite: React.FC = () => {
 
   const handleEditMicrosite = async (data: Partial<PartnerMicrositeInfo>) => {
     try {
-      await dispatch(updatePartnerMicrositeInfo(data) as any)
+      await dispatch(updatePartnerMicrositeInfo(data))
       setShowEditModal(false)
     } catch (error) {
       console.error('Failed to update microsite:', error)

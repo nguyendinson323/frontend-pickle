@@ -99,15 +99,35 @@ export const {
   updateMemberInfo
 } = clubMembersSlice.actions
 
+// Define response interfaces
+interface ClubMembersResponse {
+  members: ClubMember[]
+  stats: MembershipStats
+}
+
+interface MemberResponse {
+  member: ClubMember
+}
+
+interface InviteResponse {
+  message: string
+  invitation_id: number
+}
+
+interface BulkUpdateResponse {
+  message: string
+  updated_count: number
+}
+
 // API Functions
 export const fetchClubMembersData = () => async (dispatch: AppDispatch) => {
   try {
     dispatch(startLoading('Loading members data...'))
-    const response = await api.get('/api/club/members')
-    dispatch(setMembersData(response.data as { members: ClubMember[], stats: MembershipStats }))
+    const response = await api.get<ClubMembersResponse>('/api/club/members')
+    dispatch(setMembersData(response.data))
     dispatch(stopLoading())
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to fetch members data'))
+  } catch (error: unknown) {
+    dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch members data'))
     dispatch(stopLoading())
   }
 }
@@ -118,8 +138,8 @@ export const updateMemberActiveStatus = (memberId: number, isActive: boolean) =>
     await api.put(`/api/club/members/${memberId}/status`, { is_active: isActive })
     dispatch(updateMemberStatus({ id: memberId, is_active: isActive }))
     dispatch(stopLoading())
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to update member status'))
+  } catch (error: unknown) {
+    dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to update member status'))
     dispatch(stopLoading())
     throw error
   }
@@ -131,8 +151,8 @@ export const removeMemberFromClub = (memberId: number) => async (dispatch: AppDi
     await api.delete(`/api/club/members/${memberId}`)
     dispatch(removeMember(memberId))
     dispatch(stopLoading())
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to remove member'))
+  } catch (error: unknown) {
+    dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to remove member'))
     dispatch(stopLoading())
     throw error
   }
@@ -141,15 +161,15 @@ export const removeMemberFromClub = (memberId: number) => async (dispatch: AppDi
 export const extendMembershipExpiry = (memberId: number, expiryDate: string) => async (dispatch: AppDispatch) => {
   try {
     dispatch(startLoading('Extending membership...'))
-    const response = await api.put(`/api/club/members/${memberId}/extend`, { 
+    const response = await api.put<MemberResponse>(`/api/club/members/${memberId}/extend`, { 
       affiliation_expires_at: expiryDate 
     })
-    dispatch(updateMemberInfo((response.data as { member: ClubMember }).member))
+    dispatch(updateMemberInfo(response.data.member))
     dispatch(stopLoading())
     
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to extend membership'))
+  } catch (error: unknown) {
+    dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to extend membership'))
     dispatch(stopLoading())
     throw error
   }
@@ -163,12 +183,12 @@ export const inviteNewMember = (inviteData: {
 }) => async (dispatch: AppDispatch) => {
   try {
     dispatch(startLoading('Sending invitation...'))
-    const response = await api.post('/api/club/members/invite', inviteData)
+    const response = await api.post<InviteResponse>('/api/club/members/invite', inviteData)
     dispatch(stopLoading())
     
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to send invitation'))
+  } catch (error: unknown) {
+    dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to send invitation'))
     dispatch(stopLoading())
     throw error
   }
@@ -180,7 +200,7 @@ export const bulkUpdateMembers = (memberIds: number[], updateData: {
 }) => async (dispatch: AppDispatch) => {
   try {
     dispatch(startLoading('Updating members...'))
-    const response = await api.put('/api/club/members/bulk-update', {
+    const response = await api.put<BulkUpdateResponse>('/api/club/members/bulk-update', {
       member_ids: memberIds,
       ...updateData
     })
@@ -190,8 +210,8 @@ export const bulkUpdateMembers = (memberIds: number[], updateData: {
     dispatch(stopLoading())
     
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to update members'))
+  } catch (error: unknown) {
+    dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to update members'))
     dispatch(stopLoading())
     throw error
   }

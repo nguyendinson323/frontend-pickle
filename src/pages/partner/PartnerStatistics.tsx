@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from '../../store'
+import { RootState, AppDispatch } from '../../store'
 import {
   fetchPartnerStatistics,
   exportStatisticsReport,
@@ -12,7 +12,7 @@ import RevenueChart from '../../components/partner/statistics/RevenueChart'
 import MetricsGrid from '../../components/partner/statistics/MetricsGrid'
 
 const PartnerStatistics: React.FC = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const {
     revenueData,
     bookingMetrics,
@@ -27,18 +27,18 @@ const PartnerStatistics: React.FC = () => {
   const [exporting, setExporting] = useState(false)
 
   useEffect(() => {
-    dispatch(fetchPartnerStatistics() as any)
+    dispatch(fetchPartnerStatistics())
   }, [dispatch])
 
   const handleDateRangeChange = (newDateRange: { startDate: string; endDate: string }) => {
     dispatch(setDateRange(newDateRange))
-    dispatch(fetchPartnerStatistics(newDateRange) as any)
+    dispatch(fetchPartnerStatistics(newDateRange))
   }
 
   const handleExportReport = async (format: 'csv' | 'pdf') => {
     try {
       setExporting(true)
-      await dispatch(exportStatisticsReport(dateRange, format) as any)
+      await dispatch(exportStatisticsReport(dateRange, format))
     } catch (error) {
       console.error('Export failed:', error)
     } finally {
@@ -75,7 +75,7 @@ const PartnerStatistics: React.FC = () => {
             <h3 className="text-lg font-medium text-red-900 mb-2">Error Loading Statistics</h3>
             <p className="text-red-700 mb-4">{error}</p>
             <button
-              onClick={() => dispatch(fetchPartnerStatistics() as any)}
+              onClick={() => dispatch(fetchPartnerStatistics())}
               className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
             >
               Retry
@@ -138,7 +138,7 @@ const PartnerStatistics: React.FC = () => {
                 Manage Courts & Tournaments
               </button>
               <button
-                onClick={() => dispatch(fetchPartnerStatistics() as any)}
+                onClick={() => dispatch(fetchPartnerStatistics())}
                 className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover: transition-colors"
               >
                 Refresh Data

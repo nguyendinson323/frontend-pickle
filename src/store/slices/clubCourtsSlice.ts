@@ -183,15 +183,42 @@ export const {
   updateMaintenance
 } = clubCourtsSlice.actions
 
+// Define response interfaces
+interface ClubCourtsResponse {
+  courts: Court[]
+  courtSchedules: CourtSchedule[]
+  reservations: CourtReservation[]
+  maintenance: CourtMaintenance[]
+  stats: {
+    total_courts: number
+    total_reservations: number
+    monthly_revenue: number
+    occupancy_rate: number
+    upcoming_maintenance: number
+  } | null
+}
+
+interface CourtResponse {
+  court: Court
+}
+
+interface ScheduleResponse {
+  schedule: CourtSchedule
+}
+
+interface MaintenanceResponse {
+  maintenance: CourtMaintenance
+}
+
 // API Functions
 export const fetchClubCourtsData = () => async (dispatch: AppDispatch) => {
   try {
     dispatch(startLoading('Loading courts data...'))
-    const response = await api.get('/api/club/courts')
-    dispatch(setCourtsData(response.data as { courts: Court[], courtSchedules: CourtSchedule[], reservations: CourtReservation[], maintenance: CourtMaintenance[], stats: { total_courts: number, total_reservations: number, monthly_revenue: number, occupancy_rate: number, upcoming_maintenance: number } | null }))
+    const response = await api.get<ClubCourtsResponse>('/api/club/courts')
+    dispatch(setCourtsData(response.data))
     dispatch(stopLoading())
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to fetch courts data'))
+  } catch (error: unknown) {
+    dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch courts data'))
     dispatch(stopLoading())
   }
 }
@@ -209,13 +236,13 @@ export const createCourt = (courtData: {
 }) => async (dispatch: AppDispatch) => {
   try {
     dispatch(startLoading('Creating court...'))
-    const response = await api.post('/api/club/courts', courtData)
-    dispatch(addCourt((response.data as { court: Court }).court))
+    const response = await api.post<CourtResponse>('/api/club/courts', courtData)
+    dispatch(addCourt(response.data.court))
     dispatch(stopLoading())
     
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to create court'))
+  } catch (error: unknown) {
+    dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to create court'))
     dispatch(stopLoading())
     throw error
   }
@@ -224,13 +251,13 @@ export const createCourt = (courtData: {
 export const updateCourtInfo = (courtId: number, courtData: Partial<Court>) => async (dispatch: AppDispatch) => {
   try {
     dispatch(startLoading('Updating court...'))
-    const response = await api.put(`/api/club/courts/${courtId}`, courtData)
-    dispatch(updateCourt((response.data as { court: Court }).court))
+    const response = await api.put<CourtResponse>(`/api/club/courts/${courtId}`, courtData)
+    dispatch(updateCourt(response.data.court))
     dispatch(stopLoading())
     
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to update court'))
+  } catch (error: unknown) {
+    dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to update court'))
     dispatch(stopLoading())
     throw error
   }
@@ -242,8 +269,8 @@ export const deleteCourtInfo = (courtId: number) => async (dispatch: AppDispatch
     await api.delete(`/api/club/courts/${courtId}`)
     dispatch(deleteCourt(courtId))
     dispatch(stopLoading())
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to delete court'))
+  } catch (error: unknown) {
+    dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to delete court'))
     dispatch(stopLoading())
     throw error
   }
@@ -257,13 +284,13 @@ export const updateCourtScheduleInfo = (scheduleId: number, scheduleData: {
 }) => async (dispatch: AppDispatch) => {
   try {
     dispatch(startLoading('Updating court schedule...'))
-    const response = await api.put(`/api/club/courts/schedules/${scheduleId}`, scheduleData)
-    dispatch(updateCourtSchedule((response.data as { schedule: CourtSchedule }).schedule))
+    const response = await api.put<ScheduleResponse>(`/api/club/courts/schedules/${scheduleId}`, scheduleData)
+    dispatch(updateCourtSchedule(response.data.schedule))
     dispatch(stopLoading())
     
     return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to update schedule'))
+  } catch (error: unknown) {
+    dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to update schedule'))
     dispatch(stopLoading())
     throw error
   }
@@ -275,8 +302,8 @@ export const updateReservationStatusInfo = (reservationId: number, status: strin
     await api.put(`/api/club/courts/reservations/${reservationId}/status`, { status })
     dispatch(updateReservationStatus({ id: reservationId, status }))
     dispatch(stopLoading())
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to update reservation status'))
+  } catch (error: unknown) {
+    dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to update reservation status'))
     dispatch(stopLoading())
     throw error
   }

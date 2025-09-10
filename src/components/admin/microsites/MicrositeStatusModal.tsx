@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
+import { AppDispatch } from '../../../store'
 import { MicrositeAdmin } from '../../../types/admin'
 import { 
   updateMicrositeStatusAction,
@@ -14,7 +15,7 @@ interface MicrositeStatusModalProps {
 }
 
 const MicrositeStatusModal: React.FC<MicrositeStatusModalProps> = ({ microsite, onClose }) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const [action, setAction] = useState<'update' | 'approve' | 'reject' | 'suspend'>('update')
   const [newStatus, setNewStatus] = useState(microsite.status)
   const [reason, setReason] = useState('')
@@ -34,10 +35,10 @@ const MicrositeStatusModal: React.FC<MicrositeStatusModalProps> = ({ microsite, 
     try {
       switch (action) {
         case 'update':
-          await dispatch(updateMicrositeStatusAction(microsite.id, newStatus, reason) as any)
+          await dispatch(updateMicrositeStatusAction(microsite.id, newStatus, reason))
           break
         case 'approve':
-          await dispatch(approveMicrosite(microsite.id) as any)
+          await dispatch(approveMicrosite(microsite.id))
           break
         case 'reject':
           if (!reason.trim()) {
@@ -45,7 +46,7 @@ const MicrositeStatusModal: React.FC<MicrositeStatusModalProps> = ({ microsite, 
             setLoading(false)
             return
           }
-          await dispatch(rejectMicrosite(microsite.id, reason) as any)
+          await dispatch(rejectMicrosite(microsite.id, reason))
           break
         case 'suspend':
           if (!reason.trim()) {
@@ -53,7 +54,7 @@ const MicrositeStatusModal: React.FC<MicrositeStatusModalProps> = ({ microsite, 
             setLoading(false)
             return
           }
-          await dispatch(suspendMicrosite(microsite.id, reason) as any)
+          await dispatch(suspendMicrosite(microsite.id, reason))
           break
       }
       onClose()
@@ -106,7 +107,7 @@ const MicrositeStatusModal: React.FC<MicrositeStatusModalProps> = ({ microsite, 
                   name="action"
                   value="update"
                   checked={action === 'update'}
-                  onChange={(e) => setAction(e.target.value as any)}
+                  onChange={(e) => setAction(e.target.value as 'update' | 'approve' | 'reject' | 'suspend')}
                   className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
                 />
                 <span className="ml-2 text-sm text-gray-700">Update Status</span>
@@ -120,7 +121,7 @@ const MicrositeStatusModal: React.FC<MicrositeStatusModalProps> = ({ microsite, 
                       name="action"
                       value="approve"
                       checked={action === 'approve'}
-                      onChange={(e) => setAction(e.target.value as any)}
+                      onChange={(e) => setAction(e.target.value as 'update' | 'approve' | 'reject' | 'suspend')}
                       className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
                     />
                     <span className="ml-2 text-sm text-gray-700">Approve Microsite</span>
@@ -132,7 +133,7 @@ const MicrositeStatusModal: React.FC<MicrositeStatusModalProps> = ({ microsite, 
                       name="action"
                       value="reject"
                       checked={action === 'reject'}
-                      onChange={(e) => setAction(e.target.value as any)}
+                      onChange={(e) => setAction(e.target.value as 'update' | 'approve' | 'reject' | 'suspend')}
                       className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
                     />
                     <span className="ml-2 text-sm text-gray-700">Reject Microsite</span>
@@ -147,7 +148,7 @@ const MicrositeStatusModal: React.FC<MicrositeStatusModalProps> = ({ microsite, 
                     name="action"
                     value="suspend"
                     checked={action === 'suspend'}
-                    onChange={(e) => setAction(e.target.value as any)}
+                    onChange={(e) => setAction(e.target.value as 'update' | 'approve' | 'reject' | 'suspend')}
                     className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
                   />
                   <span className="ml-2 text-sm text-gray-700">Suspend Microsite</span>

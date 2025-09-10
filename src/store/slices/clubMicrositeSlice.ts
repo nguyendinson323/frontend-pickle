@@ -82,18 +82,38 @@ export const {
   setPreviewMode
 } = clubMicrositeSlice.actions
 
+// Define response interfaces
+interface ClubMicrositeResponse {
+  micrositeData: ClubMicrositeData
+  stats: MicrositeStats
+}
+
+interface MicrositeUpdateResponse {
+  micrositeData: ClubMicrositeData
+  message?: string
+}
+
+interface LogoUploadResponse {
+  logo_url: string
+  message?: string
+}
+
+interface PublishResponse {
+  message: string
+  published: boolean
+}
+
 // API Functions
 export const fetchClubMicrositeData = () => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Loading club microsite...'))
   
   try {
     dispatch(setError(null))
-    const response = await api.get('/api/club/microsite')
-    dispatch(setMicrositeData(response.data as { micrositeData: ClubMicrositeData, stats: MicrositeStats }))
+    const response = await api.get<ClubMicrositeResponse>('/api/club/microsite')
+    dispatch(setMicrositeData(response.data))
     dispatch(stopLoading())
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch microsite data'
-    dispatch(setError(errorMessage))
+    dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch microsite data'))
     dispatch(stopLoading())
   }
 }
@@ -111,13 +131,12 @@ export const updateClubMicrositeData = (micrositeData: {
   
   try {
     dispatch(setError(null))
-    const response = await api.put('/api/club/microsite', micrositeData)
-    dispatch(updateMicrositeData((response.data as { micrositeData: ClubMicrositeData }).micrositeData))
+    const response = await api.put<MicrositeUpdateResponse>('/api/club/microsite', micrositeData)
+    dispatch(updateMicrositeData(response.data.micrositeData))
     dispatch(stopLoading())
     return response.data
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to update microsite data'
-    dispatch(setError(errorMessage))
+    dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to update microsite data'))
     dispatch(stopLoading())
     throw error
   }
@@ -128,18 +147,17 @@ export const uploadClubLogo = (formData: FormData) => async (dispatch: AppDispat
   
   try {
     dispatch(setError(null))
-    const response = await api.post('/api/club/microsite/logo', formData, {
+    const response = await api.post<LogoUploadResponse>('/api/club/microsite/logo', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     })
     
-    dispatch(updateMicrositeData({ logo_url: (response.data as { logo_url: string }).logo_url }))
+    dispatch(updateMicrositeData({ logo_url: response.data.logo_url }))
     dispatch(stopLoading())
     return response.data
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to upload logo'
-    dispatch(setError(errorMessage))
+    dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to upload logo'))
     dispatch(stopLoading())
     throw error
   }
@@ -150,12 +168,11 @@ export const publishMicrosite = () => async (dispatch: AppDispatch) => {
   
   try {
     dispatch(setError(null))
-    const response = await api.post('/api/club/microsite/publish')
+    const response = await api.post<PublishResponse>('/api/club/microsite/publish')
     dispatch(stopLoading())
     return response.data
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to publish microsite'
-    dispatch(setError(errorMessage))
+    dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to publish microsite'))
     dispatch(stopLoading())
     throw error
   }

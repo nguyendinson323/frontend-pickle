@@ -7,15 +7,19 @@ import { CourtInfo } from '../../types/admin'
 interface CourtReservation {
   id: number
   court_id: number
-  user_id: number
-  user_name: string
+  court_name: string
+  player_id: number
+  player_name: string
   user_type: string
+  date: string
   start_time: string
   end_time: string
-  status: 'active' | 'completed' | 'cancelled' | 'no_show'
-  amount_paid: number
-  payment_status: 'paid' | 'pending' | 'refunded'
+  status: 'pending' | 'confirmed' | 'canceled' | 'completed' | 'active' | 'cancelled' | 'no_show'
+  payment_status: 'pending' | 'paid' | 'refunded'
+  amount: number
+  stripe_payment_id: string | null
   created_at: string
+  updated_at: string
 }
 
 interface CourtFilter {
@@ -47,6 +51,7 @@ interface AdminCourtsState {
     topPerformingCourt: string
     pendingApprovals: number
   }
+  loading: boolean
   error: string | null
   selectedReservations: number[]
 }
@@ -78,6 +83,7 @@ const initialState: AdminCourtsState = {
     topPerformingCourt: '',
     pendingApprovals: 0
   },
+  loading: false,
   error: null,
   selectedReservations: []
 }
@@ -86,6 +92,9 @@ const adminCourtsSlice = createSlice({
   name: 'adminCourts',
   initialState,
   reducers: {
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.loading = action.payload
+    },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload
     },
@@ -118,13 +127,13 @@ const adminCourtsSlice = createSlice({
     clearSelectedReservations: (state) => {
       state.selectedReservations = []
     },
-    updateCourtStatus: (state, action: PayloadAction<{ courtId: number; status: 'available' | 'occupied' | 'maintenance' }>) => {
+    updateCourtStatus: (state, action: PayloadAction<{ courtId: number; status: 'active' | 'maintenance' | 'inactive' | 'pending' }>) => {
       const courtIndex = state.courts.findIndex(court => court.id === action.payload.courtId)
       if (courtIndex !== -1) {
         state.courts[courtIndex].status = action.payload.status
       }
     },
-    updateReservationStatus: (state, action: PayloadAction<{ reservationId: number; status: 'active' | 'completed' | 'cancelled' | 'no_show' }>) => {
+    updateReservationStatus: (state, action: PayloadAction<{ reservationId: number; status: 'pending' | 'confirmed' | 'canceled' | 'completed' | 'active' | 'cancelled' | 'no_show' }>) => {
       const reservationIndex = state.reservations.findIndex(res => res.id === action.payload.reservationId)
       if (reservationIndex !== -1) {
         state.reservations[reservationIndex].status = action.payload.status
@@ -134,6 +143,7 @@ const adminCourtsSlice = createSlice({
 })
 
 export const {
+  setLoading,
   setError,
   setCourts,
   setReservations,
@@ -216,7 +226,7 @@ export const getCourtDetails = (courtId: number) => async (dispatch: AppDispatch
   }
 }
 
-export const updateCourtStatusAction = (courtId: number, status: 'available' | 'occupied' | 'maintenance', reason?: string) => async (dispatch: AppDispatch) => {
+export const updateCourtStatusAction = (courtId: number, status: 'active' | 'maintenance' | 'inactive' | 'pending', reason?: string) => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Updating court status...'))
   
   try {
@@ -272,7 +282,7 @@ export const rejectCourt = (courtId: number, reason: string) => async (dispatch:
   }
 }
 
-export const updateReservationStatusAction = (reservationId: number, status: 'active' | 'completed' | 'cancelled' | 'no_show', reason?: string) => async (dispatch: AppDispatch) => {
+export const updateReservationStatusAction = (reservationId: number, status: 'pending' | 'confirmed' | 'canceled' | 'completed' | 'active' | 'cancelled' | 'no_show', reason?: string) => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Updating reservation status...'))
   
   try {

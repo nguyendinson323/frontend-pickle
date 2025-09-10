@@ -63,6 +63,8 @@ interface CoachSessionsState {
     date_to: string
     player_search: string
   }
+  isLoading: boolean
+  error: string | null
 }
 
 const initialState: CoachSessionsState = {
@@ -75,13 +77,21 @@ const initialState: CoachSessionsState = {
     date_from: '',
     date_to: '',
     player_search: ''
-  }
+  },
+  isLoading: false,
+  error: null
 }
 
 const coachSessionsSlice = createSlice({
   name: 'coachSessions',
   initialState,
   reducers: {
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.isLoading = action.payload
+    },
+    setError: (state, action: PayloadAction<string | null>) => {
+      state.error = action.payload
+    },
     setCoachSessions: (state, action: PayloadAction<CoachingSession[]>) => {
       state.sessions = action.payload
     },
@@ -115,11 +125,14 @@ const coachSessionsSlice = createSlice({
       state.availability = []
       state.stats = null
       state.selectedSession = null
+      state.error = null
     }
   }
 })
 
 export const {
+  setLoading,
+  setError,
   setCoachSessions,
   setCoachAvailability,
   setSessionStats,
@@ -131,18 +144,26 @@ export const {
   clearCoachSessionsData
 } = coachSessionsSlice.actions
 
+// Define response interface
+interface CoachSessionsResponse {
+  sessions: CoachingSession[]
+  availability: CoachAvailability[]
+  stats: SessionStats
+}
+
 // API Functions
 export const fetchCoachSessionsData = () => async (dispatch: AppDispatch) => {
   try {
     dispatch(startLoading('Loading sessions data...'))
-    const response = await api.get('/api/coach/sessions')
-    dispatch(setCoachSessions((response.data as { sessions: CoachingSession[], availability: CoachAvailability[], stats: SessionStats }).sessions))
-    dispatch(setCoachAvailability((response.data as { sessions: CoachingSession[], availability: CoachAvailability[], stats: SessionStats }).availability))
-    dispatch(setSessionStats((response.data as { sessions: CoachingSession[], availability: CoachAvailability[], stats: SessionStats }).stats))
+    const response = await api.get<CoachSessionsResponse>('/api/coach/sessions')
+    dispatch(setCoachSessions(response.data.sessions))
+    dispatch(setCoachAvailability(response.data.availability))
+    dispatch(setSessionStats(response.data.stats))
     dispatch(stopLoading())
   } catch (error) {
+    dispatch(setError('Failed to load sessions data'))
     dispatch(stopLoading())
-    console.error('Error fetching coach sessions data:', error)
+    throw error
   }
 }
 

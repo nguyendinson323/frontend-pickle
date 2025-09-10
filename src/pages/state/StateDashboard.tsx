@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { RootState } from '../../store'
-import { StateDashboard } from '../../types'
+import { RootState, AppDispatch } from '../../store'
+import { fetchStateDashboard } from '../../store/slices/stateDashboardSlice'
 import {
   StateDashboardHeader,
   StateStatsGrid,
@@ -15,15 +15,22 @@ import {
 
 const StateDashboardPage: React.FC = () => {
   const navigate = useNavigate()
-  const { user, dashboard } = useSelector((state: RootState) => state.auth)
+  const dispatch = useDispatch<AppDispatch>()
+  const { user } = useSelector((state: RootState) => state.auth)
+  const { dashboardData, isLoading, error } = useSelector((state: RootState) => state.stateDashboard)
 
   useEffect(() => {
     if (!user || user.role !== 'state') {
       navigate('/login')
+      return
     }
-  }, [user, navigate])
+    
+    if (!dashboardData) {
+      dispatch(fetchStateDashboard())
+    }
+  }, [user, navigate, dispatch, dashboardData])
 
-  if (!user || user.role !== 'state' || !dashboard) {
+  if (!user || user.role !== 'state') {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
@@ -31,11 +38,34 @@ const StateDashboardPage: React.FC = () => {
     )
   }
 
-  const stateData = dashboard as StateDashboard
-  const profile = stateData.profile
-  const pendingApprovals = stateData.pendingApprovals || []
-  const upcomingTournaments = stateData.upcomingTournaments || []
-  const recentActivity = stateData.recentActivity || []
+  if (isLoading || !dashboardData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-600 text-lg font-medium">{error}</div>
+          <button 
+            onClick={() => dispatch(fetchStateDashboard())} 
+            className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  const profile = dashboardData.profile
+  const pendingApprovals = dashboardData.pendingApprovals || []
+  const upcomingTournaments = dashboardData.upcomingTournaments || []
+  const recentActivity = dashboardData.recentActivity || []
 
   return (
     <div className="min-h-screen  py-8">
@@ -47,7 +77,7 @@ const StateDashboardPage: React.FC = () => {
           presidentName: profile.president_name || 'Unknown'
         }} />
 
-        <StateStatsGrid stateData={stateData} />
+        <StateStatsGrid stateData={dashboardData} />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           <StateQuickActions />
@@ -66,7 +96,7 @@ const StateDashboardPage: React.FC = () => {
           <StateRecentActivity recentActivity={recentActivity} />
         </div>
 
-        <StatePerformanceOverview stateData={stateData} />
+        <StatePerformanceOverview stateData={dashboardData} />
       </div>
     </div>
   )

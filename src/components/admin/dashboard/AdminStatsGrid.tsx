@@ -1,5 +1,5 @@
 import React from 'react'
-import { AdminDashboard } from '../../../types'
+import { AdminStats } from '../../../store/slices/adminDashboardSlice'
 
 interface StatCard {
   label: string
@@ -9,19 +9,19 @@ interface StatCard {
 }
 
 interface AdminStatsGridProps {
-  stats: AdminDashboard['stats']
+  stats: AdminStats
 }
 
 const AdminStatsGrid: React.FC<AdminStatsGridProps> = ({ stats }) => {
   const statCards: StatCard[] = [
     { label: 'Total Users', value: stats.totalUsers, icon: '👥', color: 'bg-blue-600' },
-    { label: 'Active Players', value: stats.totalPlayers, icon: '🏓', color: 'bg-green-600' },
-    { label: 'Registered Coaches', value: stats.totalClubs, icon: '👨‍🏫', color: 'bg-purple-600' },
-    { label: 'Active Clubs', value: stats.totalClubs, icon: '🏢', color: 'bg-orange-600' },
-    { label: 'Business Partners', value: stats.totalPartners, icon: '🏨', color: 'bg-yellow-600' },
-    { label: 'State Committees', value: stats.totalStates, icon: '🏛️', color: 'bg-red-600' },
-    { label: 'Total Tournaments', value: stats.totalTournaments, icon: '🏆', color: 'bg-indigo-600' },
-    { label: 'Active Courts', value: stats.totalCourts, icon: '🎾', color: 'bg-teal-600' }
+    { label: 'Active Users', value: stats.activeUsers, icon: '🏓', color: 'bg-green-600' },
+    { label: 'Total Payments', value: stats.totalPayments, icon: '💰', color: 'bg-purple-600' },
+    { label: 'Monthly Revenue', value: stats.monthlyRevenue, icon: '📈', color: 'bg-orange-600' },
+    { label: 'Total Tournaments', value: stats.totalTournaments, icon: '🏆', color: 'bg-yellow-600' },
+    { label: 'Active Tournaments', value: stats.activeTournaments, icon: '🏛️', color: 'bg-red-600' },
+    { label: 'Total Courts', value: stats.totalCourts, icon: '🎾', color: 'bg-indigo-600' },
+    { label: 'Active Courts', value: stats.activeCourts, icon: '🎾', color: 'bg-teal-600' }
   ]
 
   return (

@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { RootState } from '../../store'
+import { RootState, AppDispatch } from '../../store'
 import { PlayerDashboard } from '../../types'
+import { fetchDashboard } from '../../store/slices/authSlice'
+import { startLoading, stopLoading } from '../../store/slices/loadingSlice'
 import {
   PlayerDashboardHeader,
   PlayerStatsGrid,
@@ -15,17 +17,34 @@ import {
 
 const PlayerDashboardPage: React.FC = () => {
   const navigate = useNavigate()
+  const dispatch = useDispatch<AppDispatch>()
   const { user, dashboard } = useSelector((state: RootState) => state.auth)
 
   useEffect(() => {
     console.log('🏁 PlayerDashboard - User:', user)
-    console.log('🏁 PlayerDashboard - Dashboard:', dashboard)
     
     if (!user || user.role !== 'player') {
       console.log('❌ Player auth check failed - redirecting to login')
       navigate('/login')
+      return
     }
-  }, [user, navigate])
+
+    // Fetch dashboard data when component mounts
+    const loadDashboard = async () => {
+      try {
+        await dispatch(fetchDashboard('player'))
+        console.log('✅ Dashboard data loaded successfully')
+      } catch (error) {
+        console.error('❌ Failed to load dashboard:', error)
+        // Could show error message to user here
+      }
+    }
+
+    // Only fetch if dashboard data is not already present
+    if (!dashboard) {
+      loadDashboard()
+    }
+  }, [user, navigate, dispatch, dashboard])
 
   if (!user || user.role !== 'player' || !dashboard) {
     return (
@@ -37,8 +56,23 @@ const PlayerDashboardPage: React.FC = () => {
 
   const playerData = dashboard as PlayerDashboard
   const profile = playerData.profile
-  const upcomingMatches = playerData.upcomingMatches || []
-  const recentMatches = playerData.recentMatches || []
+  
+  // Map backend data to component expected format
+  const upcomingMatches = (playerData.upcomingMatches || []).map(match => ({
+    tournamentName: match.name,
+    opponent: 'TBD', // Will be determined when matches are drawn
+    date: new Date(match.date).toLocaleDateString(),
+    time: 'TBD', // Time will be set closer to tournament
+    status: match.status
+  }))
+  
+  const recentMatches = (playerData.recentMatches || []).map(match => ({
+    tournamentName: match.tournament || 'Tournament',
+    opponent: match.opponent || 'Unknown',
+    date: match.date ? new Date(match.date).toLocaleDateString() : '',
+    result: match.result || 'N/A',
+    score: match.score || 'N/A'
+  }))
 
   return (
     <div className="min-h-screen  py-8">
@@ -52,8 +86,8 @@ const PlayerDashboardPage: React.FC = () => {
           }} />
 
           <PlayerStatsGrid playerData={{ 
-            tournamentWins: playerData.tournamentWins,
-            totalMatches: playerData.totalMatches,
+            tournamentWins: playerData.tournamentWins || 0,
+            totalMatches: playerData.totalMatches || 0,
             currentRanking: playerData.currentRanking?.current_rank || 0
           }} profile={{
             nrtpLevel: profile.nrtp_level?.toString() || '1.0'

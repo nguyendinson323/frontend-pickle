@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../store'
+import { RootState, AppDispatch } from '../../store'
 import {
   fetchStateStatisticsData,
   exportStatisticsReport,
@@ -13,7 +13,7 @@ import StatisticsCard, { MetricDisplay, ProgressBar, ListItem } from '../../comp
 
 const StateStatistics: React.FC = () => {
   const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   
   const {
     tournamentAnalytics,
@@ -40,7 +40,7 @@ const StateStatistics: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      await dispatch(fetchStateStatisticsData() as any)
+      await dispatch(fetchStateStatisticsData())
     } catch (error) {
       console.error('Error fetching state statistics:', error)
     }
@@ -48,12 +48,12 @@ const StateStatistics: React.FC = () => {
 
   const handleDateRangeChange = async (newDateRange: { start_date: string, end_date: string }) => {
     dispatch(setDateRange(newDateRange))
-    await dispatch(fetchStateStatisticsData(newDateRange) as any)
+    await dispatch(fetchStateStatisticsData(newDateRange))
   }
 
   const handleExport = async (format: 'pdf' | 'excel') => {
     try {
-      await dispatch(exportStatisticsReport(dateRange, format) as any)
+      await dispatch(exportStatisticsReport(dateRange, format))
     } catch (error) {
       console.error('Error exporting statistics:', error)
     }

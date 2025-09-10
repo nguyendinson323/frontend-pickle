@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
+import { AppDispatch } from '../../../store'
 import { MicrositeAdmin } from '../../../types/admin'
 import { performContentAudit } from '../../../store/slices/adminMicrositesSlice'
 
@@ -9,7 +10,7 @@ interface MicrositeAuditModalProps {
 }
 
 const MicrositeAuditModal: React.FC<MicrositeAuditModalProps> = ({ microsite, onClose }) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const [auditResults, setAuditResults] = useState<any>(null)
   const [loading, setLoading] = useState(false)
   const [auditStarted, setAuditStarted] = useState(false)
@@ -18,7 +19,7 @@ const MicrositeAuditModal: React.FC<MicrositeAuditModalProps> = ({ microsite, on
     setLoading(true)
     setAuditStarted(true)
     try {
-      const result = await dispatch(performContentAudit(microsite.id) as any)
+      const result = await dispatch(performContentAudit(microsite.id))
       setAuditResults(result.payload || result)
     } catch (error) {
       console.error('Failed to perform audit:', error)

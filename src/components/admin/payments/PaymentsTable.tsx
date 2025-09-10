@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../../store'
+import { RootState, AppDispatch } from '../../../store'
 import {
   togglePaymentSelection,
   toggleAllPayments,
@@ -15,7 +15,7 @@ import PaymentDetailsModal from './PaymentDetailsModal'
 import RefundModal from './RefundModal'
 
 const PaymentsTable: React.FC = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { 
     payments, 
     selectedPayments, 
@@ -47,9 +47,11 @@ const PaymentsTable: React.FC = () => {
   }
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('es-MX', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'MXN',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(amount)
   }
 
@@ -202,14 +204,14 @@ const PaymentsTable: React.FC = () => {
                     {formatCurrency(payment.amount)}
                   </div>
                   <div className="text-sm text-gray-500">
-                    {payment.currency || 'USD'}
+                    {payment.currency || 'MXN'}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {payment.user ? (
                     <div>
                       <div className="text-sm font-medium text-gray-900">
-                        {payment.user.first_name} {payment.user.last_name}
+                        {payment.user.username}
                       </div>
                       <div className="text-sm text-gray-500">
                         {payment.user.email}
@@ -221,7 +223,7 @@ const PaymentsTable: React.FC = () => {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className="text-sm text-gray-900 capitalize">
-                    {payment.payment_method.replace('_', ' ')}
+                    {payment.payment_method ? payment.payment_method.replace('_', ' ') : 'N/A'}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">

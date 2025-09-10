@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState, AppDispatch } from '../../../store'
-import { updatePlayerProfile } from '../../../store/slices/authSlice'
+import { updatePlayerProfile, fetchDashboard } from '../../../store/slices/authSlice'
+import { startLoading, stopLoading } from '../../../store/slices/loadingSlice'
 import { Player, User, PlayerDashboard } from '../../../types/auth'
+import api from '../../../services/api'
 
 interface PlayerProfileFormProps {
   player: Player
@@ -14,6 +16,7 @@ interface PlayerProfileFormProps {
 const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onCancel }) => {
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
+  const [states, setStates] = useState<{ id: number, name: string }[]>([])
   
   const [userData, setUserData] = useState({
     username: user.username,
@@ -25,19 +28,27 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
     full_name: player.full_name,
     birth_date: player.birth_date,
     gender: player.gender,
+    state_id: player.state?.id || 0,
     curp: player.curp || '',
     nrtp_level: player.nrtp_level || 0,
     profile_photo_url: player.profile_photo_url || '',
     nationality: player.nationality
   })
 
-  const mexicanStates = [
-    'Aguascalientes', 'Baja California', 'Baja California Sur', 'Campeche', 'Chiapas', 'Chihuahua',
-    'Coahuila', 'Colima', 'Durango', 'Guanajuato', 'Guerrero', 'Hidalgo', 'Jalisco', 'México',
-    'Michoacán', 'Morelos', 'Nayarit', 'Nuevo León', 'Oaxaca', 'Puebla', 'Querétaro',
-    'Quintana Roo', 'San Luis Potosí', 'Sinaloa', 'Sonora', 'Tabasco', 'Tamaulipas', 'Tlaxcala',
-    'Veracruz', 'Yucatán', 'Zacatecas', 'Ciudad de México'
-  ]
+  // Fetch states on component mount
+  useEffect(() => {
+    const fetchStates = async () => {
+      try {
+        const response = await api.get('/api/player/states')
+        setStates(response.data)
+      } catch (error) {
+        console.error('Failed to fetch states:', error)
+      }
+    }
+    
+    fetchStates()
+  }, [])
+
 
   const handleUserInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -48,6 +59,8 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
     const { name, value } = e.target
     if (name === 'nrtp_level') {
       setPlayerData(prev => ({ ...prev, [name]: parseFloat(value) || 0 }))
+    } else if (name === 'state_id') {
+      setPlayerData(prev => ({ ...prev, [name]: parseInt(value) || 0 }))
     } else {
       setPlayerData(prev => ({ ...prev, [name]: value }))
     }
@@ -56,13 +69,29 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    const updateData = {
-      ...playerData,
-      user_data: userData
+    try {
+      dispatch(startLoading('Updating profile...'))
+      
+      // Update user account information first
+      if (userData.username !== user.username || userData.email !== user.email || userData.phone !== user.phone) {
+        await api.put('/api/player/account', userData)
+      }
+      
+      // Update player profile information
+      await api.put('/api/player/profile', playerData)
+      
+      // Refresh dashboard data to get updated profile
+      await dispatch(fetchDashboard('player'))
+      
+      // Close editing mode
+      onCancel()
+      
+    } catch (error) {
+      console.error('Failed to update profile:', error)
+      // Could show error message to user here
+    } finally {
+      dispatch(stopLoading())
     }
-
-    dispatch(updatePlayerProfile(updateData))
-    navigate('/player/profile')
   }
 
   return (
@@ -163,6 +192,23 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
                 <option value="Other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="state_id" className="block text-sm font-medium text-gray-700 mb-2">
+                State
+              </label>
+              <select
+                id="state_id"
+                name="state_id"
+                value={playerData.state_id}
+                onChange={handlePlayerInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                <option value={0}>Select a state...</option>
+                {states.map(state => (
+                  <option key={state.id} value={state.id}>{state.name}</option>
+                ))}
               </select>
             </div>
             <div>

@@ -1,22 +1,38 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { RootState } from '../../store'
-import { PartnerDashboard } from '../../types'
+import { RootState, AppDispatch } from '../../store'
+import { fetchPartnerDashboard } from '../../store/slices/partnerDashboardSlice'
 import { PartnerProfileView, PartnerProfileForm } from '../../components/partner/profile'
 
 const PartnerProfilePage: React.FC = () => {
   const navigate = useNavigate()
-  const { user, dashboard } = useSelector((state: RootState) => state.auth)
+  const dispatch = useDispatch<AppDispatch>()
+  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth)
+  const { dashboardData, isLoading, error } = useSelector((state: RootState) => state.partnerDashboard)
   const [isEditing, setIsEditing] = useState(false)
 
   useEffect(() => {
-    if (!user || user.role !== 'partner') {
+    if (!isAuthenticated) {
       navigate('/login')
+      return
     }
-  }, [user, navigate])
 
-  if (!user || user.role !== 'partner' || !dashboard) {
+    if (user?.role !== 'partner') {
+      navigate('/dashboard')
+      return
+    }
+
+    if (!dashboardData) {
+      dispatch(fetchPartnerDashboard())
+    }
+  }, [dispatch, isAuthenticated, user, navigate, dashboardData])
+
+  if (!isAuthenticated || user?.role !== 'partner') {
+    return null
+  }
+
+  if (isLoading || !dashboardData) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
@@ -24,8 +40,7 @@ const PartnerProfilePage: React.FC = () => {
     )
   }
 
-  const partnerData = dashboard as PartnerDashboard
-  const profile = partnerData.profile
+  const profile = dashboardData.profile
 
   const handleEdit = () => {
     setIsEditing(true)
@@ -78,6 +93,22 @@ const PartnerProfilePage: React.FC = () => {
               View and manage your partner information
             </p>
           </div>
+
+          {/* Error Display */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-red-800">{error}</p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Profile Content */}
           {isEditing ? (

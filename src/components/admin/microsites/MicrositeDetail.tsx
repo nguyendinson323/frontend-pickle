@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
+import { AppDispatch } from '../../../store'
 import { MicrositeAdmin } from '../../../types/admin'
 import { getMicrositeDetails } from '../../../store/slices/adminMicrositesSlice'
 
@@ -9,14 +10,14 @@ interface MicrositeDetailProps {
 }
 
 const MicrositeDetail: React.FC<MicrositeDetailProps> = ({ microsite, onClose }) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const [detailedMicrosite, setDetailedMicrosite] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchDetails = async () => {
       try {
-        const result = await dispatch(getMicrositeDetails(microsite.id) as any)
+        const result = await dispatch(getMicrositeDetails(microsite.id))
         setDetailedMicrosite(result.payload || result)
       } catch (error) {
         console.error('Failed to fetch microsite details:', error)

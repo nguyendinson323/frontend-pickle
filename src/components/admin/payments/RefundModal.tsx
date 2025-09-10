@@ -13,9 +13,11 @@ const RefundModal: React.FC<RefundModalProps> = ({ payment, onClose, onRefund })
   const [processing, setProcessing] = useState(false)
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('es-MX', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'MXN',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(amount)
   }
 
@@ -63,7 +65,7 @@ const RefundModal: React.FC<RefundModalProps> = ({ payment, onClose, onRefund })
                 <div className="flex justify-between">
                   <span className="text-gray-600">Customer:</span>
                   <span className="font-medium">
-                    {payment.user.first_name} {payment.user.last_name}
+                    {payment.user.username}
                   </span>
                 </div>
               )}

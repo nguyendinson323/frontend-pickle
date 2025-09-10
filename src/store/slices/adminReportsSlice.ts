@@ -148,10 +148,10 @@ const adminReportsSlice = createSlice({
     addReport: (state, action: PayloadAction<ReportData>) => {
       state.reports.unshift(action.payload)
     },
-    updateReportStatus: (state, action: PayloadAction<{ reportId: string; status: string; downloadUrl?: string; fileSize?: number; recordCount?: number }>) => {
+    updateReportStatus: (state, action: PayloadAction<{ reportId: string; status: 'pending' | 'processing' | 'completed' | 'failed'; downloadUrl?: string; fileSize?: number; recordCount?: number }>) => {
       const reportIndex = state.reports.findIndex(r => r.id === action.payload.reportId)
       if (reportIndex !== -1) {
-        state.reports[reportIndex].status = action.payload.status as any
+        state.reports[reportIndex].status = action.payload.status
         if (action.payload.downloadUrl) {
           state.reports[reportIndex].downloadUrl = action.payload.downloadUrl
         }

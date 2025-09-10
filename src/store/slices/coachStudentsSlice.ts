@@ -49,6 +49,8 @@ interface CoachStudentsState {
     state: string
     activity: string
   }
+  isLoading: boolean
+  error: string | null
 }
 
 const initialState: CoachStudentsState = {
@@ -61,13 +63,21 @@ const initialState: CoachStudentsState = {
     level_max: '',
     state: '',
     activity: 'all'
-  }
+  },
+  isLoading: false,
+  error: null
 }
 
 const coachStudentsSlice = createSlice({
   name: 'coachStudents',
   initialState,
   reducers: {
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.isLoading = action.payload
+    },
+    setError: (state, action: PayloadAction<string | null>) => {
+      state.error = action.payload
+    },
     setCoachStudents: (state, action: PayloadAction<Student[]>) => {
       state.students = action.payload
     },
@@ -90,11 +100,14 @@ const coachStudentsSlice = createSlice({
       state.students = []
       state.stats = null
       state.selectedStudent = null
+      state.error = null
     }
   }
 })
 
 export const {
+  setLoading,
+  setError,
   setCoachStudents,
   setStudentsStats,
   setSelectedStudent,
@@ -103,17 +116,24 @@ export const {
   clearCoachStudentsData
 } = coachStudentsSlice.actions
 
+// Define response interfaces
+interface CoachStudentsResponse {
+  students: Student[]
+  stats: StudentsStats
+}
+
 // API Functions
 export const fetchCoachStudentsData = () => async (dispatch: AppDispatch) => {
   try {
     dispatch(startLoading('Loading students data...'))
-    const response = await api.get('/api/coach/students')
-    dispatch(setCoachStudents((response.data as { students: Student[], stats: StudentsStats }).students))
-    dispatch(setStudentsStats((response.data as { students: Student[], stats: StudentsStats }).stats))
+    const response = await api.get<CoachStudentsResponse>('/api/coach/students')
+    dispatch(setCoachStudents(response.data.students))
+    dispatch(setStudentsStats(response.data.stats))
     dispatch(stopLoading())
   } catch (error) {
+    dispatch(setError('Failed to load students data'))
     dispatch(stopLoading())
-    console.error('Error fetching coach students data:', error)
+    throw error
   }
 }
 
@@ -121,7 +141,7 @@ export const getStudentDetails = (studentId: number) => async (dispatch: AppDisp
   try {
     dispatch(startLoading('Loading student details...'))
     const response = await api.get<Student>(`/api/coach/students/${studentId}`)
-    dispatch(setSelectedStudent(response.data as Student))
+    dispatch(setSelectedStudent(response.data))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(stopLoading())
@@ -137,9 +157,9 @@ export const updateStudentLevel = (studentId: number, newLevel: number) => async
     })
     
     // Update the student in the list
-    const studentsResponse = await api.get('/api/coach/students')
-    dispatch(setCoachStudents((studentsResponse.data as { students: Student[], stats: StudentsStats }).students))
-    dispatch(setStudentsStats((studentsResponse.data as { students: Student[], stats: StudentsStats }).stats))
+    const studentsResponse = await api.get<CoachStudentsResponse>('/api/coach/students')
+    dispatch(setCoachStudents(studentsResponse.data.students))
+    dispatch(setStudentsStats(studentsResponse.data.stats))
     
     dispatch(stopLoading())
   } catch (error) {
@@ -155,7 +175,7 @@ export const addStudentNote = (studentId: number, note: string) => async (dispat
     
     // Refresh student details
     const response = await api.get<Student>(`/api/coach/students/${studentId}`)
-    dispatch(setSelectedStudent(response.data as Student))
+    dispatch(setSelectedStudent(response.data))
     
     dispatch(stopLoading())
   } catch (error) {

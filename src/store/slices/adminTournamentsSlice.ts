@@ -124,16 +124,16 @@ const adminTournamentsSlice = createSlice({
     clearSelectedParticipants: (state) => {
       state.selectedParticipants = []
     },
-    updateTournamentStatus: (state, action: PayloadAction<{ tournamentId: number; status: string }>) => {
+    updateTournamentStatus: (state, action: PayloadAction<{ tournamentId: number; status: 'draft' | 'published' | 'ongoing' | 'completed' | 'cancelled' }>) => {
       const tournamentIndex = state.tournaments.findIndex(t => t.id === action.payload.tournamentId)
       if (tournamentIndex !== -1) {
-        state.tournaments[tournamentIndex].status = action.payload.status as any
+        state.tournaments[tournamentIndex].status = action.payload.status
       }
     },
-    updateParticipantStatus: (state, action: PayloadAction<{ participantId: number; status: string }>) => {
+    updateParticipantStatus: (state, action: PayloadAction<{ participantId: number; status: 'registered' | 'confirmed' | 'checked_in' | 'disqualified' | 'withdrew' }>) => {
       const participantIndex = state.participants.findIndex(p => p.id === action.payload.participantId)
       if (participantIndex !== -1) {
-        state.participants[participantIndex].status = action.payload.status as any
+        state.participants[participantIndex].status = action.payload.status
       }
     }
   }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../../store'
+import { RootState, AppDispatch } from '../../../store'
 import { CourtInfo } from '../../../types/admin'
 import { 
   updateCourtStatusAction,
@@ -14,12 +14,12 @@ interface CourtsTableProps {
 }
 
 const CourtsTable: React.FC<CourtsTableProps> = ({ onCourtSelect }) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { courts, loading } = useSelector((state: RootState) => state.adminCourts)
   
   const [showStatusModal, setShowStatusModal] = useState(false)
   const [selectedCourt, setSelectedCourt] = useState<CourtInfo | null>(null)
-  const [newStatus, setNewStatus] = useState<'available' | 'occupied' | 'maintenance'>('available')
+  const [newStatus, setNewStatus] = useState<'active' | 'maintenance' | 'inactive' | 'pending'>('active')
   const [statusReason, setStatusReason] = useState('')
 
   const handleStatusChange = (court: CourtInfo) => {
@@ -33,7 +33,7 @@ const CourtsTable: React.FC<CourtsTableProps> = ({ onCourtSelect }) => {
     if (!selectedCourt) return
 
     try {
-      await dispatch(updateCourtStatusAction(selectedCourt.id, newStatus, statusReason) as any)
+      await dispatch(updateCourtStatusAction(selectedCourt.id, newStatus, statusReason))
       setShowStatusModal(false)
       setSelectedCourt(null)
     } catch (error) {
@@ -45,7 +45,7 @@ const CourtsTable: React.FC<CourtsTableProps> = ({ onCourtSelect }) => {
     const confirmed = window.confirm('Are you sure you want to approve this court?')
     if (confirmed) {
       try {
-        await dispatch(approveCourt(courtId) as any)
+        await dispatch(approveCourt(courtId))
         alert('Court approved successfully')
       } catch (error) {
         console.error('Failed to approve court:', error)
@@ -57,7 +57,7 @@ const CourtsTable: React.FC<CourtsTableProps> = ({ onCourtSelect }) => {
     const reason = prompt('Please provide a reason for rejection:')
     if (reason) {
       try {
-        await dispatch(rejectCourt(courtId, reason) as any)
+        await dispatch(rejectCourt(courtId, reason))
         alert('Court rejected successfully')
       } catch (error) {
         console.error('Failed to reject court:', error)
@@ -67,7 +67,7 @@ const CourtsTable: React.FC<CourtsTableProps> = ({ onCourtSelect }) => {
 
   const handleViewDetails = async (court: CourtInfo) => {
     try {
-      await dispatch(getCourtDetails(court.id) as any)
+      await dispatch(getCourtDetails(court.id))
       onCourtSelect(court)
     } catch (error) {
       console.error('Failed to fetch court details:', error)
@@ -76,9 +76,10 @@ const CourtsTable: React.FC<CourtsTableProps> = ({ onCourtSelect }) => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'available': return 'bg-green-100 text-green-800'
-      case 'occupied': return 'bg-yellow-100 text-yellow-800'
+      case 'active': return 'bg-green-100 text-green-800'
+      case 'pending': return 'bg-yellow-100 text-yellow-800'
       case 'maintenance': return 'bg-red-100 text-red-800'
+      case 'inactive': return 'bg-gray-100 text-gray-800'
       default: return 'bg-gray-100 text-gray-800'
     }
   }
@@ -147,15 +148,15 @@ const CourtsTable: React.FC<CourtsTableProps> = ({ onCourtSelect }) => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
-                      {court.club_name || court.partner_name || 'Independent'}
+                      {court.owner_name || 'Independent'}
                     </div>
                     <div className="text-sm text-gray-500">
-                      {court.club_id ? 'Club' : court.partner_id ? 'Partner' : 'Private'}
+                      {court.owner_type === 'club' ? 'Club' : court.owner_type === 'partner' ? 'Partner' : 'Private'}
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="text-sm text-gray-900">{court.location.city}</div>
-                    <div className="text-sm text-gray-500">{court.location.state}</div>
+                    <div className="text-sm text-gray-900">{court.address}</div>
+                    <div className="text-sm text-gray-500">{court.state_name}</div>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex flex-col space-y-1">
@@ -163,7 +164,7 @@ const CourtsTable: React.FC<CourtsTableProps> = ({ onCourtSelect }) => {
                         {court.surface_type}
                       </span>
                       <div className="flex space-x-2">
-                        {court.lighting && (
+                        {court.lights && (
                           <span className="text-xs text-yellow-600">💡 Lit</span>
                         )}
                         {court.indoor && (
@@ -182,15 +183,15 @@ const CourtsTable: React.FC<CourtsTableProps> = ({ onCourtSelect }) => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">
-                      ${court.hourly_rate}/hr
+                      ${court.hourly_rate || 'N/A'}/hr
                     </div>
                   </td>
                   <td className="px-6 py-4">
                     <div className="text-sm text-gray-900">
-                      {court.total_reservations} reservations
+                      {court.total_reservations || 0} reservations
                     </div>
                     <div className="text-sm text-green-600 font-medium">
-                      ${court.revenue_generated} revenue
+                      ${court.revenue_generated || 0} revenue
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-y-1">
@@ -200,7 +201,7 @@ const CourtsTable: React.FC<CourtsTableProps> = ({ onCourtSelect }) => {
                     >
                       View Details
                     </button>
-                    {court.status === 'maintenance' && (
+                    {court.status === 'pending' && (
                       <>
                         <button
                           onClick={() => handleApproveCourt(court.id)}
@@ -249,23 +250,23 @@ const CourtsTable: React.FC<CourtsTableProps> = ({ onCourtSelect }) => {
                       <input
                         type="radio"
                         name="status"
-                        value="available"
-                        checked={newStatus === 'available'}
-                        onChange={(e) => setNewStatus(e.target.value as 'available')}
+                        value="active"
+                        checked={newStatus === 'active'}
+                        onChange={(e) => setNewStatus(e.target.value as 'active')}
                         className="mr-2"
                       />
-                      Available
+                      Active
                     </label>
                     <label className="flex items-center">
                       <input
                         type="radio"
                         name="status"
-                        value="occupied"
-                        checked={newStatus === 'occupied'}
-                        onChange={(e) => setNewStatus(e.target.value as 'occupied')}
+                        value="inactive"
+                        checked={newStatus === 'inactive'}
+                        onChange={(e) => setNewStatus(e.target.value as 'inactive')}
                         className="mr-2"
                       />
-                      Occupied
+                      Inactive
                     </label>
                     <label className="flex items-center">
                       <input

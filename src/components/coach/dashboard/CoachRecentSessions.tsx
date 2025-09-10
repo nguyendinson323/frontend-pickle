@@ -1,16 +1,23 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
-interface RecentSession {
+interface CoachRecentSession {
   id: number
-  studentName: string
-  sessionType: string
-  date: string
-  rating: number
+  student_id: number
+  student_name: string
+  session_date: string
+  start_time: string
+  end_time: string
+  court_id: number | null
+  court_name: string | null
+  status: 'scheduled' | 'completed' | 'canceled'
+  price: number
+  payment_status: 'pending' | 'paid' | 'refunded'
+  rating: number | null
 }
 
 interface CoachRecentSessionsProps {
-  sessions: RecentSession[]
+  sessions: CoachRecentSession[]
 }
 
 const CoachRecentSessions: React.FC<CoachRecentSessionsProps> = ({ sessions }) => {
@@ -21,26 +28,44 @@ const CoachRecentSessions: React.FC<CoachRecentSessionsProps> = ({ sessions }) =
       <h3 className="text-xl font-semibold text-gray-900 mb-6">Recent Sessions</h3>
       {sessions.length > 0 ? (
         <div className="space-y-4">
-          {sessions.slice(0, 4).map((session) => (
-            <div key={session.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-              <div>
-                <p className="font-medium text-gray-900">{session.studentName}</p>
-                <p className="text-sm text-gray-600">{session.sessionType}</p>
-                <p className="text-xs text-gray-500">{session.date}</p>
-              </div>
-              <div className="text-right">
-                <div className="flex items-center">
-                  <span className="text-yellow-500 mr-1">⭐</span>
-                  <span className="text-sm font-medium text-gray-900">{session.rating}</span>
+          {sessions.slice(0, 4).map((session) => {
+            const sessionDate = new Date(session.session_date)
+            const formattedDate = sessionDate.toLocaleDateString()
+            const sessionType = session.court_name ? `At ${session.court_name}` : 'Private Session'
+            
+            return (
+              <div key={session.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                <div>
+                  <p className="font-medium text-gray-900">{session.student_name}</p>
+                  <p className="text-sm text-gray-600">{sessionType}</p>
+                  <p className="text-xs text-gray-500">{formattedDate} • {session.start_time}</p>
+                  <p className="text-xs font-medium text-emerald-600">${session.price}</p>
+                </div>
+                <div className="text-right">
+                  <div className="mb-1">
+                    <span className={`text-xs px-2 py-1 rounded-full ${
+                      session.status === 'completed' ? 'bg-green-100 text-green-800' :
+                      session.status === 'canceled' ? 'bg-red-100 text-red-800' :
+                      'bg-blue-100 text-blue-800'
+                    }`}>
+                      {session.status}
+                    </span>
+                  </div>
+                  {session.rating && (
+                    <div className="flex items-center justify-end">
+                      <span className="text-yellow-500 mr-1">⭐</span>
+                      <span className="text-sm font-medium text-gray-900">{session.rating}</span>
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
           <button
-            onClick={() => navigate('/coach/session-history')}
+            onClick={() => navigate('/coach/sessions')}
             className="text-blue-600 hover:text-blue-500 text-sm font-medium"
           >
-            View session history →
+            View all sessions →
           </button>
         </div>
       ) : (

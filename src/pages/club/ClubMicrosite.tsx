@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../store'
+import { RootState, AppDispatch } from '../../store'
 import {
   fetchClubMicrositeData,
   updateClubMicrositeData,
@@ -16,7 +16,7 @@ import MicrositePreview from '../../components/club/microsite/MicrositePreview'
 
 const ClubMicrosite: React.FC = () => {
   const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   
   const { micrositeData, stats, loading, error, previewMode } = useSelector((state: RootState) => state.clubMicrosite)
   const { user } = useSelector((state: RootState) => state.auth)
@@ -53,7 +53,7 @@ const ClubMicrosite: React.FC = () => {
     logo_url?: string
   }) => {
     try {
-      await dispatch(updateClubMicrositeData(data) as any)
+      await dispatch(updateClubMicrositeData(data))
     } catch (error) {
       console.error('Error saving microsite data:', error)
       throw error
@@ -64,7 +64,7 @@ const ClubMicrosite: React.FC = () => {
     try {
       const formData = new FormData()
       formData.append('logo', file)
-      await dispatch(uploadClubLogo(formData) as any)
+      await dispatch(uploadClubLogo(formData))
     } catch (error) {
       console.error('Error uploading logo:', error)
       throw error
@@ -99,7 +99,7 @@ const ClubMicrosite: React.FC = () => {
 
     if (window.confirm('Are you ready to publish your microsite? It will become publicly visible.')) {
       try {
-        const result = await dispatch(publishMicrosite() as any)
+        const result = await dispatch(publishMicrosite())
         setPublishResult(result.payload || result)
         
         // Show success message and optionally redirect

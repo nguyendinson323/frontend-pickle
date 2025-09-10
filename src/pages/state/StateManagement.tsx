@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../store'
+import { RootState, AppDispatch } from '../../store'
 import {
   fetchStateManagementData,
   createStateTournament,
@@ -27,7 +27,7 @@ import CreateTournamentModal from '../../components/state/management/CreateTourn
 
 const StateManagement: React.FC = () => {
   const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   
   const { tournaments, courts, clubs, partners, stats, loading, error } = useSelector((state: RootState) => state.stateManagement)
   const { user } = useSelector((state: RootState) => state.auth)
@@ -45,7 +45,7 @@ const StateManagement: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      await dispatch(fetchStateManagementData() as any)
+      await dispatch(fetchStateManagementData())
     } catch (error) {
       console.error('Error fetching state management data:', error)
     }
@@ -77,7 +77,7 @@ const StateManagement: React.FC = () => {
     }>
   }) => {
     try {
-      await dispatch(createStateTournament(tournamentData) as any)
+      await dispatch(createStateTournament(tournamentData))
     } catch (error) {
       console.error('Error creating tournament:', error)
       throw error
@@ -99,7 +99,7 @@ const StateManagement: React.FC = () => {
   const handleDeleteTournament = async (tournamentId: number) => {
     if (window.confirm('Are you sure you want to delete this tournament? This action cannot be undone.')) {
       try {
-        await dispatch(deleteStateTournament(tournamentId) as any)
+        await dispatch(deleteStateTournament(tournamentId))
       } catch (error) {
         console.error('Error deleting tournament:', error)
       }
@@ -108,7 +108,7 @@ const StateManagement: React.FC = () => {
 
   const handleUpdateTournamentStatus = async (tournamentId: number, status: string) => {
     try {
-      await dispatch(updateStateTournamentStatus(tournamentId, status) as any)
+      await dispatch(updateStateTournamentStatus(tournamentId, status))
     } catch (error) {
       console.error('Error updating tournament status:', error)
     }
@@ -122,7 +122,7 @@ const StateManagement: React.FC = () => {
 
   const handleUpdateCourtStatus = async (courtId: number, status: string) => {
     try {
-      await dispatch(updateStateCourtStatus(courtId, status) as any)
+      await dispatch(updateStateCourtStatus(courtId, status))
     } catch (error) {
       console.error('Error updating court status:', error)
     }

@@ -8,9 +8,11 @@ interface PaymentDetailsModalProps {
 
 const PaymentDetailsModal: React.FC<PaymentDetailsModalProps> = ({ payment, onClose }) => {
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('es-MX', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'MXN',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(amount)
   }
 
@@ -69,12 +71,12 @@ const PaymentDetailsModal: React.FC<PaymentDetailsModalProps> = ({ payment, onCl
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-500">Currency</p>
-                <p className="text-lg font-semibold text-gray-900">{payment.currency || 'USD'}</p>
+                <p className="text-lg font-semibold text-gray-900">{payment.currency || 'MXN'}</p>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-500">Payment Method</p>
                 <p className="text-lg font-semibold text-gray-900 capitalize">
-                  {payment.payment_method.replace('_', ' ')}
+                  {payment.payment_method ? payment.payment_method.replace('_', ' ') : 'N/A'}
                 </p>
               </div>
               <div>
@@ -94,7 +96,7 @@ const PaymentDetailsModal: React.FC<PaymentDetailsModalProps> = ({ payment, onCl
                 <div>
                   <p className="text-sm font-medium text-gray-500">Name</p>
                   <p className="text-lg font-semibold text-gray-900">
-                    {payment.user.first_name} {payment.user.last_name}
+                    {payment.user.username}
                   </p>
                 </div>
                 <div>

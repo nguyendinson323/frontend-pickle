@@ -1,20 +1,36 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { RootState } from '../../store'
+import { RootState, AppDispatch } from '../../store'
 import { PlayerDashboard } from '../../types'
+import { fetchDashboard } from '../../store/slices/authSlice'
 import { PlayerProfileView, PlayerProfileForm } from '../../components/player/profile'
 
 const PlayerProfilePage: React.FC = () => {
   const navigate = useNavigate()
+  const dispatch = useDispatch<AppDispatch>()
   const { user, dashboard } = useSelector((state: RootState) => state.auth)
   const [isEditing, setIsEditing] = useState(false)
 
   useEffect(() => {
     if (!user || user.role !== 'player') {
       navigate('/login')
+      return
     }
-  }, [user, navigate])
+
+    // Fetch fresh dashboard data which includes profile data
+    const loadProfile = async () => {
+      try {
+        await dispatch(fetchDashboard('player'))
+        console.log('✅ Profile data loaded successfully')
+      } catch (error) {
+        console.error('❌ Failed to load profile:', error)
+      }
+    }
+
+    // Always fetch fresh data to ensure profile is up-to-date
+    loadProfile()
+  }, [user, navigate, dispatch])
 
   if (!user || user.role !== 'player' || !dashboard) {
     return (

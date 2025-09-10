@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../../store'
+import { RootState, AppDispatch } from '../../../store'
 import { setMicrositeFilter, fetchMicrosites } from '../../../store/slices/adminMicrositesSlice'
 
 const MicrositeFilters: React.FC = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { micrositeFilter } = useSelector((state: RootState) => state.adminMicrosites)
   const [isExpanded, setIsExpanded] = useState(false)
 
@@ -13,7 +13,7 @@ const MicrositeFilters: React.FC = () => {
   }
 
   const handleSearch = () => {
-    dispatch(fetchMicrosites(micrositeFilter) as any)
+    dispatch(fetchMicrosites(micrositeFilter))
   }
 
   const handleReset = () => {
@@ -28,7 +28,7 @@ const MicrositeFilters: React.FC = () => {
       contentStatus: ''
     }
     dispatch(setMicrositeFilter(resetFilter))
-    dispatch(fetchMicrosites(resetFilter) as any)
+    dispatch(fetchMicrosites(resetFilter))
   }
 
   return (

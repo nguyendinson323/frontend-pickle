@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { RootState } from '../../store'
-import { PartnerDashboard } from '../../types'
+import { RootState, AppDispatch } from '../../store'
+import { fetchPartnerDashboard } from '../../store/slices/partnerDashboardSlice'
 import {
   PartnerDashboardHeader,
   PartnerStatsGrid,
@@ -15,15 +15,31 @@ import {
 
 const PartnerDashboardPage: React.FC = () => {
   const navigate = useNavigate()
-  const { user, dashboard } = useSelector((state: RootState) => state.auth)
+  const dispatch = useDispatch<AppDispatch>()
+  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth)
+  const { dashboardData, isLoading, error } = useSelector((state: RootState) => state.partnerDashboard)
 
   useEffect(() => {
-    if (!user || user.role !== 'partner') {
+    if (!isAuthenticated) {
       navigate('/login')
+      return
     }
-  }, [user, navigate])
 
-  if (!user || user.role !== 'partner' || !dashboard) {
+    if (user?.role !== 'partner') {
+      navigate('/dashboard')
+      return
+    }
+
+    if (!dashboardData) {
+      dispatch(fetchPartnerDashboard())
+    }
+  }, [dispatch, isAuthenticated, user, navigate, dashboardData])
+
+  if (!isAuthenticated || user?.role !== 'partner') {
+    return null
+  }
+
+  if (isLoading || !dashboardData) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
@@ -31,15 +47,29 @@ const PartnerDashboardPage: React.FC = () => {
     )
   }
 
-  const partnerData = dashboard as PartnerDashboard
-  const profile = partnerData.profile
-  const recentBookings = partnerData.recentBookings || []
-  const upcomingEvents = partnerData.upcomingEvents || []
+  const profile = dashboardData.profile
+  const recentBookings = dashboardData.recentBookings || []
+  const upcomingEvents = dashboardData.upcomingEvents || []
 
   return (
     <div className="min-h-screen  py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-red-800">{error}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <PartnerDashboardHeader profile={{
           businessName: profile.business_name,
           partnerType: profile.partner_type || 'business',
@@ -47,7 +77,7 @@ const PartnerDashboardPage: React.FC = () => {
           state: profile.state?.name || 'Unknown'
         }} />
 
-        <PartnerStatsGrid partnerData={partnerData} />
+        <PartnerStatsGrid partnerData={dashboardData} />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           <PartnerQuickActions />
@@ -56,10 +86,10 @@ const PartnerDashboardPage: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           <PartnerUpcomingEvents upcomingEvents={upcomingEvents} />
-          <PartnerPerformanceMetrics partnerData={partnerData} />
+          <PartnerPerformanceMetrics partnerData={dashboardData} />
         </div>
 
-        <PartnerBusinessOverview partnerData={partnerData} />
+        <PartnerBusinessOverview partnerData={dashboardData} />
       </div>
     </div>
   )

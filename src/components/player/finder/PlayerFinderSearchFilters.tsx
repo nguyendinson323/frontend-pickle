@@ -11,8 +11,8 @@ interface PlayerFinderSearchFiltersProps {
   isPremium: boolean
   filters: PlayerFinderFilters
   statesList: State[]
-  userLocation: { lat: number; lng: number } | null
-  locationPermission: 'granted' | 'denied' | 'prompt'
+  userLocation: { latitude: number; longitude: number } | null
+  locationPermission: 'granted' | 'denied' | 'prompt' | null
   onFilterChange: (key: keyof PlayerFinderFilters, value: string | number | null) => void
   onSearch: () => void
   onLocationRequest: () => void
@@ -64,32 +64,6 @@ const PlayerFinderSearchFilters: React.FC<PlayerFinderSearchFiltersProps> = ({
 
   return (
     <div className="space-y-8">
-      {/* Location Permission */}
-      {locationPermission === 'denied' && (
-        <div className="rounded-md bg-blue-50 p-4">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <svg className="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <div className="ml-3 flex-1 md:flex md:justify-between">
-              <p className="text-sm text-blue-700">
-                Enable location services to find players near you.
-              </p>
-              <p className="mt-3 text-sm md:mt-0 md:ml-6">
-                <button
-                  onClick={onLocationRequest}
-                  className="whitespace-nowrap font-medium text-blue-700 hover:text-blue-600"
-                >
-                  Enable Location
-                </button>
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Search Filters */}
       <div className="bg-white shadow rounded-lg">
         <div className="px-6 py-4 border-b border-gray-200">
@@ -130,25 +104,7 @@ const PlayerFinderSearchFilters: React.FC<PlayerFinderSearchFiltersProps> = ({
               </select>
             </div>
 
-            {/* Distance Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Distance (km) {userLocation ? '' : '(Location required)'}
-              </label>
-              <select
-                value={filters.distance_km || ''}
-                onChange={(e) => onFilterChange('distance_km', e.target.value ? parseInt(e.target.value) : null)}
-                disabled={!userLocation}
-                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md disabled:bg-gray-100"
-              >
-                <option value="">Any Distance</option>
-                <option value={5}>Within 5 km</option>
-                <option value={10}>Within 10 km</option>
-                <option value={25}>Within 25 km</option>
-                <option value={50}>Within 50 km</option>
-                <option value={100}>Within 100 km</option>
-              </select>
-            </div>
+            {/* Distance filtering not available - players don't have stored location coordinates */}
 
             {/* NRTP Level Min */}
             <div>

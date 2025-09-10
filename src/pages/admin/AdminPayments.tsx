@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { RootState } from '../../store'
+import { RootState, AppDispatch } from '../../store'
 import { 
   fetchPayments, 
   fetchPaymentStats, 
@@ -14,7 +14,7 @@ import {
 } from '../../components/admin/payments'
 
 const AdminPayments: React.FC = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
   const { user } = useSelector((state: RootState) => state.auth)
   const { error } = useSelector((state: RootState) => state.adminPayments)
@@ -28,9 +28,9 @@ const AdminPayments: React.FC = () => {
     }
 
     // Fetch initial data
-    dispatch(fetchPayments() as any)
-    dispatch(fetchPaymentStats() as any)
-    dispatch(fetchPaymentMethods() as any)
+    dispatch(fetchPayments())
+    dispatch(fetchPaymentStats())
+    dispatch(fetchPaymentMethods())
   }, [dispatch, user, navigate])
 
   if (!user || user.role !== 'admin') {

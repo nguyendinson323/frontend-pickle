@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from '../../store'
+import { RootState, AppDispatch } from '../../store'
 import {
   fetchStateMemberData,
   updatePlayerStatus,
@@ -20,7 +20,7 @@ import PartnersList from '../../components/state/members/PartnersList'
 
 const StateMemberManagement: React.FC = () => {
   const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth)
   const {
@@ -52,7 +52,7 @@ const StateMemberManagement: React.FC = () => {
     }
 
     // Initial data fetch
-    dispatch(fetchStateMemberData() as any)
+    dispatch(fetchStateMemberData())
   }, [dispatch, isAuthenticated, user, navigate])
 
   // Apply filters when they change
@@ -66,12 +66,12 @@ const StateMemberManagement: React.FC = () => {
     }
 
     dispatch(setFilters(newFilters))
-    dispatch(fetchStateMemberData(newFilters) as any)
+    dispatch(fetchStateMemberData(newFilters))
   }, [dispatch, activeTab, statusFilter, searchTerm, skillLevelFilter, certificationFilter])
 
   const handlePlayerStatusUpdate = async (playerId: number, status: string) => {
     try {
-      await dispatch(updatePlayerStatus(playerId, status) as any)
+      await dispatch(updatePlayerStatus(playerId, status))
     } catch (error) {
       console.error('Failed to update player status:', error)
     }
@@ -79,7 +79,7 @@ const StateMemberManagement: React.FC = () => {
 
   const handleCoachVerificationUpdate = async (coachId: number, verified: boolean) => {
     try {
-      await dispatch(updateCoachVerification(coachId, verified) as any)
+      await dispatch(updateCoachVerification(coachId, verified))
     } catch (error) {
       console.error('Failed to update coach verification:', error)
     }
@@ -87,7 +87,7 @@ const StateMemberManagement: React.FC = () => {
 
   const handleClubStatusUpdate = async (clubId: number, status: boolean) => {
     try {
-      await dispatch(updateClubStatus(clubId, status) as any)
+      await dispatch(updateClubStatus(clubId, status))
     } catch (error) {
       console.error('Failed to update club status:', error)
     }
@@ -95,7 +95,7 @@ const StateMemberManagement: React.FC = () => {
 
   const handlePartnerStatusUpdate = async (partnerId: number, status: boolean) => {
     try {
-      await dispatch(updatePartnerStatus(partnerId, status) as any)
+      await dispatch(updatePartnerStatus(partnerId, status))
     } catch (error) {
       console.error('Failed to update partner status:', error)
     }

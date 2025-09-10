@@ -1,10 +1,10 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../../store'
+import { RootState, AppDispatch } from '../../../store'
 import { setMessageFilter } from '../../../store/slices/adminMessagingSlice'
 
 const MessageFilters: React.FC = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { messageFilter } = useSelector((state: RootState) => state.adminMessaging)
 
   const handleFilterChange = (field: string, value: string) => {

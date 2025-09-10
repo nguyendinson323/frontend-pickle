@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from '../../store'
+import { RootState, AppDispatch } from '../../store'
 import {
   fetchPartnerDocuments,
   uploadPartnerDocument,
@@ -19,7 +19,7 @@ import InvoicesList from '../../components/partner/documents/InvoicesList'
 import UploadModal from '../../components/partner/documents/UploadModal'
 
 const PartnerDocuments: React.FC = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const {
     documents,
     invoices,
@@ -35,7 +35,7 @@ const PartnerDocuments: React.FC = () => {
   const [showUploadModal, setShowUploadModal] = useState(false)
 
   useEffect(() => {
-    dispatch(fetchPartnerDocuments() as any)
+    dispatch(fetchPartnerDocuments())
   }, [dispatch])
 
   const handleUploadDocument = async (formData: FormData) => {
@@ -50,7 +50,7 @@ const PartnerDocuments: React.FC = () => {
   const handleSignDocument = async (documentId: number) => {
     if (window.confirm('Are you sure you want to digitally sign this document?')) {
       try {
-        await dispatch(signPartnerDocument(documentId) as any)
+        await dispatch(signPartnerDocument(documentId))
       } catch (error) {
         console.error('Signing failed:', error)
       }
@@ -59,7 +59,7 @@ const PartnerDocuments: React.FC = () => {
 
   const handleDownloadDocument = async (documentId: number) => {
     try {
-      await dispatch(downloadPartnerDocument(documentId) as any)
+      await dispatch(downloadPartnerDocument(documentId))
     } catch (error) {
       console.error('Download failed:', error)
     }

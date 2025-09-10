@@ -7,19 +7,24 @@ export interface Payment {
   id: number
   amount: number
   currency: string
-  status: string
-  payment_method: string
-  transaction_id: string
-  description: string
+  status: 'pending' | 'completed' | 'failed' | 'refunded' | 'cancelled'
+  payment_type?: string
+  payment_method?: string
+  reference_type?: string
+  reference_id?: number
+  stripe_payment_id?: string
+  transaction_id?: string
+  description?: string
   user_id: number
-  metadata: any
+  metadata?: any
+  transaction_date: string
   created_at: string
   updated_at: string
   user?: {
     id: number
-    first_name: string
-    last_name: string
+    username: string
     email: string
+    role: string
   }
 }
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../store'
+import { RootState, AppDispatch } from '../../store'
 import {
   fetchClubTournamentsData,
   createTournament,
@@ -20,7 +20,7 @@ import CreateTournamentModal from '../../components/club/tournaments/CreateTourn
 
 const ClubTournaments: React.FC = () => {
   const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   
   const { tournaments, stats, loading, error } = useSelector((state: RootState) => state.clubTournaments)
   const { user } = useSelector((state: RootState) => state.auth)
@@ -39,7 +39,7 @@ const ClubTournaments: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      await dispatch(fetchClubTournamentsData() as any)
+      await dispatch(fetchClubTournamentsData())
     } catch (error) {
       console.error('Error fetching tournaments data:', error)
     }
@@ -71,7 +71,7 @@ const ClubTournaments: React.FC = () => {
     }>
   }) => {
     try {
-      await dispatch(createTournament(tournamentData) as any)
+      await dispatch(createTournament(tournamentData))
     } catch (error) {
       console.error('Error creating tournament:', error)
       throw error
@@ -84,8 +84,8 @@ const ClubTournaments: React.FC = () => {
     setShowDetailsModal(true)
     
     // Fetch additional data for the tournament
-    dispatch(fetchTournamentRegistrations(tournament.id) as any)
-    dispatch(fetchTournamentMatches(tournament.id) as any)
+    dispatch(fetchTournamentRegistrations(tournament.id))
+    dispatch(fetchTournamentMatches(tournament.id))
   }
 
   const handleEditTournament = (tournament: ClubTournament) => {
@@ -96,7 +96,7 @@ const ClubTournaments: React.FC = () => {
   const handleDeleteTournament = async (tournamentId: number) => {
     if (window.confirm('Are you sure you want to delete this tournament? This action cannot be undone.')) {
       try {
-        await dispatch(deleteTournamentInfo(tournamentId) as any)
+        await dispatch(deleteTournamentInfo(tournamentId))
       } catch (error) {
         console.error('Error deleting tournament:', error)
       }
@@ -105,7 +105,7 @@ const ClubTournaments: React.FC = () => {
 
   const handleUpdateStatus = async (tournamentId: number, status: string) => {
     try {
-      await dispatch(updateTournamentStatusInfo(tournamentId, status) as any)
+      await dispatch(updateTournamentStatusInfo(tournamentId, status))
     } catch (error) {
       console.error('Error updating tournament status:', error)
     }

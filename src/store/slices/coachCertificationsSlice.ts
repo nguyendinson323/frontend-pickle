@@ -30,6 +30,8 @@ interface CoachCertificationsState {
     issuer: string
     search: string
   }
+  isLoading: boolean
+  error: string | null
 }
 
 const initialState: CoachCertificationsState = {
@@ -40,13 +42,21 @@ const initialState: CoachCertificationsState = {
     status: 'all',
     issuer: '',
     search: ''
-  }
+  },
+  isLoading: false,
+  error: null
 }
 
 const coachCertificationsSlice = createSlice({
   name: 'coachCertifications',
   initialState,
   reducers: {
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.isLoading = action.payload
+    },
+    setError: (state, action: PayloadAction<string | null>) => {
+      state.error = action.payload
+    },
     setCoachCertifications: (state, action: PayloadAction<CoachCertification[]>) => {
       state.certifications = action.payload
     },
@@ -75,11 +85,14 @@ const coachCertificationsSlice = createSlice({
       state.certifications = []
       state.stats = null
       state.selectedCertification = null
+      state.error = null
     }
   }
 })
 
 export const {
+  setLoading,
+  setError,
   setCoachCertifications,
   setCertificationStats,
   setSelectedCertification,
@@ -90,25 +103,36 @@ export const {
   clearCoachCertificationsData
 } = coachCertificationsSlice.actions
 
+// Define response interfaces
+interface CoachCertificationsResponse {
+  certifications: CoachCertification[]
+  stats: CertificationStats
+}
+
+interface CertificationResponse {
+  certification: CoachCertification
+}
+
 // API Functions
 export const fetchCoachCertificationsData = () => async (dispatch: AppDispatch) => {
   try {
     dispatch(startLoading('Loading certifications data...'))
-    const response = await api.get('/api/coach/certifications')
-    dispatch(setCoachCertifications((response.data as { certifications: CoachCertification[], stats: CertificationStats }).certifications))
-    dispatch(setCertificationStats((response.data as { certifications: CoachCertification[], stats: CertificationStats }).stats))
+    const response = await api.get<CoachCertificationsResponse>('/api/coach/certifications')
+    dispatch(setCoachCertifications(response.data.certifications))
+    dispatch(setCertificationStats(response.data.stats))
     dispatch(stopLoading())
   } catch (error) {
+    dispatch(setError('Failed to load certifications data'))
     dispatch(stopLoading())
-    console.error('Error fetching coach certifications data:', error)
+    throw error
   }
 }
 
 export const addCoachCertification = (certificationData: Partial<CoachCertification>) => async (dispatch: AppDispatch) => {
   try {
     dispatch(startLoading('Adding certification...'))
-    const response = await api.post('/api/coach/certifications', certificationData)
-    dispatch(addCertification((response.data as { certification: CoachCertification }).certification))
+    const response = await api.post<CertificationResponse>('/api/coach/certifications', certificationData)
+    dispatch(addCertification(response.data.certification))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(stopLoading())
@@ -119,8 +143,8 @@ export const addCoachCertification = (certificationData: Partial<CoachCertificat
 export const updateCoachCertification = (certificationId: number, certificationData: Partial<CoachCertification>) => async (dispatch: AppDispatch) => {
   try {
     dispatch(startLoading('Updating certification...'))
-    const response = await api.put(`/api/coach/certifications/${certificationId}`, certificationData)
-    dispatch(updateCertification((response.data as { certification: CoachCertification }).certification))
+    const response = await api.put<CertificationResponse>(`/api/coach/certifications/${certificationId}`, certificationData)
+    dispatch(updateCertification(response.data.certification))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(stopLoading())
@@ -148,7 +172,7 @@ export const downloadCertificate = (certificationId: number) => async (dispatch:
     })
     
     // Create download link
-    const blob = new Blob([response.data as BlobPart], { type: 'application/pdf' })
+    const blob = new Blob([response.data], { type: 'application/pdf' })
     const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url

@@ -344,4 +344,45 @@ export const updateStateProfile = (profileData: Partial<StateCommittee>) => asyn
   }
 }
 
+// Fetch dashboard data for current user  
+const fetchDashboard = (userRole: string) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading dashboard...'))
+  
+  try {
+    let response
+    switch (userRole) {
+      case 'player':
+        response = await api.get('/api/player/dashboard')
+        break
+      case 'coach':
+        response = await api.get('/api/coach/dashboard')
+        break
+      case 'club':
+        response = await api.get('/api/club/dashboard')
+        break
+      case 'partner':
+        response = await api.get('/api/partner/dashboard')
+        break
+      case 'state':
+        response = await api.get('/api/state/dashboard')
+        break
+      case 'admin':
+        response = await api.get('/api/admin/dashboard')
+        break
+      default:
+        throw new Error('Invalid user role')
+    }
+    
+    dispatch(updateDashboard(response.data))
+    return response.data
+  } catch (error) {
+    throw error
+  } finally {
+    dispatch(stopLoading())
+  }
+}
+
+// Export fetchDashboard function
+export { fetchDashboard }
+
 export default authSlice.reducer

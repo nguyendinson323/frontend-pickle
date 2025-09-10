@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../../store'
+import { RootState, AppDispatch } from '../../../store'
 import { MicrositeAdmin } from '../../../types/admin'
 import { exportMicrosites } from '../../../store/slices/adminMicrositesSlice'
 import MicrositeStatusModal from './MicrositeStatusModal'
@@ -13,7 +13,7 @@ interface MicrositesTableProps {
 }
 
 const MicrositesTable: React.FC<MicrositesTableProps> = ({ onMicrositeSelect }) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { microsites, micrositeFilter, loading } = useSelector((state: RootState) => state.adminMicrosites)
   const [selectedMicrosite, setSelectedMicrosite] = useState<MicrositeAdmin | null>(null)
   const [showStatusModal, setShowStatusModal] = useState(false)
@@ -83,7 +83,7 @@ const MicrositesTable: React.FC<MicrositesTableProps> = ({ onMicrositeSelect }) 
   }
 
   const handleExport = async (format: 'csv' | 'excel' | 'pdf') => {
-    dispatch(exportMicrosites(micrositeFilter, format) as any)
+    dispatch(exportMicrosites(micrositeFilter, format))
   }
 
   const handleStatusChange = (microsite: MicrositeAdmin) => {
