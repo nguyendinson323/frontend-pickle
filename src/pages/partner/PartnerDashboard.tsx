@@ -74,7 +74,8 @@ const PartnerDashboardPage: React.FC = () => {
           businessName: profile.business_name,
           partnerType: profile.partner_type || 'business',
           contactPersonName: profile.contact_name || 'Contact Person',
-          state: profile.state?.name || 'Unknown'
+          state: profile.state?.name || 'Unknown',
+          businessLogoUrl: profile.logo_url
         }} />
 
         <PartnerStatsGrid partnerData={dashboardData} />

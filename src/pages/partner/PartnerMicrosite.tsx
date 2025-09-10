@@ -11,6 +11,8 @@ import {
 import MicrositeHeader from '../../components/partner/microsite/MicrositeHeader'
 import CourtsSection from '../../components/partner/microsite/CourtsSection'
 import TournamentsSection from '../../components/partner/microsite/TournamentsSection'
+import PagesSection from '../../components/partner/microsite/PagesSection'
+import MicrositeEditModal from '../../components/partner/microsite/MicrositeEditModal'
 
 const PartnerMicrosite: React.FC = () => {
   const navigate = useNavigate()
@@ -22,11 +24,12 @@ const PartnerMicrosite: React.FC = () => {
     micrositeInfo,
     courts,
     tournaments,
+    pages,
     stats,
-    loading,
-    error,
-    isPublicView
+    error
   } = useSelector((state: RootState) => state.partnerMicrosite)
+  
+  const { isLoading: loading } = useSelector((state: RootState) => state.loading)
 
   const [showEditModal, setShowEditModal] = useState(false)
 
@@ -117,6 +120,11 @@ const PartnerMicrosite: React.FC = () => {
           />
         )}
 
+        <PagesSection
+          pages={pages}
+          isOwner={isOwner}
+        />
+
         {!micrositeInfo?.is_active && isOwner && (
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-6">
             <div className="flex">
@@ -159,37 +167,12 @@ const PartnerMicrosite: React.FC = () => {
           </div>
         )}
 
-        {/* Edit Modal - simplified for now */}
-        {showEditModal && (
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-            <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
-              <div className="flex justify-between items-center pb-3">
-                <h3 className="text-lg font-bold text-gray-900">Edit Microsite</h3>
-                <button
-                  onClick={() => setShowEditModal(false)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-              <div className="mt-4">
-                <p className="text-gray-600">
-                  Microsite editing functionality will be implemented here.
-                </p>
-              </div>
-              <div className="flex justify-end mt-6">
-                <button
-                  onClick={() => setShowEditModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover: transition-colors"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <MicrositeEditModal
+          micrositeInfo={micrositeInfo}
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          onSave={handleEditMicrosite}
+        />
       </div>
     </div>
   )

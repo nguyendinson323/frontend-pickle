@@ -24,12 +24,13 @@ const PartnerDocuments: React.FC = () => {
     documents,
     invoices,
     stats,
-    loading,
     error,
     documentFilter,
     invoiceFilter,
     uploadingFile
   } = useSelector((state: RootState) => state.partnerDocuments)
+  
+  const { isLoading: loading } = useSelector((state: RootState) => state.loading)
 
   const [activeTab, setActiveTab] = useState<'documents' | 'invoices'>('documents')
   const [showUploadModal, setShowUploadModal] = useState(false)

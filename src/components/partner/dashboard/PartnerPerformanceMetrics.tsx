@@ -2,9 +2,11 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
 interface PartnerData {
-  courtUtilization?: number
-  customerRating?: number
-  repeatCustomers?: number
+  stats: {
+    court_utilization?: number
+    customer_rating?: number
+    repeat_customers?: number
+  }
 }
 
 interface PartnerPerformanceMetricsProps {
@@ -22,7 +24,7 @@ const PartnerPerformanceMetrics: React.FC<PartnerPerformanceMetricsProps> = ({ p
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium text-green-800">Court Utilization</p>
-              <p className="text-2xl font-bold text-green-900">{partnerData.courtUtilization || 0}%</p>
+              <p className="text-2xl font-bold text-green-900">{partnerData.stats.court_utilization || 0}%</p>
             </div>
             <div className="text-3xl text-green-600">📊</div>
           </div>
@@ -32,7 +34,7 @@ const PartnerPerformanceMetrics: React.FC<PartnerPerformanceMetricsProps> = ({ p
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium text-blue-800">Customer Rating</p>
-              <p className="text-2xl font-bold text-blue-900">{partnerData.customerRating || 0}/5</p>
+              <p className="text-2xl font-bold text-blue-900">{partnerData.stats.customer_rating || 0}/5</p>
             </div>
             <div className="text-3xl text-blue-600">⭐</div>
           </div>
@@ -42,7 +44,7 @@ const PartnerPerformanceMetrics: React.FC<PartnerPerformanceMetricsProps> = ({ p
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium text-purple-800">Repeat Customers</p>
-              <p className="text-2xl font-bold text-purple-900">{partnerData.repeatCustomers || 0}%</p>
+              <p className="text-2xl font-bold text-purple-900">{partnerData.stats.repeat_customers || 0}%</p>
             </div>
             <div className="text-3xl text-purple-600">🔄</div>
           </div>

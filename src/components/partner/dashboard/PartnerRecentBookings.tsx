@@ -2,8 +2,9 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
 interface Booking {
-  playerName: string
-  courtNumber: number
+  id: number
+  player_name: string
+  court_number: number
   date: string
   time: string
   amount: number
@@ -23,10 +24,10 @@ const PartnerRecentBookings: React.FC<PartnerRecentBookingsProps> = ({ recentBoo
       {recentBookings.length > 0 ? (
         <div className="space-y-4">
           {recentBookings.slice(0, 4).map((booking, index) => (
-            <div key={index} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+            <div key={booking.id || index} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
               <div>
-                <p className="font-medium text-gray-900">{booking.playerName}</p>
-                <p className="text-sm text-gray-600">Court {booking.courtNumber}</p>
+                <p className="font-medium text-gray-900">{booking.player_name}</p>
+                <p className="text-sm text-gray-600">Court {booking.court_number}</p>
                 <p className="text-xs text-gray-500">{booking.date} • {booking.time}</p>
               </div>
               <div className="text-right">

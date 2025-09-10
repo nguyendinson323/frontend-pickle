@@ -2,11 +2,12 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
 interface Event {
+  id: number
   name: string
   type: string
   date: string
   duration: string
-  expectedRevenue: number
+  expected_revenue: number
   registrations: number
 }
 
@@ -23,7 +24,7 @@ const PartnerUpcomingEvents: React.FC<PartnerUpcomingEventsProps> = ({ upcomingE
       {upcomingEvents.length > 0 ? (
         <div className="space-y-4">
           {upcomingEvents.slice(0, 3).map((event, index) => (
-            <div key={index} className="p-4 border border-gray-200 rounded-lg">
+            <div key={event.id || index} className="p-4 border border-gray-200 rounded-lg">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-semibold text-gray-900">{event.name}</p>
@@ -31,7 +32,7 @@ const PartnerUpcomingEvents: React.FC<PartnerUpcomingEventsProps> = ({ upcomingE
                   <p className="text-xs text-gray-500">{event.date} • {event.duration}</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-medium text-orange-600">${event.expectedRevenue}</p>
+                  <p className="font-medium text-orange-600">${event.expected_revenue}</p>
                   <span className="bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
                     {event.registrations} registered
                   </span>

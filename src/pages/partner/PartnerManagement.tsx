@@ -29,13 +29,14 @@ const PartnerManagement: React.FC = () => {
     courts,
     tournaments,
     stats,
-    loading,
     error,
     courtFilter,
     tournamentFilter,
     selectedCourt,
     selectedTournament
   } = useSelector((state: RootState) => state.partnerManagement)
+  
+  const { isLoading: loading } = useSelector((state: RootState) => state.loading)
 
   const [activeTab, setActiveTab] = useState<'courts' | 'tournaments'>('courts')
   const [showCourtModal, setShowCourtModal] = useState(false)

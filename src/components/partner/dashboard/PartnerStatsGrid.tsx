@@ -1,10 +1,17 @@
 import React from 'react'
 
 interface PartnerData {
-  totalCourts: number
-  monthlyBookings: number
-  eventsHosted: number
-  monthlyRevenue?: number
+  stats: {
+    total_courts: number
+    active_tournaments: number
+    monthly_bookings: number
+    monthly_revenue: number
+    court_utilization?: number
+    customer_rating?: number
+    repeat_customers?: number
+    revenue_growth?: number
+    booking_trend?: number
+  }
 }
 
 interface PartnerStatsGridProps {
@@ -13,10 +20,10 @@ interface PartnerStatsGridProps {
 
 const PartnerStatsGrid: React.FC<PartnerStatsGridProps> = ({ partnerData }) => {
   const stats = [
-    { label: 'Active Courts', value: partnerData.totalCourts, icon: '🎾', color: 'bg-green-600' },
-    { label: 'Monthly Bookings', value: partnerData.monthlyBookings, icon: '📅', color: 'bg-blue-600' },
-    { label: 'Events Hosted', value: partnerData.eventsHosted, icon: '🏆', color: 'bg-purple-600' },
-    { label: 'Monthly Revenue', value: `$${partnerData.monthlyRevenue?.toLocaleString() || 0}`, icon: '💰', color: 'bg-orange-600' }
+    { label: 'Active Courts', value: partnerData.stats.total_courts || 0, icon: '🎾', color: 'bg-green-600' },
+    { label: 'Monthly Bookings', value: partnerData.stats.monthly_bookings || 0, icon: '📅', color: 'bg-blue-600' },
+    { label: 'Active Tournaments', value: partnerData.stats.active_tournaments || 0, icon: '🏆', color: 'bg-purple-600' },
+    { label: 'Monthly Revenue', value: `$${(partnerData.stats.monthly_revenue || 0).toLocaleString()}`, icon: '💰', color: 'bg-orange-600' }
   ]
 
   return (

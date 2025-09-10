@@ -38,6 +38,7 @@ import partnerStatisticsReducer from './slices/partnerStatisticsSlice'
 import partnerDocumentsReducer from './slices/partnerDocumentsSlice'
 import partnerManagementReducer from './slices/partnerManagementSlice'
 import partnerDashboardReducer from './slices/partnerDashboardSlice'
+import partnerProfileReducer from './slices/partnerProfileSlice'
 import adminUserManagementReducer from './slices/adminUserManagementSlice'
 import adminMessagingReducer from './slices/adminMessagingSlice'
 import adminRankingsReducer from './slices/adminRankingsSlice'
@@ -90,6 +91,7 @@ export const store = configureStore({
     partnerDocuments: partnerDocumentsReducer,
     partnerManagement: partnerManagementReducer,
     partnerDashboard: partnerDashboardReducer,
+    partnerProfile: partnerProfileReducer,
     adminUserManagement: adminUserManagementReducer,
     adminMessaging: adminMessagingReducer,
     adminRankings: adminRankingsReducer,

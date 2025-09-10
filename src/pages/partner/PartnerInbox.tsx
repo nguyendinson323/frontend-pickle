@@ -24,9 +24,10 @@ const PartnerInbox: React.FC = () => {
     messages,
     stats,
     selectedMessage,
-    loading,
     error
   } = useSelector((state: RootState) => state.partnerInbox)
+  
+  const { isLoading: loading } = useSelector((state: RootState) => state.loading)
 
   const [searchTerm, setSearchTerm] = useState('')
   const [filterType, setFilterType] = useState('')

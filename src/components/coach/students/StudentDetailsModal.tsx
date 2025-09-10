@@ -41,7 +41,7 @@ const StudentDetailsModal: React.FC<StudentDetailsModalProps> = ({
   onUpdateLevel
 }) => {
   const dispatch = useDispatch<AppDispatch>()
-  const { studentDetails, loading } = useSelector((state: RootState) => state.coachStudents)
+  const { selectedStudent, isLoading } = useSelector((state: RootState) => state.coachStudents)
   const [note, setNote] = React.useState('')
 
   useEffect(() => {
@@ -52,7 +52,7 @@ const StudentDetailsModal: React.FC<StudentDetailsModalProps> = ({
 
   const handleAddNote = async () => {
     if (note.trim()) {
-      await dispatch(addStudentNote({ studentId: student.id, note: note.trim() }))
+      await dispatch(addStudentNote(student.id, note.trim()))
       setNote('')
     }
   }
@@ -108,7 +108,7 @@ const StudentDetailsModal: React.FC<StudentDetailsModalProps> = ({
           </button>
         </div>
 
-        {loading ? (
+        {isLoading ? (
           <div className="p-6 text-center">
             <div className="text-gray-500">Loading student details...</div>
           </div>
@@ -189,13 +189,13 @@ const StudentDetailsModal: React.FC<StudentDetailsModalProps> = ({
             </div>
 
             {/* Recent Sessions */}
-            {studentDetails && studentDetails.recent_sessions && studentDetails.recent_sessions.length > 0 && (
+            {selectedStudent && (selectedStudent as any).recent_sessions && (selectedStudent as any).recent_sessions.length > 0 && (
               <div className="bg-white border border-gray-200 rounded-lg">
                 <div className="px-4 py-3 border-b border-gray-200">
                   <h3 className="text-lg font-semibold text-gray-900">Recent Sessions</h3>
                 </div>
                 <div className="divide-y divide-gray-200">
-                  {studentDetails.recent_sessions.map((session: any, index: number) => (
+                  {(selectedStudent as any).recent_sessions.map((session: any, index: number) => (
                     <div key={index} className="p-4">
                       <div className="flex justify-between items-start">
                         <div>
