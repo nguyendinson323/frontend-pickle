@@ -1,7 +1,8 @@
 import React from 'react'
+import { PlayerStats } from '../../../store/slices/playerRankingsSlice'
 
 interface StatsOverviewCardsProps {
-  playerStats: any
+  playerStats: PlayerStats | null
 }
 
 const StatsOverviewCards: React.FC<StatsOverviewCardsProps> = ({

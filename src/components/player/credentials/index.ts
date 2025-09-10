@@ -5,3 +5,4 @@ export { default as CreateCredentialTemplates } from './CreateCredentialTemplate
 export { default as CredentialVerification } from './CredentialVerification'
 export { default as QrCodeModal } from './QrCodeModal'
 export { default as CreateCredentialModal } from './CreateCredentialModal'
+export { default as PlayerCredentialCard } from './PlayerCredentialCard'

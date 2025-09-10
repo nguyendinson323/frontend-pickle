@@ -59,16 +59,16 @@ const PlayerDashboardPage: React.FC = () => {
   
   // Map backend data to component expected format
   const upcomingMatches = (playerData.upcomingMatches || []).map(match => ({
-    tournamentName: match.name,
-    opponent: 'TBD', // Will be determined when matches are drawn
-    date: new Date(match.date).toLocaleDateString(),
-    time: 'TBD', // Time will be set closer to tournament
+    tournamentName: match.tournamentName,
+    opponent: match.opponent || 'TBD',
+    date: match.date,
+    time: match.time || 'TBD',
     status: match.status
   }))
   
   const recentMatches = (playerData.recentMatches || []).map(match => ({
-    tournamentName: match.tournament || 'Tournament',
     opponent: match.opponent || 'Unknown',
+    tournament: match.tournament || 'Tournament',
     date: match.date ? new Date(match.date).toLocaleDateString() : '',
     result: match.result || 'N/A',
     score: match.score || 'N/A'

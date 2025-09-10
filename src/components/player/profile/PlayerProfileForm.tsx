@@ -21,7 +21,8 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
   const [userData, setUserData] = useState({
     username: user.username,
     email: user.email,
-    phone: user.phone || ''
+    phone: user.phone || '',
+    is_searchable: user.is_searchable
   })
 
   const [playerData, setPlayerData] = useState({
@@ -51,8 +52,11 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
 
 
   const handleUserInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setUserData(prev => ({ ...prev, [name]: value }))
+    const { name, value, type, checked } = e.target
+    setUserData(prev => ({ 
+      ...prev, 
+      [name]: type === 'checkbox' ? checked : value 
+    }))
   }
 
   const handlePlayerInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -73,7 +77,10 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
       dispatch(startLoading('Updating profile...'))
       
       // Update user account information first
-      if (userData.username !== user.username || userData.email !== user.email || userData.phone !== user.phone) {
+      if (userData.username !== user.username || 
+          userData.email !== user.email || 
+          userData.phone !== user.phone || 
+          userData.is_searchable !== user.is_searchable) {
         await api.put('/api/player/account', userData)
       }
       
@@ -265,6 +272,37 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
                 onChange={handlePlayerInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
+            </div>
+          </div>
+        </div>
+
+        {/* Privacy Settings Section */}
+        <div>
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Privacy Settings</h3>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+            <div className="flex items-start">
+              <div className="flex items-center h-5">
+                <input
+                  type="checkbox"
+                  id="is_searchable"
+                  name="is_searchable"
+                  checked={userData.is_searchable}
+                  onChange={handleUserInputChange}
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                />
+              </div>
+              <div className="ml-3 text-sm">
+                <label htmlFor="is_searchable" className="font-medium text-gray-900">
+                  Can Be Found in Player Searches
+                </label>
+                <p className="text-gray-600">
+                  When enabled, other players will be able to find you in search results and send you match requests. 
+                  When disabled, you will be hidden from all player searches and cannot receive match requests.
+                </p>
+                <p className="text-gray-500 text-xs mt-2">
+                  Note: This setting does not affect your visibility in tournament results or rankings.
+                </p>
+              </div>
             </div>
           </div>
         </div>

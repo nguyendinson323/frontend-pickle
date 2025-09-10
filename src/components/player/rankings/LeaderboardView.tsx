@@ -1,9 +1,15 @@
 import React from 'react'
+import { PlayerRanking } from '../../../store/slices/playerRankingsSlice'
 
 interface LeaderboardViewProps {
   selectedRankingType: 'overall' | 'state' | 'club' | 'age_group'
   onRankingTypeChange: (rankingType: 'overall' | 'state' | 'club' | 'age_group') => void
-  leaderboards: any
+  leaderboards: {
+    overall: PlayerRanking[]
+    state: PlayerRanking[]
+    club: PlayerRanking[]
+    age_group: PlayerRanking[]
+  }
   getRankChangeIcon: (change: string) => string
   getRankChangeColor: (change: string) => string
 }

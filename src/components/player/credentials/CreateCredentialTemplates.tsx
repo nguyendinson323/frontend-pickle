@@ -1,7 +1,8 @@
 import React from 'react'
+import { CredentialTemplate } from '../../../store/slices/digitalCredentialsSlice'
 
 interface CreateCredentialTemplatesProps {
-  templates: any[]
+  templates: CredentialTemplate[]
   onCreateCredential: (templateType: string) => void
   getCredentialIcon: (type: string) => string
 }

@@ -1,18 +1,7 @@
 import React from 'react'
 import { useDispatch } from 'react-redux'
-import { closeReservationModal } from '../../../store/slices/courtReservationSlice'
+import { closeReservationModal, Court, TimeSlot } from '../../../store/slices/courtReservationSlice'
 import { AppDispatch } from '../../../store'
-
-interface Court {
-  id: number
-  name: string
-}
-
-interface TimeSlot {
-  start_time: string
-  end_time: string
-  price: number
-}
 
 interface ReservationModal {
   isOpen: boolean

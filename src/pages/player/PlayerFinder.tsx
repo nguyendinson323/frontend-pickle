@@ -10,6 +10,7 @@ import {
   respondToMatchRequest,
   cancelMatchRequest,
   setFilters,
+  updatePlayerSearchability,
   PlayerFinderFilters
 } from '../../store/slices/playerFinderSlice'
 import { fetchStates } from '../../store/slices/playerSlice'
@@ -103,6 +104,10 @@ const PlayerFinderPage: React.FC = () => {
     dispatch(cancelMatchRequest(requestId))
   }
 
+  const handleToggleSearchability = (isSearchable: boolean) => {
+    dispatch(updatePlayerSearchability(isSearchable))
+  }
+
 
   if (!user || user.role !== 'player') {
     return (
@@ -116,6 +121,35 @@ const PlayerFinderPage: React.FC = () => {
     <div className="min-h-screen  py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <PlayerFinderHeader isPremium={user.is_premium} />
+        
+        {/* Privacy Settings */}
+        <div className="mb-8 bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-medium text-gray-900">Privacy Settings</h3>
+              <p className="text-sm text-gray-600">Control whether other players can find you in searches</p>
+            </div>
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="searchable"
+                checked={user.is_searchable}
+                onChange={(e) => handleToggleSearchability(e.target.checked)}
+                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+              />
+              <label htmlFor="searchable" className="ml-2 block text-sm text-gray-900">
+                {user.is_searchable ? 'Visible in searches' : 'Hidden from searches'}
+              </label>
+            </div>
+          </div>
+          {!user.is_searchable && (
+            <div className="mt-3 p-3 bg-yellow-50 rounded-md">
+              <p className="text-sm text-yellow-700">
+                You are currently hidden from player searches. Other players will not be able to find and connect with you.
+              </p>
+            </div>
+          )}
+        </div>
         
         <PlayerFinderTabs
           activeTab={activeTab}

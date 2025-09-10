@@ -1,18 +1,5 @@
 import React from 'react'
-
-interface CourtReservation {
-  id: number
-  court?: {
-    name: string
-    address: string
-  }
-  date: string
-  start_time: string
-  end_time: string
-  amount: number
-  status: 'confirmed' | 'pending' | 'canceled'
-  payment_status: 'paid' | 'pending' | 'failed'
-}
+import { CourtReservation } from '../../../store/slices/courtReservationSlice'
 
 interface CourtReservationsListProps {
   userReservations: CourtReservation[]

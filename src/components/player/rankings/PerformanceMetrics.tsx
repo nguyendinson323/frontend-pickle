@@ -1,7 +1,8 @@
 import React from 'react'
+import { PerformanceMetrics } from '../../../store/slices/playerRankingsSlice'
 
 interface PerformanceMetricsProps {
-  performanceMetrics: any
+  performanceMetrics: PerformanceMetrics | null
   getPerformanceColor: (rating: number) => string
 }
 

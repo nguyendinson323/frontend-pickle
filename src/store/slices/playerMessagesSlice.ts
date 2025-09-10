@@ -522,8 +522,8 @@ export const searchPlayers = (query: string) => async (dispatch: AppDispatch) =>
   
   try {
     dispatch(setError(null))
-    const response = await api.get('/api/player-messages/search-players', {
-      params: { query }
+    const response = await api.get('/api/player-messages/search', {
+      params: { q: query }
     })
     dispatch(setSearchResults(response.data as PlayerContact[]))
   } catch (error) {

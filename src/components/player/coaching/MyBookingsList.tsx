@@ -1,12 +1,10 @@
 import React from 'react'
-import { useDispatch } from 'react-redux'
-import { openReviewModal } from '../../../store/slices/coachingSessionsSlice'
-import { AppDispatch } from '../../../store'
 
 interface MyBookingsListProps {
   bookings: any[]
   onTabChange: (tab: 'search' | 'coaches' | 'my-bookings') => void
   onCancelBooking: (bookingId: number) => void
+  onOpenReview: (sessionId: number) => void
   formatDate: (dateString: string) => string
   formatTime: (timeString: string) => string
   getStatusColor: (status: string) => string
@@ -18,13 +16,13 @@ const MyBookingsList: React.FC<MyBookingsListProps> = ({
   bookings,
   onTabChange,
   onCancelBooking,
+  onOpenReview,
   formatDate,
   formatTime,
   getStatusColor,
   canCancelBooking,
   canReviewSession
 }) => {
-  const dispatch = useDispatch<AppDispatch>()
 
   if (bookings.length === 0) {
     return (
@@ -104,7 +102,7 @@ const MyBookingsList: React.FC<MyBookingsListProps> = ({
                   
                   {canReviewSession(booking) && (
                     <button
-                      onClick={() => dispatch(openReviewModal({ sessionId: booking.session.id }))}
+                      onClick={() => onOpenReview(booking.session.id)}
                       className="text-sm text-green-600 hover:text-green-800 font-medium"
                     >
                       Leave Review

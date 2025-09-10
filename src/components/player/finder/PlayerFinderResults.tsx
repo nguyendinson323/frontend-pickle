@@ -1,21 +1,9 @@
 import React from 'react'
-
-interface Player {
-  id: number
-  full_name: string
-  birth_date: string
-  gender: string
-  nrtp_level: number
-  profile_photo_url?: string
-  club?: { name: string }
-  state?: { name: string }
-  distance?: number
-  user: { is_premium: boolean }
-}
+import { PlayerFinderPlayer } from '../../../store/slices/playerFinderSlice'
 
 interface PlayerFinderResultsProps {
   searchPerformed: boolean
-  players: Player[]
+  players: PlayerFinderPlayer[]
   onSendMatchRequest: (playerId: number) => void
 }
 
@@ -24,16 +12,7 @@ const PlayerFinderResults: React.FC<PlayerFinderResultsProps> = ({
   players,
   onSendMatchRequest
 }) => {
-  const calculateAge = (birthDate: string) => {
-    const today = new Date()
-    const birth = new Date(birthDate)
-    let age = today.getFullYear() - birth.getFullYear()
-    const monthDiff = today.getMonth() - birth.getMonth()
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-      age--
-    }
-    return age
-  }
+  // Age is now calculated by the backend and provided in the player data
 
   if (!searchPerformed) {
     return null
@@ -80,7 +59,7 @@ const PlayerFinderResults: React.FC<PlayerFinderResultsProps> = ({
                   <div>
                     <h3 className="text-lg font-medium text-gray-900">{player.full_name}</h3>
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
-                      <span>Age: {calculateAge(player.birth_date)}</span>
+                      <span>Age: {player.age}</span>
                       <span>NRTP: {player.nrtp_level}</span>
                       <span>{player.gender}</span>
                       {player.state && <span>{player.state.name}</span>}

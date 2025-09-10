@@ -119,9 +119,13 @@ export const DigitalCredentialCard: React.FC<DigitalCredentialCardProps> = ({
         {/* QR Code */}
         <div className="text-center mb-4">
           <div className="w-32 h-32 bg-gray-200 rounded-lg flex items-center justify-center mx-auto mb-2">
-            <div className="w-28 h-28 bg-gray-100 rounded flex items-center justify-center">
-              <span className="text-xs text-gray-600">QR Code</span>
-            </div>
+            {qrCodeData ? (
+              <img src={qrCodeData} alt="QR Code" className="w-28 h-28 rounded object-contain" />
+            ) : (
+              <div className="w-28 h-28 bg-gray-100 rounded flex items-center justify-center">
+                <span className="text-xs text-gray-600">QR Code</span>
+              </div>
+            )}
           </div>
           <p className="text-xs text-gray-500">Scan for verification</p>
         </div>

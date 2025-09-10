@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from 'react'
-
-interface TimeSlot {
-  start_time: string
-  end_time: string
-  available: boolean
-  price: number
-  reservation_id?: number
-}
+import { TimeSlot } from '../../../store/slices/courtReservationSlice'
 
 interface CalendarViewProps {
   selectedDate: string

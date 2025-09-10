@@ -12,9 +12,8 @@ import {
   getPlayerComparison,
   setSelectedRankingType,
   setSelectedTimeframe,
-  setFilters,
-  setComparisonMode,
-  setComparisonPlayer
+  setComparisonPlayer,
+  PlayerRanking
 } from '../../store/slices/playerRankingsSlice'
 import { AppDispatch } from '../../store'
 import {
@@ -45,10 +44,6 @@ const PlayerRankings: React.FC = () => {
     leaderboards,
     selectedRankingType,
     selectedTimeframe,
-    isLoading,
-    error,
-    statsPeriod,
-    comparisonMode,
     comparisonPlayer
   } = useSelector((state: RootState) => state.playerRankings)
 
@@ -65,9 +60,14 @@ const PlayerRankings: React.FC = () => {
     if (comparisonSearch.length >= 2) {
       const searchTimeout = setTimeout(async () => {
         try {
-          const results = await dispatch(searchPlayersForComparison(comparisonSearch))
-          setComparisonResults(results)
+          const resultAction = await dispatch(searchPlayersForComparison(comparisonSearch))
+          if (typeof resultAction === 'object' && resultAction !== null) {
+            setComparisonResults(resultAction as PlayerRanking[])
+          } else {
+            setComparisonResults([])
+          }
         } catch (error) {
+          console.error('Search error:', error)
           setComparisonResults([])
         }
       }, 300)
@@ -86,14 +86,17 @@ const PlayerRankings: React.FC = () => {
     dispatch(setSelectedRankingType(rankingType))
   }
 
-  const handleComparePlayer = async (player: any) => {
+  const handleComparePlayer = async (player: PlayerRanking) => {
     if (playerStats) {
       dispatch(setComparisonPlayer(player))
       try {
-        const comparison = await dispatch(getPlayerComparison(playerStats.player_id, player.player_id, selectedTimeframe))
-        setComparisonData(comparison)
+        const comparisonResult = await dispatch(getPlayerComparison(playerStats.player_id, player.player_id, selectedTimeframe))
+        if (typeof comparisonResult === 'object' && comparisonResult !== null) {
+          setComparisonData(comparisonResult)
+        }
       } catch (error) {
         console.error('Failed to load comparison data:', error)
+        setComparisonData(null)
       }
     }
   }
@@ -192,6 +195,8 @@ const PlayerRankings: React.FC = () => {
             playerStats={playerStats}
             onComparePlayer={handleComparePlayer}
             formatDate={formatDate}
+            comparisonSearch={comparisonSearch}
+            setComparisonSearch={setComparisonSearch}
           />
         )}
       </div>

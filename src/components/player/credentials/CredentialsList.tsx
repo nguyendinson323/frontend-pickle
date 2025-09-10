@@ -1,14 +1,15 @@
 import React from 'react'
+import { DigitalCredential } from '../../../store/slices/digitalCredentialsSlice'
 
 interface CredentialsListProps {
-  credentials: any[]
+  credentials: DigitalCredential[]
   onTabChange: (tab: 'my-credentials' | 'create' | 'verify') => void
   onGenerateQrCode: (credentialId: number) => void
   onToggleCredentialStatus: (credentialId: number, currentStatus: boolean) => void
   onDeleteCredential: (credentialId: number) => void
   formatDate: (dateString: string) => string
-  getStatusColor: (credential: any) => string
-  getStatusText: (credential: any) => string
+  getStatusColor: (credential: DigitalCredential) => string
+  getStatusText: (credential: DigitalCredential) => string
   getCredentialIcon: (type: string) => string
 }
 

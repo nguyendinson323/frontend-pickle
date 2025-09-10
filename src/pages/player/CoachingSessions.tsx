@@ -9,15 +9,8 @@ import {
   bookCoachingSession,
   cancelSessionBooking,
   submitSessionReview,
-  fetchSessionDetails,
-  setFilters,
   openBookingModal,
-  closeBookingModal,
-  openReviewModal,
-  closeReviewModal,
-  updateReviewModal,
-  openAvailabilityModal,
-  closeAvailabilityModal
+  openReviewModal
 } from '../../store/slices/coachingSessionsSlice'
 import { AppDispatch } from '../../store'
 import {
@@ -38,16 +31,12 @@ const CoachingSessions: React.FC = () => {
   const {
     availableSessions,
     myBookings,
-    selectedSession,
     coaches,
-    selectedCoach,
     filters,
     isLoading,
-    error,
     searchPerformed,
     bookingModal,
-    reviewModal,
-    availabilityModal
+    reviewModal
   } = useSelector((state: RootState) => state.coachingSessions)
 
   useEffect(() => {
@@ -74,9 +63,14 @@ const CoachingSessions: React.FC = () => {
   }
 
   const handleBookSession = () => {
-    if (bookingModal.sessionId) {
+    if (bookingModal.selectedSession) {
+      const session = bookingModal.selectedSession;
       const bookingData = {
-        session_id: bookingModal.sessionId,
+        coach_id: session.coach_id,
+        session_date: session.scheduled_date,
+        start_time: session.start_time,
+        end_time: session.end_time,
+        price: session.price_per_person,
         payment_method: 'card' // Mock payment method
       }
       
@@ -97,6 +91,10 @@ const CoachingSessions: React.FC = () => {
         comment: reviewModal.comment
       }))
     }
+  }
+
+  const handleOpenReview = (sessionId: number) => {
+    dispatch(openReviewModal({ sessionId }))
   }
 
   const formatDate = (dateString: string) => {
@@ -190,6 +188,7 @@ const CoachingSessions: React.FC = () => {
             bookings={myBookings}
             onTabChange={setActiveTab}
             onCancelBooking={handleCancelBooking}
+            onOpenReview={handleOpenReview}
             formatDate={formatDate}
             formatTime={formatTime}
             getStatusColor={getStatusColor}

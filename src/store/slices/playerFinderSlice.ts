@@ -8,6 +8,7 @@ export interface PlayerFinderPlayer {
   user_id: number
   full_name: string
   age: number
+  birth_date: string
   gender: string
   state_id: number
   nrtp_level: number
@@ -45,8 +46,20 @@ export interface MatchRequest {
   court_id: number | null
   created_at: string
   updated_at: string
-  requester?: PlayerFinderPlayer
-  receiver?: PlayerFinderPlayer
+  requester?: {
+    id: number
+    full_name: string
+    user?: { username: string }
+    state?: { id: number; name: string; short_code: string }
+    club?: { id: number; name: string; logo_url: string }
+  }
+  receiver?: {
+    id: number
+    full_name: string
+    user?: { username: string }
+    state?: { id: number; name: string; short_code: string }
+    club?: { id: number; name: string; logo_url: string }
+  }
   court?: {
     id: number
     name: string

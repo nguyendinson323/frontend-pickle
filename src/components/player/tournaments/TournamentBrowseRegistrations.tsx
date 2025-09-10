@@ -1,19 +1,5 @@
 import React from 'react'
-
-interface TournamentRegistration {
-  id: number
-  tournament?: {
-    name: string
-    start_date: string
-    end_date: string
-    venue_name?: string
-  }
-  category?: { name: string }
-  partner?: { full_name: string; nrtp_level: number }
-  status: 'registered' | 'confirmed' | 'waitlisted' | 'withdrawn'
-  payment_status: 'pending' | 'paid' | 'failed'
-  amount_paid?: number
-}
+import { TournamentRegistration } from '../../../store/slices/tournamentBrowseSlice'
 
 interface TournamentBrowseRegistrationsProps {
   userRegistrations: TournamentRegistration[]

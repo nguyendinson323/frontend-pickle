@@ -10,8 +10,6 @@ import {
   withdrawFromTournament,
   setFilters,
   openRegistrationModal,
-  closeRegistrationModal,
-  setSelectedPartner,
   setSelectedTournament,
   TournamentFilters,
   Tournament,

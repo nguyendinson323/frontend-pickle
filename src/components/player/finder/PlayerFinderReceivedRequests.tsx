@@ -1,13 +1,5 @@
 import React from 'react'
-
-interface MatchRequest {
-  id: number
-  requester?: { full_name: string }
-  preferred_date: string
-  preferred_time: string
-  message?: string
-  status: 'pending' | 'accepted' | 'rejected' | 'canceled'
-}
+import { MatchRequest } from '../../../store/slices/playerFinderSlice'
 
 interface PlayerFinderReceivedRequestsProps {
   receivedRequests: MatchRequest[]

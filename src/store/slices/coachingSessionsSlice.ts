@@ -395,7 +395,11 @@ export const fetchMyBookings = () => async (dispatch: AppDispatch) => {
 
 // Book a coaching session
 export const bookCoachingSession = (sessionData: {
-  session_id: number
+  coach_id: number
+  session_date: string
+  start_time: string
+  end_time: string
+  price: number
   payment_method: string
 }) => async (dispatch: AppDispatch) => {
   try {

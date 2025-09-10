@@ -1,7 +1,8 @@
 import React from 'react'
+import { TournamentPerformance } from '../../../store/slices/playerRankingsSlice'
 
 interface TournamentHistoryProps {
-  tournamentHistory: any[]
+  tournamentHistory: TournamentPerformance[]
   formatDate: (dateString: string) => string
 }
 

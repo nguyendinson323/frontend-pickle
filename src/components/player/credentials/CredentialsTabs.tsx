@@ -1,8 +1,8 @@
 import React from 'react'
 
 interface CredentialsTabsProps {
-  activeTab: 'my-credentials' | 'create' | 'verify'
-  onTabChange: (tab: 'my-credentials' | 'create' | 'verify') => void
+  activeTab: 'credential' | 'my-credentials' | 'create' | 'verify'
+  onTabChange: (tab: 'credential' | 'my-credentials' | 'create' | 'verify') => void
   credentialsCount: number
 }
 
@@ -16,6 +16,16 @@ const CredentialsTabs: React.FC<CredentialsTabsProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <nav className="-mb-px flex space-x-8" aria-label="Tabs">
           <button
+            onClick={() => onTabChange('credential')}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'credential'
+                ? 'border-green-500 text-green-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            My Credential
+          </button>
+          <button
             onClick={() => onTabChange('my-credentials')}
             className={`py-2 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'my-credentials'
@@ -23,7 +33,7 @@ const CredentialsTabs: React.FC<CredentialsTabsProps> = ({
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             }`}
           >
-            My Credentials ({credentialsCount})
+            All Credentials ({credentialsCount})
           </button>
           <button
             onClick={() => onTabChange('create')}

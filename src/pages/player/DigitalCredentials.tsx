@@ -21,17 +21,19 @@ import {
   CreateCredentialTemplates,
   CredentialVerification,
   QrCodeModal,
-  CreateCredentialModal
+  CreateCredentialModal,
+  PlayerCredentialCard
 } from '../../components/player/credentials'
 
 const DigitalCredentials: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
-  const [activeTab, setActiveTab] = useState<'my-credentials' | 'create' | 'verify'>('my-credentials')
+  const [activeTab, setActiveTab] = useState<'credential' | 'my-credentials' | 'create' | 'verify'>('credential')
   const [verificationResult, setVerificationResult] = useState<VerificationResult | null>(null)
 
   const {
     credentials,
     templates,
+    playerProfile,
     isLoading,
     qrCodeModal,
     createCredentialModal
@@ -132,6 +134,13 @@ const DigitalCredentials: React.FC = () => {
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {activeTab === 'credential' && (
+          <PlayerCredentialCard
+            credential={credentials.find(c => c.credential_type === 'player_card')}
+            playerProfile={playerProfile}
+          />
+        )}
+
         {activeTab === 'my-credentials' && (
           <CredentialsList
             credentials={credentials}

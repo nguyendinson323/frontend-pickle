@@ -1,12 +1,12 @@
 import React from 'react'
 import { useDispatch } from 'react-redux'
-import { closeCreateCredentialModal, updateCreateCredentialFormData } from '../../../store/slices/digitalCredentialsSlice'
+import { closeCreateCredentialModal, updateCreateCredentialFormData, CredentialTemplate } from '../../../store/slices/digitalCredentialsSlice'
 import { AppDispatch } from '../../../store'
 
 interface CreateCredentialModalProps {
   isOpen: boolean
-  selectedTemplate: any
-  formData: any
+  selectedTemplate: CredentialTemplate | null
+  formData: Record<string, string>
   onSubmitCreateCredential: () => void
   isLoading: boolean
 }

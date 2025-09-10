@@ -1,21 +1,7 @@
 import React from 'react'
 import { useDispatch } from 'react-redux'
-import { closeRegistrationModal } from '../../../store/slices/tournamentBrowseSlice'
+import { closeRegistrationModal, TournamentBrowseState } from '../../../store/slices/tournamentBrowseSlice'
 import { AppDispatch } from '../../../store'
-
-interface TournamentCategory {
-  id: number
-  name: string
-  gender?: string
-  min_skill_level?: number
-  max_skill_level?: number
-}
-
-interface RegistrationModal {
-  isOpen: boolean
-  partnerRequired: boolean
-  selectedCategory: TournamentCategory | null
-}
 
 interface RegistrationForm {
   partnerName: string
@@ -23,7 +9,7 @@ interface RegistrationForm {
 }
 
 interface TournamentRegistrationModalProps {
-  registrationModal: RegistrationModal
+  registrationModal: TournamentBrowseState['registrationModal']
   registrationForm: RegistrationForm
   onFormChange: (form: RegistrationForm) => void
   onSubmit: () => void

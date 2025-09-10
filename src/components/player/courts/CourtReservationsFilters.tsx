@@ -1,11 +1,5 @@
 import React from 'react'
-
-interface CourtFilters {
-  surface_type: string | null
-  indoor: boolean | null
-  lights: boolean | null
-  distance_km: number
-}
+import { CourtFilters } from '../../../store/slices/courtReservationSlice'
 
 interface CourtReservationsFiltersProps {
   filters: CourtFilters

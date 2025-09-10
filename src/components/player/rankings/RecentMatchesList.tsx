@@ -1,7 +1,8 @@
 import React from 'react'
+import { MatchResult } from '../../../store/slices/playerRankingsSlice'
 
 interface RecentMatchesListProps {
-  recentMatches: any[]
+  recentMatches: MatchResult[]
   formatDate: (dateString: string) => string
 }
 

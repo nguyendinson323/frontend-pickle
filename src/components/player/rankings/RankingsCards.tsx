@@ -1,7 +1,8 @@
 import React from 'react'
+import { PlayerRanking } from '../../../store/slices/playerRankingsSlice'
 
 interface RankingsCardsProps {
-  playerRankings: any[]
+  playerRankings: PlayerRanking[]
   getRankChangeIcon: (change: string) => string
   getRankChangeColor: (change: string) => string
 }

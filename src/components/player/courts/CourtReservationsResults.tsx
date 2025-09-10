@@ -1,23 +1,6 @@
 import React from 'react'
 import CalendarView from './CalendarView'
-
-interface Court {
-  id: number
-  name: string
-  address: string
-  surface_type?: string
-  indoor: boolean
-  lights?: boolean
-  hourlyRate?: number
-  distance?: number
-}
-
-interface TimeSlot {
-  start_time: string
-  end_time: string
-  price: number
-  available: boolean
-}
+import { Court, TimeSlot } from '../../../store/slices/courtReservationSlice'
 
 interface CourtReservationsResultsProps {
   searchPerformed: boolean

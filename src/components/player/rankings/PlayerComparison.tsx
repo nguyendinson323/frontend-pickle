@@ -1,12 +1,15 @@
 import React, { useState } from 'react'
+import { PlayerRanking, PlayerStats } from '../../../store/slices/playerRankingsSlice'
 
 interface PlayerComparisonProps {
-  comparisonResults: any[]
-  comparisonPlayer: any
-  comparisonData: any
-  playerStats: any
-  onComparePlayer: (player: any) => void
+  comparisonResults: PlayerRanking[]
+  comparisonPlayer: PlayerRanking | null
+  comparisonData: any // This would need a specific interface for comparison data
+  playerStats: PlayerStats | null
+  onComparePlayer: (player: PlayerRanking) => void
   formatDate: (dateString: string) => string
+  comparisonSearch: string
+  setComparisonSearch: (value: string) => void
 }
 
 const PlayerComparison: React.FC<PlayerComparisonProps> = ({
@@ -15,9 +18,10 @@ const PlayerComparison: React.FC<PlayerComparisonProps> = ({
   comparisonData,
   playerStats,
   onComparePlayer,
-  formatDate
+  formatDate,
+  comparisonSearch,
+  setComparisonSearch
 }) => {
-  const [comparisonSearch, setComparisonSearch] = useState('')
 
   return (
     <div>

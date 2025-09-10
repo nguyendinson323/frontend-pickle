@@ -16,7 +16,7 @@ interface Court {
   lights: boolean
   amenities: string
   description: string
-  hourly_rate: number
+  status: 'active' | 'maintenance' | 'inactive'
   created_at: string
   updated_at: string
 }
@@ -39,7 +39,7 @@ interface CourtReservation {
   start_time: string
   end_time: string
   status: 'pending' | 'confirmed' | 'canceled'
-  total_amount: number
+  amount: number
   payment_status: 'pending' | 'paid' | 'refunded'
   stripe_payment_id: string | null
   created_at: string
@@ -232,7 +232,6 @@ export const createCourt = (courtData: {
   lights: boolean
   amenities: string
   description: string
-  hourly_rate: number
 }) => async (dispatch: AppDispatch) => {
   try {
     dispatch(startLoading('Creating court...'))
