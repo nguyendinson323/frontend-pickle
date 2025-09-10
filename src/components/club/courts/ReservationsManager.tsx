@@ -8,7 +8,7 @@ interface CourtReservation {
   start_time: string
   end_time: string
   status: 'pending' | 'confirmed' | 'canceled'
-  total_amount: number
+  amount: number
   payment_status: 'pending' | 'paid' | 'refunded'
   stripe_payment_id: string | null
   created_at: string
@@ -219,7 +219,7 @@ const ReservationsManager: React.FC<ReservationsManagerProps> = ({
                 <div className="text-right">
                   <div className="mb-2">
                     <div className="text-lg font-semibold text-gray-900">
-                      ${reservation.total_amount.toFixed(2)}
+                      ${reservation.amount.toFixed(2)}
                     </div>
                   </div>
                   

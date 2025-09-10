@@ -13,7 +13,7 @@ interface Court {
   lights: boolean
   amenities: string
   description: string
-  hourly_rate: number
+  status: 'active' | 'maintenance' | 'inactive'
   created_at: string
   updated_at: string
 }
@@ -41,8 +41,7 @@ const CourtFormModal: React.FC<CourtFormModalProps> = ({
     indoor: false,
     lights: false,
     amenities: '',
-    description: '',
-    hourly_rate: 0
+    description: ''
   })
 
   useEffect(() => {
@@ -55,8 +54,7 @@ const CourtFormModal: React.FC<CourtFormModalProps> = ({
         indoor: court.indoor,
         lights: court.lights,
         amenities: court.amenities || '',
-        description: court.description || '',
-        hourly_rate: court.hourly_rate
+        description: court.description || ''
       })
     } else {
       setFormData({
@@ -67,8 +65,7 @@ const CourtFormModal: React.FC<CourtFormModalProps> = ({
         indoor: false,
         lights: false,
         amenities: '',
-        description: '',
-        hourly_rate: 0
+        description: ''
       })
     }
   }, [court, isOpen])
@@ -157,41 +154,23 @@ const CourtFormModal: React.FC<CourtFormModalProps> = ({
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Surface Type
-              </label>
-              <select
-                name="surface_type"
-                value={formData.surface_type}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              >
-                <option value="Hard Court">Hard Court</option>
-                <option value="Clay">Clay</option>
-                <option value="Grass">Grass</option>
-                <option value="Synthetic">Synthetic</option>
-                <option value="Concrete">Concrete</option>
-                <option value="Asphalt">Asphalt</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Hourly Rate ($)
-              </label>
-              <input
-                type="number"
-                name="hourly_rate"
-                value={formData.hourly_rate}
-                onChange={handleChange}
-                min="0"
-                step="0.01"
-                placeholder="0.00"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Surface Type
+            </label>
+            <select
+              name="surface_type"
+              value={formData.surface_type}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            >
+              <option value="Hard Court">Hard Court</option>
+              <option value="Clay">Clay</option>
+              <option value="Grass">Grass</option>
+              <option value="Synthetic">Synthetic</option>
+              <option value="Concrete">Concrete</option>
+              <option value="Asphalt">Asphalt</option>
+            </select>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

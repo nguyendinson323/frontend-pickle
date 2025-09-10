@@ -146,12 +146,12 @@ export const fetchClubDashboard = () => async (dispatch: AppDispatch) => {
     ])
     
     const combinedStats: ClubStats = {
-      totalMembers: dashboardResponse.data.stats.totalMembers,
-      totalCourts: dashboardResponse.data.stats.totalCourts,
-      activeTournaments: dashboardResponse.data.stats.activeTournaments,
+      totalMembers: dashboardResponse.data.stats?.totalMembers || 0,
+      totalCourts: dashboardResponse.data.stats?.totalCourts || 0,
+      activeTournaments: dashboardResponse.data.stats?.activeTournaments || 0,
       monthlyRevenue: dashboardResponse.data.dashboardStats?.monthlyRevenue || 0,
       memberGrowth: dashboardResponse.data.dashboardStats?.memberGrowth || 0,
-      memberSatisfaction: dashboardResponse.data.dashboardStats?.memberSatisfaction || 0,
+      memberSatisfaction: dashboardResponse.data.dashboardStats?.memberSatisfaction || 85,
       todaysBookings: dashboardResponse.data.dashboardStats?.todaysBookings || 0,
       weeklyUsage: dashboardResponse.data.dashboardStats?.weeklyUsage || 0
     }

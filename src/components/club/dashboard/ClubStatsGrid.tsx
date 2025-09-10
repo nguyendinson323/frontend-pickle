@@ -1,5 +1,15 @@
 import React from 'react'
-import { ClubDashboard } from '../../../types'
+
+interface ClubStats {
+  totalMembers: number
+  totalCourts: number
+  activeTournaments: number
+  monthlyRevenue: number
+  memberGrowth: number
+  memberSatisfaction: number
+  todaysBookings: number
+  weeklyUsage: number
+}
 
 interface StatCard {
   label: string
@@ -9,7 +19,7 @@ interface StatCard {
 }
 
 interface ClubStatsGridProps {
-  stats: ClubDashboard['stats']
+  stats: ClubStats
 }
 
 const ClubStatsGrid: React.FC<ClubStatsGridProps> = ({ stats }) => {
@@ -17,7 +27,7 @@ const ClubStatsGrid: React.FC<ClubStatsGridProps> = ({ stats }) => {
     { label: 'Active Members', value: stats.totalMembers, icon: '👥', color: 'bg-purple-600' },
     { label: 'Registered Courts', value: stats.totalCourts, icon: '🎾', color: 'bg-green-600' },
     { label: 'Active Tournaments', value: stats.activeTournaments, icon: '🏆', color: 'bg-yellow-600' },
-    { label: 'Monthly Revenue', value: '$0', icon: '💰', color: 'bg-blue-600' } // Revenue would come from separate API
+    { label: 'Monthly Revenue', value: `$${stats.monthlyRevenue.toFixed(2)}`, icon: '💰', color: 'bg-blue-600' }
   ]
 
   return (

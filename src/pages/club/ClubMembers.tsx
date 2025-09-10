@@ -9,6 +9,7 @@ import {
   extendMembershipExpiry,
   inviteNewMember,
   bulkUpdateMembers,
+  updateMemberData,
   setSelectedMember,
   ClubMember
 } from '../../store/slices/clubMembersSlice'
@@ -18,6 +19,7 @@ import MembersList from '../../components/club/members/MembersList'
 import InviteMemberModal from '../../components/club/members/InviteMemberModal'
 import BulkActionsModal from '../../components/club/members/BulkActionsModal'
 import ExtendMembershipModal from '../../components/club/members/ExtendMembershipModal'
+import EditMemberModal from '../../components/club/members/EditMemberModal'
 
 const ClubMembers: React.FC = () => {
   const navigate = useNavigate()
@@ -30,7 +32,16 @@ const ClubMembers: React.FC = () => {
   const [showInviteModal, setShowInviteModal] = useState(false)
   const [showBulkModal, setShowBulkModal] = useState(false)
   const [showExtendModal, setShowExtendModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
   const [memberToExtend, setMemberToExtend] = useState<ClubMember | null>(null)
+  const [memberToEdit, setMemberToEdit] = useState<ClubMember | null>(null)
+  
+  // Filter and pagination state
+  const [searchQuery, setSearchQuery] = useState('')
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive' | 'expired'>('all')
+  const [membershipFilter, setMembershipFilter] = useState<'all' | 'active' | 'expired' | 'expiring_soon'>('all')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [membersPerPage] = useState(10)
 
   useEffect(() => {
     if (user && user.role === 'club') {
@@ -56,17 +67,61 @@ const ClubMembers: React.FC = () => {
     )
   }
 
+  // Filter and pagination logic
+  const filteredMembers = members.filter(member => {
+    // Search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase()
+      if (!member.full_name.toLowerCase().includes(query) &&
+          !member.user.email.toLowerCase().includes(query) &&
+          !member.user.username.toLowerCase().includes(query)) {
+        return false
+      }
+    }
+
+    // Status filter
+    if (statusFilter !== 'all') {
+      if (statusFilter === 'active' && !member.user.is_active) return false
+      if (statusFilter === 'inactive' && member.user.is_active) return false
+    }
+
+    // Membership filter
+    if (membershipFilter !== 'all') {
+      const now = new Date()
+      const expiryDate = member.affiliation_expires_at ? new Date(member.affiliation_expires_at) : null
+      
+      if (membershipFilter === 'active') {
+        if (!expiryDate || expiryDate < now) return false
+      } else if (membershipFilter === 'expired') {
+        if (!expiryDate || expiryDate >= now) return false
+      } else if (membershipFilter === 'expiring_soon') {
+        if (!expiryDate) return false
+        const thirtyDaysFromNow = new Date()
+        thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30)
+        if (expiryDate < now || expiryDate > thirtyDaysFromNow) return false
+      }
+    }
+
+    return true
+  })
+
+  // Pagination
+  const totalMembers = filteredMembers.length
+  const totalPages = Math.ceil(totalMembers / membersPerPage)
+  const startIndex = (currentPage - 1) * membersPerPage
+  const paginatedMembers = filteredMembers.slice(startIndex, startIndex + membersPerPage)
+
   const handleSelectAll = () => {
-    if (selectedMembers.length === members.length) {
+    if (selectedMembers.length === paginatedMembers.length) {
       setSelectedMembers([])
     } else {
-      setSelectedMembers(members.map(member => member.id))
+      setSelectedMembers(paginatedMembers.map(member => member.id))
     }
   }
 
   const handleEditMember = (member: ClubMember) => {
-    dispatch(setSelectedMember(member))
-    console.log('Edit member functionality to be implemented')
+    setMemberToEdit(member)
+    setShowEditModal(true)
   }
 
   const handleToggleStatus = async (memberId: number, currentStatus: boolean) => {
@@ -131,6 +186,29 @@ const ClubMembers: React.FC = () => {
     }
   }
 
+  const handleUpdateMember = async (memberId: number, updateData: {
+    full_name: string
+    nrtp_level: number
+    affiliation_expires_at: string | null
+  }) => {
+    try {
+      await dispatch(updateMemberData(memberId, updateData))
+    } catch (error) {
+      console.error('Error updating member:', error)
+      throw error
+    }
+  }
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchQuery, statusFilter, membershipFilter])
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+    setSelectedMembers([]) // Clear selected members when changing page
+  }
+
   if (loading && members.length === 0) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -146,6 +224,12 @@ const ClubMembers: React.FC = () => {
           stats={stats}
           onInviteMember={() => setShowInviteModal(true)}
           onBulkActions={() => setShowBulkModal(true)}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          statusFilter={statusFilter}
+          onStatusFilterChange={setStatusFilter}
+          membershipFilter={membershipFilter}
+          onMembershipFilterChange={setMembershipFilter}
         />
 
         {error && (
@@ -161,7 +245,7 @@ const ClubMembers: React.FC = () => {
         )}
 
         <MembersList
-          members={members}
+          members={paginatedMembers}
           selectedMembers={selectedMembers}
           onMemberSelect={handleMemberSelect}
           onSelectAll={handleSelectAll}
@@ -169,6 +253,11 @@ const ClubMembers: React.FC = () => {
           onToggleStatus={handleToggleStatus}
           onRemoveMember={handleRemoveMember}
           onExtendMembership={handleExtendMembership}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          totalMembers={totalMembers}
+          membersPerPage={membersPerPage}
         />
 
         <InviteMemberModal
@@ -194,6 +283,17 @@ const ClubMembers: React.FC = () => {
           }}
           member={memberToExtend}
           onExtend={handleExtendMembershipSubmit}
+          loading={loading}
+        />
+
+        <EditMemberModal
+          isOpen={showEditModal}
+          onClose={() => {
+            setShowEditModal(false)
+            setMemberToEdit(null)
+          }}
+          member={memberToEdit}
+          onUpdate={handleUpdateMember}
           loading={loading}
         />
       </div>

@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from '../../store'
-import { ClubDashboard } from '../../types'
-import { ClubProfileView, ClubProfileForm } from '../../components/club/profile'
+import { ClubDashboard } from '../../types/auth'
+import ClubProfileView from '../../components/club/profile/ClubProfileView'
+import ClubProfileForm from '../../components/club/profile/ClubProfileForm'
 
 const ClubProfilePage: React.FC = () => {
   const navigate = useNavigate()

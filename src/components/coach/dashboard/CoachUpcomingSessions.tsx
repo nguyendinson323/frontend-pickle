@@ -1,9 +1,9 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CoachingSession } from '../../../types'
+import { CoachUpcomingSession } from '../../../store/slices/coachDashboardSlice'
 
 interface CoachUpcomingSessionsProps {
-  sessions: CoachingSession[]
+  sessions: CoachUpcomingSession[]
 }
 
 const CoachUpcomingSessions: React.FC<CoachUpcomingSessionsProps> = ({ sessions }) => {
@@ -28,13 +28,14 @@ const CoachUpcomingSessions: React.FC<CoachUpcomingSessionsProps> = ({ sessions 
           {sessions.slice(0, 3).map((session) => (
             <div key={session.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
               <div>
-                <p className="font-semibold text-gray-900">Session #{session.id}</p>
-                <p className="text-sm text-gray-600">Court {session.court_id || 'TBD'}</p>
+                <p className="font-semibold text-gray-900">{session.student_name}</p>
+                <p className="text-sm text-gray-600">{session.court_name || 'Court TBD'}</p>
                 <p className="text-xs text-gray-500">
-                  {formatDate(session.session_date)} at {formatTime(session.start_time)}
+                  {formatDate(session.session_date)} at {formatTime(session.start_time)} - {formatTime(session.end_time)}
                 </p>
               </div>
               <div className="text-right">
+                <div className="text-sm font-semibold text-gray-900">${session.price}</div>
                 <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
                   {session.status}
                 </span>

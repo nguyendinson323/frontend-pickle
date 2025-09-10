@@ -378,4 +378,5 @@ export const updateMatchResult = (matchId: number, matchData: {
   }
 }
 
+export type { ClubTournament, TournamentStats, TournamentCategory, TournamentRegistration, TournamentMatch }
 export default clubTournamentsSlice.reducer

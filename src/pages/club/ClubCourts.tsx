@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
 import { RootState, AppDispatch } from '../../store'
 import { 
   fetchClubCourtsData,
@@ -33,15 +32,14 @@ interface Court {
   lights: boolean
   amenities: string
   description: string
-  hourly_rate: number
+  status: 'active' | 'maintenance' | 'inactive'
   created_at: string
   updated_at: string
 }
 
 const ClubCourtsPage: React.FC = () => {
-  const navigate = useNavigate()
   const dispatch = useDispatch<AppDispatch>()
-  const { courts, courtSchedules, reservations, maintenance, stats, selectedCourt, loading, error } = useSelector((state: RootState) => state.clubCourts)
+  const { courts, reservations, maintenance, stats, selectedCourt, loading, error } = useSelector((state: RootState) => state.clubCourts)
   
   const [activeTab, setActiveTab] = useState<'courts' | 'reservations' | 'maintenance'>('courts')
   const [isCourtFormOpen, setIsCourtFormOpen] = useState(false)

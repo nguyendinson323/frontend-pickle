@@ -1,5 +1,19 @@
 import React, { useState } from 'react'
 import { User } from '../../../types/auth'
+import api from '../../../services/api'
+
+interface SearchUser {
+  id: number
+  full_name: string
+  role: string
+  nrtp_level?: number
+  state_name?: string
+  profile_photo_url?: string
+  hourly_rate?: number
+  club_name?: string
+  business_name?: string
+  last_active?: string
+}
 
 interface CoachConnectionTabProps {
   user: User
@@ -7,11 +21,88 @@ interface CoachConnectionTabProps {
 
 const CoachConnectionTab: React.FC<CoachConnectionTabProps> = ({ user }) => {
   const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState<SearchUser[]>([])
+  const [isSearching, setIsSearching] = useState(false)
+  const [searchError, setSearchError] = useState<string | null>(null)
   const [searchFilters, setSearchFilters] = useState({
     userType: 'all',
     location: 'all',
     level: 'all'
   })
+
+  const performSearch = async () => {
+    if (!searchQuery.trim()) {
+      setSearchResults([])
+      return
+    }
+
+    setIsSearching(true)
+    setSearchError(null)
+
+    try {
+      const params = new URLSearchParams({
+        q: searchQuery,
+        type: searchFilters.userType,
+        location: searchFilters.location,
+        level: searchFilters.level
+      })
+
+      const response = await api.get(`/api/users/search?${params}`)
+      setSearchResults(response.data.users || [])
+    } catch (error: any) {
+      console.error('Search failed:', error)
+      setSearchError('Search failed. Please try again.')
+    } finally {
+      setIsSearching(false)
+    }
+  }
+
+  const getUserIcon = (role: string) => {
+    switch (role.toLowerCase()) {
+      case 'player': return '👨'
+      case 'coach': return '👨‍🏫'  
+      case 'club': return '🏛️'
+      case 'partner': return '🤝'
+      case 'state': return '🏛️'
+      default: return '👤'
+    }
+  }
+
+  const getUserDescription = (user: SearchUser) => {
+    const parts = []
+    
+    parts.push(user.role.charAt(0).toUpperCase() + user.role.slice(1))
+    
+    if (user.nrtp_level) {
+      parts.push(`Level ${user.nrtp_level}`)
+    }
+    
+    if (user.state_name) {
+      parts.push(user.state_name)
+    }
+    
+    if (user.hourly_rate && user.role === 'coach') {
+      parts.push(`$${user.hourly_rate}/hr`)
+    }
+
+    return parts.join(' • ')
+  }
+
+  const formatLastActive = (lastActive?: string) => {
+    if (!lastActive) return 'Never'
+    
+    const date = new Date(lastActive)
+    const now = new Date()
+    const diffHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
+    
+    if (diffHours < 1) return 'Just now'
+    if (diffHours < 24) return `${diffHours} hours ago`
+    
+    const diffDays = Math.floor(diffHours / 24)
+    if (diffDays < 7) return `${diffDays} days ago`
+    
+    return date.toLocaleDateString()
+  }
 
   if (!user.is_premium) {
     return (
@@ -119,8 +210,12 @@ const CoachConnectionTab: React.FC<CoachConnectionTabProps> = ({ user }) => {
             </div>
           </div>
 
-          <button className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700">
-            Search Users
+          <button 
+            onClick={performSearch}
+            disabled={isSearching}
+            className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 disabled:opacity-50"
+          >
+            {isSearching ? 'Searching...' : 'Search Users'}
           </button>
         </div>
       </div>
@@ -129,77 +224,75 @@ const CoachConnectionTab: React.FC<CoachConnectionTabProps> = ({ user }) => {
       <div className="bg-white border border-gray-200 rounded-lg p-6">
         <h4 className="font-semibold text-gray-900 mb-4">Search Results</h4>
         
-        {/* Sample Results */}
+        {searchError && (
+          <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-4">
+            <p className="text-red-600 text-sm">{searchError}</p>
+          </div>
+        )}
+
+        {searchResults.length === 0 && !searchError && searchQuery && !isSearching && (
+          <div className="text-center py-8">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-2xl">🔍</span>
+            </div>
+            <p className="text-gray-600">No users found matching your search criteria.</p>
+          </div>
+        )}
+
+        {searchResults.length === 0 && !searchQuery && (
+          <div className="text-center py-8">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-2xl">🔍</span>
+            </div>
+            <p className="text-gray-600">Enter a search query above to find other users.</p>
+          </div>
+        )}
+
         <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 border border-gray-100 rounded-lg">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                <span className="text-blue-600">👨</span>
+          {searchResults.map((searchUser) => (
+            <div key={searchUser.id} className="flex items-center justify-between p-4 border border-gray-100 rounded-lg">
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
+                  {searchUser.profile_photo_url ? (
+                    <img 
+                      src={searchUser.profile_photo_url} 
+                      alt={searchUser.full_name}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-lg">{getUserIcon(searchUser.role)}</span>
+                  )}
+                </div>
+                <div>
+                  <h5 className="font-medium text-gray-900">
+                    {searchUser.full_name || searchUser.business_name || searchUser.club_name || 'Unknown'}
+                  </h5>
+                  <p className="text-sm text-gray-600">{getUserDescription(searchUser)}</p>
+                  <p className="text-xs text-gray-500">Last active: {formatLastActive(searchUser.last_active)}</p>
+                </div>
               </div>
-              <div>
-                <h5 className="font-medium text-gray-900">Carlos Martinez</h5>
-                <p className="text-sm text-gray-600">Player • Level 3.0 • Mexico City</p>
-                <p className="text-xs text-gray-500">Last active: 2 hours ago</p>
-              </div>
-            </div>
-            <div className="flex space-x-2">
-              <button className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
-                Connect
-              </button>
-              <button className="border border-gray-300 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-50">
-                View Profile
-              </button>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between p-4 border border-gray-100 rounded-lg">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                <span className="text-green-600">👩‍🏫</span>
-              </div>
-              <div>
-                <h5 className="font-medium text-gray-900">Ana Rodriguez</h5>
-                <p className="text-sm text-gray-600">Coach • Level 4.5 • Guadalajara</p>
-                <p className="text-xs text-gray-500">Last active: 1 day ago</p>
-              </div>
-            </div>
-            <div className="flex space-x-2">
-              <button className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
-                Connect
-              </button>
-              <button className="border border-gray-300 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-50">
-                View Profile
-              </button>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between p-4 border border-gray-100 rounded-lg">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                <span className="text-purple-600">🏛️</span>
-              </div>
-              <div>
-                <h5 className="font-medium text-gray-900">Club Deportivo Pickleball</h5>
-                <p className="text-sm text-gray-600">Club • 45 members • Monterrey</p>
-                <p className="text-xs text-gray-500">Has 3 courts available</p>
+              <div className="flex space-x-2">
+                <button className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
+                  Connect
+                </button>
+                <button className="border border-gray-300 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-50">
+                  View Profile
+                </button>
               </div>
             </div>
-            <div className="flex space-x-2">
-              <button className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
-                Connect
-              </button>
-              <button className="border border-gray-300 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-50">
-                View Profile
-              </button>
-            </div>
-          </div>
+          ))}
         </div>
 
-        <div className="text-center mt-6">
-          <button className="text-green-600 hover:text-green-700 font-medium">
-            Load More Results
-          </button>
-        </div>
+        {searchResults.length > 0 && (
+          <div className="text-center mt-6">
+            <button 
+              onClick={performSearch}
+              className="text-green-600 hover:text-green-700 font-medium"
+            >
+              Refresh Results
+            </button>
+          </div>
+        )}
       </div>
 
       {/* My Connections */}

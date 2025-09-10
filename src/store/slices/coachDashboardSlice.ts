@@ -149,41 +149,113 @@ export const fetchCoachDashboard = () => async (dispatch: AppDispatch) => {
   try {
     dispatch(startLoading('Loading dashboard...'))
     
-    // Fetch data from multiple coach endpoints in parallel
+    // Fetch basic dashboard data first, then fetch detailed data from other endpoints
     const [
+      dashboardResponse,
       sessionsResponse,
       certificationsResponse,
-      studentsResponse,
-      membershipResponse
+      studentsResponse
     ] = await Promise.all([
+      api.get('/api/coach/dashboard'),
       api.get('/api/coach/sessions'),
       api.get('/api/coach/certifications'),
-      api.get('/api/coach/students'),
-      api.get('/api/coach/membership')
+      api.get('/api/coach/students')
     ])
 
-    // Get current user profile from auth
-    const profileResponse = await api.get('/api/auth/me')
+    const dashboardData = dashboardResponse.data
+    const coachProfile = dashboardData.profile
+    const user = dashboardData.user
     
-    // Aggregate dashboard data
-    const dashboardData: CoachDashboardData = {
-      profile: {
-        id: profileResponse.data.coach.id,
-        full_name: profileResponse.data.coach.full_name,
-        nrtp_level: profileResponse.data.coach.nrtp_level,
-        hourly_rate: profileResponse.data.coach.hourly_rate,
-        profile_photo_url: profileResponse.data.coach.profile_photo_url,
-        affiliation_expires_at: profileResponse.data.coach.affiliation_expires_at,
-        state_name: profileResponse.data.state?.name || ''
-      },
-      stats: sessionsResponse.data.stats,
-      upcomingSessions: sessionsResponse.data.upcomingSessions || [],
-      recentSessions: sessionsResponse.data.recentSessions || [],
-      certifications: certificationsResponse.data.certifications || [],
-      studentProgress: studentsResponse.data.studentProgress || []
+    // Transform sessions data to separate upcoming from recent
+    const allSessions = sessionsResponse.data.sessions || []
+    const upcomingSessions = allSessions.filter((session: any) => 
+      session.status === 'scheduled' && new Date(session.session_date) >= new Date()
+    ).map((session: any) => ({
+      id: session.id,
+      student_id: session.player_id,
+      student_name: session.player.full_name,
+      session_date: session.session_date,
+      start_time: session.start_time,
+      end_time: session.end_time,
+      court_id: session.court_id,
+      court_name: session.court?.name || null,
+      status: session.status,
+      price: parseFloat(session.price),
+      payment_status: session.payment_status
+    }))
+
+    const recentSessions = allSessions.filter((session: any) => 
+      session.status !== 'scheduled' || new Date(session.session_date) < new Date()
+    ).map((session: any) => ({
+      id: session.id,
+      student_id: session.player_id,
+      student_name: session.player.full_name,
+      session_date: session.session_date,
+      start_time: session.start_time,
+      end_time: session.end_time,
+      court_id: session.court_id,
+      court_name: session.court?.name || null,
+      status: session.status,
+      price: parseFloat(session.price),
+      payment_status: session.payment_status,
+      rating: session.rating
+    }))
+
+    // Transform students data for progress
+    const studentProgress = studentsResponse.data.students?.map((student: any) => ({
+      id: student.id,
+      player_id: student.id,
+      player_name: student.full_name,
+      current_level: parseFloat(student.nrtp_level),
+      sessions_count: student.sessions?.total_sessions || 0,
+      last_session_date: student.sessions?.last_session_date,
+      improvement_rate: student.progress?.improvement || 0
+    })) || []
+
+    // Aggregate stats from multiple sources
+    const sessionStats = sessionsResponse.data.stats || {}
+    const certStats = certificationsResponse.data.stats || {}
+    const studentStats = studentsResponse.data.stats || {}
+
+    const aggregatedStats: CoachStats = {
+      totalSessions: sessionStats.total_sessions || 0,
+      upcomingSessionsCount: upcomingSessions.length,
+      totalStudents: studentStats.total_students || 0,
+      activeStudents: studentStats.active_students || 0,
+      totalCertifications: certStats.total_certifications || 0,
+      activeCertifications: certStats.active_certifications || 0,
+      monthlyRevenue: sessionStats.total_earnings || 0,
+      averageRating: sessionStats.average_rating || 0,
+      completedSessions: sessionStats.completed_sessions || 0,
+      cancelledSessions: sessionStats.canceled_sessions || 0
     }
 
-    dispatch(setDashboardData(dashboardData))
+    // Aggregate dashboard data
+    const finalDashboardData: CoachDashboardData = {
+      profile: {
+        id: coachProfile.id || 1,
+        full_name: coachProfile.full_name || '',
+        nrtp_level: parseFloat(coachProfile.nrtp_level) || 0,
+        hourly_rate: parseFloat(coachProfile.hourly_rate) || 0,
+        profile_photo_url: coachProfile.profile_photo_url || null,
+        affiliation_expires_at: coachProfile.affiliation_expires_at || null,
+        state_name: coachProfile.state_name || ''
+      },
+      stats: aggregatedStats,
+      upcomingSessions,
+      recentSessions,
+      certifications: certificationsResponse.data.certifications || [],
+      studentProgress
+    }
+
+    // Store user data for profile access
+    const userData = {
+      ...user,
+      dashboard: finalDashboardData
+    }
+    localStorage.setItem('user', JSON.stringify(userData))
+
+    dispatch(setDashboardData(finalDashboardData))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(setError('Failed to load dashboard data'))

@@ -1,8 +1,8 @@
 import React from 'react'
-import { Coach } from '../../../types'
+import { CoachProfile } from '../../../store/slices/coachDashboardSlice'
 
 interface CoachDashboardHeaderProps {
-  profile: Coach
+  profile: CoachProfile
 }
 
 const CoachDashboardHeader: React.FC<CoachDashboardHeaderProps> = ({ profile }) => {
@@ -18,7 +18,7 @@ const CoachDashboardHeader: React.FC<CoachDashboardHeaderProps> = ({ profile }) 
         </div>
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Welcome, Coach {profile.full_name}</h1>
-          <p className="text-gray-600">Certified Pickleball Coach{profile.state?.name && ` • ${profile.state.name}`}</p>
+          <p className="text-gray-600">Certified Pickleball Coach{profile.state_name && ` • ${profile.state_name}`}</p>
         </div>
       </div>
     </div>

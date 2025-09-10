@@ -13,7 +13,7 @@ interface Court {
   lights: boolean
   amenities: string
   description: string
-  hourly_rate: number
+  status: 'active' | 'maintenance' | 'inactive'
   created_at: string
   updated_at: string
 }
@@ -115,8 +115,11 @@ const CourtsList: React.FC<CourtsListProps> = ({
                     <span>
                       <span className="font-medium">Surface:</span> {court.surface_type}
                     </span>
-                    <span>
-                      <span className="font-medium">Rate:</span> ${court.hourly_rate}/hour
+                    <span className={`font-medium ${
+                      court.status === 'active' ? 'text-green-600' : 
+                      court.status === 'maintenance' ? 'text-yellow-600' : 'text-red-600'
+                    }`}>
+                      Status: {court.status.charAt(0).toUpperCase() + court.status.slice(1)}
                     </span>
                   </div>
                   {court.description && (

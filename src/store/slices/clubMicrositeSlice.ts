@@ -28,6 +28,32 @@ interface ClubMicrositeData {
   updated_at: string
 }
 
+interface MicrositeCustomization {
+  primary_color?: string
+  secondary_color?: string
+  description?: string
+  banner_url?: string
+}
+
+interface MicrositeAnalytics {
+  pageViews: number
+  monthlyVisitors: number
+  contentScore: number
+  seoScore: number
+  performanceScore: number
+  lastAudit: string | null
+  visibilityStatus: string
+  approvalStatus: string
+  publicUrl: string | null
+  socialShares: number
+  averageSessionDuration: string
+  bounceRate: string
+  topPages: Array<{
+    page: string
+    views: number
+  }>
+}
+
 interface MicrositeStats {
   profile_completion: number
   public_visibility: boolean
@@ -39,6 +65,8 @@ interface MicrositeStats {
 interface ClubMicrositeState {
   micrositeData: ClubMicrositeData | null
   stats: MicrositeStats | null
+  customization: MicrositeCustomization | null
+  analytics: MicrositeAnalytics | null
   error: string | null
   previewMode: boolean
 }
@@ -46,6 +74,8 @@ interface ClubMicrositeState {
 const initialState: ClubMicrositeState = {
   micrositeData: null,
   stats: null,
+  customization: null,
+  analytics: null,
   error: null,
   previewMode: false
 }
@@ -69,6 +99,12 @@ const clubMicrositeSlice = createSlice({
         state.micrositeData = { ...state.micrositeData, ...action.payload }
       }
     },
+    setCustomization: (state, action: PayloadAction<MicrositeCustomization>) => {
+      state.customization = action.payload
+    },
+    setAnalytics: (state, action: PayloadAction<MicrositeAnalytics>) => {
+      state.analytics = action.payload
+    },
     setPreviewMode: (state, action: PayloadAction<boolean>) => {
       state.previewMode = action.payload
     }
@@ -79,6 +115,8 @@ export const {
   setError,
   setMicrositeData,
   updateMicrositeData,
+  setCustomization,
+  setAnalytics,
   setPreviewMode
 } = clubMicrositeSlice.actions
 
@@ -100,7 +138,24 @@ interface LogoUploadResponse {
 
 interface PublishResponse {
   message: string
-  published: boolean
+  microsite_url?: string
+  published_at?: string
+  microsite_id?: number
+}
+
+interface BannerUploadResponse {
+  banner_url: string
+  message?: string
+}
+
+interface CustomizationResponse {
+  microsite: any
+  message?: string
+}
+
+interface AnalyticsResponse {
+  analytics: MicrositeAnalytics
+  message?: string
 }
 
 // API Functions
@@ -177,5 +232,79 @@ export const publishMicrosite = () => async (dispatch: AppDispatch) => {
     throw error
   }
 }
+
+export const uploadBannerImage = (formData: FormData) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Uploading banner image...'))
+  
+  try {
+    dispatch(setError(null))
+    const response = await api.post<BannerUploadResponse>('/api/club/microsite/banner', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    
+    dispatch(stopLoading())
+    return response.data
+  } catch (error: unknown) {
+    dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to upload banner'))
+    dispatch(stopLoading())
+    throw error
+  }
+}
+
+export const updateMicrositeCustomization = (customizationData: {
+  primary_color?: string
+  secondary_color?: string
+  description?: string
+}) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating customization...'))
+  
+  try {
+    dispatch(setError(null))
+    const response = await api.put<CustomizationResponse>('/api/club/microsite/customization', customizationData)
+    dispatch(setCustomization(customizationData))
+    dispatch(stopLoading())
+    return response.data
+  } catch (error: unknown) {
+    dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to update customization'))
+    dispatch(stopLoading())
+    throw error
+  }
+}
+
+export const fetchMicrositeAnalytics = () => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Loading analytics...'))
+  
+  try {
+    dispatch(setError(null))
+    const response = await api.get<AnalyticsResponse>('/api/club/microsite/analytics')
+    dispatch(setAnalytics(response.data.analytics))
+    dispatch(stopLoading())
+    return response.data
+  } catch (error: unknown) {
+    dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch analytics'))
+    dispatch(stopLoading())
+    throw error
+  }
+}
+
+export const unpublishMicrosite = () => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Unpublishing microsite...'))
+  
+  try {
+    dispatch(setError(null))
+    const response = await api.post('/api/club/microsite/unpublish')
+    dispatch(stopLoading())
+    return response.data
+  } catch (error: unknown) {
+    dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to unpublish microsite'))
+    dispatch(stopLoading())
+    throw error
+  }
+}
+
+// Export types for use in components
+export type { ClubMicrositeData, MicrositeStats, MicrositeCustomization, MicrositeAnalytics }
 
 export default clubMicrositeSlice.reducer

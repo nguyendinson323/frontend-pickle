@@ -1,8 +1,31 @@
 import React from 'react'
-import { Club } from '../../../types'
+
+interface ClubProfile {
+  id: number
+  user_id: number
+  name: string
+  rfc: string | null
+  manager_name: string
+  manager_title: string
+  state_id: number
+  club_type: string
+  website: string | null
+  social_media: string | null
+  logo_url: string | null
+  has_courts: boolean
+  premium_expires_at: string | null
+  affiliation_expires_at: string | null
+  created_at: string
+  updated_at: string
+  state: {
+    id: number
+    name: string
+    code: string
+  }
+}
 
 interface ClubDashboardHeaderProps {
-  profile: Club
+  profile: ClubProfile
 }
 
 const ClubDashboardHeader: React.FC<ClubDashboardHeaderProps> = ({ profile }) => {

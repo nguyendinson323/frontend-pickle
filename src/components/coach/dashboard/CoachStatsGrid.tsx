@@ -1,5 +1,5 @@
 import React from 'react'
-import { CoachDashboard } from '../../../types'
+import { CoachStats } from '../../../store/slices/coachDashboardSlice'
 
 interface StatCard {
   label: string
@@ -9,15 +9,15 @@ interface StatCard {
 }
 
 interface CoachStatsGridProps {
-  stats: CoachDashboard['stats']
+  stats: CoachStats
 }
 
 const CoachStatsGrid: React.FC<CoachStatsGridProps> = ({ stats }) => {
   const statCards: StatCard[] = [
     { label: 'Total Sessions', value: stats.totalSessions, icon: '📅', color: 'bg-blue-600' },
     { label: 'Active Certifications', value: stats.activeCertifications, icon: '🎓', color: 'bg-green-600' },
-    { label: 'Monthly Sessions', value: '12', icon: '🏓', color: 'bg-purple-600' }, // Would come from API
-    { label: 'Average Rating', value: '4.8/5', icon: '⭐', color: 'bg-yellow-600' } // Would come from API
+    { label: 'Total Students', value: stats.totalStudents, icon: '👥', color: 'bg-purple-600' },
+    { label: 'Average Rating', value: `${stats.averageRating}/5`, icon: '⭐', color: 'bg-yellow-600' }
   ]
 
   return (

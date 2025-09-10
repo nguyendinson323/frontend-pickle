@@ -5,13 +5,12 @@ import { RootState, AppDispatch } from '../../store'
 import {
   fetchClubTournamentsData,
   createTournament,
-  updateTournamentInfo,
   deleteTournamentInfo,
   updateTournamentStatusInfo,
   setSelectedTournament,
   fetchTournamentRegistrations,
   fetchTournamentMatches,
-  ClubTournament
+  type ClubTournament
 } from '../../store/slices/clubTournamentsSlice'
 
 import TournamentsHeader from '../../components/club/tournaments/TournamentsHeader'
@@ -214,7 +213,7 @@ const ClubTournaments: React.FC = () => {
                       <div className="mt-6">
                         <h5 className="text-md font-medium text-gray-900 mb-3">Categories</h5>
                         <div className="space-y-2">
-                          {selectedTournament.categories.map((category, index) => (
+                          {selectedTournament.categories.map((category, index: number) => (
                             <div key={index} className="bg-blue-50 rounded-md p-3">
                               <div className="flex justify-between items-center">
                                 <span className="font-medium">{category.name}</span>

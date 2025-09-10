@@ -1,9 +1,22 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Tournament } from '../../../types'
+
+interface ClubUpcomingTournament {
+  id: number
+  name: string
+  description: string | null
+  start_date: string
+  end_date: string
+  registration_deadline?: string
+  entry_fee: number
+  max_participants: number
+  status: string
+  tournament_type?: string
+  created_at: string
+}
 
 interface ClubUpcomingTournamentsProps {
-  tournaments: Tournament[]
+  tournaments: ClubUpcomingTournament[]
 }
 
 const ClubUpcomingTournaments: React.FC<ClubUpcomingTournamentsProps> = ({ tournaments }) => {

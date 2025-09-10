@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { AppDispatch } from '../../../store'
 import { User } from '../../../types/auth'
 import { CoachProfile } from '../../../store/slices/coachDashboardSlice'
+import api from '../../../services/api'
 
 interface CoachAccountFormProps {
   profile: CoachProfile
@@ -9,6 +12,7 @@ interface CoachAccountFormProps {
 }
 
 const CoachAccountForm: React.FC<CoachAccountFormProps> = ({ profile, user, onCancel }) => {
+  const dispatch = useDispatch<AppDispatch>()
   const [formData, setFormData] = useState({
     full_name: profile.full_name || '',
     email: user.email || '',
@@ -27,16 +31,23 @@ const CoachAccountForm: React.FC<CoachAccountFormProps> = ({ profile, user, onCa
     setErrors({})
 
     try {
-      // TODO: Implement API call to update coach profile
-      console.log('Updating coach profile:', formData)
+      const response = await api.put('/api/coach/profile', formData)
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // Update profile data in local storage if needed
+      const currentUser = JSON.parse(localStorage.getItem('user') || '{}')
+      if (currentUser.dashboard) {
+        currentUser.dashboard.profile = response.data.profile
+        localStorage.setItem('user', JSON.stringify(currentUser))
+      }
+      
+      // Refresh the page data by reloading the dashboard
+      window.location.reload()
       
       onCancel() // Close edit mode
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to update profile:', error)
-      setErrors({ general: 'Failed to update profile. Please try again.' })
+      const errorMessage = error.response?.data?.message || 'Failed to update profile. Please try again.'
+      setErrors({ general: errorMessage })
     } finally {
       setIsSubmitting(false)
     }

@@ -1,20 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-
-interface CoachRecentSession {
-  id: number
-  student_id: number
-  student_name: string
-  session_date: string
-  start_time: string
-  end_time: string
-  court_id: number | null
-  court_name: string | null
-  status: 'scheduled' | 'completed' | 'canceled'
-  price: number
-  payment_status: 'pending' | 'paid' | 'refunded'
-  rating: number | null
-}
+import { CoachRecentSession } from '../../../store/slices/coachDashboardSlice'
 
 interface CoachRecentSessionsProps {
   sessions: CoachRecentSession[]

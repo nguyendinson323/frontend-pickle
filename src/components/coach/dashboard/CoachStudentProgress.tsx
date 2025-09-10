@@ -1,15 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-
-interface CoachStudentProgress {
-  id: number
-  player_id: number
-  player_name: string
-  current_level: number
-  sessions_count: number
-  last_session_date: string | null
-  improvement_rate: number
-}
+import { CoachStudentProgress } from '../../../store/slices/coachDashboardSlice'
 
 interface CoachStudentProgressProps {
   studentProgress: CoachStudentProgress[]

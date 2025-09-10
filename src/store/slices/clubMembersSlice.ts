@@ -3,7 +3,7 @@ import { AppDispatch } from '../index'
 import { startLoading, stopLoading } from './loadingSlice'
 import api from '../../services/api'
 
-interface ClubMember {
+export interface ClubMember {
   id: number
   full_name: string
   profile_photo_url: string | null
@@ -26,7 +26,7 @@ interface ClubMember {
   } | null
 }
 
-interface MembershipStats {
+export interface MembershipStats {
   total_members: number
   active_members: number
   expired_members: number
@@ -189,6 +189,25 @@ export const inviteNewMember = (inviteData: {
     return response.data
   } catch (error: unknown) {
     dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to send invitation'))
+    dispatch(stopLoading())
+    throw error
+  }
+}
+
+export const updateMemberData = (memberId: number, updateData: {
+  full_name: string
+  nrtp_level: number
+  affiliation_expires_at: string | null
+}) => async (dispatch: AppDispatch) => {
+  try {
+    dispatch(startLoading('Updating member information...'))
+    const response = await api.put<MemberResponse>(`/api/club/members/${memberId}`, updateData)
+    dispatch(updateMemberInfo(response.data.member))
+    dispatch(stopLoading())
+    
+    return response.data
+  } catch (error: unknown) {
+    dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to update member information'))
     dispatch(stopLoading())
     throw error
   }
