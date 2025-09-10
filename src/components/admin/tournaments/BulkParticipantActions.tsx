@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../../store'
+import { RootState, AppDispatch } from '../../../store'
 import { bulkUpdateParticipants } from '../../../store/slices/adminTournamentsSlice'
 
 const BulkParticipantActions: React.FC = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { selectedParticipants, loading } = useSelector((state: RootState) => state.adminTournaments)
   const [action, setAction] = useState('')
   const [status, setStatus] = useState('')
@@ -33,7 +33,7 @@ const BulkParticipantActions: React.FC = () => {
 
     try {
       const data = action === 'status' ? { status } : undefined
-      await dispatch(bulkUpdateParticipants(selectedParticipants, action, data) as any)
+      await dispatch(bulkUpdateParticipants(selectedParticipants, action, data))
       setShowConfirm(false)
       setAction('')
       setStatus('')

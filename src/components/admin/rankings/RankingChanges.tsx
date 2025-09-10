@@ -3,25 +3,24 @@ import { useSelector } from 'react-redux'
 import { RootState } from '../../../store'
 
 const RankingChanges: React.FC = () => {
-  const { rankingChanges, loading } = useSelector((state: RootState) => state.adminRankings)
+  const { rankingChanges } = useSelector((state: RootState) => state.adminRankings)
+  const { isLoading: loading } = useSelector((state: RootState) => state.loading)
 
-  const getChangeColor = (oldPos: number, newPos: number) => {
-    if (newPos < oldPos) return 'text-green-600' // Improved ranking (lower number = better)
-    if (newPos > oldPos) return 'text-red-600'   // Declined ranking
-    return 'text-gray-600' // No change
+  const getChangeColor = (changeType: string, pointsChange: number) => {
+    if (changeType === 'gain' || pointsChange > 0) return 'text-green-600'
+    if (changeType === 'loss' || pointsChange < 0) return 'text-red-600'
+    return 'text-gray-600'
   }
 
-  const getChangeIcon = (oldPos: number, newPos: number) => {
-    if (newPos < oldPos) return '⬆️' // Improved
-    if (newPos > oldPos) return '⬇️' // Declined
-    return '➡️' // No change
+  const getChangeIcon = (changeType: string, pointsChange: number) => {
+    if (changeType === 'gain' || pointsChange > 0) return '⬆️'
+    if (changeType === 'loss' || pointsChange < 0) return '⬇️'
+    return '➡️'
   }
 
-  const formatChange = (oldPos: number, newPos: number) => {
-    const diff = oldPos - newPos // Positive means improved, negative means declined
-    if (diff > 0) return `+${diff}`
-    if (diff < 0) return `${diff}`
-    return '0'
+  const formatPointsChange = (pointsChange: number) => {
+    if (pointsChange > 0) return `+${pointsChange}`
+    return pointsChange.toString()
   }
 
   if (loading) {
@@ -51,10 +50,10 @@ const RankingChanges: React.FC = () => {
                   Player
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Position Change
+                  Points Change
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Points Change
+                  Change Type
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Tournament/Reason
@@ -71,42 +70,42 @@ const RankingChanges: React.FC = () => {
                     <div className="text-sm font-medium text-gray-900">
                       {change.player_name}
                     </div>
+                    <div className="text-xs text-gray-500">
+                      @{change.username}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className={`flex items-center text-sm font-medium ${getChangeColor(change.old_position, change.new_position)}`}>
-                      <span className="mr-2">{getChangeIcon(change.old_position, change.new_position)}</span>
+                    <div className={`flex items-center text-sm font-medium ${getChangeColor(change.change_type, change.points_change)}`}>
+                      <span className="mr-2">{getChangeIcon(change.change_type, change.points_change)}</span>
                       <div>
-                        <div>#{change.old_position} → #{change.new_position}</div>
-                        <div className="text-xs">
-                          ({formatChange(change.old_position, change.new_position)} positions)
+                        <div>{formatPointsChange(change.points_change)} pts</div>
+                        <div className="text-xs capitalize">
+                          {change.change_type}
                         </div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className={`text-sm ${change.new_points > change.old_points ? 'text-green-600' : change.new_points < change.old_points ? 'text-red-600' : 'text-gray-600'}`}>
-                      <div>{change.old_points} → {change.new_points} pts</div>
-                      <div className="text-xs">
-                        ({change.new_points > change.old_points ? '+' : ''}{change.new_points - change.old_points} pts)
-                      </div>
+                    <div className={`text-sm font-medium ${getChangeColor(change.change_type, change.points_change)}`}>
+                      {change.change_type === 'gain' ? 'Point Gain' : 'Point Loss'}
                     </div>
                   </td>
                   <td className="px-6 py-4">
                     <div className="text-sm text-gray-900">
-                      {change.tournament_name || change.reason}
+                      {change.tournament_name}
                     </div>
-                    {change.tournament_name && (
+                    {change.reason && (
                       <div className="text-xs text-gray-500">
-                        Tournament #{change.tournament_id}
+                        {change.reason}
                       </div>
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
-                      {new Date(change.change_date).toLocaleDateString()}
+                      {new Date(change.timestamp).toLocaleDateString()}
                     </div>
                     <div className="text-xs text-gray-500">
-                      {new Date(change.change_date).toLocaleTimeString()}
+                      {new Date(change.timestamp).toLocaleTimeString()}
                     </div>
                   </td>
                 </tr>

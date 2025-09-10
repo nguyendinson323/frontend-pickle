@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../../store'
+import { RootState, AppDispatch } from '../../../store'
 import { generateReport, getReportPreview } from '../../../store/slices/adminReportsSlice'
 import ReportPreviewModal from './ReportPreviewModal'
 
 const ReportGenerator: React.FC = () => {
-  const dispatch = useDispatch()
-  const { availableReportTypes, loading } = useSelector((state: RootState) => state.adminReports)
+  const dispatch = useDispatch<AppDispatch>()
+  const { availableReportTypes } = useSelector((state: RootState) => state.adminReports)
+  const { isLoading: loading } = useSelector((state: RootState) => state.loading)
   
   const [reportConfig, setReportConfig] = useState({
     type: '',
@@ -62,7 +63,7 @@ const ReportGenerator: React.FC = () => {
         filters: reportConfig.filters,
         fields: reportConfig.fields,
         limit: 10
-      }) as any)
+      }))
       
       setPreviewData(preview.payload || preview)
       setShowPreview(true)
@@ -86,7 +87,7 @@ const ReportGenerator: React.FC = () => {
         filters: reportConfig.filters,
         fields: reportConfig.fields.length > 0 ? reportConfig.fields : selectedReportType?.fields || [],
         format: reportConfig.format
-      }) as any)
+      }))
       
       // Reset form
       setReportConfig({
@@ -104,7 +105,7 @@ const ReportGenerator: React.FC = () => {
         fields: []
       })
       
-      alert('Report generation started successfully!')
+      alert('Report downloaded successfully!')
     } catch (error) {
       console.error('Failed to generate report:', error)
       alert('Failed to generate report')

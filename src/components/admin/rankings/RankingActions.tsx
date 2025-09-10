@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../../store'
+import { RootState, AppDispatch } from '../../../store'
 import { 
   recalculateRankings,
   freezeRankings
 } from '../../../store/slices/adminRankingsSlice'
 
 const RankingActions: React.FC = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { recalculatingRankings } = useSelector((state: RootState) => state.adminRankings)
   
   const [showRecalculateModal, setShowRecalculateModal] = useState(false)
@@ -18,14 +18,12 @@ const RankingActions: React.FC = () => {
 
   const handleRecalculate = async () => {
     const confirmed = window.confirm(
-      selectedStateId 
-        ? 'Are you sure you want to recalculate rankings for the selected state?' 
-        : 'Are you sure you want to recalculate all rankings? This process may take several minutes.'
+      'Are you sure you want to recalculate all rankings? This process may take several minutes.'
     )
 
     if (confirmed) {
       try {
-        await dispatch(recalculateRankings(selectedStateId ? parseInt(selectedStateId) : undefined) as any)
+        await dispatch(recalculateRankings())
         setShowRecalculateModal(false)
         setSelectedStateId('')
         alert('Rankings recalculated successfully!')
@@ -41,7 +39,7 @@ const RankingActions: React.FC = () => {
 
     if (confirmed) {
       try {
-        await dispatch(freezeRankings(freeze, freezeReason) as any)
+        await dispatch(freezeRankings(freeze, freezeReason))
         setIsCurrentlyFrozen(freeze)
         setShowFreezeModal(false)
         setFreezeReason('')

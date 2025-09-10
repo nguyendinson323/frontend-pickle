@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../../store'
+import { RootState, AppDispatch } from '../../../store'
 import { 
   manualRankingAdjustment,
   getPlayerRankingHistory
@@ -11,8 +11,9 @@ interface RankingsTableProps {
 }
 
 const RankingsTable: React.FC<RankingsTableProps> = ({ onPlayerSelect }) => {
-  const dispatch = useDispatch()
-  const { playerRankings, loading } = useSelector((state: RootState) => state.adminRankings)
+  const dispatch = useDispatch<AppDispatch>()
+  const { playerRankings } = useSelector((state: RootState) => state.adminRankings)
+  const { isLoading: loading } = useSelector((state: RootState) => state.loading)
   
   const [showAdjustmentModal, setShowAdjustmentModal] = useState(false)
   const [selectedPlayer, setSelectedPlayer] = useState(null)
@@ -41,10 +42,10 @@ const RankingsTable: React.FC<RankingsTableProps> = ({ onPlayerSelect }) => {
     try {
       await dispatch(manualRankingAdjustment(
         selectedPlayer.player_id,
-        parseInt(adjustmentForm.newPosition),
         parseInt(adjustmentForm.newPoints),
+        parseInt(adjustmentForm.newPosition),
         adjustmentForm.reason
-      ) as any)
+      ))
       
       setShowAdjustmentModal(false)
       setSelectedPlayer(null)
@@ -56,7 +57,7 @@ const RankingsTable: React.FC<RankingsTableProps> = ({ onPlayerSelect }) => {
 
   const handleViewHistory = async (playerId: number) => {
     try {
-      const history = await dispatch(getPlayerRankingHistory(playerId) as any)
+      const history = await dispatch(getPlayerRankingHistory(playerId))
       onPlayerSelect(playerId)
     } catch (error) {
       console.error('Failed to fetch player history:', error)
@@ -68,6 +69,7 @@ const RankingsTable: React.FC<RankingsTableProps> = ({ onPlayerSelect }) => {
       case 'up': return '📈'
       case 'down': return '📉'
       case 'stable': return '➡️'
+      case 'new': return '🆕'
       default: return '➡️'
     }
   }
@@ -77,6 +79,7 @@ const RankingsTable: React.FC<RankingsTableProps> = ({ onPlayerSelect }) => {
       case 'up': return 'text-green-600'
       case 'down': return 'text-red-600'
       case 'stable': return 'text-gray-600'
+      case 'new': return 'text-blue-600'
       default: return 'text-gray-600'
     }
   }

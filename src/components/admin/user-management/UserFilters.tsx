@@ -1,10 +1,10 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../../store'
+import { RootState, AppDispatch } from '../../../store'
 import { setUserFilter, exportUsers } from '../../../store/slices/adminUserManagementSlice'
 
 const UserFilters: React.FC = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { userFilter, exportLoading } = useSelector((state: RootState) => state.adminUserManagement)
 
   const handleFilterChange = (field: string, value: string) => {
@@ -12,7 +12,7 @@ const UserFilters: React.FC = () => {
   }
 
   const handleExport = (format: 'csv' | 'excel' | 'pdf') => {
-    dispatch(exportUsers(userFilter, format) as any)
+    dispatch(exportUsers(userFilter, format))
   }
 
   const handleClearFilters = () => {

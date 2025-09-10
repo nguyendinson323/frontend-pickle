@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../../store'
+import { RootState, AppDispatch } from '../../../store'
 import { bulkUpdateUsers, clearSelectedUsers, sendUserNotification } from '../../../store/slices/adminUserManagementSlice'
 
 const BulkActions: React.FC = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { selectedUsers, loading } = useSelector((state: RootState) => state.adminUserManagement)
   const [showNotificationModal, setShowNotificationModal] = useState(false)
   const [notificationData, setNotificationData] = useState({ subject: '', message: '' })
@@ -12,13 +12,14 @@ const BulkActions: React.FC = () => {
   const handleBulkStatusUpdate = async (status: 'active' | 'inactive' | 'suspended') => {
     if (selectedUsers.length === 0) return
 
+    const actionName = status === 'active' ? 'activate' : 'deactivate'
     const confirmed = window.confirm(
-      `Are you sure you want to ${status} ${selectedUsers.length} selected user(s)?`
+      `Are you sure you want to ${status === 'active' ? 'activate' : 'deactivate'} ${selectedUsers.length} selected user(s)?`
     )
 
     if (confirmed) {
       try {
-        await dispatch(bulkUpdateUsers(selectedUsers, 'status', { status }) as any)
+        await dispatch(bulkUpdateUsers(selectedUsers, actionName, {}))
       } catch (error) {
         console.error('Failed to update user status:', error)
       }
@@ -28,13 +29,14 @@ const BulkActions: React.FC = () => {
   const handleBulkVerification = async (verified: boolean) => {
     if (selectedUsers.length === 0) return
 
+    const actionName = verified ? 'verify' : 'unverify'
     const confirmed = window.confirm(
       `Are you sure you want to ${verified ? 'verify' : 'unverify'} ${selectedUsers.length} selected user(s)?`
     )
 
     if (confirmed) {
       try {
-        await dispatch(bulkUpdateUsers(selectedUsers, 'verification', { verified }) as any)
+        await dispatch(bulkUpdateUsers(selectedUsers, actionName, {}))
       } catch (error) {
         console.error('Failed to update user verification:', error)
       }
@@ -44,13 +46,14 @@ const BulkActions: React.FC = () => {
   const handleBulkPremium = async (premium: boolean) => {
     if (selectedUsers.length === 0) return
 
+    const actionName = premium ? 'premium' : 'unpremium'
     const confirmed = window.confirm(
       `Are you sure you want to ${premium ? 'grant' : 'remove'} premium status for ${selectedUsers.length} selected user(s)?`
     )
 
     if (confirmed) {
       try {
-        await dispatch(bulkUpdateUsers(selectedUsers, 'premium', { premium }) as any)
+        await dispatch(bulkUpdateUsers(selectedUsers, actionName, {}))
       } catch (error) {
         console.error('Failed to update user premium status:', error)
       }
@@ -61,7 +64,7 @@ const BulkActions: React.FC = () => {
     if (selectedUsers.length === 0 || !notificationData.subject || !notificationData.message) return
 
     try {
-      await dispatch(sendUserNotification(selectedUsers, notificationData.subject, notificationData.message) as any)
+      await dispatch(sendUserNotification(selectedUsers, notificationData.subject, notificationData.message))
       setShowNotificationModal(false)
       setNotificationData({ subject: '', message: '' })
     } catch (error) {
@@ -107,13 +110,6 @@ const BulkActions: React.FC = () => {
                 className="px-3 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Deactivate
-              </button>
-              <button
-                onClick={() => handleBulkStatusUpdate('suspended')}
-                disabled={loading}
-                className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                Suspend
               </button>
             </div>
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
+import { AppDispatch } from '../../../store'
 import { TournamentAdmin } from '../../../types/admin'
 import { 
   updateTournamentStatusAction,
@@ -14,7 +15,7 @@ interface TournamentStatusModalProps {
 }
 
 const TournamentStatusModal: React.FC<TournamentStatusModalProps> = ({ tournament, onClose }) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const [action, setAction] = useState<'update' | 'approve' | 'reject' | 'cancel'>('update')
   const [newStatus, setNewStatus] = useState(tournament.status)
   const [reason, setReason] = useState('')
@@ -36,10 +37,10 @@ const TournamentStatusModal: React.FC<TournamentStatusModalProps> = ({ tournamen
     try {
       switch (action) {
         case 'update':
-          await dispatch(updateTournamentStatusAction(tournament.id, newStatus, reason) as any)
+          await dispatch(updateTournamentStatusAction(tournament.id, newStatus, reason))
           break
         case 'approve':
-          await dispatch(approveTournament(tournament.id) as any)
+          await dispatch(approveTournament(tournament.id))
           break
         case 'reject':
           if (!reason.trim()) {
@@ -47,7 +48,7 @@ const TournamentStatusModal: React.FC<TournamentStatusModalProps> = ({ tournamen
             setLoading(false)
             return
           }
-          await dispatch(rejectTournament(tournament.id, reason) as any)
+          await dispatch(rejectTournament(tournament.id, reason))
           break
         case 'cancel':
           if (!reason.trim()) {
@@ -55,7 +56,7 @@ const TournamentStatusModal: React.FC<TournamentStatusModalProps> = ({ tournamen
             setLoading(false)
             return
           }
-          await dispatch(cancelTournament(tournament.id, reason) as any)
+          await dispatch(cancelTournament(tournament.id, reason))
           break
       }
       onClose()

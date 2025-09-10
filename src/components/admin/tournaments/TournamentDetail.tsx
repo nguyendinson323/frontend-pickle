@@ -1,5 +1,6 @@
 import React from 'react'
 import { useDispatch } from 'react-redux'
+import { AppDispatch } from '../../../store'
 import { TournamentAdmin } from '../../../types/admin'
 import { fetchTournamentParticipants } from '../../../store/slices/adminTournamentsSlice'
 
@@ -9,10 +10,10 @@ interface TournamentDetailProps {
 }
 
 const TournamentDetail: React.FC<TournamentDetailProps> = ({ tournament, onClose }) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
 
   React.useEffect(() => {
-    dispatch(fetchTournamentParticipants(tournament.id) as any)
+    dispatch(fetchTournamentParticipants(tournament.id))
   }, [dispatch, tournament.id])
 
   const getStatusBadge = (status: string) => {

@@ -3,7 +3,8 @@ import { useSelector } from 'react-redux'
 import { RootState } from '../../../store'
 
 const ReportStats: React.FC = () => {
-  const { reportStats, loading } = useSelector((state: RootState) => state.adminReports)
+  const { reportStats } = useSelector((state: RootState) => state.adminReports)
+  const { isLoading: loading } = useSelector((state: RootState) => state.loading)
 
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 B'
@@ -21,65 +22,65 @@ const ReportStats: React.FC = () => {
 
   const stats = [
     {
-      label: 'Total Reports',
-      value: reportStats.totalReports,
-      icon: '📊',
+      label: 'Total Users',
+      value: reportStats.systemMetrics?.totalUsers || 0,
+      icon: '👥',
       color: 'text-blue-600',
       bgColor: 'bg-blue-50',
       borderColor: 'border-blue-200'
     },
     {
-      label: 'Pending',
-      value: reportStats.pendingReports,
-      icon: '⏳',
-      color: 'text-yellow-600',
-      bgColor: 'bg-yellow-50',
-      borderColor: 'border-yellow-200'
-    },
-    {
-      label: 'Completed',
-      value: reportStats.completedReports,
+      label: 'Active Users',
+      value: reportStats.systemMetrics?.activeUsers || 0,
       icon: '✅',
       color: 'text-green-600',
       bgColor: 'bg-green-50',
       borderColor: 'border-green-200'
     },
     {
-      label: 'Failed',
-      value: reportStats.failedReports,
-      icon: '❌',
-      color: 'text-red-600',
-      bgColor: 'bg-red-50',
-      borderColor: 'border-red-200'
-    },
-    {
-      label: 'Total File Size',
-      value: formatFileSize(reportStats.totalFileSize),
-      icon: '💾',
+      label: 'Total Tournaments',
+      value: reportStats.systemMetrics?.totalTournaments || 0,
+      icon: '🏆',
       color: 'text-purple-600',
       bgColor: 'bg-purple-50',
       borderColor: 'border-purple-200'
     },
     {
-      label: 'Total Records',
-      value: reportStats.totalRecords.toLocaleString(),
-      icon: '📈',
-      color: 'text-indigo-600',
-      bgColor: 'bg-indigo-50',
-      borderColor: 'border-indigo-200'
+      label: 'Active Tournaments',
+      value: reportStats.systemMetrics?.activeTournaments || 0,
+      icon: '🏃',
+      color: 'text-yellow-600',
+      bgColor: 'bg-yellow-50',
+      borderColor: 'border-yellow-200'
     },
     {
-      label: 'Most Popular',
-      value: reportStats.mostPopularType.charAt(0).toUpperCase() + reportStats.mostPopularType.slice(1),
-      icon: '⭐',
+      label: 'Total Courts',
+      value: reportStats.systemMetrics?.totalCourts || 0,
+      icon: '🎾',
       color: 'text-orange-600',
       bgColor: 'bg-orange-50',
       borderColor: 'border-orange-200'
     },
     {
-      label: 'Avg Generation Time',
-      value: formatTime(reportStats.averageGenerationTime),
-      icon: '⚡',
+      label: 'Total Payments',
+      value: reportStats.systemMetrics?.totalPayments || 0,
+      icon: '💰',
+      color: 'text-indigo-600',
+      bgColor: 'bg-indigo-50',
+      borderColor: 'border-indigo-200'
+    },
+    {
+      label: 'Total Revenue',
+      value: `$${(reportStats.systemMetrics?.totalRevenue || 0).toLocaleString()}`,
+      icon: '💵',
+      color: 'text-emerald-600',
+      bgColor: 'bg-emerald-50',
+      borderColor: 'border-emerald-200'
+    },
+    {
+      label: 'Ranked Players',
+      value: reportStats.systemMetrics?.totalRankedPlayers || 0,
+      icon: '🏅',
       color: 'text-cyan-600',
       bgColor: 'bg-cyan-50',
       borderColor: 'border-cyan-200'

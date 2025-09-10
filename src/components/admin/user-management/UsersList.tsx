@@ -1,7 +1,7 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { RootState } from '../../../store'
+import { RootState, AppDispatch } from '../../../store'
 import { UserListItem } from '../../../types/admin'
 import { 
   addSelectedUser, 
@@ -16,7 +16,7 @@ interface UsersListProps {
 }
 
 const UsersList: React.FC<UsersListProps> = ({ onUserSelect }) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
   const { users, selectedUsers, loading } = useSelector((state: RootState) => state.adminUserManagement)
 
@@ -30,7 +30,7 @@ const UsersList: React.FC<UsersListProps> = ({ onUserSelect }) => {
 
   const handleStatusChange = async (userId: number, status: 'active' | 'inactive' | 'suspended') => {
     try {
-      await dispatch(updateUserStatusAction(userId, status) as any)
+      await dispatch(updateUserStatusAction(userId, status))
     } catch (error) {
       console.error('Failed to update user status:', error)
     }
@@ -38,7 +38,7 @@ const UsersList: React.FC<UsersListProps> = ({ onUserSelect }) => {
 
   const handleVerificationToggle = async (userId: number, verified: boolean) => {
     try {
-      await dispatch(updateUserVerificationAction(userId, verified) as any)
+      await dispatch(updateUserVerificationAction(userId, verified))
     } catch (error) {
       console.error('Failed to update user verification:', error)
     }
@@ -46,7 +46,7 @@ const UsersList: React.FC<UsersListProps> = ({ onUserSelect }) => {
 
   const handlePremiumToggle = async (userId: number, premium: boolean) => {
     try {
-      await dispatch(updateUserPremiumAction(userId, premium) as any)
+      await dispatch(updateUserPremiumAction(userId, premium))
     } catch (error) {
       console.error('Failed to update user premium status:', error)
     }

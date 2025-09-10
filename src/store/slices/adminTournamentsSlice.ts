@@ -124,7 +124,7 @@ const adminTournamentsSlice = createSlice({
     clearSelectedParticipants: (state) => {
       state.selectedParticipants = []
     },
-    updateTournamentStatus: (state, action: PayloadAction<{ tournamentId: number; status: 'draft' | 'published' | 'ongoing' | 'completed' | 'cancelled' }>) => {
+    updateTournamentStatus: (state, action: PayloadAction<{ tournamentId: number; status: 'upcoming' | 'ongoing' | 'completed' | 'canceled' }>) => {
       const tournamentIndex = state.tournaments.findIndex(t => t.id === action.payload.tournamentId)
       if (tournamentIndex !== -1) {
         state.tournaments[tournamentIndex].status = action.payload.status
@@ -225,7 +225,7 @@ export const updateTournamentStatusAction = (tournamentId: number, status: strin
 
     const response = await api.put(`/api/admin/tournaments/${tournamentId}/status`, { status, reason })
 
-    dispatch(updateTournamentStatus({ tournamentId, status }))
+    dispatch(updateTournamentStatus({ tournamentId, status: status as 'upcoming' | 'ongoing' | 'completed' | 'canceled' }))
     dispatch(stopLoading())
     return response.data
   } catch (error) {
@@ -281,7 +281,7 @@ export const cancelTournament = (tournamentId: number, reason: string) => async 
 
     const response = await api.post(`/api/admin/tournaments/${tournamentId}/cancel`, { reason })
 
-    dispatch(updateTournamentStatus({ tournamentId, status: 'cancelled' }))
+    dispatch(updateTournamentStatus({ tournamentId, status: 'canceled' }))
     dispatch(stopLoading())
     return response.data
   } catch (error) {

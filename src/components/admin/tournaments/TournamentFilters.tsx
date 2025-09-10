@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../../store'
+import { RootState, AppDispatch } from '../../../store'
 import { setTournamentFilter, fetchTournaments } from '../../../store/slices/adminTournamentsSlice'
 
 const TournamentFilters: React.FC = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { tournamentFilter } = useSelector((state: RootState) => state.adminTournaments)
   const [isExpanded, setIsExpanded] = useState(false)
 
@@ -13,7 +13,7 @@ const TournamentFilters: React.FC = () => {
   }
 
   const handleSearch = () => {
-    dispatch(fetchTournaments(tournamentFilter) as any)
+    dispatch(fetchTournaments(tournamentFilter))
   }
 
   const handleReset = () => {
@@ -30,7 +30,7 @@ const TournamentFilters: React.FC = () => {
       participantsMax: ''
     }
     dispatch(setTournamentFilter(resetFilter))
-    dispatch(fetchTournaments(resetFilter) as any)
+    dispatch(fetchTournaments(resetFilter))
   }
 
   return (

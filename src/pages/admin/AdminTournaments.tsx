@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { RootState } from '../../store'
+import { RootState, AppDispatch } from '../../store'
 import { TournamentAdmin } from '../../types/admin'
 import { 
   fetchTournaments,
@@ -17,7 +17,7 @@ import {
 } from '../../components/admin/tournaments'
 
 const AdminTournaments: React.FC = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
   const { user } = useSelector((state: RootState) => state.auth)
   const { tournamentFilter, error } = useSelector((state: RootState) => state.adminTournaments)
@@ -32,14 +32,14 @@ const AdminTournaments: React.FC = () => {
     }
 
     // Fetch initial data
-    dispatch(fetchTournaments(tournamentFilter) as any)
-    dispatch(fetchTournamentParticipants() as any)
+    dispatch(fetchTournaments(tournamentFilter))
+    dispatch(fetchTournamentParticipants())
   }, [dispatch, user, navigate])
 
   useEffect(() => {
     // Refresh data when filters change
     if (activeTab === 'tournaments') {
-      dispatch(fetchTournaments(tournamentFilter) as any)
+      dispatch(fetchTournaments(tournamentFilter))
     }
   }, [dispatch, tournamentFilter, activeTab])
 

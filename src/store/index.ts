@@ -47,6 +47,7 @@ import adminMicrositesReducer from './slices/adminMicrositesSlice'
 import adminReportsReducer from './slices/adminReportsSlice'
 import adminPaymentsReducer from './slices/adminPaymentsSlice'
 import adminDashboardReducer from './slices/adminDashboardSlice'
+import adminProfileReducer from './slices/adminProfileSlice'
 
 export const store = configureStore({
   reducer: {
@@ -97,7 +98,8 @@ export const store = configureStore({
     adminMicrosites: adminMicrositesReducer,
     adminReports: adminReportsReducer,
     adminPayments: adminPaymentsReducer,
-    adminDashboard: adminDashboardReducer
+    adminDashboard: adminDashboardReducer,
+    adminProfile: adminProfileReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

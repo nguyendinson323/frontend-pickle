@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { RootState } from '../../store'
+import { RootState, AppDispatch } from '../../store'
 import { fetchReports } from '../../store/slices/adminReportsSlice'
 import {
   ReportsTable,
@@ -11,7 +11,7 @@ import {
 } from '../../components/admin/reports'
 
 const AdminReports: React.FC = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
   const { user } = useSelector((state: RootState) => state.auth)
   const { error } = useSelector((state: RootState) => state.adminReports)
@@ -25,7 +25,7 @@ const AdminReports: React.FC = () => {
     }
 
     // Fetch initial data
-    dispatch(fetchReports() as any)
+    dispatch(fetchReports())
   }, [dispatch, user, navigate])
 
   if (!user || user.role !== 'admin') {

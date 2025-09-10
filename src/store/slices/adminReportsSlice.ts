@@ -38,6 +38,20 @@ interface AdminReportsState {
     totalRecords: number
     mostPopularType: string
     averageGenerationTime: number
+    systemMetrics: {
+      totalUsers: number
+      activeUsers: number
+      totalTournaments: number
+      activeTournaments: number
+      completedTournaments: number
+      totalCourts: number
+      activeCourts: number
+      totalPayments: number
+      totalRevenue: number
+      totalRankedPlayers: number
+      totalMicrosites: number
+      activeMicrosites: number
+    }
   }
   availableReportTypes: {
     value: string
@@ -70,56 +84,64 @@ const initialState: AdminReportsState = {
     totalFileSize: 0,
     totalRecords: 0,
     mostPopularType: '',
-    averageGenerationTime: 0
+    averageGenerationTime: 0,
+    systemMetrics: {
+      totalUsers: 0,
+      activeUsers: 0,
+      totalTournaments: 0,
+      activeTournaments: 0,
+      completedTournaments: 0,
+      totalCourts: 0,
+      activeCourts: 0,
+      totalPayments: 0,
+      totalRevenue: 0,
+      totalRankedPlayers: 0,
+      totalMicrosites: 0,
+      activeMicrosites: 0
+    }
   },
   availableReportTypes: [
     {
       value: 'users',
       label: 'User Activity Report',
       description: 'Comprehensive user data with activity metrics and engagement statistics',
-      fields: ['user_info', 'activity_metrics', 'engagement_data', 'membership_details']
+      fields: ['id', 'email', 'first_name', 'last_name', 'user_type', 'created_at', 'updated_at', 'state', 'is_active', 'phone', 'registration_date']
     },
     {
       value: 'tournaments',
-      label: 'Tournament Analytics Report',
+      label: 'Tournament Analytics Report', 
       description: 'Tournament performance data including participation and revenue metrics',
-      fields: ['tournament_details', 'participation_stats', 'revenue_data', 'organizer_performance']
+      fields: ['id', 'name', 'start_date', 'end_date', 'location', 'status', 'entry_fee', 'prize_pool', 'max_participants', 'organizer_id', 'state', 'description']
     },
     {
       value: 'courts',
       label: 'Courts Utilization Report',
       description: 'Court usage statistics and revenue analysis across all facilities',
-      fields: ['court_details', 'utilization_metrics', 'reservation_data', 'revenue_analysis']
+      fields: ['id', 'name', 'location', 'court_type', 'surface_type', 'hourly_rate', 'is_active', 'owner_id', 'description', 'availability_hours']
     },
     {
       value: 'payments',
       label: 'Financial Summary Report',
       description: 'Complete financial overview including payments, subscriptions, and revenue trends',
-      fields: ['payment_transactions', 'subscription_data', 'revenue_breakdown', 'refund_analysis']
+      fields: ['id', 'amount', 'payment_method', 'status', 'transaction_id', 'payment_date', 'payer_id', 'payee_id', 'description', 'reference_type']
     },
     {
       value: 'rankings',
       label: 'Player Rankings Report',
       description: 'Player ranking data with progression tracking and tournament performance',
-      fields: ['ranking_positions', 'point_changes', 'tournament_results', 'progression_trends']
+      fields: ['player_id', 'category_id', 'ranking_position', 'points', 'wins', 'losses', 'matches_played', 'last_updated', 'period_id', 'state']
     },
     {
       value: 'microsites',
       label: 'Microsites Performance Report',
       description: 'Microsite analytics including traffic data and content performance metrics',
-      fields: ['site_performance', 'traffic_analytics', 'content_scores', 'owner_engagement']
+      fields: ['id', 'subdomain', 'title', 'description', 'owner_id', 'is_active', 'created_at', 'updated_at', 'theme', 'custom_domain']
     },
     {
       value: 'system_activity',
       label: 'System Activity Report',
       description: 'Administrative actions and system usage patterns across the platform',
-      fields: ['admin_actions', 'system_metrics', 'error_logs', 'performance_data']
-    },
-    {
-      value: 'custom',
-      label: 'Custom Data Export',
-      description: 'Build custom reports with specific data fields and filtering criteria',
-      fields: ['custom_fields', 'advanced_filters', 'data_relationships', 'export_options']
+      fields: ['user_logins', 'tournament_registrations', 'court_bookings', 'payment_activity', 'ranking_updates', 'microsite_activity']
     }
   ],
   loading: false,
@@ -212,37 +234,17 @@ export const generateReport = (reportConfig: {
   try {
     dispatch(setError(null))
 
-    const response = await api.post('/api/admin/reports/generate', reportConfig)
-
-    const responseData = response.data as { report: ReportData }
-    dispatch(addReport(responseData.report))
-    dispatch(stopLoading())
-    return response.data
-  } catch (error) {
-    dispatch(setError('Failed to generate report'))
-    dispatch(stopLoading())
-    throw error
-  }
-}
-
-export const downloadReport = (reportId: string) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Downloading report...'))
-  
-  try {
-    dispatch(setError(null))
-
-    const response = await api.get(`/api/admin/reports/${reportId}/download`, {
+    const response = await api.post('/api/admin/reports/generate', reportConfig, {
       responseType: 'blob'
     })
 
+    // Create download link for the file
     const url = window.URL.createObjectURL(new Blob([response.data as BlobPart]))
     const link = document.createElement('a')
     link.href = url
     
-    const contentDisposition = response.headers['content-disposition']
-    const filename = contentDisposition 
-      ? contentDisposition.split('filename=')[1]?.replace(/"/g, '')
-      : `report-${reportId}.${response.headers['content-type']?.includes('csv') ? 'csv' : 'xlsx'}`
+    const timestamp = new Date().toISOString().split('T')[0]
+    const filename = `${reportConfig.type}-report-${timestamp}.${reportConfig.format}`
     
     link.setAttribute('download', filename)
     document.body.appendChild(link)
@@ -251,104 +253,18 @@ export const downloadReport = (reportId: string) => async (dispatch: AppDispatch
     window.URL.revokeObjectURL(url)
 
     dispatch(stopLoading())
-    return response.data
+    return { success: true }
   } catch (error) {
-    dispatch(setError('Failed to download report'))
+    dispatch(setError('Failed to generate report'))
     dispatch(stopLoading())
     throw error
   }
 }
 
-export const deleteReport = (reportId: string) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Deleting report...'))
-  
-  try {
-    dispatch(setError(null))
 
-    await api.delete(`/api/admin/reports/${reportId}`)
 
-    dispatch(removeReport(reportId))
-    dispatch(stopLoading())
-  } catch (error) {
-    dispatch(setError('Failed to delete report'))
-    dispatch(stopLoading())
-    throw error
-  }
-}
 
-export const getReportStatus = (reportId: string) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Checking report status...'))
-  
-  try {
-    const response = await api.get(`/api/admin/reports/${reportId}/status`)
 
-    const reportData = response.data as {
-      status: string
-      downloadUrl: string
-      fileSize: number
-      recordCount: number
-    }
-    
-    dispatch(updateReportStatus({
-      reportId,
-      status: reportData.status,
-      downloadUrl: reportData.downloadUrl,
-      fileSize: reportData.fileSize,
-      recordCount: reportData.recordCount
-    }))
-
-    dispatch(stopLoading())
-    return response.data
-  } catch (error) {
-    dispatch(stopLoading())
-    throw error
-  }
-}
-
-export const scheduleReport = (reportConfig: {
-  type: string
-  name: string
-  filters: any
-  fields: string[]
-  format: string
-  schedule: {
-    frequency: 'daily' | 'weekly' | 'monthly'
-    dayOfWeek?: number
-    dayOfMonth?: number
-    time: string
-  }
-  recipients: string[]
-}) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Scheduling report...'))
-  
-  try {
-    dispatch(setError(null))
-
-    const response = await api.post('/api/admin/reports/schedule', reportConfig)
-
-    dispatch(stopLoading())
-    return response.data
-  } catch (error) {
-    dispatch(setError('Failed to schedule report'))
-    dispatch(stopLoading())
-    throw error
-  }
-}
-
-export const getScheduledReports = () => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Loading scheduled reports...'))
-  
-  try {
-    const response = await api.get('/api/admin/reports/scheduled')
-
-    dispatch(stopLoading())
-    return response.data
-  } catch (error) {
-    dispatch(setError('Failed to fetch scheduled reports'))
-    dispatch(stopLoading())
-    throw error
-  }
-}
 
 export const getReportPreview = (reportConfig: {
   type: string

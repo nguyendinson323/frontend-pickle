@@ -344,6 +344,50 @@ export const updateStateProfile = (profileData: Partial<StateCommittee>) => asyn
   }
 }
 
+// Update admin profile
+export const updateAdminProfile = (profileData: Partial<User>) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating administrator profile...'))
+  
+  try {
+    const response = await api.put('/api/admin/profile', profileData)
+    dispatch(updateUser(response.data.user))
+    return response.data
+  } catch (error) {
+    throw error
+  } finally {
+    dispatch(stopLoading())
+  }
+}
+
+// Change admin password
+export const changeAdminPassword = (passwordData: { currentPassword: string, newPassword: string }) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Changing password...'))
+  
+  try {
+    const response = await api.put('/api/admin/profile/password', passwordData)
+    return response.data
+  } catch (error) {
+    throw error
+  } finally {
+    dispatch(stopLoading())
+  }
+}
+
+// Update admin security settings
+export const updateAdminSecuritySettings = (securityData: { is_searchable: boolean }) => async (dispatch: AppDispatch) => {
+  dispatch(startLoading('Updating security settings...'))
+  
+  try {
+    const response = await api.put('/api/admin/profile/security', securityData)
+    dispatch(updateUser(response.data.user))
+    return response.data
+  } catch (error) {
+    throw error
+  } finally {
+    dispatch(stopLoading())
+  }
+}
+
 // Fetch dashboard data for current user  
 const fetchDashboard = (userRole: string) => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Loading dashboard...'))

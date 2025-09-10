@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { RootState } from '../../store'
+import { RootState, AppDispatch } from '../../store'
 import { UserListItem } from '../../types/admin'
 import { fetchUsers } from '../../store/slices/adminUserManagementSlice'
 import {
@@ -13,7 +13,7 @@ import {
 } from '../../components/admin/user-management'
 
 const AdminUserManagement: React.FC = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
   const { user } = useSelector((state: RootState) => state.auth)
   const { users, userFilter, error } = useSelector((state: RootState) => state.adminUserManagement)
@@ -27,7 +27,7 @@ const AdminUserManagement: React.FC = () => {
     }
 
     // Fetch users when component mounts or when filters change
-    dispatch(fetchUsers(userFilter) as any)
+    dispatch(fetchUsers(userFilter))
   }, [dispatch, user, navigate, userFilter])
 
   const handleUserSelect = (user: UserListItem) => {

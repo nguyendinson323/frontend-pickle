@@ -248,12 +248,23 @@ export interface TournamentAdmin {
   organizer_type: string
   start_date: string
   end_date: string
+  registration_start: string
+  registration_end: string
   location: string
-  status: 'draft' | 'published' | 'ongoing' | 'completed' | 'cancelled'
+  venue_name?: string
+  venue_address?: string
+  status: 'upcoming' | 'ongoing' | 'completed' | 'canceled'
   total_participants: number
+  max_participants?: number
   entry_fee: number
   total_revenue: number
   prize_pool: number
+  description?: string
+  banner_url?: string
+  is_ranking: boolean
+  ranking_multiplier?: number
+  created_at: string
+  updated_at: string
 }
 
 // Ranking Management Types
@@ -261,14 +272,12 @@ export interface RankingChange {
   id: number
   player_id: number
   player_name: string
-  old_position: number
-  new_position: number
-  old_points: number
-  new_points: number
-  change_date: string
+  username: string
+  points_change: number
   reason: string
-  tournament_id: number | null
-  tournament_name: string | null
+  tournament_name: string
+  timestamp: string
+  change_type: 'gain' | 'loss'
 }
 
 // Support & Security Types

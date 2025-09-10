@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../../store'
+import { RootState, AppDispatch } from '../../../store'
 import { TournamentAdmin } from '../../../types/admin'
 import { exportTournaments } from '../../../store/slices/adminTournamentsSlice'
 import TournamentStatusModal from './TournamentStatusModal'
@@ -12,7 +12,7 @@ interface TournamentsTableProps {
 }
 
 const TournamentsTable: React.FC<TournamentsTableProps> = ({ onTournamentSelect }) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { tournaments, tournamentFilter, loading } = useSelector((state: RootState) => state.adminTournaments)
   const [selectedTournament, setSelectedTournament] = useState<TournamentAdmin | null>(null)
   const [showStatusModal, setShowStatusModal] = useState(false)
@@ -21,14 +21,12 @@ const TournamentsTable: React.FC<TournamentsTableProps> = ({ onTournamentSelect 
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      pending: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'Pending' },
-      approved: { bg: 'bg-green-100', text: 'text-green-800', label: 'Approved' },
-      rejected: { bg: 'bg-red-100', text: 'text-red-800', label: 'Rejected' },
-      active: { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Active' },
+      upcoming: { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Upcoming' },
+      ongoing: { bg: 'bg-green-100', text: 'text-green-800', label: 'Ongoing' },
       completed: { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Completed' },
-      cancelled: { bg: 'bg-red-100', text: 'text-red-800', label: 'Cancelled' }
+      canceled: { bg: 'bg-red-100', text: 'text-red-800', label: 'Canceled' }
     }
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending
+    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.upcoming
     return (
       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${config.bg} ${config.text}`}>
         {config.label}
@@ -51,7 +49,7 @@ const TournamentsTable: React.FC<TournamentsTableProps> = ({ onTournamentSelect 
   }
 
   const handleExport = async (format: 'csv' | 'excel' | 'pdf') => {
-    dispatch(exportTournaments(tournamentFilter, format) as any)
+    dispatch(exportTournaments(tournamentFilter, format))
   }
 
   const handleStatusChange = (tournament: TournamentAdmin) => {

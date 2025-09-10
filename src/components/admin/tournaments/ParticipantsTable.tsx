@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../../store'
+import { RootState, AppDispatch } from '../../../store'
 import { 
   addSelectedParticipant,
   removeSelectedParticipant,
@@ -10,7 +10,7 @@ import {
 import ParticipantStatusModal from './ParticipantStatusModal'
 
 const ParticipantsTable: React.FC = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { participants, selectedParticipants, loading } = useSelector((state: RootState) => state.adminTournaments)
   const [selectedParticipant, setSelectedParticipant] = useState<any>(null)
   const [showStatusModal, setShowStatusModal] = useState(false)

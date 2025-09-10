@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../../store'
+import { RootState, AppDispatch } from '../../../store'
 import { PlayerDetail, CoachDetail, ClubDetail, PartnerDetail, StateDetail, UserListItem } from '../../../types/admin'
 import { fetchUserDetails, resetUserPassword } from '../../../store/slices/adminUserManagementSlice'
 
@@ -10,11 +10,11 @@ interface UserDetailProps {
 }
 
 const UserDetail: React.FC<UserDetailProps> = ({ user, onClose }) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { selectedUser, loading } = useSelector((state: RootState) => state.adminUserManagement)
 
   useEffect(() => {
-    dispatch(fetchUserDetails(user.id) as any)
+    dispatch(fetchUserDetails(user.id))
   }, [dispatch, user.id])
 
   const handleResetPassword = async () => {
@@ -24,7 +24,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, onClose }) => {
 
     if (confirmed) {
       try {
-        await dispatch(resetUserPassword(user.id) as any)
+        await dispatch(resetUserPassword(user.id))
         alert('Password reset successfully. New password sent to user\'s email.')
       } catch (error) {
         console.error('Failed to reset password:', error)

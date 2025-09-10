@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { RootState } from '../../store'
+import { RootState, AppDispatch } from '../../store'
 import { 
   fetchPlayerRankings,
-  fetchRankingChanges
+  fetchRankingChanges,
+  fetchRankingStats,
+  fetchRankingPeriods,
+  fetchRankingCategories
 } from '../../store/slices/adminRankingsSlice'
 import {
   RankingsTable,
@@ -15,7 +18,7 @@ import {
 } from '../../components/admin/rankings'
 
 const AdminRankings: React.FC = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
   const { user } = useSelector((state: RootState) => state.auth)
   const { rankingFilter, error } = useSelector((state: RootState) => state.adminRankings)
@@ -30,16 +33,19 @@ const AdminRankings: React.FC = () => {
     }
 
     // Fetch initial data
-    dispatch(fetchPlayerRankings(rankingFilter) as any)
-    dispatch(fetchRankingChanges(rankingFilter) as any)
-  }, [dispatch, user, navigate])
+    dispatch(fetchPlayerRankings(rankingFilter))
+    dispatch(fetchRankingChanges(rankingFilter))
+    dispatch(fetchRankingStats())
+    dispatch(fetchRankingPeriods())
+    dispatch(fetchRankingCategories())
+  }, [dispatch, user, navigate, rankingFilter])
 
   useEffect(() => {
     // Refresh data when filters change
     if (activeTab === 'rankings') {
-      dispatch(fetchPlayerRankings(rankingFilter) as any)
+      dispatch(fetchPlayerRankings(rankingFilter))
     } else if (activeTab === 'changes') {
-      dispatch(fetchRankingChanges(rankingFilter) as any)
+      dispatch(fetchRankingChanges(rankingFilter))
     }
   }, [dispatch, rankingFilter, activeTab])
 

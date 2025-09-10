@@ -1,18 +1,19 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../../store'
+import { RootState, AppDispatch } from '../../../store'
 import { setRankingFilter, exportRankings } from '../../../store/slices/adminRankingsSlice'
 
 const RankingFilters: React.FC = () => {
-  const dispatch = useDispatch()
-  const { rankingFilter, loading } = useSelector((state: RootState) => state.adminRankings)
+  const dispatch = useDispatch<AppDispatch>()
+  const { rankingFilter, periods, categories } = useSelector((state: RootState) => state.adminRankings)
+  const { isLoading: loading } = useSelector((state: RootState) => state.loading)
 
   const handleFilterChange = (field: string, value: string) => {
     dispatch(setRankingFilter({ [field]: value }))
   }
 
   const handleExport = (format: 'csv' | 'excel' | 'pdf') => {
-    dispatch(exportRankings(rankingFilter, format) as any)
+    dispatch(exportRankings(rankingFilter, format))
   }
 
   const handleClearFilters = () => {
@@ -23,7 +24,11 @@ const RankingFilters: React.FC = () => {
       maxPosition: '',
       changeType: '',
       dateFrom: '',
-      dateTo: ''
+      dateTo: '',
+      category: '',
+      period: '',
+      page: '1',
+      limit: '50'
     }))
   }
 
@@ -39,7 +44,7 @@ const RankingFilters: React.FC = () => {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-9 gap-4 mb-6">
         {/* Search Term */}
         <div className="col-span-1 md:col-span-2">
           <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-1">
@@ -113,9 +118,10 @@ const RankingFilters: React.FC = () => {
             className="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
           >
             <option value="">All Changes</option>
-            <option value="improved">Improved</option>
-            <option value="declined">Declined</option>
+            <option value="up">Improved</option>
+            <option value="down">Declined</option>
             <option value="stable">No Change</option>
+            <option value="new">New Players</option>
           </select>
         </div>
 
@@ -144,6 +150,46 @@ const RankingFilters: React.FC = () => {
             onChange={(e) => handleFilterChange('dateTo', e.target.value)}
             className="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
           />
+        </div>
+
+        {/* Category Filter */}
+        <div>
+          <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+            Category
+          </label>
+          <select
+            id="category"
+            value={rankingFilter.category}
+            onChange={(e) => handleFilterChange('category', e.target.value)}
+            className="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          >
+            <option value="">All Categories</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Period Filter */}
+        <div>
+          <label htmlFor="period" className="block text-sm font-medium text-gray-700 mb-1">
+            Period
+          </label>
+          <select
+            id="period"
+            value={rankingFilter.period}
+            onChange={(e) => handleFilterChange('period', e.target.value)}
+            className="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          >
+            <option value="">Active Period</option>
+            {periods.map((period) => (
+              <option key={period.id} value={period.id}>
+                {period.name} {period.is_active && '(Active)'}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 

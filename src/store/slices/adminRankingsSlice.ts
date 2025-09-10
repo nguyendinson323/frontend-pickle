@@ -8,6 +8,7 @@ interface PlayerRanking {
   id: number
   player_id: number
   player_name: string
+  username: string
   current_position: number
   previous_position: number
   current_points: number
@@ -17,7 +18,10 @@ interface PlayerRanking {
   state_name: string
   tournaments_played: number
   last_updated: string
-  trend: 'up' | 'down' | 'stable'
+  trend: 'up' | 'down' | 'stable' | 'new'
+  nrtp_level: string
+  category: string
+  period: string
 }
 
 interface RankingFilter {
@@ -28,6 +32,10 @@ interface RankingFilter {
   changeType: string
   dateFrom: string
   dateTo: string
+  category: string
+  period: string
+  page: string
+  limit: string
 }
 
 interface AdminRankingsState {
@@ -42,7 +50,32 @@ interface AdminRankingsState {
     highestPoints: number
     mostActiveState: string
     totalTournamentsConsidered: number
+    activePeriod: {
+      id: number
+      name: string
+      start_date: string
+      end_date: string
+    } | null
   }
+  pagination: {
+    currentPage: number
+    totalPages: number
+    totalCount: number
+  }
+  periods: Array<{
+    id: number
+    name: string
+    start_date: string
+    end_date: string
+    is_active: boolean
+  }>
+  categories: Array<{
+    id: number
+    name: string
+    gender: string
+    min_age: number | null
+    max_age: number | null
+  }>
   error: string | null
   recalculatingRankings: boolean
 }
@@ -58,7 +91,11 @@ const initialState: AdminRankingsState = {
     maxPosition: '',
     changeType: '',
     dateFrom: '',
-    dateTo: ''
+    dateTo: '',
+    category: '',
+    period: '',
+    page: '1',
+    limit: '50'
   },
   rankingStats: {
     totalRankedPlayers: 0,
@@ -66,8 +103,16 @@ const initialState: AdminRankingsState = {
     averagePoints: 0,
     highestPoints: 0,
     mostActiveState: '',
-    totalTournamentsConsidered: 0
+    totalTournamentsConsidered: 0,
+    activePeriod: null
   },
+  pagination: {
+    currentPage: 1,
+    totalPages: 1,
+    totalCount: 0
+  },
+  periods: [],
+  categories: [],
   error: null,
   recalculatingRankings: false
 }
@@ -97,6 +142,15 @@ const adminRankingsSlice = createSlice({
     setRankingStats: (state, action: PayloadAction<typeof initialState.rankingStats>) => {
       state.rankingStats = action.payload
     },
+    setPagination: (state, action: PayloadAction<typeof initialState.pagination>) => {
+      state.pagination = action.payload
+    },
+    setPeriods: (state, action: PayloadAction<typeof initialState.periods>) => {
+      state.periods = action.payload
+    },
+    setCategories: (state, action: PayloadAction<typeof initialState.categories>) => {
+      state.categories = action.payload
+    },
     updatePlayerRanking: (state, action: PayloadAction<{ playerId: number; newPosition: number; newPoints: number }>) => {
       const playerIndex = state.playerRankings.findIndex(p => p.player_id === action.payload.playerId)
       if (playerIndex !== -1) {
@@ -124,6 +178,9 @@ export const {
   setSelectedPlayer,
   setRankingFilter,
   setRankingStats,
+  setPagination,
+  setPeriods,
+  setCategories,
   updatePlayerRanking,
   addRankingChange
 } = adminRankingsSlice.actions
@@ -143,10 +200,19 @@ export const fetchPlayerRankings = (filters?: Partial<RankingFilter>) => async (
     }
 
     const response = await api.get(`/api/admin/rankings/players?${queryParams.toString()}`)
-    const responseData = response.data as { rankings: PlayerRanking[], stats: typeof initialState.rankingStats }
+    const responseData = response.data as { 
+      rankings: PlayerRanking[], 
+      totalCount: number,
+      currentPage: number,
+      totalPages: number
+    }
 
     dispatch(setPlayerRankings(responseData.rankings))
-    dispatch(setRankingStats(responseData.stats))
+    dispatch(setPagination({
+      currentPage: responseData.currentPage,
+      totalPages: responseData.totalPages,
+      totalCount: responseData.totalCount
+    }))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(setError('Failed to fetch player rankings'))
@@ -169,8 +235,9 @@ export const fetchRankingChanges = (filters?: Partial<RankingFilter>) => async (
     }
 
     const response = await api.get(`/api/admin/rankings/changes?${queryParams.toString()}`)
+    const responseData = response.data as { changes: RankingChange[] }
 
-    dispatch(setRankingChanges(response.data as RankingChange[]))
+    dispatch(setRankingChanges(responseData.changes))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(setError('Failed to fetch ranking changes'))
@@ -179,7 +246,7 @@ export const fetchRankingChanges = (filters?: Partial<RankingFilter>) => async (
   }
 }
 
-export const manualRankingAdjustment = (playerId: number, newPosition: number, newPoints: number, reason: string) => async (dispatch: AppDispatch) => {
+export const manualRankingAdjustment = (playerId: number, points?: number, newRank?: number, reason?: string) => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Adjusting player ranking...'))
   
   try {
@@ -187,13 +254,14 @@ export const manualRankingAdjustment = (playerId: number, newPosition: number, n
 
     const response = await api.post('/api/admin/rankings/adjust', {
       playerId,
-      newPosition,
-      newPoints,
+      points,
+      newRank,
       reason
     })
 
-    dispatch(updatePlayerRanking({ playerId, newPosition, newPoints }))
-    dispatch(addRankingChange((response.data as { change: RankingChange }).change))
+    if (newRank && points) {
+      dispatch(updatePlayerRanking({ playerId, newPosition: newRank, newPoints: points }))
+    }
     dispatch(stopLoading())
     
     return response.data
@@ -204,14 +272,13 @@ export const manualRankingAdjustment = (playerId: number, newPosition: number, n
   }
 }
 
-export const recalculateRankings = (stateId?: number) => async (dispatch: AppDispatch) => {
+export const recalculateRankings = () => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Recalculating rankings...'))
   
   try {
     dispatch(setError(null))
 
-    const payload = stateId ? { stateId } : {}
-    const response = await api.post('/api/admin/rankings/recalculate', payload)
+    const response = await api.post('/api/admin/rankings/recalculate')
 
     // Refresh rankings after recalculation
     dispatch(fetchPlayerRankings())
@@ -276,6 +343,36 @@ export const exportRankings = (filters: Partial<RankingFilter>, format: 'csv' | 
   } catch (error) {
     dispatch(setError('Failed to export rankings'))
     dispatch(stopLoading())
+    throw error
+  }
+}
+
+export const fetchRankingStats = () => async (dispatch: AppDispatch) => {
+  try {
+    const response = await api.get('/api/admin/rankings/stats')
+    dispatch(setRankingStats(response.data))
+  } catch (error) {
+    dispatch(setError('Failed to fetch ranking statistics'))
+    throw error
+  }
+}
+
+export const fetchRankingPeriods = () => async (dispatch: AppDispatch) => {
+  try {
+    const response = await api.get('/api/admin/rankings/periods')
+    dispatch(setPeriods(response.data.periods))
+  } catch (error) {
+    dispatch(setError('Failed to fetch ranking periods'))
+    throw error
+  }
+}
+
+export const fetchRankingCategories = () => async (dispatch: AppDispatch) => {
+  try {
+    const response = await api.get('/api/admin/rankings/categories')
+    dispatch(setCategories(response.data.categories))
+  } catch (error) {
+    dispatch(setError('Failed to fetch ranking categories'))
     throw error
   }
 }
