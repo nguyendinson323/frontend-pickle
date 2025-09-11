@@ -85,13 +85,13 @@ const UsersList: React.FC<UsersListProps> = ({ onUserSelect }) => {
     <div className="bg-white shadow-sm rounded-lg overflow-hidden">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="">
+          <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 <input
                   type="checkbox"
                   className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                  onChange={(e) => {
+                  onChange={() => {
                     // Toggle all users selection logic could be added here
                   }}
                 />
@@ -107,7 +107,7 @@ const UsersList: React.FC<UsersListProps> = ({ onUserSelect }) => {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {users.map((user) => (
-              <tr key={user.id} className="hover:">
+              <tr key={user.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <input
                     type="checkbox"
@@ -121,7 +121,7 @@ const UsersList: React.FC<UsersListProps> = ({ onUserSelect }) => {
                     <div>
                       <div className="text-sm font-medium text-gray-900">{user.username}</div>
                       <div className="text-sm text-gray-500">{user.email}</div>
-                      <div className="text-sm text-gray-500">{user.phone}</div>
+                      {user.phone && <div className="text-sm text-gray-500">{user.phone}</div>}
                     </div>
                   </div>
                 </td>

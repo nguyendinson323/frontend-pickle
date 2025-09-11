@@ -102,7 +102,7 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({ tournament, onClose
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Venue</label>
-                  <p className="mt-1 text-gray-900">{tournament.venue || 'Not specified'}</p>
+                  <p className="mt-1 text-gray-900">{tournament.venue_name || 'Not specified'}</p>
                 </div>
               </div>
             </div>
@@ -139,7 +139,7 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({ tournament, onClose
               
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-white rounded-lg p-4 text-center">
-                  <div className="text-2xl font-bold text-blue-600">{tournament.current_participants}</div>
+                  <div className="text-2xl font-bold text-blue-600">{tournament.total_participants}</div>
                   <div className="text-sm text-gray-600">Current Participants</div>
                 </div>
                 
@@ -168,21 +168,21 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({ tournament, onClose
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Registration Deadline</label>
                   <p className="mt-1 text-gray-900">
-                    {tournament.registration_deadline ? 
-                      new Date(tournament.registration_deadline).toLocaleDateString() : 
+                    {tournament.registration_end ? 
+                      new Date(tournament.registration_end).toLocaleDateString() : 
                       'Not specified'
                     }
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Tournament Format</label>
-                  <p className="mt-1 text-gray-900">{tournament.tournament_format || 'Not specified'}</p>
+                  <label className="block text-sm font-medium text-gray-700">Ranking Tournament</label>
+                  <p className="mt-1 text-gray-900">{tournament.is_ranking ? 'Yes' : 'No'}</p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Skill Level</label>
-                  <p className="mt-1 text-gray-900">{tournament.skill_level || 'All levels'}</p>
+                  <label className="block text-sm font-medium text-gray-700">Ranking Multiplier</label>
+                  <p className="mt-1 text-gray-900">{tournament.ranking_multiplier || 'N/A'}</p>
                 </div>
 
                 <div>
@@ -190,10 +190,10 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({ tournament, onClose
                   <p className="mt-1 text-gray-900">{new Date(tournament.created_at).toLocaleDateString()}</p>
                 </div>
 
-                {tournament.rejection_reason && (
+                {tournament.status === 'canceled' && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Rejection Reason</label>
-                    <p className="mt-1 text-red-600">{tournament.rejection_reason}</p>
+                    <label className="block text-sm font-medium text-gray-700">Status</label>
+                    <p className="mt-1 text-red-600">Tournament has been canceled</p>
                   </div>
                 )}
               </div>

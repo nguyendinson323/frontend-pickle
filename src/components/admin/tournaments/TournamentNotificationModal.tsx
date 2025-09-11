@@ -94,7 +94,7 @@ const TournamentNotificationModal: React.FC<TournamentNotificationModalProps> = 
 
         <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <h4 className="font-medium text-blue-900">Tournament: {tournament.name}</h4>
-          <p className="text-sm text-blue-700">Current participants: {tournament.current_participants}</p>
+          <p className="text-sm text-blue-700">Current participants: {tournament.total_participants}</p>
         </div>
 
         <div className="space-y-6">
@@ -167,7 +167,7 @@ const TournamentNotificationModal: React.FC<TournamentNotificationModalProps> = 
               className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             />
             <p className="text-xs text-gray-500 mt-1">
-              Available variables: {{tournamentName}}, {{startDate}}, {{location}}
+              Available variables: {'{tournamentName}'}, {'{startDate}'}, {'{location}'}
             </p>
           </div>
 

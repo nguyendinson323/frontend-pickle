@@ -194,7 +194,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, onClose }) => {
         ) : (
           <div className="space-y-6">
             {/* Basic Information */}
-            <div className=" rounded-lg p-6">
+            <div className="bg-gray-50 rounded-lg p-6">
               <h4 className="text-lg font-medium text-gray-900 mb-4">Basic Information</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -244,7 +244,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, onClose }) => {
 
             {/* Role-specific Details */}
             {selectedUser && (
-              <div className=" rounded-lg p-6">
+              <div className="bg-gray-50 rounded-lg p-6">
                 {renderUserSpecificDetails()}
               </div>
             )}

@@ -4,8 +4,7 @@ import { RootState, AppDispatch } from '../../../store'
 import { 
   addSelectedParticipant,
   removeSelectedParticipant,
-  setSelectedParticipants,
-  updateParticipantStatusAction
+  setSelectedParticipants
 } from '../../../store/slices/adminTournamentsSlice'
 import ParticipantStatusModal from './ParticipantStatusModal'
 

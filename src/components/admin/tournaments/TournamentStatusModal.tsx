@@ -114,7 +114,7 @@ const TournamentStatusModal: React.FC<TournamentStatusModalProps> = ({ tournamen
                 <span className="ml-2 text-sm text-gray-700">Update Status</span>
               </label>
               
-              {tournament.status === 'pending' && (
+              {tournament.status === 'upcoming' && (
                 <>
                   <label className="flex items-center">
                     <input
@@ -166,7 +166,7 @@ const TournamentStatusModal: React.FC<TournamentStatusModalProps> = ({ tournamen
               </label>
               <select
                 value={newStatus}
-                onChange={(e) => setNewStatus(e.target.value)}
+                onChange={(e) => setNewStatus(e.target.value as 'upcoming' | 'ongoing' | 'completed' | 'canceled')}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               >
                 {statusOptions.map((option) => (

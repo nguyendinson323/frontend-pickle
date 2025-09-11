@@ -49,13 +49,13 @@ Start Date: ${new Date(tournament.start_date).toLocaleString()}
 End Date: ${new Date(tournament.end_date).toLocaleString()}
 
 === PARTICIPATION ===
-Current Participants: ${tournament.current_participants}
+Current Participants: ${tournament.total_participants}
 Maximum Participants: ${tournament.max_participants}
-Registration Rate: ${((tournament.current_participants / tournament.max_participants) * 100).toFixed(1)}%
+Registration Rate: ${((tournament.total_participants / (tournament.max_participants || 1)) * 100).toFixed(1)}%
 
 === FINANCIAL ===
 Entry Fee: $${tournament.entry_fee}
-Total Revenue: $${report.financial?.totalRevenue || (tournament.current_participants * tournament.entry_fee)}
+Total Revenue: $${report.financial?.totalRevenue || (tournament.total_participants * tournament.entry_fee)}
 Prize Pool: $${tournament.prize_pool || 0}
 
 === PARTICIPANT BREAKDOWN ===
@@ -64,10 +64,10 @@ ${report.participantBreakdown ? Object.entries(report.participantBreakdown)
   .join('\n') : 'No participant breakdown available'}
 
 === ADDITIONAL DETAILS ===
-Tournament Format: ${tournament.tournament_format || 'Not specified'}
-Skill Level: ${tournament.skill_level || 'All levels'}
+Ranking Tournament: ${tournament.is_ranking ? 'Yes' : 'No'}
+Ranking Multiplier: ${tournament.ranking_multiplier || 'N/A'}
 Created: ${new Date(tournament.created_at).toLocaleString()}
-${tournament.rejection_reason ? `Rejection Reason: ${tournament.rejection_reason}` : ''}
+${tournament.status === 'canceled' ? 'Status: Canceled' : ''}
     `.trim()
 
     const blob = new Blob([reportContent], { type: 'text/plain' })
@@ -120,8 +120,8 @@ ${tournament.rejection_reason ? `Rejection Reason: ${tournament.rejection_reason
 
   const participantBreakdown = report?.participantBreakdown || {}
   const financial = report?.financial || {
-    totalRevenue: tournament.current_participants * tournament.entry_fee,
-    paidParticipants: tournament.current_participants,
+    totalRevenue: tournament.total_participants * tournament.entry_fee,
+    paidParticipants: tournament.total_participants,
     pendingPayments: 0,
     refunded: 0
   }
@@ -151,7 +151,7 @@ ${tournament.rejection_reason ? `Rejection Reason: ${tournament.rejection_reason
             <div className="space-y-4">
               <div className="flex justify-between">
                 <span className="text-gray-600">Current Participants:</span>
-                <span className="font-semibold">{tournament.current_participants}</span>
+                <span className="font-semibold">{tournament.total_participants}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Maximum Capacity:</span>
@@ -160,7 +160,7 @@ ${tournament.rejection_reason ? `Rejection Reason: ${tournament.rejection_reason
               <div className="flex justify-between">
                 <span className="text-gray-600">Registration Rate:</span>
                 <span className="font-semibold">
-                  {((tournament.current_participants / tournament.max_participants) * 100).toFixed(1)}%
+                  {((tournament.total_participants / (tournament.max_participants || 1)) * 100).toFixed(1)}%
                 </span>
               </div>
               
@@ -232,7 +232,7 @@ ${tournament.rejection_reason ? `Rejection Reason: ${tournament.rejection_reason
               </div>
               <div>
                 <span className="text-sm font-medium text-gray-700">Format:</span>
-                <p className="text-gray-900">{tournament.tournament_format || 'Not specified'}</p>
+                <p className="text-gray-900">{tournament.is_ranking ? 'Ranking Tournament' : 'Regular Tournament'}</p>
               </div>
             </div>
             <div className="space-y-3">
@@ -246,7 +246,7 @@ ${tournament.rejection_reason ? `Rejection Reason: ${tournament.rejection_reason
               </div>
               <div>
                 <span className="text-sm font-medium text-gray-700">Skill Level:</span>
-                <p className="text-gray-900">{tournament.skill_level || 'All levels'}</p>
+                <p className="text-gray-900">{tournament.ranking_multiplier || 'N/A'}</p>
               </div>
               <div>
                 <span className="text-sm font-medium text-gray-700">Created:</span>

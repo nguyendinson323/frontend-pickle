@@ -159,7 +159,7 @@ const TournamentsTable: React.FC<TournamentsTableProps> = ({ onTournamentSelect 
                   <div>End: {new Date(tournament.end_date).toLocaleDateString()}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {tournament.current_participants} / {tournament.max_participants}
+                  {tournament.total_participants} / {tournament.max_participants || 'Unlimited'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   ${tournament.entry_fee}

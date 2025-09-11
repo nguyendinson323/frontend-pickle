@@ -299,7 +299,7 @@ export const updateParticipantStatusAction = (participantId: number, status: str
 
     const response = await api.put(`/api/admin/tournaments/participants/${participantId}/status`, { status, reason })
 
-    dispatch(updateParticipantStatus({ participantId, status }))
+    dispatch(updateParticipantStatus({ participantId, status: status as 'registered' | 'confirmed' | 'checked_in' | 'disqualified' | 'withdrew' }))
     dispatch(stopLoading())
     return response.data
   } catch (error) {
