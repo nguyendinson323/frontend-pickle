@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppDispatch } from '../index'
 import { startLoading, stopLoading } from './loadingSlice'
+import { State } from '../../types/auth'
 import api from '../../services/api'
 
 export interface StateProfile {
@@ -19,11 +20,7 @@ export interface StateProfile {
   affiliation_expires_at: string | null
   created_at: string
   updated_at: string
-  state?: {
-    id: number
-    name: string
-    short_code: string | null
-  }
+  state?: State
 }
 
 export interface StateUpcomingTournament {
@@ -146,6 +143,57 @@ export const fetchStateDashboard = () => async (dispatch: AppDispatch) => {
   } catch (error: unknown) {
     dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch state dashboard data'))
     dispatch(stopLoading())
+  }
+}
+
+// Get state profile
+export const getStateProfile = () => async (dispatch: AppDispatch, getState: () => any) => {
+  try {
+    dispatch(startLoading('Loading state profile...'))
+    dispatch(setError(null))
+    
+    const response = await api.get('/api/auth/profile')
+    
+    // Update just the profile in the dashboard data
+    const state = getState()
+    const currentDashboard = state.stateDashboard.dashboardData
+    
+    if (currentDashboard) {
+      dispatch(setStateDashboardData({
+        ...currentDashboard,
+        profile: response.data
+      }))
+    }
+    
+    dispatch(stopLoading())
+    return response.data
+  } catch (error: unknown) {
+    const errorMessage = (error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to get state profile'
+    dispatch(setError(errorMessage))
+    dispatch(stopLoading())
+    throw new Error(errorMessage)
+  }
+}
+
+// Update state profile
+export const updateStateProfile = (profileData: Partial<StateProfile>) => async (dispatch: AppDispatch) => {
+  try {
+    dispatch(startLoading('Updating state profile...'))
+    dispatch(setError(null))
+    
+    const response = await api.put('/api/auth/profile/state', profileData)
+    
+    // Refresh dashboard data to get updated profile
+    const dashboardResponse = await api.get<StateDashboardResponse>('/api/state/dashboard')
+    dispatch(setStateDashboardData(dashboardResponse.data))
+    
+    dispatch(stopLoading())
+    return response.data
+  } catch (error: unknown) {
+    const errorMessage = (error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to update state profile'
+    dispatch(setError(errorMessage))
+    dispatch(stopLoading())
+    throw new Error(errorMessage)
   }
 }
 

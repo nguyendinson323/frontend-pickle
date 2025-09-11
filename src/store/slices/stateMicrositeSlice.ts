@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import api from '../../services/api'
-import { startLoading, stopLoading } from './loadingSlice'
 import { AppDispatch } from '../index'
 
 interface StateMicrositeInfo {
@@ -87,6 +86,7 @@ interface StateMicrositeState {
   upcomingEvents: StateMicrositeEvent[]
   clubs: StateMicrositeClub[]
   news: StateMicrositeNews[]
+  loading: boolean
   error: string | null
 }
 
@@ -96,6 +96,7 @@ const initialState: StateMicrositeState = {
   upcomingEvents: [],
   clubs: [],
   news: [],
+  loading: false,
   error: null
 }
 
@@ -103,6 +104,9 @@ const stateMicrositeSlice = createSlice({
   name: 'stateMicrosite',
   initialState,
   reducers: {
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.loading = action.payload
+    },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload
     },
@@ -138,6 +142,7 @@ const stateMicrositeSlice = createSlice({
 })
 
 export const {
+  setLoading,
   setError,
   setMicrositeData,
   updateMicrositeInfo,
@@ -148,7 +153,7 @@ export const {
 
 // API Functions
 export const fetchStateMicrositeData = (stateId?: string) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Loading state microsite data...'))
+  dispatch(setLoading(true))
   
   try {
     dispatch(setError(null))
@@ -165,28 +170,28 @@ export const fetchStateMicrositeData = (stateId?: string) => async (dispatch: Ap
       clubs: StateMicrositeClub[]
       news: StateMicrositeNews[]
     }))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
   } catch (error: unknown) {
     dispatch(setError('Failed to fetch state microsite data'))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
     throw error
   }
 }
 
 export const updateStateMicrositeInfo = (micrositeData: Partial<StateMicrositeInfo>) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Updating state microsite info...'))
+  dispatch(setLoading(true))
   
   try {
     dispatch(setError(null))
     
     const response = await api.put('/api/state/microsite', micrositeData)
     dispatch(updateMicrositeInfo((response.data as any).micrositeInfo as StateMicrositeInfo))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
     
     return response.data
   } catch (error: unknown) {
     dispatch(setError('Failed to update microsite info'))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
     throw error
   }
 }
@@ -197,53 +202,53 @@ export const createStateMicrositeNews = (newsData: {
   is_featured?: boolean
   image_url?: string
 }) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Creating news article...'))
+  dispatch(setLoading(true))
   
   try {
     dispatch(setError(null))
     
     const response = await api.post('/api/state/microsite/news', newsData)
     dispatch(addNews((response.data as any).news as StateMicrositeNews))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
     
     return response.data
   } catch (error: unknown) {
     dispatch(setError('Failed to create news'))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
     throw error
   }
 }
 
 export const updateStateMicrositeNews = (newsId: number, newsData: Partial<StateMicrositeNews>) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Updating news article...'))
+  dispatch(setLoading(true))
   
   try {
     dispatch(setError(null))
     
     const response = await api.put(`/api/state/microsite/news/${newsId}`, newsData)
     dispatch(updateNews((response.data as any).news as StateMicrositeNews))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
     
     return response.data
   } catch (error: unknown) {
     dispatch(setError('Failed to update news'))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
     throw error
   }
 }
 
 export const deleteStateMicrositeNews = (newsId: number) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Deleting news article...'))
+  dispatch(setLoading(true))
   
   try {
     dispatch(setError(null))
     
     await api.delete(`/api/state/microsite/news/${newsId}`)
     dispatch(deleteNews(newsId))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
   } catch (error: unknown) {
     dispatch(setError('Failed to delete news'))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
     throw error
   }
 }

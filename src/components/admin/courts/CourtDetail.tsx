@@ -80,8 +80,8 @@ const CourtDetail: React.FC<CourtDetailProps> = ({ court, onClose }) => {
                   <span className="ml-2 text-gray-900">{courtData.surface_type}</span>
                 </div>
                 <div>
-                  <span className="font-medium text-gray-700">Hourly Rate:</span>
-                  <span className="ml-2 text-gray-900 font-semibold">${courtData.hourly_rate || 'N/A'}/hour</span>
+                  <span className="font-medium text-gray-700">Court Count:</span>
+                  <span className="ml-2 text-gray-900 font-semibold">{courtData.court_count || 1} courts</span>
                 </div>
               </div>
               <div className="space-y-3">

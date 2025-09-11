@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
 import { RootState, AppDispatch } from '../../../store'
-import { updateStateProfile } from '../../../store/slices/authSlice'
+import { updateStateProfile } from '../../../store/slices/stateDashboardSlice'
 import { StateCommittee, User } from '../../../types/auth'
 
 interface StateProfileFormProps {
@@ -13,7 +12,6 @@ interface StateProfileFormProps {
 
 const StateProfileForm: React.FC<StateProfileFormProps> = ({ stateCommittee, user, onCancel }) => {
   const dispatch = useDispatch<AppDispatch>()
-  const navigate = useNavigate()
   const { isLoading } = useSelector((state: RootState) => state.loading)
   
   const [userData, setUserData] = useState({

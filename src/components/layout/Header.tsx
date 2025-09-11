@@ -80,6 +80,7 @@ const Header: React.FC = () => {
       ],
       state: [
         { label: 'State Management', path: '/state/management', roles: ['state'] },
+        { label: 'Member Management', path: '/state/members', roles: ['state'] },
         { label: 'State Tournaments', path: '/state/tournaments', roles: ['state'] },
         { label: 'Microsite', path: '/state/microsite', roles: ['state'] },
         { label: 'Reports', path: '/state/reports', roles: ['state'] }

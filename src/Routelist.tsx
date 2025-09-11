@@ -12,6 +12,7 @@ import AboutPage from './pages/common/About'
 import LoginPage from './pages/common/Login'
 import UserSelectPage from './pages/common/UserSelect'
 import TournamentsPage from './pages/common/Tournaments'
+import TournamentDetailPage from './pages/common/TournamentDetail'
 import CourtsPage from './pages/common/Courts'
 
 // Registration pages
@@ -115,6 +116,12 @@ const routes: RouteConfig[] = [
         key: "tournaments",
         public: true,
         element: <TournamentsPage />
+    },
+    {
+        path: "/tournaments/:id",
+        key: "tournament-detail",
+        public: true,
+        element: <TournamentDetailPage />
     },
     {
         path: "/courts",

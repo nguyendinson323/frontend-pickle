@@ -332,7 +332,7 @@ const StateStatistics: React.FC = () => {
           </StatisticsCard>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           {/* Club Analytics */}
           <StatisticsCard
             title="Club Performance"
@@ -385,6 +385,65 @@ const StateStatistics: React.FC = () => {
             )}
           </StatisticsCard>
 
+          {/* Partner Analytics */}
+          <StatisticsCard
+            title="Partnership Performance"
+            subtitle="Partner engagement and sponsorship metrics"
+            loading={loading}
+          >
+            {partnerAnalytics && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <MetricDisplay
+                    label="Total Partners"
+                    value={partnerAnalytics.total_partners}
+                    colorClass="text-teal-600"
+                  />
+                  <MetricDisplay
+                    label="Active Partnerships"
+                    value={partnerAnalytics.engagement_metrics.active_partnerships}
+                    colorClass="text-green-600"
+                  />
+                </div>
+
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-3">Sponsorship Metrics</h4>
+                  <div className="space-y-2">
+                    <ListItem
+                      label="Tournament Sponsorships"
+                      value={partnerAnalytics.engagement_metrics.tournament_sponsorships}
+                    />
+                    <ListItem
+                      label="Total Sponsorship Value"
+                      value={formatCurrency(partnerAnalytics.engagement_metrics.total_sponsorship_value)}
+                    />
+                    <ListItem
+                      label="Average Sponsorship"
+                      value={formatCurrency(partnerAnalytics.engagement_metrics.average_sponsorship_value)}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-3">Partnership Types</h4>
+                  <div className="space-y-2">
+                    {Object.entries(partnerAnalytics.partnership_types).map(([type, count], index) => (
+                      <ProgressBar
+                        key={index}
+                        label={type}
+                        value={count}
+                        max={partnerAnalytics.total_partners}
+                        colorClass="bg-teal-600"
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </StatisticsCard>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Comparative Analytics */}
           <StatisticsCard
             title="Comparative Analysis"

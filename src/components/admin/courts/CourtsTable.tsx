@@ -129,7 +129,7 @@ const CourtsTable: React.FC<CourtsTableProps> = ({ onCourtSelect }) => {
                   Status
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Rate
+                  Court Count
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Performance
@@ -183,7 +183,7 @@ const CourtsTable: React.FC<CourtsTableProps> = ({ onCourtSelect }) => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">
-                      ${court.hourly_rate || 'N/A'}/hr
+                      {court.court_count || 1} courts
                     </div>
                   </td>
                   <td className="px-6 py-4">

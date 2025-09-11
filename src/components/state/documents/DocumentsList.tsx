@@ -1,5 +1,5 @@
 import React from 'react'
-import { StateDocument } from '../../../store/slices/stateDocumentsSlice'
+import { Document as StateDocument } from '../../../store/slices/stateDocumentsSlice'
 
 interface DocumentsListProps {
   documents: StateDocument[]

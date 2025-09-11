@@ -7,6 +7,23 @@ import {
   AvailableSlot,
   PaginatedResponse
 } from '../../types'
+import {
+  fetchCourts,
+  fetchCourt,
+  createCourt,
+  updateCourt as updateCourtThunk,
+  fetchMyCourts,
+  searchNearbyCourts,
+  fetchAvailableSlots,
+  fetchCourtReservations,
+  createReservation,
+  fetchMyReservations,
+  cancelReservation,
+  fetchMaintenanceSchedule,
+  scheduleMaintenance,
+  updateMaintenance,
+  updateCourtSchedule
+} from '../thunks/courtsThunks'
 
 const initialState: CourtsState = {
   courts: [],
@@ -99,6 +116,134 @@ const courtsSlice = createSlice({
     clearMyCourts: (state) => {
       state.myCourts = []
     }
+  },
+  extraReducers: (builder) => {
+    // Fetch courts
+    builder
+      .addCase(fetchCourts.pending, (state) => {
+        state.isLoading = true
+      })
+      .addCase(fetchCourts.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.courts = action.payload.rows
+        state.totalCount = action.payload.count
+      })
+      .addCase(fetchCourts.rejected, (state) => {
+        state.isLoading = false
+      })
+
+    // Fetch single court
+    builder
+      .addCase(fetchCourt.pending, (state) => {
+        state.isLoading = true
+      })
+      .addCase(fetchCourt.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.currentCourt = action.payload
+      })
+      .addCase(fetchCourt.rejected, (state) => {
+        state.isLoading = false
+      })
+
+    // Create court
+    builder
+      .addCase(createCourt.fulfilled, (state, action) => {
+        state.courts.unshift(action.payload)
+        state.myCourts.unshift(action.payload)
+        state.totalCount += 1
+      })
+
+    // Update court
+    builder
+      .addCase(updateCourtThunk.fulfilled, (state, action) => {
+        const index = state.courts.findIndex(c => c.id === action.payload.id)
+        if (index !== -1) {
+          state.courts[index] = action.payload
+        }
+        
+        const myIndex = state.myCourts.findIndex(c => c.id === action.payload.id)
+        if (myIndex !== -1) {
+          state.myCourts[myIndex] = action.payload
+        }
+        
+        if (state.currentCourt && state.currentCourt.id === action.payload.id) {
+          state.currentCourt = action.payload
+        }
+      })
+
+    // Fetch my courts
+    builder
+      .addCase(fetchMyCourts.fulfilled, (state, action) => {
+        state.myCourts = action.payload
+      })
+
+    // Search nearby courts
+    builder
+      .addCase(searchNearbyCourts.pending, (state) => {
+        state.isLoading = true
+      })
+      .addCase(searchNearbyCourts.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.courts = action.payload
+        state.totalCount = action.payload.length
+      })
+      .addCase(searchNearbyCourts.rejected, (state) => {
+        state.isLoading = false
+      })
+
+    // Fetch available slots
+    builder
+      .addCase(fetchAvailableSlots.fulfilled, (state, action) => {
+        state.availableSlots = action.payload
+      })
+
+    // Fetch court reservations
+    builder
+      .addCase(fetchCourtReservations.fulfilled, (state, action) => {
+        state.reservations = action.payload
+      })
+
+    // Create reservation
+    builder
+      .addCase(createReservation.fulfilled, (state, action) => {
+        state.reservations.push(action.payload)
+      })
+
+    // Fetch my reservations
+    builder
+      .addCase(fetchMyReservations.fulfilled, (state, action) => {
+        state.reservations = action.payload
+      })
+
+    // Cancel reservation
+    builder
+      .addCase(cancelReservation.fulfilled, (state, action) => {
+        const index = state.reservations.findIndex(r => r.id === action.payload.id)
+        if (index !== -1) {
+          state.reservations[index] = action.payload
+        }
+      })
+
+    // Fetch maintenance schedule
+    builder
+      .addCase(fetchMaintenanceSchedule.fulfilled, (state, action) => {
+        state.maintenance = action.payload
+      })
+
+    // Schedule maintenance
+    builder
+      .addCase(scheduleMaintenance.fulfilled, (state, action) => {
+        state.maintenance.push(action.payload)
+      })
+
+    // Update maintenance
+    builder
+      .addCase(updateMaintenance.fulfilled, (state, action) => {
+        const index = state.maintenance.findIndex(m => m.id === action.payload.id)
+        if (index !== -1) {
+          state.maintenance[index] = action.payload
+        }
+      })
   }
 })
 

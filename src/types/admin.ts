@@ -177,7 +177,6 @@ export interface CourtInfo {
   latitude: number | null
   longitude: number | null
   status: 'active' | 'maintenance' | 'inactive' | 'pending'
-  hourly_rate?: number
   total_reservations?: number
   revenue_generated?: number
   recent_reservations?: any[]

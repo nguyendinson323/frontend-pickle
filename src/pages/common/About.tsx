@@ -9,6 +9,9 @@ import {
   OrganizationStructure,
   TournamentOrganization,
   DigitalCredentials,
+  FederationInfo,
+  FeaturedContent,
+  NewsSection,
   AboutCTA
 } from '../../components/common/About'
 
@@ -17,6 +20,18 @@ const AboutPage: React.FC = () => {
   const { data: commonData } = useSelector((state: RootState) => state.common)
 
   useEffect(() => {
+    // Set page title and meta description for SEO
+    document.title = 'About - Mexican Pickleball Federation'
+    const metaDescription = document.querySelector('meta[name="description"]')
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Learn about the Mexican Pickleball Federation - the official governing body for pickleball development and regulation in Mexico, dedicated to promoting the sport nationwide.')
+    } else {
+      const meta = document.createElement('meta')
+      meta.name = 'description'
+      meta.content = 'Learn about the Mexican Pickleball Federation - the official governing body for pickleball development and regulation in Mexico, dedicated to promoting the sport nationwide.'
+      document.head.appendChild(meta)
+    }
+
     if (!commonData) {
       dispatch(fetchCommonData())
     }
@@ -34,6 +49,19 @@ const AboutPage: React.FC = () => {
       <OrganizationStructure />
       <TournamentOrganization />
       <DigitalCredentials />
+      
+      {commonData?.federation_info && (
+        <FederationInfo info={commonData.federation_info} />
+      )}
+      
+      {commonData?.featured_content && (
+        <FeaturedContent content={commonData.featured_content} />
+      )}
+      
+      {commonData?.news_articles && (
+        <NewsSection articles={commonData.news_articles} />
+      )}
+      
       <AboutCTA />
     </>
   )

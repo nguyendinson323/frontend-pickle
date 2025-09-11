@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState, AppDispatch } from '../../store'
 import { fetchCommonData } from '../../store/slices/commonSlice'
+import { fetchCourts } from '../../store/thunks/courtsThunks'
 import { LoadingSpinner } from '../../components/common'
 import {
   CourtsHero,
@@ -14,20 +15,34 @@ import {
 
 const CourtsPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
-  const { data: commonData, isLoading } = useSelector((state: RootState) => state.common)
+  const { data: commonData, isLoading: commonLoading } = useSelector((state: RootState) => state.common)
+  const { courts, isLoading: courtsLoading, totalCount } = useSelector((state: RootState) => state.courts)
   const [selectedState, setSelectedState] = useState<string>('')
 
   useEffect(() => {
+    document.title = 'Courts - Mexican Pickleball Federation'
+    const metaDescription = document.querySelector('meta[name="description"]')
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Find and reserve pickleball courts across Mexico. Browse courts by state, view amenities, and book your next game at top-rated facilities.')
+    } else {
+      const meta = document.createElement('meta')
+      meta.name = 'description'
+      meta.content = 'Find and reserve pickleball courts across Mexico. Browse courts by state, view amenities, and book your next game at top-rated facilities.'
+      document.head.appendChild(meta)
+    }
+
     if (!commonData) {
       dispatch(fetchCommonData())
     }
-  }, [dispatch, commonData])
+    
+    dispatch(fetchCourts(selectedState ? { state_id: parseInt(selectedState) } : {}))
+  }, [dispatch, commonData, selectedState])
 
   const handleStateFilter = (stateId: string) => {
     setSelectedState(stateId)
   }
 
-  if (isLoading) {
+  if (commonLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <LoadingSpinner size="lg" message="Loading courts..." />
@@ -51,7 +66,11 @@ const CourtsPage: React.FC = () => {
         onStateFilter={handleStateFilter}
       />
       
-      <CourtsListing />
+      <CourtsListing 
+        courts={courts}
+        isLoading={courtsLoading}
+        totalCount={totalCount}
+      />
       <CourtsFeatures />
       <CourtsCTA />
     </>

@@ -9,10 +9,15 @@ interface Document {
   title: string
   description: string | null
   document_url: string
+  file_name: string
   file_type: string | null
+  file_size: number
+  document_type: string
+  related_entity_type: string | null
+  related_entity_id: number | null
   is_public: boolean
   created_at: string
-  owner: {
+  created_by_user: {
     id: number
     username: string
     email: string
@@ -27,6 +32,18 @@ interface DocumentsStats {
   public_documents: number
   private_documents: number
   recent_activity: number
+  total_invoices: number
+  invoices_by_status: {
+    paid: number
+    pending: number
+    overdue: number
+  }
+  financial_summary: {
+    total_invoiced: number
+    total_paid: number
+    total_outstanding: number
+    overdue_amount: number
+  }
 }
 
 interface StateDocumentsState {
@@ -96,8 +113,8 @@ const stateDocumentsSlice = createSlice({
           state.stats.private_documents += 1
         }
         // Update documents by type
-        const fileType = action.payload.file_type || 'unknown'
-        state.stats.documents_by_type[fileType] = (state.stats.documents_by_type[fileType] || 0) + 1
+        const docType = action.payload.document_type || 'other'
+        state.stats.documents_by_type[docType] = (state.stats.documents_by_type[docType] || 0) + 1
       }
     },
     updateDocument: (state, action: PayloadAction<Document>) => {
@@ -118,9 +135,9 @@ const stateDocumentsSlice = createSlice({
           state.stats.private_documents -= 1
         }
         // Update documents by type
-        const fileType = document.file_type || 'unknown'
-        if (state.stats.documents_by_type[fileType] > 0) {
-          state.stats.documents_by_type[fileType] -= 1
+        const docType = document.document_type || 'other'
+        if (state.stats.documents_by_type[docType] > 0) {
+          state.stats.documents_by_type[docType] -= 1
         }
       }
     }
@@ -153,7 +170,7 @@ export const fetchStateDocuments = (filters?: Partial<StateDocumentsState['filte
     }
     
     const params: any = {}
-    if (currentFilters.file_type) params.file_type = currentFilters.file_type
+    if (currentFilters.file_type) params.document_type = currentFilters.file_type
     if (currentFilters.is_public !== null) params.is_public = currentFilters.is_public
     if (currentFilters.search) params.search = currentFilters.search
     if (currentFilters.date_range.start_date) params.start_date = currentFilters.date_range.start_date

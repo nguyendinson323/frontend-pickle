@@ -172,7 +172,7 @@ export const fetchCourts = (filters?: Partial<CourtFilter>) => async (dispatch: 
       })
     }
 
-    const response = await api.get(`/api/admin/courts?${queryParams.toString()}`)
+    const response = await api.get(`/api/admin/courts-test?${queryParams.toString()}`)
     const responseData = response.data as { courts: CourtInfo[], stats: typeof initialState.courtStats }
 
     dispatch(setCourts(responseData.courts))
@@ -215,7 +215,7 @@ export const getCourtDetails = (courtId: number) => async (dispatch: AppDispatch
   try {
     dispatch(setError(null))
 
-    const response = await api.get(`/api/admin/courts/${courtId}`)
+    const response = await api.get(`/api/admin/courts-test/${courtId}`)
 
     dispatch(setSelectedCourt(response.data as CourtInfo))
     dispatch(stopLoading())

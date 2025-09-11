@@ -121,11 +121,29 @@ export const {
 
 // Async thunks for API integration
 
-export const fetchTournaments = () => async (dispatch: AppDispatch) => {
+export const fetchTournaments = (filters?: {
+  status?: string
+  tournament_type?: string
+  state_id?: number
+  organizer_type?: string
+  search?: string
+  page?: number
+  limit?: number
+}) => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Loading tournaments...'))
   
   try {
-    const response = await api.get('/api/tournaments')
+    const params = new URLSearchParams()
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== '') {
+          params.append(key, value.toString())
+        }
+      })
+    }
+    
+    const url = `/api/tournaments${params.toString() ? `?${params.toString()}` : ''}`
+    const response = await api.get(url)
     dispatch(setTournaments(response.data as PaginatedResponse<Tournament>))
   } catch (error) {
     throw error

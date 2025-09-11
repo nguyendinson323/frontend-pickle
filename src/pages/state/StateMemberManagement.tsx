@@ -30,8 +30,7 @@ const StateMemberManagement: React.FC = () => {
     partners,
     stats,
     loading,
-    error,
-    filters
+    error
   } = useSelector((state: RootState) => state.stateMemberManagement)
 
   const [activeTab, setActiveTab] = useState<'all' | 'players' | 'coaches' | 'clubs' | 'partners'>('all')

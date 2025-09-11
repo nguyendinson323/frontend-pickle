@@ -1,8 +1,8 @@
 import React from 'react'
-import { StateDocumentsStats } from '../../../store/slices/stateDocumentsSlice'
+import { DocumentsStats } from '../../../store/slices/stateDocumentsSlice'
 
 interface DocumentsStatsCardProps {
-  stats: StateDocumentsStats | null
+  stats: DocumentsStats | null
 }
 
 const DocumentsStatsCard: React.FC<DocumentsStatsCardProps> = ({ stats }) => {
