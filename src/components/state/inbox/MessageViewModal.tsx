@@ -30,8 +30,8 @@ const MessageViewModal: React.FC<MessageViewModalProps> = ({
     })
   }
 
-  const getMessageTypeColor = (isAnnouncement: boolean) => {
-    return isAnnouncement 
+  const getMessageTypeColor = (messageType: string) => {
+    return messageType === 'announcement' 
       ? 'bg-green-100 text-green-800'
       : 'bg-blue-100 text-blue-800'
   }
@@ -69,8 +69,8 @@ const MessageViewModal: React.FC<MessageViewModalProps> = ({
                 <h3 className="text-xl font-semibold text-gray-900">{message.subject}</h3>
               </div>
               <div className="flex items-center space-x-2 mb-3">
-                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getMessageTypeColor(message.is_announcement)}`}>
-                  {message.is_announcement ? 'Announcement' : 'Direct Message'}
+                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getMessageTypeColor(message.message_type)}`}>
+                  {message.message_type === 'announcement' ? 'Announcement' : 'Direct Message'}
                 </span>
                 <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getSenderRoleColor(message.sender.role)}`}>
                   {message.sender.role.charAt(0).toUpperCase() + message.sender.role.slice(1)}
@@ -97,13 +97,19 @@ const MessageViewModal: React.FC<MessageViewModalProps> = ({
                 </span>
               </div>
               
-              {message.recipient && (
-                <div className="flex items-center">
-                  <span className="text-sm font-medium text-gray-500 w-20">To:</span>
-                  <span className="text-sm text-gray-900">
-                    {message.recipient.username || message.recipient.name}
-                    {message.recipient.email && ` (${message.recipient.email})`}
-                  </span>
+              {message.recipients && message.recipients.length > 0 && (
+                <div className="flex items-start">
+                  <span className="text-sm font-medium text-gray-500 w-20 mt-1">To:</span>
+                  <div className="text-sm text-gray-900">
+                    {message.recipients.map((recipientData, index) => (
+                      <div key={recipientData.id} className={index > 0 ? 'mt-1' : ''}>
+                        {recipientData.recipient.username} ({recipientData.recipient.email})
+                        {recipientData.is_read && (
+                          <span className="ml-2 text-xs text-green-600">✓ Read</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 
@@ -120,8 +126,8 @@ const MessageViewModal: React.FC<MessageViewModalProps> = ({
               )}
             </div>
 
-            {message.is_announcement && message.announcement_stats && (
-              <div className="mt-4 p-3  rounded-lg">
+            {message.message_type === 'announcement' && message.announcement_stats && (
+              <div className="mt-4 p-3 bg-gray-50 rounded-lg">
                 <h4 className="text-sm font-medium text-gray-900 mb-2">Announcement Statistics</h4>
                 <div className="grid grid-cols-3 gap-4 text-sm">
                   <div>
@@ -143,9 +149,9 @@ const MessageViewModal: React.FC<MessageViewModalProps> = ({
 
           {/* Message Content */}
           <div className="mb-6">
-            <div className=" p-4 rounded-lg">
+            <div className="bg-gray-50 p-4 rounded-lg">
               <div className="whitespace-pre-wrap text-gray-900 leading-relaxed">
-                {message.message}
+                {message.content}
               </div>
             </div>
           </div>
@@ -168,7 +174,7 @@ const MessageViewModal: React.FC<MessageViewModalProps> = ({
                 </button>
               )}
 
-              {!message.is_announcement && onReply && (
+              {message.message_type !== 'announcement' && onReply && (
                 <button
                   onClick={() => {
                     onReply(message)

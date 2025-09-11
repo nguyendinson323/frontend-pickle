@@ -6,10 +6,9 @@ interface ComposeAnnouncementModalProps {
   onClose: () => void
   onSend: (announcementData: {
     subject: string
-    message: string
+    content: string
     target_groups: string[]
     recipient_ids?: number[]
-    schedule_at?: string
   }) => Promise<void>
   recipients: MessageRecipient[]
   templates: AnnouncementTemplate[]
@@ -63,7 +62,7 @@ const ComposeAnnouncementModal: React.FC<ComposeAnnouncementModalProps> = ({
     try {
       await onSend({
         subject: formData.subject,
-        message: formData.message,
+        content: formData.message,
         target_groups: formData.target_groups
       })
       

@@ -22,8 +22,8 @@ const SentMessagesTab: React.FC<SentMessagesTabProps> = ({
     })
   }
 
-  const getMessageTypeColor = (isAnnouncement: boolean) => {
-    return isAnnouncement 
+  const getMessageTypeColor = (messageType: string) => {
+    return messageType === 'announcement' 
       ? 'bg-green-100 text-green-800'
       : 'bg-blue-100 text-blue-800'
   }
@@ -68,24 +68,34 @@ const SentMessagesTab: React.FC<SentMessagesTabProps> = ({
                     {message.subject}
                   </h3>
                   <div className="flex items-center space-x-2">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getMessageTypeColor(message.is_announcement)}`}>
-                      {message.is_announcement ? 'Announcement' : 'Direct'}
+                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getMessageTypeColor(message.message_type)}`}>
+                      {message.message_type === 'announcement' ? 'Announcement' : 'Direct'}
                     </span>
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRecipientTypeColor(message.recipient_type)}`}>
-                      {message.recipient_type.charAt(0).toUpperCase() + message.recipient_type.slice(1)}
-                    </span>
+                    {message.recipients && message.recipients.length > 0 && (
+                      <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                        {message.recipients.length} Recipient{message.recipients.length > 1 ? 's' : ''}
+                      </span>
+                    )}
                   </div>
                 </div>
 
                 <div className="mb-3">
-                  {message.recipient ? (
+                  {message.recipients && message.recipients.length > 0 ? (
                     <p className="text-sm text-gray-600">
-                      To: <span className="font-medium">{message.recipient.username || message.recipient.name}</span> 
-                      {message.recipient.email && ` (${message.recipient.email})`}
+                      To: 
+                      {message.recipients.length === 1 ? (
+                        <span className="font-medium">
+                          {message.recipients[0].recipient.username} ({message.recipients[0].recipient.email})
+                        </span>
+                      ) : (
+                        <span className="font-medium">
+                          {message.recipients.length} Recipients
+                        </span>
+                      )}
                     </p>
                   ) : (
                     <p className="text-sm text-gray-600">
-                      To: <span className="font-medium">Multiple Recipients</span>
+                      To: <span className="font-medium">Unknown Recipients</span>
                     </p>
                   )}
                   <p className="text-sm text-gray-500">
@@ -95,15 +105,15 @@ const SentMessagesTab: React.FC<SentMessagesTabProps> = ({
 
                 <div className="mb-3">
                   <p className="text-sm text-gray-700 line-clamp-2">
-                    {message.message.length > 150 
-                      ? `${message.message.substring(0, 150)}...`
-                      : message.message
+                    {message.content.length > 150 
+                      ? `${message.content.substring(0, 150)}...`
+                      : message.content
                     }
                   </p>
                 </div>
 
-                {message.is_announcement && message.announcement_stats && (
-                  <div className="mb-3 p-2  rounded-lg">
+                {message.message_type === 'announcement' && message.announcement_stats && (
+                  <div className="mb-3 p-2 bg-gray-50 rounded-lg">
                     <p className="text-xs text-gray-600">
                       Announcement Stats: {message.announcement_stats.total_recipients} recipients, {message.announcement_stats.delivered} delivered, {message.announcement_stats.read} read
                     </p>

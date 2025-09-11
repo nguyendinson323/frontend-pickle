@@ -6,27 +6,38 @@ import { AppDispatch } from '../index'
 interface StateMessage {
   id: number
   sender_id: number
-  recipient_id: number | null
-  recipient_type: 'direct' | 'group' | 'tournament' | 'state' | 'club'
   subject: string
-  message: string
-  is_read: boolean
-  is_announcement: boolean
+  content: string
+  message_type: string
   sent_at: string
-  read_at: string | null
+  has_attachments: boolean
+  is_read?: boolean
+  read_at?: string | null
   sender: {
     id: number
     username: string
     email: string
     role: string
   }
-  recipient: {
+  recipients?: {
     id: number
-    username?: string
-    email?: string
-    name?: string
-    role?: string
-  } | null
+    recipient_id: number
+    is_read: boolean
+    read_at: string | null
+    recipient: {
+      id: number
+      username: string
+      email: string
+      role: string
+    }
+  }[]
+  attachments?: {
+    id: number
+    filename: string
+    original_name: string
+    file_size: number
+    file_type: string
+  }[]
   announcement_stats?: {
     total_recipients: number
     delivered: number
@@ -196,11 +207,10 @@ export const fetchStateRecipients = (recipientType?: string) => async (dispatch:
 
 export const sendStateMessage = (messageData: {
   subject: string
-  message: string
-  recipient_type: 'direct' | 'group' | 'tournament' | 'state' | 'club'
-  recipient_ids?: number[]
-  is_announcement?: boolean
-  schedule_at?: string
+  content: string
+  message_type: string
+  recipient_ids: number[]
+  has_attachments?: boolean
 }) => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Sending message...'))
   
@@ -221,10 +231,9 @@ export const sendStateMessage = (messageData: {
 
 export const sendBulkAnnouncement = (announcementData: {
   subject: string
-  message: string
+  content: string
   target_groups: string[]
   recipient_ids?: number[]
-  schedule_at?: string
 }) => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Sending announcement...'))
   
@@ -232,10 +241,10 @@ export const sendBulkAnnouncement = (announcementData: {
     dispatch(setError(null))
     
     const response = await api.post('/api/state/announcements', announcementData)
-    dispatch(addMessage((response.data as { announcement: StateMessage }).announcement))
+    dispatch(addMessage((response.data as { message: StateMessage, stats: any }).message))
     
     dispatch(stopLoading())
-    return response.data as { announcement: StateMessage }
+    return response.data as { message: StateMessage, stats: any }
   } catch (error: any) {
     dispatch(setError(error.response?.data?.message || 'Failed to send announcement'))
     dispatch(stopLoading())
@@ -342,5 +351,6 @@ export default stateInboxSlice.reducer
 export type {
   StateMessage,
   MessageRecipient,
-  AnnouncementTemplate
+  AnnouncementTemplate,
+  StateInboxStats
 }

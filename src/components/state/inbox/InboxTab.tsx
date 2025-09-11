@@ -24,8 +24,8 @@ const InboxTab: React.FC<InboxTabProps> = ({
     })
   }
 
-  const getMessageTypeColor = (isAnnouncement: boolean) => {
-    return isAnnouncement 
+  const getMessageTypeColor = (messageType: string) => {
+    return messageType === 'announcement' 
       ? 'bg-green-100 text-green-800'
       : 'bg-blue-100 text-blue-800'
   }
@@ -79,8 +79,8 @@ const InboxTab: React.FC<InboxTabProps> = ({
                     </h3>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getMessageTypeColor(message.is_announcement)}`}>
-                      {message.is_announcement ? 'Announcement' : 'Direct'}
+                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getMessageTypeColor(message.message_type)}`}>
+                      {message.message_type === 'announcement' ? 'Announcement' : 'Direct'}
                     </span>
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getSenderRoleColor(message.sender.role)}`}>
                       {message.sender.role.charAt(0).toUpperCase() + message.sender.role.slice(1)}
@@ -99,15 +99,15 @@ const InboxTab: React.FC<InboxTabProps> = ({
 
                 <div className="mb-3">
                   <p className="text-sm text-gray-700 line-clamp-2">
-                    {message.message.length > 150 
-                      ? `${message.message.substring(0, 150)}...`
-                      : message.message
+                    {message.content.length > 150 
+                      ? `${message.content.substring(0, 150)}...`
+                      : message.content
                     }
                   </p>
                 </div>
 
-                {message.is_announcement && message.announcement_stats && (
-                  <div className="mb-3 p-2  rounded-lg">
+                {message.message_type === 'announcement' && message.announcement_stats && (
+                  <div className="mb-3 p-2 bg-gray-50 rounded-lg">
                     <p className="text-xs text-gray-600">
                       Announcement Stats: {message.announcement_stats.total_recipients} recipients, {message.announcement_stats.delivered} delivered, {message.announcement_stats.read} read
                     </p>

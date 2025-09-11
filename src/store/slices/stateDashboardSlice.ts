@@ -66,11 +66,15 @@ export interface StateRecentActivity {
 export interface StateStats {
   totalPlayers: number
   totalClubs: number
-  totalCourts: number
+  totalPartners: number
   totalCoaches: number
+  totalCourts: number
+  activePlayers: number
+  verifiedPlayers: number
   tournamentsThisYear: number
   activeTournaments: number
   playerGrowth: number
+  clubGrowth: number
   newClubs: number
   tournamentParticipation: number
   nationalRanking: number
@@ -135,12 +139,28 @@ export const fetchStateDashboard = () => async (dispatch: AppDispatch) => {
     dispatch(startLoading('Loading state dashboard...'))
     dispatch(setError(null))
     
-    const response = await api.get<StateDashboardResponse>('/api/auth/dashboard')
+    const response = await api.get<StateDashboardResponse>('/api/state/dashboard')
     dispatch(setStateDashboardData(response.data))
     
     dispatch(stopLoading())
   } catch (error: unknown) {
     dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch state dashboard data'))
+    dispatch(stopLoading())
+  }
+}
+
+// Fetch state performance metrics
+export const fetchStatePerformanceMetrics = () => async (dispatch: AppDispatch) => {
+  try {
+    dispatch(startLoading('Loading performance metrics...'))
+    
+    const response = await api.get('/api/state/dashboard/metrics')
+    // Handle the metrics response if needed
+    
+    dispatch(stopLoading())
+    return response.data
+  } catch (error: unknown) {
+    dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch performance metrics'))
     dispatch(stopLoading())
   }
 }

@@ -61,11 +61,10 @@ const StateInbox: React.FC = () => {
 
   const handleComposeMessage = async (messageData: {
     subject: string
-    message: string
-    recipient_type: 'direct' | 'group' | 'tournament' | 'state' | 'club'
-    recipient_ids?: number[]
-    is_announcement?: boolean
-    schedule_at?: string
+    content: string
+    message_type: string
+    recipient_ids: number[]
+    has_attachments?: boolean
   }) => {
     try {
       await dispatch(sendStateMessage(messageData))
@@ -78,10 +77,9 @@ const StateInbox: React.FC = () => {
 
   const handleSendAnnouncement = async (announcementData: {
     subject: string
-    message: string
+    content: string
     target_groups: string[]
     recipient_ids?: number[]
-    schedule_at?: string
   }) => {
     try {
       await dispatch(sendBulkAnnouncement(announcementData))

@@ -6,11 +6,10 @@ interface ComposeMessageModalProps {
   onClose: () => void
   onSend: (messageData: {
     subject: string
-    message: string
-    recipient_type: 'direct' | 'group' | 'tournament' | 'state' | 'club'
-    recipient_ids?: number[]
-    is_announcement?: boolean
-    schedule_at?: string
+    content: string
+    message_type: string
+    recipient_ids: number[]
+    has_attachments?: boolean
   }) => Promise<void>
   recipients: MessageRecipient[]
   onLoadRecipients: (type?: string) => void
@@ -56,10 +55,10 @@ const ComposeMessageModal: React.FC<ComposeMessageModalProps> = ({
     try {
       await onSend({
         subject: formData.subject,
-        message: formData.message,
-        recipient_type: 'direct',
+        content: formData.message,
+        message_type: 'direct',
         recipient_ids: [parseInt(formData.selected_recipient_id)],
-        is_announcement: false
+        has_attachments: false
       })
       
       // Reset form
