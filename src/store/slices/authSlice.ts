@@ -257,7 +257,7 @@ export const registerState = (formData: StateRegisterRequest) => async (dispatch
         president_name: formData.presidentName,
         president_title: 'President',
         rfc: formData.rfc,
-        state_id: parseInt(formData.stateCoverage),
+        state_id: formData.stateCoverage ? parseInt(formData.stateCoverage) : null,
         logo_url: formData.committeeLogoUrl,
         institutional_email: formData.institutionalDetails,
         phone: formData.phoneNumber

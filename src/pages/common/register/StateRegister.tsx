@@ -62,10 +62,21 @@ const StateRegisterPage: React.FC = () => {
     e.preventDefault()
 
     try {
-      await dispatch(registerState(formData))
-      navigate('/state/dashboard')
-    } catch (error) {
+      console.log('Starting state registration with data:', formData)
+      const result = await dispatch(registerState(formData))
+      console.log('Registration result:', result)
+      
+      // Since registerState is a thunk that returns response.data directly
+      if (result && (result as any).user) {
+        console.log('Registration successful, navigating to dashboard')
+        navigate('/state/dashboard')
+      } else {
+        console.error('Registration failed: No user data returned')
+        alert('Registration failed. Please try again.')
+      }
+    } catch (error: any) {
       console.error('Registration failed:', error)
+      alert(`Registration failed: ${error?.response?.data?.message || error?.message || 'Please try again.'}`)
     }
   }
 
