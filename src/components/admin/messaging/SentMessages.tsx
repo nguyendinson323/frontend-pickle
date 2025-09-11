@@ -10,9 +10,8 @@ const SentMessages: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
   const { sentMessages, loading } = useSelector((state: RootState) => state.adminMessaging)
   
-  const [selectedMessage, setSelectedMessage] = useState(null)
   const [showDeliveryReport, setShowDeliveryReport] = useState(false)
-  const [deliveryReport, setDeliveryReport] = useState(null)
+  const [deliveryReport, setDeliveryReport] = useState<any>(null)
 
   const handleResendFailed = async (messageId: number) => {
     const confirmed = window.confirm('Are you sure you want to resend failed messages?')
@@ -28,8 +27,8 @@ const SentMessages: React.FC = () => {
 
   const handleViewDeliveryReport = async (messageId: number) => {
     try {
-      const report = await dispatch(getMessageDeliveryReport(messageId))
-      setDeliveryReport(report)
+      const report = await dispatch(getMessageDeliveryReport(messageId)) as any
+      setDeliveryReport(report.payload || report)
       setShowDeliveryReport(true)
     } catch (error) {
       console.error('Failed to get delivery report:', error)
@@ -259,7 +258,7 @@ const SentMessages: React.FC = () => {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-red-200">
-                          {deliveryReport.failureReasons.map((failure, index) => (
+                          {deliveryReport.failureReasons.map((failure: any, index: number) => (
                             <tr key={index}>
                               <td className="px-4 py-3 text-sm text-red-900">{failure.reason}</td>
                               <td className="px-4 py-3 text-sm text-red-900">{failure.count}</td>

@@ -1,9 +1,9 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CoachStudentProgress } from '../../../store/slices/coachDashboardSlice'
+import { CoachStudentProgress as CoachStudentProgressType } from '../../../store/slices/coachDashboardSlice'
 
 interface CoachStudentProgressProps {
-  studentProgress: CoachStudentProgress[]
+  studentProgress: CoachStudentProgressType[]
 }
 
 const CoachStudentProgress: React.FC<CoachStudentProgressProps> = ({ studentProgress }) => {

@@ -18,7 +18,7 @@ const MicrositeDetail: React.FC<MicrositeDetailProps> = ({ microsite, onClose })
     const fetchDetails = async () => {
       try {
         const result = await dispatch(getMicrositeDetails(microsite.id))
-        setDetailedMicrosite(result.payload || result)
+        setDetailedMicrosite(result)
       } catch (error) {
         console.error('Failed to fetch microsite details:', error)
       } finally {
@@ -127,18 +127,18 @@ const MicrositeDetail: React.FC<MicrositeDetailProps> = ({ microsite, onClose })
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Domain Name</label>
-                    <p className="mt-1 text-gray-900">{data.domain_name}</p>
+                    <label className="block text-sm font-medium text-gray-700">Subdomain</label>
+                    <p className="mt-1 text-gray-900">{data.subdomain || 'No subdomain'}</p>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700">Site URL</label>
                     <a 
-                      href={data.url} 
+                      href={data.subdomain ? `https://${data.subdomain}` : '#'} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="mt-1 text-indigo-600 hover:text-indigo-900 break-all"
                     >
-                      {data.url}
+                      {data.subdomain ? `https://${data.subdomain}` : 'No URL assigned'}
                     </a>
                   </div>
                 </div>
@@ -150,7 +150,7 @@ const MicrositeDetail: React.FC<MicrositeDetailProps> = ({ microsite, onClose })
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700">Last Updated</label>
-                    <p className="mt-1 text-gray-900">{new Date(data.last_updated).toLocaleDateString()}</p>
+                    <p className="mt-1 text-gray-900">{new Date(data.updated_at).toLocaleDateString()}</p>
                   </div>
                 </div>
 

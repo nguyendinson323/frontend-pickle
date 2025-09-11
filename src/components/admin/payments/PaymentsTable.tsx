@@ -9,7 +9,8 @@ import {
   processRefund,
   updatePaymentStatus,
   bulkUpdatePaymentStatus,
-  exportPayments
+  exportPayments,
+  Payment
 } from '../../../store/slices/adminPaymentsSlice'
 import PaymentDetailsModal from './PaymentDetailsModal'
 import RefundModal from './RefundModal'
@@ -21,13 +22,13 @@ const PaymentsTable: React.FC = () => {
     selectedPayments, 
     currentPage, 
     totalPages, 
-    loading, 
     bulkActionLoading 
   } = useSelector((state: RootState) => state.adminPayments)
+  const { isLoading } = useSelector((state: RootState) => state.loading)
 
-  const [selectedPayment, setSelectedPayment] = useState(null)
+  const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null)
   const [showRefundModal, setShowRefundModal] = useState(false)
-  const [refundPayment, setRefundPayment] = useState(null)
+  const [refundPayment, setRefundPayment] = useState<Payment | null>(null)
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -92,7 +93,7 @@ const PaymentsTable: React.FC = () => {
     dispatch(exportPayments())
   }
 
-  if (loading && payments.length === 0) {
+  if (isLoading && payments.length === 0) {
     return (
       <div className="bg-white rounded-lg border border-gray-200 p-8">
         <div className="flex items-center justify-center">
@@ -134,7 +135,7 @@ const PaymentsTable: React.FC = () => {
             )}
             <button
               onClick={handleExport}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover: focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
               Export
             </button>
@@ -145,7 +146,7 @@ const PaymentsTable: React.FC = () => {
       {/* Table */}
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="">
+          <thead className="bg-gray-50">
             <tr>
               <th className="w-4 px-6 py-3">
                 <input
@@ -180,7 +181,7 @@ const PaymentsTable: React.FC = () => {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {payments.map((payment) => (
-              <tr key={payment.id} className="hover:">
+              <tr key={payment.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4">
                   <input
                     type="checkbox"
@@ -274,7 +275,7 @@ const PaymentsTable: React.FC = () => {
         </table>
       </div>
 
-      {payments.length === 0 && !loading && (
+      {payments.length === 0 && !isLoading && (
         <div className="text-center py-12">
           <svg
             className="mx-auto h-12 w-12 text-gray-400"
@@ -307,14 +308,14 @@ const PaymentsTable: React.FC = () => {
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover: disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Previous
               </button>
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover: disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Next
               </button>

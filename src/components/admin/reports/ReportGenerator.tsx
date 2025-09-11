@@ -65,7 +65,8 @@ const ReportGenerator: React.FC = () => {
         limit: 10
       }))
       
-      setPreviewData(preview.payload || preview)
+      const previewResponse = preview as any
+      setPreviewData(previewResponse.payload || previewResponse)
       setShowPreview(true)
     } catch (error) {
       console.error('Failed to generate preview:', error)
@@ -259,7 +260,7 @@ const ReportGenerator: React.FC = () => {
               <h4 className="text-sm font-medium text-gray-900 mb-3">
                 Available Data Fields
               </h4>
-              <div className=" border border-gray-200 rounded-md p-4 max-h-80 overflow-y-auto">
+              <div className="bg-gray-50 border border-gray-200 rounded-md p-4 max-h-80 overflow-y-auto">
                 <p className="text-xs text-gray-600 mb-3">
                   Select specific fields to include in your report, or leave empty to include all fields.
                 </p>

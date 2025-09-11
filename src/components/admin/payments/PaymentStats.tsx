@@ -93,7 +93,7 @@ const PaymentStats: React.FC = () => {
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Revenue by Period</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {periodStats.map((stat) => (
-            <div key={stat.name} className=" rounded-lg p-4">
+            <div key={stat.name} className="bg-gray-50 rounded-lg p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">{stat.name}</p>

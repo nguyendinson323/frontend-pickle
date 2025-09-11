@@ -43,6 +43,7 @@ interface AdminMessagingState {
     inAppSent: number
   }
   sendingMessage: boolean
+  loading: boolean
   error: string | null
   broadcastForm: BroadcastMessage
 }
@@ -68,6 +69,7 @@ const initialState: AdminMessagingState = {
     inAppSent: 0
   },
   sendingMessage: false,
+  loading: false,
   error: null,
   broadcastForm: {
     recipients: [],
@@ -86,6 +88,9 @@ const adminMessagingSlice = createSlice({
   reducers: {
     setSendingMessage: (state, action: PayloadAction<boolean>) => {
       state.sendingMessage = action.payload
+    },
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.loading = action.payload
     },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload
@@ -139,6 +144,7 @@ const adminMessagingSlice = createSlice({
 
 export const {
   setSendingMessage,
+  setLoading,
   setError,
   setTemplates,
   setSentMessages,

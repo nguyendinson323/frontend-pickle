@@ -13,7 +13,7 @@ const BroadcastComposer: React.FC = () => {
   const { broadcastForm, selectedTemplate, sendingMessage } = useSelector((state: RootState) => state.adminMessaging)
   
   const [showPreview, setShowPreview] = useState(false)
-  const [previewData, setPreviewData] = useState(null)
+  const [previewData, setPreviewData] = useState<any>(null)
 
   const recipientOptions = [
     { value: 'all', label: 'All Users', description: 'Send to all active users' },
@@ -52,8 +52,8 @@ const BroadcastComposer: React.FC = () => {
     }
 
     try {
-      const preview = await dispatch(getMessagePreview(broadcastForm))
-      setPreviewData(preview)
+      const preview = await dispatch(getMessagePreview(broadcastForm)) as any
+      setPreviewData(preview.payload || preview)
       setShowPreview(true)
     } catch (error) {
       console.error('Failed to get preview:', error)
@@ -214,7 +214,7 @@ const BroadcastComposer: React.FC = () => {
         <div className="flex justify-end space-x-4 pt-4 border-t border-gray-200">
           <button
             onClick={handleClear}
-            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover: transition-colors"
+            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-100 transition-colors"
           >
             Clear Form
           </button>
@@ -248,9 +248,9 @@ const BroadcastComposer: React.FC = () => {
                     This message will be sent to <strong>{previewData.totalRecipients}</strong> recipients
                   </p>
                   <div className="mt-2 text-sm text-blue-600">
-                    {Object.entries(previewData.recipientBreakdown).map(([type, count]) => (
+                    {previewData.recipientBreakdown && Object.entries(previewData.recipientBreakdown).map(([type, count]) => (
                       <div key={type}>
-                        {type}: {count} recipients
+                        {type}: {count as number} recipients
                       </div>
                     ))}
                   </div>
@@ -266,7 +266,7 @@ const BroadcastComposer: React.FC = () => {
                   </div>
                   <div>
                     <strong>Body:</strong>
-                    <div className="mt-1 p-3  rounded text-sm">
+                    <div className="mt-1 p-3 bg-gray-50 rounded text-sm">
                       {previewData.body}
                     </div>
                   </div>

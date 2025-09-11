@@ -6,19 +6,6 @@ const ReportStats: React.FC = () => {
   const { reportStats } = useSelector((state: RootState) => state.adminReports)
   const { isLoading: loading } = useSelector((state: RootState) => state.loading)
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 B'
-    const k = 1024
-    const sizes = ['B', 'KB', 'MB', 'GB']
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-  }
-
-  const formatTime = (seconds: number) => {
-    if (seconds < 60) return `${seconds.toFixed(1)}s`
-    if (seconds < 3600) return `${(seconds / 60).toFixed(1)}m`
-    return `${(seconds / 3600).toFixed(1)}h`
-  }
 
   const stats = [
     {

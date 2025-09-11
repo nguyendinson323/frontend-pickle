@@ -350,7 +350,8 @@ export const exportRankings = (filters: Partial<RankingFilter>, format: 'csv' | 
 export const fetchRankingStats = () => async (dispatch: AppDispatch) => {
   try {
     const response = await api.get('/api/admin/rankings/stats')
-    dispatch(setRankingStats(response.data))
+    const responseData = response.data as typeof initialState.rankingStats
+    dispatch(setRankingStats(responseData))
   } catch (error) {
     dispatch(setError('Failed to fetch ranking statistics'))
     throw error
@@ -360,7 +361,8 @@ export const fetchRankingStats = () => async (dispatch: AppDispatch) => {
 export const fetchRankingPeriods = () => async (dispatch: AppDispatch) => {
   try {
     const response = await api.get('/api/admin/rankings/periods')
-    dispatch(setPeriods(response.data.periods))
+    const responseData = response.data as { periods: typeof initialState.periods }
+    dispatch(setPeriods(responseData.periods))
   } catch (error) {
     dispatch(setError('Failed to fetch ranking periods'))
     throw error
@@ -370,7 +372,8 @@ export const fetchRankingPeriods = () => async (dispatch: AppDispatch) => {
 export const fetchRankingCategories = () => async (dispatch: AppDispatch) => {
   try {
     const response = await api.get('/api/admin/rankings/categories')
-    dispatch(setCategories(response.data.categories))
+    const responseData = response.data as { categories: typeof initialState.categories }
+    dispatch(setCategories(responseData.categories))
   } catch (error) {
     dispatch(setError('Failed to fetch ranking categories'))
     throw error

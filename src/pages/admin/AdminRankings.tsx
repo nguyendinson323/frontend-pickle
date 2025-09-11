@@ -69,7 +69,7 @@ const AdminRankings: React.FC = () => {
   ]
 
   return (
-    <div className="min-h-screen ">
+    <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
         <div className="mb-8">
@@ -82,7 +82,7 @@ const AdminRankings: React.FC = () => {
             </div>
             <button
               onClick={() => navigate('/admin/dashboard')}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover: transition-colors"
+              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
             >
               <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -169,15 +169,15 @@ const AdminRankings: React.FC = () => {
                   </p>
                   
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between p-3  rounded">
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
                       <span className="text-sm font-medium">Automatic Updates</span>
                       <span className="text-sm text-green-600">Enabled</span>
                     </div>
-                    <div className="flex items-center justify-between p-3  rounded">
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
                       <span className="text-sm font-medium">Tournament Integration</span>
                       <span className="text-sm text-green-600">Active</span>
                     </div>
-                    <div className="flex items-center justify-between p-3  rounded">
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
                       <span className="text-sm font-medium">Manual Adjustments</span>
                       <span className="text-sm text-blue-600">Available</span>
                     </div>

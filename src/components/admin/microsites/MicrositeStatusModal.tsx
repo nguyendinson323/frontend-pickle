@@ -165,7 +165,7 @@ const MicrositeStatusModal: React.FC<MicrositeStatusModalProps> = ({ microsite, 
               </label>
               <select
                 value={newStatus}
-                onChange={(e) => setNewStatus(e.target.value)}
+                onChange={(e) => setNewStatus(e.target.value as 'active' | 'inactive' | 'suspended' | 'pending' | 'approved' | 'rejected')}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               >
                 {statusOptions.map((option) => (
@@ -202,7 +202,7 @@ const MicrositeStatusModal: React.FC<MicrositeStatusModalProps> = ({ microsite, 
           <div className=" rounded-md p-4">
             <h4 className="text-sm font-medium text-gray-900 mb-2">Microsite Details</h4>
             <div className="text-sm text-gray-700 space-y-1">
-              <div>Domain: {microsite.domain_name}</div>
+              <div>Subdomain: {microsite.subdomain || 'Not assigned'}</div>
               <div>Current Status: {microsite.status}</div>
               <div>Visibility: {microsite.visibility_status}</div>
               <div>Content Score: {microsite.content_score}/100</div>

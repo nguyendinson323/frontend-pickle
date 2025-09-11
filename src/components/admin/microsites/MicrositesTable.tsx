@@ -186,13 +186,13 @@ const MicrositesTable: React.FC<MicrositesTableProps> = ({ onMicrositeSelect }) 
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {microsites.map((microsite) => (
-              <tr key={microsite.id} className="hover:">
+              <tr key={microsite.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div>
                     <div className="text-sm font-medium text-gray-900">{microsite.title}</div>
-                    <div className="text-sm text-gray-500">{microsite.domain_name}</div>
+                    <div className="text-sm text-gray-500">{microsite.subdomain || 'No subdomain'}</div>
                     <a 
-                      href={microsite.url} 
+                      href={microsite.subdomain ? `https://${microsite.subdomain}` : '#'} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="text-xs text-indigo-600 hover:text-indigo-900"
@@ -224,7 +224,7 @@ const MicrositesTable: React.FC<MicrositesTableProps> = ({ onMicrositeSelect }) 
                   <div>Visitors: {microsite.monthly_visitors.toLocaleString()}/mo</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {new Date(microsite.last_updated).toLocaleDateString()}
+                  {new Date(microsite.updated_at).toLocaleDateString()}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex justify-end space-x-2">

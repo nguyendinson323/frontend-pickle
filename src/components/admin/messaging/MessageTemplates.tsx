@@ -11,7 +11,7 @@ import {
 
 const MessageTemplates: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
-  const { templates, selectedTemplate, loading } = useSelector((state: RootState) => state.adminMessaging)
+  const { templates, loading } = useSelector((state: RootState) => state.adminMessaging)
   
   const [showModal, setShowModal] = useState(false)
   const [editingTemplate, setEditingTemplate] = useState<MessageTemplate | null>(null)

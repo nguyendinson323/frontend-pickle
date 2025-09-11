@@ -145,6 +145,12 @@ export interface MessageTemplate {
   subject: string
   body: string
   created_at: string
+  created_by?: number
+  is_active?: boolean
+  creator?: {
+    id: number
+    username: string
+  }
 }
 
 export interface BroadcastMessage {
@@ -216,13 +222,18 @@ export interface MicrositeAdmin {
   owner_id: number
   owner_name: string
   owner_type: 'club' | 'partner' | 'state'
-  status: 'active' | 'inactive' | 'suspended' | 'pending' | 'approved' | 'rejected'
-  url: string
-  domain_name: string
+  template_id: number
+  subdomain: string | null
   title: string
-  description: string
-  last_updated: string
+  description: string | null
+  logo_url: string | null
+  banner_url: string | null
+  primary_color: string
+  secondary_color: string
+  is_active: boolean
+  status: 'active' | 'inactive' | 'suspended' | 'pending' | 'approved' | 'rejected'
   created_at: string
+  updated_at: string
   page_views: number
   monthly_visitors: number
   content_score: number

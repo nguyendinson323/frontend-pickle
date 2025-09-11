@@ -52,7 +52,7 @@ const MicrositeNotificationModal: React.FC<MicrositeNotificationModalProps> = ({
     
     const processedMessage = template.message
       .replace(/{{siteName}}/g, microsite.title)
-      .replace('{{siteUrl}}', microsite.url)
+      .replace('{{siteUrl}}', microsite.subdomain ? `https://${microsite.subdomain}` : 'No URL')
       .replace('{{ownerName}}', microsite.owner_name)
 
     setSubject(processedSubject)
@@ -101,7 +101,7 @@ const MicrositeNotificationModal: React.FC<MicrositeNotificationModalProps> = ({
         <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <h4 className="font-medium text-blue-900">{microsite.title}</h4>
           <p className="text-sm text-blue-700">Owner: {microsite.owner_name} ({microsite.owner_type})</p>
-          <p className="text-sm text-blue-700">Domain: {microsite.domain_name}</p>
+          <p className="text-sm text-blue-700">Domain: {microsite.subdomain || "No subdomain"}</p>
         </div>
 
         <div className="space-y-6">
@@ -174,7 +174,7 @@ const MicrositeNotificationModal: React.FC<MicrositeNotificationModalProps> = ({
               className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             />
             <p className="text-xs text-gray-500 mt-1">
-              Available variables: {{siteName}}, {{siteUrl}}, {{ownerName}}
+              Available variables: {'{'}siteName{'}'}, {'{'}siteUrl{'}'}, {'{'}ownerName{'}'}
             </p>
           </div>
 

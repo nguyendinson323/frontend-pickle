@@ -16,7 +16,7 @@ const RankingsTable: React.FC<RankingsTableProps> = ({ onPlayerSelect }) => {
   const { isLoading: loading } = useSelector((state: RootState) => state.loading)
   
   const [showAdjustmentModal, setShowAdjustmentModal] = useState(false)
-  const [selectedPlayer, setSelectedPlayer] = useState(null)
+  const [selectedPlayer, setSelectedPlayer] = useState<any>(null)
   const [adjustmentForm, setAdjustmentForm] = useState({
     newPosition: '',
     newPoints: '',
@@ -57,7 +57,7 @@ const RankingsTable: React.FC<RankingsTableProps> = ({ onPlayerSelect }) => {
 
   const handleViewHistory = async (playerId: number) => {
     try {
-      const history = await dispatch(getPlayerRankingHistory(playerId))
+      await dispatch(getPlayerRankingHistory(playerId))
       onPlayerSelect(playerId)
     } catch (error) {
       console.error('Failed to fetch player history:', error)
@@ -107,7 +107,7 @@ const RankingsTable: React.FC<RankingsTableProps> = ({ onPlayerSelect }) => {
 
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="">
+            <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Rank
@@ -137,7 +137,7 @@ const RankingsTable: React.FC<RankingsTableProps> = ({ onPlayerSelect }) => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {playerRankings.map((player) => (
-                <tr key={player.player_id} className="hover:">
+                <tr key={player.player_id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="text-lg font-bold text-gray-900">

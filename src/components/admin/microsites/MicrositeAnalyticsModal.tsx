@@ -20,7 +20,7 @@ const MicrositeAnalyticsModal: React.FC<MicrositeAnalyticsModalProps> = ({ micro
       setLoading(true)
       try {
         const result = await dispatch(getMicrositeAnalytics(microsite.id, period))
-        setAnalytics(result.payload || result)
+        setAnalytics(result)
       } catch (error) {
         console.error('Failed to fetch analytics:', error)
       } finally {
@@ -67,7 +67,7 @@ const MicrositeAnalyticsModal: React.FC<MicrositeAnalyticsModalProps> = ({ micro
 
         <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <h4 className="font-medium text-blue-900">{microsite.title}</h4>
-          <p className="text-sm text-blue-700">Domain: {microsite.domain_name}</p>
+          <p className="text-sm text-blue-700">Domain: {microsite.subdomain || "No subdomain"}</p>
         </div>
 
         {/* Period Selection */}
