@@ -5,16 +5,14 @@ import { registerPlayer } from '../../../store/slices/authSlice'
 import { fetchCommonData } from '../../../store/slices/commonSlice'
 import { PlayerRegisterRequest } from '../../../types'
 import { RootState, AppDispatch } from '../../../store'
-import { uploadPlayerPhoto, uploadPlayerDocument } from '../../../services/playerUpload'
+import CentralizedImageUpload from '../../../components/common/CentralizedImageUpload'
 import {
   PlayerRegisterHeader,
   PlayerAccountInfoSection,
   PlayerPersonalInfoSection,
-  PlayerDocumentUploadsSection,
   PlayerPrivacyPolicySection,
   PlayerRegisterActions
 } from '../../../components/common/register/PlayerRegister'
-import ImageCropModal from '../../../components/common/ImageCropModal'
 
 const PlayerRegisterPage: React.FC = () => {
   const navigate = useNavigate()
@@ -40,10 +38,6 @@ const PlayerRegisterPage: React.FC = () => {
     privacyPolicyAccepted: false
   })
 
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null)
-  const [showCropModal, setShowCropModal] = useState(false)
-  const [cropSrc, setCropSrc] = useState<string | null>(null)
-  const [isUploading, setIsUploading] = useState(false)
 
   useEffect(() => {
     if (!commonData) {
@@ -64,60 +58,6 @@ const PlayerRegisterPage: React.FC = () => {
     }
   }
 
-  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      const result = e.target?.result as string
-      setCropSrc(result)
-      setShowCropModal(true)
-    }
-    reader.readAsDataURL(file)
-  }
-
-  const handleCropComplete = async (croppedBlob: Blob) => {
-    setIsUploading(true)
-    
-    try {
-      const uploadResponse = await uploadPlayerPhoto(croppedBlob)
-      setFormData(prev => ({ ...prev, profilePhotoUrl: uploadResponse.secure_url }))
-      setPhotoPreview(uploadResponse.secure_url)
-      setShowCropModal(false)
-      setCropSrc(null)
-    } catch (error) {
-      console.error('Upload failed:', error)
-    } finally {
-      setIsUploading(false)
-    }
-  }
-
-  const handleCropCancel = () => {
-    setShowCropModal(false)
-    setCropSrc(null)
-  }
-
-  const handleDocumentUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    setIsUploading(true)
-    
-    try {
-      const uploadResponse = await uploadPlayerDocument(file)
-      setFormData(prev => ({ ...prev, idDocumentUrl: uploadResponse.secure_url }))
-    } catch (error) {
-      console.error('Document upload failed:', error)
-    } finally {
-      setIsUploading(false)
-    }
-  }
-
-  const handlePhotoRemove = () => {
-    setPhotoPreview(null)
-    setFormData(prev => ({ ...prev, profilePhotoUrl: '' }))
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -163,13 +103,24 @@ const PlayerRegisterPage: React.FC = () => {
             states={states}
           />
 
-          <PlayerDocumentUploadsSection
-            formData={formData}
-            photoPreview={photoPreview}
-            onPhotoSelect={handlePhotoSelect}
-            onPhotoRemove={handlePhotoRemove}
-            onDocumentUpload={handleDocumentUpload}
-            isUploading={isUploading}
+          {/* Player Photo Upload */}
+          <CentralizedImageUpload
+            uploadType="player-photo"
+            value={formData.profilePhotoUrl}
+            onChange={(url) => setFormData(prev => ({ ...prev, profilePhotoUrl: url }))}
+            required={true}
+            title="Profile Photo"
+            color="blue"
+          />
+
+          {/* Player Document Upload */}
+          <CentralizedImageUpload
+            uploadType="player-document"
+            value={formData.idDocumentUrl}
+            onChange={(url) => setFormData(prev => ({ ...prev, idDocumentUrl: url }))}
+            required={true}
+            title="ID Document"
+            color="blue"
           />
 
           <PlayerPrivacyPolicySection
@@ -185,17 +136,6 @@ const PlayerRegisterPage: React.FC = () => {
           />
         </form>
         
-        {/* Image Crop Modal */}
-        {showCropModal && cropSrc && (
-          <ImageCropModal
-            src={cropSrc}
-            onCropComplete={handleCropComplete}
-            onCancel={handleCropCancel}
-            aspectRatio={1}
-            cropShape="round"
-            isUploading={isUploading}
-          />
-        )}
       </div>
     </div>
   )

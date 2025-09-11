@@ -5,18 +5,16 @@ import { AppDispatch, RootState } from '../../../store'
 import { registerPartner } from '../../../store/slices/authSlice'
 import { fetchCommonData } from '../../../store/slices/commonSlice'
 import { PartnerRegisterRequest } from '../../../types'
-import { uploadFile } from '../../../services/upload'
+import CentralizedImageUpload from '../../../components/common/CentralizedImageUpload'
 import {
   PartnerRegisterHeader,
   AccountInfoSection,
   BusinessInfoSection,
   PartnerTypeSection,
-  LogoUploadSection,
   PartnerBenefitsSection,
   PrivacyPolicySection,
   PartnerRegisterActions
 } from '../../../components/common/register/PartnerRegister'
-import ImageCropModal from '../../../components/common/ImageCropModal'
 
 const PartnerRegisterPage: React.FC = () => {
   const navigate = useNavigate()
@@ -39,10 +37,6 @@ const PartnerRegisterPage: React.FC = () => {
     privacyPolicyAccepted: false
   })
 
-  const [logoPreview, setLogoPreview] = useState<string | null>(null)
-  const [showCropModal, setShowCropModal] = useState(false)
-  const [cropSrc, setCropSrc] = useState<string | null>(null)
-  const [isUploading, setIsUploading] = useState(false)
 
   useEffect(() => {
     if (!commonData) {
@@ -70,39 +64,6 @@ const PartnerRegisterPage: React.FC = () => {
     }
   }
 
-  const handleLogoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      const result = e.target?.result as string
-      setCropSrc(result)
-      setShowCropModal(true)
-    }
-    reader.readAsDataURL(file)
-  }
-
-  const handleCropComplete = async (croppedBlob: Blob) => {
-    setIsUploading(true)
-    
-    try {
-      const uploadResponse = await uploadFile(croppedBlob)
-      setFormData(prev => ({ ...prev, businessLogoUrl: uploadResponse.secure_url }))
-      setLogoPreview(uploadResponse.secure_url)
-      setShowCropModal(false)
-      setCropSrc(null)
-    } catch (error) {
-      console.error('Upload failed:', error)
-    } finally {
-      setIsUploading(false)
-    }
-  }
-
-  const handleCropCancel = () => {
-    setShowCropModal(false)
-    setCropSrc(null)
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -119,10 +80,6 @@ const PartnerRegisterPage: React.FC = () => {
     navigate('/register')
   }
 
-  const handleLogoRemove = () => {
-    setLogoPreview(null)
-    setFormData(prev => ({ ...prev, businessLogoUrl: '' }))
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-100 py-12">
@@ -155,10 +112,14 @@ const PartnerRegisterPage: React.FC = () => {
                 partnerTypes={partnerTypes}
               />
 
-              <LogoUploadSection 
-                logoPreview={logoPreview}
-                onLogoUpload={handleLogoSelect}
-                onLogoRemove={handleLogoRemove}
+              {/* Partner Logo Upload */}
+              <CentralizedImageUpload
+                uploadType="partner-logo"
+                value={formData.businessLogoUrl}
+                onChange={(url) => setFormData(prev => ({ ...prev, businessLogoUrl: url }))}
+                required={false}
+                title="Business Logo"
+                color="orange"
               />
 
               <PartnerBenefitsSection />
@@ -176,17 +137,6 @@ const PartnerRegisterPage: React.FC = () => {
           </div>
         </div>
         
-        {/* Image Crop Modal */}
-        {showCropModal && cropSrc && (
-          <ImageCropModal
-            src={cropSrc}
-            onCropComplete={handleCropComplete}
-            onCancel={handleCropCancel}
-            aspectRatio={1}
-            cropShape="rect"
-            isUploading={isUploading}
-          />
-        )}
     </div>
   )
 }

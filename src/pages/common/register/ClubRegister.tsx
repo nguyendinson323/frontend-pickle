@@ -4,18 +4,16 @@ import { loginSuccess } from '../../../store/slices/authSlice'
 import { useDispatch as useReduxDispatch } from 'react-redux'
 import { AppDispatch } from '../../../store'
 import api from '../../../services/api'
-import { uploadFile } from '../../../services/upload'
+import CentralizedImageUpload from '../../../components/common/CentralizedImageUpload'
 import { ClubRegisterRequest, LoginResponse } from '../../../types'
 import {
   ClubRegisterHeader,
   AccountInfoSection,
   ClubInfoSection,
   ClubTypeSection,
-  LogoUploadSection,
   PrivacyPolicySection,
   ClubRegisterActions
 } from '../../../components/common/register/ClubRegister'
-import ImageCropModal from '../../../components/common/ImageCropModal'
 
 interface State {
   id: number
@@ -42,11 +40,7 @@ const ClubRegisterPage: React.FC = () => {
     privacyPolicyAccepted: false
   })
 
-  const [logoPreview, setLogoPreview] = useState<string | null>(null)
   const [states, setStates] = useState<State[]>([])
-  const [showCropModal, setShowCropModal] = useState(false)
-  const [cropSrc, setCropSrc] = useState<string | null>(null)
-  const [isUploading, setIsUploading] = useState(false)
 
   // Fetch states from backend
   useEffect(() => {
@@ -116,52 +110,6 @@ const ClubRegisterPage: React.FC = () => {
     }
   }
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      alert('Please select a valid image file')
-      return
-    }
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      alert('File size should not exceed 5MB')
-      return
-    }
-
-    
-    // Create preview URL for cropping
-    const reader = new FileReader()
-    reader.onload = (event) => {
-      setCropSrc(event.target?.result as string)
-      setShowCropModal(true)
-    }
-    reader.readAsDataURL(file)
-  }
-
-  const handleCropComplete = async (croppedBlob: Blob) => {
-    setIsUploading(true)
-    try {
-      const data = await uploadFile(croppedBlob, 'club-logo.png')
-      setFormData(prev => ({ ...prev, logoUrl: data.secure_url }))
-      setLogoPreview(data.secure_url)
-      setShowCropModal(false)
-      setCropSrc(null)
-    } catch (error: any) {
-      console.error('Upload failed:', error)
-      alert('Failed to upload logo. Please try again.')
-    } finally {
-      setIsUploading(false)
-    }
-  }
-
-  const handleCropCancel = () => {
-    setShowCropModal(false)
-    setCropSrc(null)
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -221,10 +169,6 @@ const ClubRegisterPage: React.FC = () => {
     navigate('/register')
   }
 
-  const handleLogoRemove = () => {
-    setLogoPreview(null)
-    setFormData(prev => ({ ...prev, logoUrl: '' }))
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 py-12">
@@ -255,11 +199,14 @@ const ClubRegisterPage: React.FC = () => {
               clubTypes={clubTypes}
             />
 
-            <LogoUploadSection 
-              logoPreview={logoPreview}
-              onFileSelect={handleFileSelect}
-              onLogoRemove={handleLogoRemove}
-              isUploading={isUploading}
+            {/* Club Logo Upload */}
+            <CentralizedImageUpload
+              uploadType="club-logo"
+              value={formData.logoUrl}
+              onChange={(url) => setFormData(prev => ({ ...prev, logoUrl: url }))}
+              required={false}
+              title="Club Logo"
+              color="purple"
             />
 
             <PrivacyPolicySection 
@@ -275,17 +222,6 @@ const ClubRegisterPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Image Crop Modal */}
-      {showCropModal && cropSrc && (
-        <ImageCropModal
-          src={cropSrc}
-          onCropComplete={handleCropComplete}
-          onCancel={handleCropCancel}
-          aspectRatio={1} // Square aspect ratio for logo
-          cropShape="round" // Circular crop for logo
-          isUploading={isUploading}
-        />
-      )}
     </div>
   )
 }

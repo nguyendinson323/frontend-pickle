@@ -1,6 +1,5 @@
 export { default as PlayerRegisterHeader } from './PlayerRegisterHeader'
 export { default as PlayerAccountInfoSection } from './PlayerAccountInfoSection'
 export { default as PlayerPersonalInfoSection } from './PlayerPersonalInfoSection'
-export { default as PlayerDocumentUploadsSection } from './PlayerDocumentUploadsSection'
 export { default as PlayerPrivacyPolicySection } from './PlayerPrivacyPolicySection'
 export { default as PlayerRegisterActions } from './PlayerRegisterActions'
