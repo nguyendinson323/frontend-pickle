@@ -162,13 +162,13 @@ export const fetchTournamentDetails = (tournamentId: number) => async (dispatch:
       api.get(`/api/tournaments/${tournamentId}/matches`)
     ])
     
-    const tournament = tournamentResponse.data as Tournament
+    const tournamentData = tournamentResponse.data as Tournament & { totalRegistrations: number }
     const registrations = registrationsResponse.data as TournamentRegistration[]
     const matches = matchesResponse.data as TournamentMatch[]
     
     dispatch(setCurrentTournament({
-      tournament: tournament,
-      totalRegistrations: registrations.length
+      tournament: tournamentData,
+      totalRegistrations: tournamentData.totalRegistrations
     }))
     dispatch(setTournamentRegistrations(registrations))
     dispatch(setTournamentMatches(matches))

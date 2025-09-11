@@ -2,7 +2,7 @@ import React from 'react'
 
 const AboutHero: React.FC = () => {
   return (
-    <section className="relative bg-gradient-to-br from-indigo-900 via-purple-900  text-white py-20 overflow-hidden">
+    <section className="relative bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-800 text-white py-20 overflow-hidden">
       <div className="absolute inset-0 bg-black/30 z-0"></div>
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h1 className="text-4xl md:text-6xl font-bold mb-6 animate-fade-in-up">

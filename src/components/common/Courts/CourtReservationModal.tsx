@@ -21,7 +21,7 @@ export const CourtReservationModal: React.FC<CourtReservationModalProps> = ({
   
   const [selectedDate, setSelectedDate] = useState('')
   const [selectedSlot, setSelectedSlot] = useState<{start_time: string, end_time: string} | null>(null)
-  const [reservationAmount, setReservationAmount] = useState(50) // Default hourly rate
+  const [reservationAmount] = useState(50) // Default hourly rate
 
   useEffect(() => {
     if (isOpen && selectedDate) {

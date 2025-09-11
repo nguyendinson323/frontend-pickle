@@ -151,7 +151,7 @@ export interface Tournament {
   registration_end: string
   entry_fee: number
   max_participants: number | null
-  status: 'draft' | 'upcoming' | 'active' | 'completed' | 'cancelled'
+  status: 'draft' | 'upcoming' | 'ongoing' | 'completed' | 'cancelled'
   banner_url: string | null
   is_ranking: boolean
   ranking_multiplier: number | null

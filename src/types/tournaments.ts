@@ -58,13 +58,39 @@ export interface TournamentRegistration {
   updated_at: string
   player?: {
     id: number
+    user_id: number
     full_name: string
+    birth_date: string
+    gender: string
+    state_id: number
+    curp: string
     nrtp_level: number | null
+    profile_photo_url: string | null
+    id_document_url: string | null
+    nationality: string
+    club_id: number | null
+    ranking_position: number | null
+    affiliation_expires_at: string | null
+    created_at: string
+    updated_at: string
   }
   partner?: {
     id: number
+    user_id: number
     full_name: string
+    birth_date: string
+    gender: string
+    state_id: number
+    curp: string
     nrtp_level: number | null
+    profile_photo_url: string | null
+    id_document_url: string | null
+    nationality: string
+    club_id: number | null
+    ranking_position: number | null
+    affiliation_expires_at: string | null
+    created_at: string
+    updated_at: string
   }
   category?: TournamentCategory
   Tournament?: Tournament
