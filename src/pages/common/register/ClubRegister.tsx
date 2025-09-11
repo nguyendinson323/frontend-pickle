@@ -1,46 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { loginSuccess } from '../../../store/slices/authSlice'
 import { useDispatch as useReduxDispatch } from 'react-redux'
 import { AppDispatch } from '../../../store'
-import axios from 'axios'
-
-const BASE_URL = 'http://localhost:5000'
-
-const apiClient = axios.create({
-  baseURL: BASE_URL,
-  timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json'
-  }
-})
-
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token')
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
-
-apiClient.interceptors.response.use(
-  (response) => {
-    return response
-  },
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token')
-      window.location.href = '/login'
-    }
-    return Promise.reject(error)
-  }
-)
-import { ClubRegisterRequest } from '../../../types'
+import api from '../../../services/api'
+import { uploadFile } from '../../../services/upload'
+import { ClubRegisterRequest, LoginResponse } from '../../../types'
 import {
   ClubRegisterHeader,
   AccountInfoSection,
@@ -50,6 +15,13 @@ import {
   PrivacyPolicySection,
   ClubRegisterActions
 } from '../../../components/common/register/ClubRegister'
+import ImageCropModal from '../../../components/common/ImageCropModal'
+
+interface State {
+  id: number
+  name: string
+  short_code: string
+}
 
 const ClubRegisterPage: React.FC = () => {
   const navigate = useNavigate()
@@ -71,14 +43,60 @@ const ClubRegisterPage: React.FC = () => {
   })
 
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
+  const [states, setStates] = useState<State[]>([])
+  const [showCropModal, setShowCropModal] = useState(false)
+  const [cropSrc, setCropSrc] = useState<string | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
 
-  const mexicanStates = [
-    'Aguascalientes', 'Baja California', 'Baja California Sur', 'Campeche', 'Chiapas', 'Chihuahua',
-    'Coahuila', 'Colima', 'Durango', 'Guanajuato', 'Guerrero', 'Hidalgo', 'Jalisco', 'México',
-    'Michoacán', 'Morelos', 'Nayarit', 'Nuevo León', 'Oaxaca', 'Puebla', 'Querétaro',
-    'Quintana Roo', 'San Luis Potosí', 'Sinaloa', 'Sonora', 'Tabasco', 'Tamaulipas', 'Tlaxcala',
-    'Veracruz', 'Yucatán', 'Zacatecas', 'Ciudad de México'
-  ]
+  // Fetch states from backend
+  useEffect(() => {
+    const fetchStates = async () => {
+      try {
+        const response = await api.get<State[]>('/api/common/states')
+        setStates(response.data)
+      } catch (error) {
+        console.error('Failed to fetch states:', error)
+        // Fallback to hardcoded states if API fails
+        const fallbackStates = [
+          { id: 1, name: 'Aguascalientes', short_code: 'AGS' },
+          { id: 2, name: 'Baja California', short_code: 'BC' },
+          { id: 3, name: 'Baja California Sur', short_code: 'BCS' },
+          { id: 4, name: 'Campeche', short_code: 'CAM' },
+          { id: 5, name: 'Chiapas', short_code: 'CHIS' },
+          { id: 6, name: 'Chihuahua', short_code: 'CHIH' },
+          { id: 7, name: 'Coahuila', short_code: 'COAH' },
+          { id: 8, name: 'Colima', short_code: 'COL' },
+          { id: 9, name: 'Durango', short_code: 'DGO' },
+          { id: 10, name: 'Guanajuato', short_code: 'GTO' },
+          { id: 11, name: 'Guerrero', short_code: 'GRO' },
+          { id: 12, name: 'Hidalgo', short_code: 'HGO' },
+          { id: 13, name: 'Jalisco', short_code: 'JAL' },
+          { id: 14, name: 'México', short_code: 'MEX' },
+          { id: 15, name: 'Michoacán', short_code: 'MICH' },
+          { id: 16, name: 'Morelos', short_code: 'MOR' },
+          { id: 17, name: 'Nayarit', short_code: 'NAY' },
+          { id: 18, name: 'Nuevo León', short_code: 'NL' },
+          { id: 19, name: 'Oaxaca', short_code: 'OAX' },
+          { id: 20, name: 'Puebla', short_code: 'PUE' },
+          { id: 21, name: 'Querétaro', short_code: 'QRO' },
+          { id: 22, name: 'Quintana Roo', short_code: 'QROO' },
+          { id: 23, name: 'San Luis Potosí', short_code: 'SLP' },
+          { id: 24, name: 'Sinaloa', short_code: 'SIN' },
+          { id: 25, name: 'Sonora', short_code: 'SON' },
+          { id: 26, name: 'Tabasco', short_code: 'TAB' },
+          { id: 27, name: 'Tamaulipas', short_code: 'TAMPS' },
+          { id: 28, name: 'Tlaxcala', short_code: 'TLAX' },
+          { id: 29, name: 'Veracruz', short_code: 'VER' },
+          { id: 30, name: 'Yucatán', short_code: 'YUC' },
+          { id: 31, name: 'Zacatecas', short_code: 'ZAC' },
+          { id: 32, name: 'Ciudad de México', short_code: 'CDMX' }
+        ]
+        setStates(fallbackStates)
+      }
+    }
+    
+    fetchStates()
+  }, [])
 
   const clubTypes = [
     { value: 'recreational', label: 'Recreational Club', description: 'Focused on casual play and community building' },
@@ -98,33 +116,75 @@ const ClubRegisterPage: React.FC = () => {
     }
   }
 
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
-    const uploadData = new FormData()
-    uploadData.append('file', file)
-    uploadData.append('upload_preset', 'your_upload_preset')
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file')
+      return
+    }
 
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File size should not exceed 5MB')
+      return
+    }
+
+    
+    // Create preview URL for cropping
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      setCropSrc(event.target?.result as string)
+      setShowCropModal(true)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const handleCropComplete = async (croppedBlob: Blob) => {
+    setIsUploading(true)
     try {
-      const response = await fetch('https://api.cloudinary.com/v1_1/your_cloud_name/image/upload', {
-        method: 'POST',
-        body: uploadData
-      })
-      
-      const data = await response.json()
-      
+      const data = await uploadFile(croppedBlob, 'club-logo.png')
       setFormData(prev => ({ ...prev, logoUrl: data.secure_url }))
       setLogoPreview(data.secure_url)
-    } catch (error) {
+      setShowCropModal(false)
+      setCropSrc(null)
+    } catch (error: any) {
       console.error('Upload failed:', error)
+      alert('Failed to upload logo. Please try again.')
+    } finally {
+      setIsUploading(false)
     }
+  }
+
+  const handleCropCancel = () => {
+    setShowCropModal(false)
+    setCropSrc(null)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    // Validation
+    if (!formData.privacyPolicyAccepted) {
+      alert('Please accept the privacy policy to continue')
+      return
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      alert('Passwords do not match')
+      return
+    }
+
     try {
+      // Find state ID from the states array
+      const selectedState = states.find(state => state.name === formData.state)
+      if (!selectedState && formData.state) {
+        alert('Please select a valid state')
+        return
+      }
+
       const registerData = {
         userData: {
           username: formData.username,
@@ -136,20 +196,24 @@ const ClubRegisterPage: React.FC = () => {
         profileData: {
           name: formData.clubName,
           manager_name: formData.managerName,
-          manager_title: 'Manager',
-          state_id: mexicanStates.indexOf(formData.state) + 1,
+          manager_title: 'Manager', // Default title
+          state_id: selectedState?.id || null,
           club_type: formData.clubType,
-          rfc: formData.rfc,
-          logo_url: formData.logoUrl,
-          has_courts: false
+          rfc: formData.rfc || null,
+          logo_url: formData.logoUrl || null,
+          website: null, // Optional field
+          social_media: null, // Optional field
+          has_courts: false // Default to false for new clubs
         }
       }
 
-      const response = await apiClient.post('/api/auth/register', registerData)
+      const response = await api.post<LoginResponse>('/api/auth/register', registerData)
       dispatch(loginSuccess(response.data))
       navigate('/club/dashboard')
-    } catch (error) {
+    } catch (error: any) {
       console.error('Registration failed:', error)
+      const errorMessage = error.response?.data?.message || 'Registration failed. Please try again.'
+      alert(errorMessage)
     }
   }
 
@@ -182,7 +246,7 @@ const ClubRegisterPage: React.FC = () => {
             <ClubInfoSection 
               formData={formData}
               onInputChange={handleInputChange}
-              mexicanStates={mexicanStates}
+              states={states}
             />
 
             <ClubTypeSection 
@@ -193,8 +257,9 @@ const ClubRegisterPage: React.FC = () => {
 
             <LogoUploadSection 
               logoPreview={logoPreview}
-              onLogoUpload={handleLogoUpload}
+              onFileSelect={handleFileSelect}
               onLogoRemove={handleLogoRemove}
+              isUploading={isUploading}
             />
 
             <PrivacyPolicySection 
@@ -209,6 +274,18 @@ const ClubRegisterPage: React.FC = () => {
           </form>
         </div>
       </div>
+
+      {/* Image Crop Modal */}
+      {showCropModal && cropSrc && (
+        <ImageCropModal
+          src={cropSrc}
+          onCropComplete={handleCropComplete}
+          onCancel={handleCropCancel}
+          aspectRatio={1} // Square aspect ratio for logo
+          cropShape="round" // Circular crop for logo
+          isUploading={isUploading}
+        />
+      )}
     </div>
   )
 }

@@ -1,13 +1,19 @@
 import React from 'react'
 import { ClubRegisterRequest } from '../../../../types'
 
+interface State {
+  id: number
+  name: string
+  short_code: string
+}
+
 interface ClubInfoSectionProps {
   formData: ClubRegisterRequest
   onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void
-  mexicanStates: string[]
+  states: State[]
 }
 
-const ClubInfoSection: React.FC<ClubInfoSectionProps> = ({ formData, onInputChange, mexicanStates }) => {
+const ClubInfoSection: React.FC<ClubInfoSectionProps> = ({ formData, onInputChange, states }) => {
   return (
     <div className=" p-6 rounded-lg">
       <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
@@ -54,8 +60,8 @@ const ClubInfoSection: React.FC<ClubInfoSectionProps> = ({ formData, onInputChan
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200"
           >
             <option value="">Select state where club is located</option>
-            {mexicanStates.map(state => (
-              <option key={state} value={state}>{state}</option>
+            {states.map(state => (
+              <option key={state.id} value={state.name}>{state.name}</option>
             ))}
           </select>
         </div>

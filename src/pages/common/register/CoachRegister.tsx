@@ -5,6 +5,7 @@ import { registerCoach } from '../../../store/slices/authSlice'
 import { fetchCommonData } from '../../../store/slices/commonSlice'
 import { CoachRegisterRequest } from '../../../types'
 import { RootState, AppDispatch } from '../../../store'
+import { uploadFile } from '../../../services/upload'
 import {
   CoachRegisterHeader,
   CoachAccountInfoSection,
@@ -13,6 +14,7 @@ import {
   CoachPrivacyPolicySection,
   CoachRegisterActions
 } from '../../../components/common/register/CoachRegister'
+import ImageCropModal from '../../../components/common/ImageCropModal'
 
 const CoachRegisterPage: React.FC = () => {
   const navigate = useNavigate()
@@ -30,6 +32,7 @@ const CoachRegisterPage: React.FC = () => {
     gender: 'male',
     state: '',
     curp: '',
+    nrtpLevel: 1.0,
     profilePhotoUrl: '',
     idDocumentUrl: '',
     privacyPolicyAccepted: false
@@ -37,6 +40,9 @@ const CoachRegisterPage: React.FC = () => {
 
   const [profilePhotoPreview, setProfilePhotoPreview] = useState<string | null>(null)
   const [idDocumentPreview, setIdDocumentPreview] = useState<string | null>(null)
+  const [showCropModal, setShowCropModal] = useState(false)
+  const [cropSrc, setCropSrc] = useState<string | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
 
   useEffect(() => {
     if (!commonData) {
@@ -57,31 +63,84 @@ const CoachRegisterPage: React.FC = () => {
     }
   }
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, fieldName: 'profilePhotoUrl' | 'idDocumentUrl') => {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
-    const formData = new FormData()
-    formData.append('file', file)
-    formData.append('upload_preset', 'your_upload_preset')
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file')
+      return
+    }
 
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File size should not exceed 5MB')
+      return
+    }
+
+    
+    // Create preview URL for cropping
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      setCropSrc(event.target?.result as string)
+      setShowCropModal(true)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const handleCropComplete = async (croppedBlob: Blob) => {
+    setIsUploading(true)
     try {
-      const response = await fetch('https://api.cloudinary.com/v1_1/your_cloud_name/image/upload', {
-        method: 'POST',
-        body: formData
-      })
+      const data = await uploadFile(croppedBlob, 'profile-photo.png')
       
-      const data = await response.json()
-      
-      setFormData(prev => ({ ...prev, [fieldName]: data.secure_url }))
-      
-      if (fieldName === 'profilePhotoUrl') {
-        setProfilePhotoPreview(data.secure_url)
-      } else {
-        setIdDocumentPreview(data.secure_url)
-      }
-    } catch (error) {
+      setFormData(prev => ({ ...prev, profilePhotoUrl: data.secure_url }))
+      setProfilePhotoPreview(data.secure_url)
+      setShowCropModal(false)
+      setCropSrc(null)
+    } catch (error: any) {
       console.error('Upload failed:', error)
+      const errorMessage = error.response?.data?.message || error.message || 'Unknown error'
+      alert(`Failed to upload photo: ${errorMessage}. Please try again.`)
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
+  const handleCropCancel = () => {
+    setShowCropModal(false)
+    setCropSrc(null)
+  }
+
+  const handleDocumentUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf']
+    if (!allowedTypes.includes(file.type)) {
+      alert('Please select a valid image file (JPG, PNG) or PDF document')
+      return
+    }
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert('File size should not exceed 10MB')
+      return
+    }
+
+    setIsUploading(true)
+    try {
+      const data = await uploadFile(file, 'id-document')
+      
+      setFormData(prev => ({ ...prev, idDocumentUrl: data.secure_url }))
+      setIdDocumentPreview(data.secure_url)
+    } catch (error: any) {
+      console.error('Upload failed:', error)
+      const errorMessage = error.response?.data?.message || error.message || 'Unknown error'
+      alert(`Failed to upload document: ${errorMessage}. Please try again.`)
+    } finally {
+      setIsUploading(false)
     }
   }
 
@@ -124,7 +183,9 @@ const CoachRegisterPage: React.FC = () => {
             <CoachDocumentUploadsSection 
               profilePhotoPreview={profilePhotoPreview}
               idDocumentPreview={idDocumentPreview}
-              onFileUpload={handleFileUpload}
+              onPhotoSelect={handleFileSelect}
+              onDocumentUpload={handleDocumentUpload}
+              isUploading={isUploading}
             />
 
             <CoachPrivacyPolicySection 
@@ -139,6 +200,18 @@ const CoachRegisterPage: React.FC = () => {
           </form>
         </div>
       </div>
+
+      {/* Image Crop Modal */}
+      {showCropModal && cropSrc && (
+        <ImageCropModal
+          src={cropSrc}
+          onCropComplete={handleCropComplete}
+          onCancel={handleCropCancel}
+          aspectRatio={1} // Square aspect ratio for profile photo
+          cropShape="round" // Circular crop for profile photo
+          isUploading={isUploading}
+        />
+      )}
     </div>
   )
 }

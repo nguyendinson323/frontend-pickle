@@ -1,20 +1,14 @@
 import React from 'react'
 import { StateRegisterRequest } from '../../../../types'
+import { State } from '../../../../types/auth'
 
 interface StateCommitteeInfoSectionProps {
   formData: StateRegisterRequest
   onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void
+  states: State[]
 }
 
-const mexicanStates = [
-  'Aguascalientes', 'Baja California', 'Baja California Sur', 'Campeche', 'Chiapas', 'Chihuahua',
-  'Coahuila', 'Colima', 'Durango', 'Guanajuato', 'Guerrero', 'Hidalgo', 'Jalisco', 'México',
-  'Michoacán', 'Morelos', 'Nayarit', 'Nuevo León', 'Oaxaca', 'Puebla', 'Querétaro',
-  'Quintana Roo', 'San Luis Potosí', 'Sinaloa', 'Sonora', 'Tabasco', 'Tamaulipas', 'Tlaxcala',
-  'Veracruz', 'Yucatán', 'Zacatecas', 'Ciudad de México'
-]
-
-const StateCommitteeInfoSection: React.FC<StateCommitteeInfoSectionProps> = ({ formData, onInputChange }) => {
+const StateCommitteeInfoSection: React.FC<StateCommitteeInfoSectionProps> = ({ formData, onInputChange, states }) => {
   return (
     <div className=" p-6 rounded-lg">
       <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
@@ -61,8 +55,8 @@ const StateCommitteeInfoSection: React.FC<StateCommitteeInfoSectionProps> = ({ f
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors duration-200"
           >
             <option value="">Select the state you will manage</option>
-            {mexicanStates.map(state => (
-              <option key={state} value={state}>{state}</option>
+            {states.map(state => (
+              <option key={state.id} value={state.id}>{state.name}</option>
             ))}
           </select>
         </div>

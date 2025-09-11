@@ -23,7 +23,6 @@ import {
   ClubRegisterRequest,
   PartnerRegisterRequest,
   StateRegisterRequest,
-  RegisterResponse
 } from '../../types/auth'
 
 const initialState: AuthState = {
@@ -158,6 +157,7 @@ export const registerCoach = (formData: CoachRegisterRequest) => async (dispatch
         gender: formData.gender === 'male' ? 'Male' : formData.gender === 'female' ? 'Female' : 'Other',
         state_id: parseInt(formData.state),
         curp: formData.curp,
+        nrtp_level: formData.nrtpLevel,
         profile_photo_url: formData.profilePhotoUrl,
         id_document_url: formData.idDocumentUrl
       }
@@ -223,6 +223,7 @@ export const registerPartner = (formData: PartnerRegisterRequest) => async (disp
         contact_name: formData.contactPersonName,
         contact_title: 'Contact Person',
         partner_type: formData.partnerType,
+        state_id: parseInt(formData.state),
         rfc: formData.rfc,
         logo_url: formData.businessLogoUrl,
         has_courts: true
@@ -349,7 +350,7 @@ export const updateAdminProfile = (profileData: Partial<User>) => async (dispatc
   dispatch(startLoading('Updating administrator profile...'))
   
   try {
-    const response = await api.put('/api/admin/profile', profileData)
+    const response = await api.put<{user: User}>('/api/admin/profile', profileData)
     dispatch(updateUser(response.data.user))
     return response.data
   } catch (error) {
@@ -378,7 +379,7 @@ export const updateAdminSecuritySettings = (securityData: { is_searchable: boole
   dispatch(startLoading('Updating security settings...'))
   
   try {
-    const response = await api.put('/api/admin/profile/security', securityData)
+    const response = await api.put<{user: User}>('/api/admin/profile/security', securityData)
     dispatch(updateUser(response.data.user))
     return response.data
   } catch (error) {
@@ -417,7 +418,7 @@ const fetchDashboard = (userRole: string) => async (dispatch: AppDispatch) => {
         throw new Error('Invalid user role')
     }
     
-    dispatch(updateDashboard(response.data))
+    dispatch(updateDashboard(response.data as PlayerDashboard | CoachDashboard | ClubDashboard | PartnerDashboard | StateDashboard | AdminDashboard))
     return response.data
   } catch (error) {
     throw error

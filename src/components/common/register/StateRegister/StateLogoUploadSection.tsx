@@ -4,15 +4,17 @@ import { StateRegisterRequest } from '../../../../types'
 interface StateLogoUploadSectionProps {
   formData: StateRegisterRequest
   logoPreview: string | null
-  onLogoUpload: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>
+  onLogoUpload: (e: React.ChangeEvent<HTMLInputElement>) => void
   onRemoveLogo: () => void
+  isUploading: boolean
 }
 
 const StateLogoUploadSection: React.FC<StateLogoUploadSectionProps> = ({ 
   formData, 
   logoPreview, 
   onLogoUpload,
-  onRemoveLogo
+  onRemoveLogo,
+  isUploading
 }) => {
   return (
     <div className=" p-6 rounded-lg">
@@ -28,12 +30,13 @@ const StateLogoUploadSection: React.FC<StateLogoUploadSectionProps> = ({
         <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-red-500 transition-colors duration-200">
           {logoPreview ? (
             <div className="space-y-4">
-              <img src={logoPreview} alt="Committee logo preview" className="w-24 h-24 mx-auto object-contain" />
+              <img src={logoPreview} alt="Committee logo preview" className="w-24 h-24 mx-auto object-cover rounded-lg" />
               <p className="text-sm text-green-600">Logo uploaded successfully</p>
               <button
                 type="button"
                 onClick={onRemoveLogo}
                 className="text-sm text-red-600 hover:text-red-500"
+                disabled={isUploading}
               >
                 Remove logo
               </button>
@@ -45,7 +48,8 @@ const StateLogoUploadSection: React.FC<StateLogoUploadSectionProps> = ({
               </svg>
               <div>
                 <p className="text-lg font-medium text-gray-900">Upload your committee logo</p>
-                <p className="text-sm text-gray-600">PNG, JPG, or SVG files up to 10MB</p>
+                <p className="text-sm text-gray-600">PNG, JPG files up to 10MB</p>
+                <p className="text-xs text-gray-500">Logo will be cropped to fit</p>
               </div>
             </div>
           )}
@@ -54,8 +58,15 @@ const StateLogoUploadSection: React.FC<StateLogoUploadSectionProps> = ({
             accept="image/*"
             onChange={onLogoUpload}
             className="mt-4"
-            required={!logoPreview}
+            required={!formData.committeeLogoUrl}
+            disabled={isUploading}
           />
+          {isUploading && (
+            <div className="mt-2 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600"></div>
+              <span className="ml-2 text-sm text-gray-600">Uploading...</span>
+            </div>
+          )}
         </div>
       </div>
     </div>

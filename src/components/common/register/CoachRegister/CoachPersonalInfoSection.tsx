@@ -93,6 +93,27 @@ const CoachPersonalInfoSection: React.FC<CoachPersonalInfoSectionProps> = ({ for
             maxLength={18}
           />
         </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">NRTP Level *</label>
+          <select
+            name="nrtpLevel"
+            value={formData.nrtpLevel}
+            onChange={onInputChange}
+            required
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+          >
+            <option value="1.0">1.0 - Beginner</option>
+            <option value="1.5">1.5</option>
+            <option value="2.0">2.0 - Novice</option>
+            <option value="2.5">2.5</option>
+            <option value="3.0">3.0 - Intermediate</option>
+            <option value="3.5">3.5</option>
+            <option value="4.0">4.0 - Advanced</option>
+            <option value="4.5">4.5</option>
+            <option value="5.0">5.0 - Professional</option>
+          </select>
+        </div>
       </div>
     </div>
   )

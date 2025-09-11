@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { registerState } from '../../../store/slices/authSlice'
+import { fetchCommonData } from '../../../store/slices/commonSlice'
 import { StateRegisterRequest } from '../../../types'
-import { AppDispatch } from '../../../store'
+import { RootState, AppDispatch } from '../../../store'
+import { uploadStateLogo } from '../../../services/stateUpload'
 import {
   StateRegisterHeader,
   StateAccountInfoSection,
@@ -14,10 +16,13 @@ import {
   StatePrivacyPolicySection,
   StateRegisterActions
 } from '../../../components/common/register/StateRegister'
+import ImageCropModal from '../../../components/common/ImageCropModal'
 
 const StateRegisterPage: React.FC = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch<AppDispatch>()
+  const { isLoading } = useSelector((state: RootState) => state.loading)
+  const { data: commonData } = useSelector((state: RootState) => state.common)
 
   const [formData, setFormData] = useState<StateRegisterRequest>({
     username: '',
@@ -35,6 +40,17 @@ const StateRegisterPage: React.FC = () => {
   })
 
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
+  const [showCropModal, setShowCropModal] = useState(false)
+  const [cropSrc, setCropSrc] = useState<string | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
+
+  useEffect(() => {
+    if (!commonData) {
+      dispatch(fetchCommonData())
+    }
+  }, [dispatch, commonData])
+
+  const states = commonData?.states || []
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target
@@ -47,34 +63,49 @@ const StateRegisterPage: React.FC = () => {
     }
   }
 
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLogoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
-    const uploadData = new FormData()
-    uploadData.append('file', file)
-    uploadData.append('upload_preset', 'your_upload_preset')
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const result = e.target?.result as string
+      setCropSrc(result)
+      setShowCropModal(true)
+    }
+    reader.readAsDataURL(file)
+  }
 
+  const handleCropComplete = async (croppedBlob: Blob) => {
+    setIsUploading(true)
+    
     try {
-      const response = await fetch('https://api.cloudinary.com/v1_1/your_cloud_name/image/upload', {
-        method: 'POST',
-        body: uploadData
-      })
-      
-      const data = await response.json()
-      
-      setFormData(prev => ({ ...prev, committeeLogoUrl: data.secure_url }))
-      setLogoPreview(data.secure_url)
+      const uploadResponse = await uploadStateLogo(croppedBlob)
+      setFormData(prev => ({ ...prev, committeeLogoUrl: uploadResponse.secure_url }))
+      setLogoPreview(uploadResponse.secure_url)
+      setShowCropModal(false)
+      setCropSrc(null)
     } catch (error) {
       console.error('Upload failed:', error)
+    } finally {
+      setIsUploading(false)
     }
+  }
+
+  const handleCropCancel = () => {
+    setShowCropModal(false)
+    setCropSrc(null)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    await dispatch(registerState(formData))
-    navigate('/state/dashboard')
+    try {
+      await dispatch(registerState(formData))
+      navigate('/state/dashboard')
+    } catch (error) {
+      console.error('Registration failed:', error)
+    }
   }
 
   const handleRemoveLogo = () => {
@@ -103,6 +134,7 @@ const StateRegisterPage: React.FC = () => {
             <StateCommitteeInfoSection
               formData={formData}
               onInputChange={handleInputChange}
+              states={states}
             />
 
             <StateInstitutionalDetailsSection
@@ -113,8 +145,9 @@ const StateRegisterPage: React.FC = () => {
             <StateLogoUploadSection
               formData={formData}
               logoPreview={logoPreview}
-              onLogoUpload={handleLogoUpload}
+              onLogoUpload={handleLogoSelect}
               onRemoveLogo={handleRemoveLogo}
+              isUploading={isUploading}
             />
 
             <StateResponsibilitiesSection />
@@ -126,9 +159,21 @@ const StateRegisterPage: React.FC = () => {
               }
             />
 
-            <StateRegisterActions isLoading={false} />
+            <StateRegisterActions isLoading={isLoading} />
           </form>
         </div>
+        
+        {/* Image Crop Modal */}
+        {showCropModal && cropSrc && (
+          <ImageCropModal
+            src={cropSrc}
+            onCropComplete={handleCropComplete}
+            onCancel={handleCropCancel}
+            aspectRatio={1}
+            cropShape="rect"
+            isUploading={isUploading}
+          />
+        )}
       </div>
     </div>
   )

@@ -1,13 +1,14 @@
 import React from 'react'
 import { PartnerRegisterRequest } from '../../../../types'
+import { State } from '../../../../types/auth'
 
 interface BusinessInfoSectionProps {
   formData: PartnerRegisterRequest
   onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void
-  mexicanStates: string[]
+  states: State[]
 }
 
-const BusinessInfoSection: React.FC<BusinessInfoSectionProps> = ({ formData, onInputChange, mexicanStates }) => {
+const BusinessInfoSection: React.FC<BusinessInfoSectionProps> = ({ formData, onInputChange, states }) => {
   return (
     <div className=" p-6 rounded-lg">
       <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
@@ -54,8 +55,8 @@ const BusinessInfoSection: React.FC<BusinessInfoSectionProps> = ({ formData, onI
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-200"
           >
             <option value="">Select state where business is located</option>
-            {mexicanStates.map(state => (
-              <option key={state} value={state}>{state}</option>
+            {states.map(state => (
+              <option key={state.id} value={state.id}>{state.name}</option>
             ))}
           </select>
         </div>

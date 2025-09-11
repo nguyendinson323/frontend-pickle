@@ -474,6 +474,7 @@ export interface CoachRegisterRequest {
   gender: 'male' | 'female' | 'other'
   state: string
   curp: string
+  nrtpLevel: number
   profilePhotoUrl: string
   idDocumentUrl: string
   privacyPolicyAccepted: boolean
