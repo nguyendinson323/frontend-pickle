@@ -197,7 +197,7 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
           return
         }
       }
-      
+
       const updateData = {
         ...clubData,
         logo_url: logoUrl,
