@@ -106,6 +106,14 @@ export interface TournamentBrowseState {
     selectedCategory: TournamentCategory | null
     partnerRequired: boolean
     selectedPartner: number | null
+    partnerSearchQuery: string
+    partnerSearchResults: Array<{
+      id: number
+      full_name: string
+      nrtp_level: number
+      profile_photo_url?: string
+    }>
+    isSearchingPartners: boolean
   }
 }
 
@@ -132,7 +140,10 @@ const initialState: TournamentBrowseState = {
     tournamentId: null,
     selectedCategory: null,
     partnerRequired: false,
-    selectedPartner: null
+    selectedPartner: null,
+    partnerSearchQuery: '',
+    partnerSearchResults: [],
+    isSearchingPartners: false
   }
 }
 
@@ -178,11 +189,28 @@ const tournamentBrowseSlice = createSlice({
         tournamentId: null,
         selectedCategory: null,
         partnerRequired: false,
-        selectedPartner: null
+        selectedPartner: null,
+        partnerSearchQuery: '',
+        partnerSearchResults: [],
+        isSearchingPartners: false
       }
     },
     setSelectedPartner: (state, action: PayloadAction<number | null>) => {
       state.registrationModal.selectedPartner = action.payload
+    },
+    setPartnerSearchQuery: (state, action: PayloadAction<string>) => {
+      state.registrationModal.partnerSearchQuery = action.payload
+    },
+    setPartnerSearchResults: (state, action: PayloadAction<Array<{
+      id: number
+      full_name: string
+      nrtp_level: number
+      profile_photo_url?: string
+    }>>) => {
+      state.registrationModal.partnerSearchResults = action.payload
+    },
+    setIsSearchingPartners: (state, action: PayloadAction<boolean>) => {
+      state.registrationModal.isSearchingPartners = action.payload
     },
     addTournamentRegistration: (state, action: PayloadAction<TournamentRegistration>) => {
       state.userRegistrations.unshift(action.payload)
@@ -221,7 +249,10 @@ const tournamentBrowseSlice = createSlice({
         tournamentId: null,
         selectedCategory: null,
         partnerRequired: false,
-        selectedPartner: null
+        selectedPartner: null,
+        partnerSearchQuery: '',
+        partnerSearchResults: [],
+        isSearchingPartners: false
       }
     }
   }
@@ -237,6 +268,9 @@ export const {
   openRegistrationModal,
   closeRegistrationModal,
   setSelectedPartner,
+  setPartnerSearchQuery,
+  setPartnerSearchResults,
+  setIsSearchingPartners,
   addTournamentRegistration,
   updateTournamentRegistration,
   clearTournamentBrowse
@@ -330,6 +364,26 @@ export const withdrawFromTournament = (registrationId: number) => async (dispatc
     dispatch(setError('Failed to withdraw from tournament'))
     dispatch(stopLoading())
     throw error
+  }
+}
+
+// Search for partners
+export const searchPartners = (query: string) => async (dispatch: AppDispatch) => {
+  if (query.length < 2) {
+    dispatch(setPartnerSearchResults([]))
+    return
+  }
+
+  dispatch(setIsSearchingPartners(true))
+  
+  try {
+    const response = await api.get(`/api/player-messages/search?q=${encodeURIComponent(query)}`)
+    dispatch(setPartnerSearchResults(response.data))
+  } catch (error) {
+    console.error('Failed to search partners:', error)
+    dispatch(setPartnerSearchResults([]))
+  } finally {
+    dispatch(setIsSearchingPartners(false))
   }
 }
 

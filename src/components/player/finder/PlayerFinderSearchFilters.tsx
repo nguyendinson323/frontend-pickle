@@ -22,11 +22,8 @@ const PlayerFinderSearchFilters: React.FC<PlayerFinderSearchFiltersProps> = ({
   isPremium,
   filters,
   statesList,
-  userLocation,
-  locationPermission,
   onFilterChange,
-  onSearch,
-  onLocationRequest
+  onSearch
 }) => {
   const navigate = useNavigate()
 

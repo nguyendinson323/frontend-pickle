@@ -76,6 +76,7 @@ export interface PlayerMessagesState {
   error: string | null
   messageInput: string
   searchQuery: string
+  conversationsFilter: string
   searchResults: PlayerContact[]
   isSearching: boolean
   messagePagination: {
@@ -110,6 +111,7 @@ const initialState: PlayerMessagesState = {
   error: null,
   messageInput: '',
   searchQuery: '',
+  conversationsFilter: '',
   searchResults: [],
   isSearching: false,
   messagePagination: {
@@ -237,6 +239,9 @@ const playerMessagesSlice = createSlice({
     },
     setSearchQuery: (state, action: PayloadAction<string>) => {
       state.searchQuery = action.payload
+    },
+    setConversationsFilter: (state, action: PayloadAction<string>) => {
+      state.conversationsFilter = action.payload
     },
     setSearchResults: (state, action: PayloadAction<PlayerContact[]>) => {
       state.searchResults = action.payload
@@ -405,6 +410,7 @@ export const {
   setSelectedContact,
   setMessageInput,
   setSearchQuery,
+  setConversationsFilter,
   setSearchResults,
   setIsSearching,
   setTyping,

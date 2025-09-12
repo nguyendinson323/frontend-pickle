@@ -1,5 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { AppDispatch } from '../index'
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import api from '../../services/api'
 import { startLoading, stopLoading } from './loadingSlice'
 
@@ -199,6 +198,63 @@ const playerFinderSlice = createSlice({
       state.searchPerformed = false
       state.pagination = initialState.pagination
     }
+  },
+  extraReducers: (builder) => {
+    builder
+      // searchPlayers
+      .addCase(searchPlayers.fulfilled, (state, action) => {
+        state.players = action.payload.players
+        state.pagination = action.payload.pagination
+        state.searchPerformed = true
+      })
+      .addCase(searchPlayers.rejected, (state, action) => {
+        state.error = action.payload as string
+      })
+      // fetchSentRequests
+      .addCase(fetchSentRequests.fulfilled, (state, action) => {
+        state.sentRequests = action.payload
+      })
+      .addCase(fetchSentRequests.rejected, (state, action) => {
+        state.error = action.payload as string
+      })
+      // fetchReceivedRequests
+      .addCase(fetchReceivedRequests.fulfilled, (state, action) => {
+        state.receivedRequests = action.payload
+      })
+      .addCase(fetchReceivedRequests.rejected, (state, action) => {
+        state.error = action.payload as string
+      })
+      // sendMatchRequest
+      .addCase(sendMatchRequest.fulfilled, (state, action) => {
+        state.sentRequests.unshift(action.payload)
+      })
+      .addCase(sendMatchRequest.rejected, (state, action) => {
+        state.error = action.payload as string
+      })
+      // respondToMatchRequest
+      .addCase(respondToMatchRequest.fulfilled, (state, action) => {
+        const index = state.receivedRequests.findIndex(req => req.id === action.payload.id)
+        if (index !== -1) {
+          state.receivedRequests[index] = action.payload
+        }
+      })
+      .addCase(respondToMatchRequest.rejected, (state, action) => {
+        state.error = action.payload as string
+      })
+      // cancelMatchRequest
+      .addCase(cancelMatchRequest.fulfilled, (state, action) => {
+        state.sentRequests = state.sentRequests.filter(req => req.id !== action.payload)
+      })
+      .addCase(cancelMatchRequest.rejected, (state, action) => {
+        state.error = action.payload as string
+      })
+      // updatePlayerSearchability
+      .addCase(updatePlayerSearchability.fulfilled, () => {
+        // Success handled by auth slice or page refresh
+      })
+      .addCase(updatePlayerSearchability.rejected, (state, action) => {
+        state.error = action.payload as string
+      })
   }
 })
 
@@ -217,107 +273,124 @@ export const {
   clearSearch
 } = playerFinderSlice.actions
 
-// Thunks
-export const searchPlayers = (searchParams: SearchPlayersParams) => async (dispatch: AppDispatch) => {
-  try {
-    dispatch(startLoading('Searching players...'))
-    const response = await api.post<SearchPlayersResponse>('/api/player-finder/search', {
-      ...searchParams.filters,
-      page: searchParams.page || 1,
-      limit: searchParams.limit || 20
-    })
-    
-    dispatch(setPlayers(response.data as SearchPlayersResponse))
-    dispatch(stopLoading())
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to search players'
-    dispatch(setError(errorMessage))
-    dispatch(stopLoading())
+// Async Thunks
+export const searchPlayers = createAsyncThunk(
+  'playerFinder/searchPlayers',
+  async (searchParams: SearchPlayersParams, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(startLoading('Searching players...'))
+      const response = await api.post<SearchPlayersResponse>('/api/player-finder/search', {
+        ...searchParams.filters,
+        page: searchParams.page || 1,
+        limit: searchParams.limit || 20
+      })
+      return response.data as SearchPlayersResponse
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to search players'
+      return rejectWithValue(errorMessage)
+    } finally {
+      dispatch(stopLoading())
+    }
   }
-}
+)
 
-export const fetchSentRequests = () => async (dispatch: AppDispatch) => {
-  try {
-    dispatch(startLoading('Loading sent requests...'))
-    const response = await api.get<MatchRequest[]>('/api/player-finder/requests/sent')
-    dispatch(setSentRequests(response.data as MatchRequest[]))
-    dispatch(stopLoading())
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch sent requests'
-    dispatch(setError(errorMessage))
-    dispatch(stopLoading())
+export const fetchSentRequests = createAsyncThunk(
+  'playerFinder/fetchSentRequests',
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(startLoading('Loading sent requests...'))
+      const response = await api.get<MatchRequest[]>('/api/player-finder/requests/sent')
+      return response.data as MatchRequest[]
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch sent requests'
+      return rejectWithValue(errorMessage)
+    } finally {
+      dispatch(stopLoading())
+    }
   }
-}
+)
 
-export const fetchReceivedRequests = () => async (dispatch: AppDispatch) => {
-  try {
-    dispatch(startLoading('Loading received requests...'))
-    const response = await api.get<MatchRequest[]>('/api/player-finder/requests/received')
-    dispatch(setReceivedRequests(response.data as MatchRequest[]))
-    dispatch(stopLoading())
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch received requests'
-    dispatch(setError(errorMessage))
-    dispatch(stopLoading())
+export const fetchReceivedRequests = createAsyncThunk(
+  'playerFinder/fetchReceivedRequests',
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(startLoading('Loading received requests...'))
+      const response = await api.get<MatchRequest[]>('/api/player-finder/requests/received')
+      return response.data as MatchRequest[]
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch received requests'
+      return rejectWithValue(errorMessage)
+    } finally {
+      dispatch(stopLoading())
+    }
   }
-}
+)
 
-export const sendMatchRequest = (requestData: SendMatchRequestData) => async (dispatch: AppDispatch) => {
-  try {
-    dispatch(startLoading('Sending match request...'))
-    const response = await api.post<MatchRequest>('/api/player-finder/requests', requestData)
-    dispatch(addSentRequest(response.data as MatchRequest))
-    dispatch(stopLoading())
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to send match request'
-    dispatch(setError(errorMessage))
-    dispatch(stopLoading())
-    throw error
+export const sendMatchRequest = createAsyncThunk(
+  'playerFinder/sendMatchRequest',
+  async (requestData: SendMatchRequestData, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(startLoading('Sending match request...'))
+      const response = await api.post<MatchRequest>('/api/player-finder/requests', requestData)
+      return response.data as MatchRequest
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to send match request'
+      return rejectWithValue(errorMessage)
+    } finally {
+      dispatch(stopLoading())
+    }
   }
-}
+)
 
-export const respondToMatchRequest = (requestId: number, responseData: RespondToRequestData) => async (dispatch: AppDispatch) => {
-  try {
-    dispatch(startLoading('Responding to match request...'))
-    const response = await api.put<MatchRequest>(`/api/player-finder/requests/${requestId}`, responseData)
-    dispatch(updateReceivedRequest(response.data as MatchRequest))
-    dispatch(stopLoading())
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to respond to match request'
-    dispatch(setError(errorMessage))
-    dispatch(stopLoading())
-    throw error
+export const respondToMatchRequest = createAsyncThunk(
+  'playerFinder/respondToMatchRequest',
+  async ({ requestId, responseData }: { requestId: number; responseData: RespondToRequestData }, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(startLoading('Responding to match request...'))
+      const response = await api.put<MatchRequest>(`/api/player-finder/requests/${requestId}`, responseData)
+      return response.data as MatchRequest
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to respond to match request'
+      return rejectWithValue(errorMessage)
+    } finally {
+      dispatch(stopLoading())
+    }
   }
-}
+)
 
-export const cancelMatchRequest = (requestId: number) => async (dispatch: AppDispatch) => {
-  try {
-    dispatch(startLoading('Canceling match request...'))
-    await api.put(`/api/player-finder/requests/${requestId}`, { action: 'cancel' })
-    dispatch(removeSentRequest(requestId))
-    dispatch(stopLoading())
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to cancel match request'
-    dispatch(setError(errorMessage))
-    dispatch(stopLoading())
-    throw error
+export const cancelMatchRequest = createAsyncThunk(
+  'playerFinder/cancelMatchRequest',
+  async (requestId: number, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(startLoading('Canceling match request...'))
+      await api.put(`/api/player-finder/requests/${requestId}`, { action: 'cancel' })
+      return requestId
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to cancel match request'
+      return rejectWithValue(errorMessage)
+    } finally {
+      dispatch(stopLoading())
+    }
   }
-}
+)
 
-export const updatePlayerSearchability = (isSearchable: boolean) => async (dispatch: AppDispatch) => {
-  try {
-    dispatch(startLoading('Updating searchability...'))
-    await api.put('/api/player-finder/searchability', {
-      is_searchable: isSearchable
-    })
-    dispatch(stopLoading())
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to update searchability'
-    dispatch(setError(errorMessage))
-    dispatch(stopLoading())
-    throw error
+export const updatePlayerSearchability = createAsyncThunk(
+  'playerFinder/updatePlayerSearchability',
+  async (isSearchable: boolean, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(startLoading('Updating searchability...'))
+      await api.put('/api/player-finder/searchability', {
+        is_searchable: isSearchable
+      })
+      return isSearchable
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update searchability'
+      return rejectWithValue(errorMessage)
+    } finally {
+      dispatch(stopLoading())
+    }
   }
-}
+)
 
 
 export default playerFinderSlice.reducer

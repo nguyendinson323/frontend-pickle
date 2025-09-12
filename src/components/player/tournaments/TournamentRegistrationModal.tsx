@@ -1,6 +1,12 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { closeRegistrationModal, TournamentBrowseState } from '../../../store/slices/tournamentBrowseSlice'
+import { 
+  closeRegistrationModal, 
+  TournamentBrowseState,
+  setPartnerSearchQuery,
+  setSelectedPartner,
+  searchPartners
+} from '../../../store/slices/tournamentBrowseSlice'
 import { AppDispatch } from '../../../store'
 
 interface RegistrationForm {
@@ -22,6 +28,21 @@ const TournamentRegistrationModal: React.FC<TournamentRegistrationModalProps> = 
   onSubmit
 }) => {
   const dispatch = useDispatch<AppDispatch>()
+
+  useEffect(() => {
+    if (registrationModal.partnerSearchQuery.length >= 2) {
+      const searchTimeout = setTimeout(() => {
+        dispatch(searchPartners(registrationModal.partnerSearchQuery))
+      }, 300)
+      
+      return () => clearTimeout(searchTimeout)
+    }
+  }, [registrationModal.partnerSearchQuery, dispatch])
+
+  const handlePartnerSelect = (partnerId: number, partnerName: string) => {
+    dispatch(setSelectedPartner(partnerId))
+    dispatch(setPartnerSearchQuery(partnerName))
+  }
 
   if (!registrationModal.isOpen || !registrationModal.selectedCategory) {
     return null
@@ -59,23 +80,56 @@ const TournamentRegistrationModal: React.FC<TournamentRegistrationModalProps> = 
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Partner (Required)</label>
                   <div className="mt-2 space-y-2">
-                    <input
-                      type="text"
-                      placeholder="Partner's name"
-                      value={registrationForm.partnerName}
-                      onChange={(e) => onFormChange({...registrationForm, partnerName: e.target.value})}
-                      className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Partner's skill level"
-                      value={registrationForm.partnerLevel}
-                      onChange={(e) => onFormChange({...registrationForm, partnerLevel: e.target.value})}
-                      className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    />
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Search for your partner by name..."
+                        value={registrationModal.partnerSearchQuery}
+                        onChange={(e) => dispatch(setPartnerSearchQuery(e.target.value))}
+                        className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      />
+                      {registrationModal.isSearchingPartners && (
+                        <div className="absolute right-2 top-2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-600"></div>
+                        </div>
+                      )}
+                      
+                      {/* Search Results */}
+                      {registrationModal.partnerSearchResults.length > 0 && (
+                        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                          {registrationModal.partnerSearchResults.map((player) => (
+                            <button
+                              key={player.id}
+                              type="button"
+                              onClick={() => handlePartnerSelect(player.id, player.full_name)}
+                              className="w-full px-3 py-2 text-left hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
+                            >
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <div className="font-medium text-sm">{player.full_name}</div>
+                                  <div className="text-xs text-gray-500">Skill Level: {player.nrtp_level}</div>
+                                </div>
+                                {registrationModal.selectedPartner === player.id && (
+                                  <div className="text-indigo-600">✓</div>
+                                )}
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    
+                    {registrationModal.selectedPartner && (
+                      <div className="bg-green-50 border border-green-200 rounded-md p-2">
+                        <div className="flex items-center">
+                          <span className="text-green-600 mr-2">✓</span>
+                          <span className="text-sm text-green-800">Partner selected: {registrationModal.partnerSearchQuery}</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <p className="mt-1 text-xs text-gray-500">
-                    Note: Your partner must also register separately for doubles tournaments.
+                    Search and select a registered player as your partner for doubles tournaments.
                   </p>
                 </div>
               )}
@@ -87,7 +141,7 @@ const TournamentRegistrationModal: React.FC<TournamentRegistrationModalProps> = 
               </div>
             </div>
           </div>
-          <div className=" px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+          <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
             <button
               onClick={onSubmit}
               className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
@@ -96,7 +150,7 @@ const TournamentRegistrationModal: React.FC<TournamentRegistrationModalProps> = 
             </button>
             <button
               onClick={() => dispatch(closeRegistrationModal())}
-              className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover: focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+              className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
             >
               Cancel
             </button>

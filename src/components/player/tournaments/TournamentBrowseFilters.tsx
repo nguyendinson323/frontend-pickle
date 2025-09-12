@@ -112,11 +112,11 @@ const TournamentBrowseFilters: React.FC<TournamentBrowseFiltersProps> = ({
           <div>
             <label className="block text-sm font-medium text-gray-700">Availability</label>
             <select
-              value={filters.has_available_spots ? 'true' : 'false'}
-              onChange={(e) => onFilterChange('has_available_spots', e.target.value === 'true')}
+              value={filters.has_available_spots === null ? '' : filters.has_available_spots ? 'true' : 'false'}
+              onChange={(e) => onFilterChange('has_available_spots', e.target.value === '' ? null : e.target.value === 'true')}
               className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
             >
-              <option value="false">All Tournaments</option>
+              <option value="">All Tournaments</option>
               <option value="true">Available Spots Only</option>
             </select>
           </div>

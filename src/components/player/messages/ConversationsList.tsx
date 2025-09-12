@@ -1,11 +1,12 @@
 import React from 'react'
 import { useDispatch } from 'react-redux'
-import { openNewConversationModal } from '../../../store/slices/playerMessagesSlice'
+import { openNewConversationModal, setConversationsFilter } from '../../../store/slices/playerMessagesSlice'
 import { AppDispatch } from '../../../store'
 
 interface ConversationsListProps {
   conversations: any[]
   activeConversation: any
+  conversationsFilter: string
   onConversationSelect: (conversation: any) => void
   formatTime: (dateString: string) => string
   getOnlineStatus: (participant: any) => string
@@ -15,6 +16,7 @@ interface ConversationsListProps {
 const ConversationsList: React.FC<ConversationsListProps> = ({
   conversations,
   activeConversation,
+  conversationsFilter,
   onConversationSelect,
   formatTime,
   getOnlineStatus,
@@ -22,12 +24,20 @@ const ConversationsList: React.FC<ConversationsListProps> = ({
 }) => {
   const dispatch = useDispatch<AppDispatch>()
 
+  // Filter conversations based on search query
+  const filteredConversations = conversations.filter(conversation => 
+    conversation.participant?.full_name?.toLowerCase().includes(conversationsFilter.toLowerCase()) ||
+    conversation.last_message?.content?.toLowerCase().includes(conversationsFilter.toLowerCase())
+  )
+
   return (
     <div className="w-1/3 border-r border-gray-200 flex flex-col">
       {/* Search Bar */}
       <div className="p-4 border-b border-gray-200">
         <input
           type="text"
+          value={conversationsFilter}
+          onChange={(e) => dispatch(setConversationsFilter(e.target.value))}
           placeholder="Search conversations..."
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 text-sm"
         />
@@ -35,7 +45,7 @@ const ConversationsList: React.FC<ConversationsListProps> = ({
 
       {/* Conversations List */}
       <div className="flex-1 overflow-y-auto">
-        {conversations.length === 0 ? (
+        {filteredConversations.length === 0 ? (
           <div className="p-4 text-center">
             <div className="text-gray-400 text-4xl mb-2">💬</div>
             <p className="text-sm text-gray-500">No conversations yet</p>
@@ -47,11 +57,11 @@ const ConversationsList: React.FC<ConversationsListProps> = ({
             </button>
           </div>
         ) : (
-          conversations.map(conversation => (
+          filteredConversations.map(conversation => (
             <div
               key={conversation.id}
               onClick={() => onConversationSelect(conversation)}
-              className={`p-4 border-b border-gray-100 cursor-pointer hover: transition-colors ${
+              className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
                 activeConversation?.id === conversation.id ? 'bg-green-50 border-green-200' : ''
               }`}
             >

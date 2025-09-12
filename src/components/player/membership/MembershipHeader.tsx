@@ -22,7 +22,7 @@ const MembershipHeader: React.FC<MembershipHeaderProps> = ({
       case 'canceled':
         return 'bg-yellow-50 text-yellow-600'
       default:
-        return ' text-gray-600'
+        return 'bg-gray-50 text-gray-600'
     }
   }
 

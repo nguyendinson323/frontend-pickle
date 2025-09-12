@@ -1,6 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { AppDispatch } from '../index'
-import { startLoading, stopLoading } from './loadingSlice'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import api from '../../services/api'
 
 interface SubscriptionPlan {
@@ -68,158 +66,191 @@ const initialState: PlayerMembershipState = {
   error: null
 }
 
+// Async thunks
+export const fetchPlayerMembershipData = createAsyncThunk(
+  'playerMembership/fetchData',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get('/api/player/membership')
+      return response.data
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch membership data')
+    }
+  }
+)
+
+export const subscribeToPlan = createAsyncThunk(
+  'playerMembership/subscribe',
+  async ({ planId, paymentData }: {
+    planId: number
+    paymentData: {
+      payment_method: string
+      billing_cycle: 'monthly' | 'yearly'
+    }
+  }, { rejectWithValue }) => {
+    try {
+      const response = await api.post('/api/player/membership/subscribe', {
+        plan_id: planId,
+        ...paymentData
+      })
+      return response.data
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to subscribe to plan')
+    }
+  }
+)
+
+export const cancelPlayerSubscription = createAsyncThunk(
+  'playerMembership/cancel',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.post('/api/player/membership/cancel')
+      return response.data
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to cancel subscription')
+    }
+  }
+)
+
+export const renewSubscription = createAsyncThunk(
+  'playerMembership/renew',
+  async ({ planId, paymentData }: {
+    planId: number
+    paymentData: {
+      payment_method: string
+      billing_cycle: 'monthly' | 'yearly'
+    }
+  }, { rejectWithValue }) => {
+    try {
+      const response = await api.post('/api/player/membership/renew', {
+        plan_id: planId,
+        ...paymentData
+      })
+      return response.data
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to renew subscription')
+    }
+  }
+)
+
+export const updatePaymentMethod = createAsyncThunk(
+  'playerMembership/updatePaymentMethod',
+  async (paymentMethodData: {
+    payment_method: string
+    stripe_payment_method_id?: string
+  }, { rejectWithValue }) => {
+    try {
+      const response = await api.put('/api/player/membership/payment-method', paymentMethodData)
+      return response.data
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to update payment method')
+    }
+  }
+)
+
 const playerMembershipSlice = createSlice({
   name: 'playerMembership',
   initialState,
   reducers: {
-    setLoading: (state, action: PayloadAction<boolean>) => {
-      state.loading = action.payload
-    },
-    setError: (state, action: PayloadAction<string | null>) => {
-      state.error = action.payload
-    },
-    setMembershipData: (state, action: PayloadAction<{
-      currentSubscription: Subscription | null
-      availablePlans: SubscriptionPlan[]
-      paymentHistory: Payment[]
-      stats: PlayerMembershipState['stats']
-    }>) => {
-      state.currentSubscription = action.payload.currentSubscription
-      state.availablePlans = action.payload.availablePlans
-      state.paymentHistory = action.payload.paymentHistory
-      state.stats = action.payload.stats
-    },
-    updateSubscription: (state, action: PayloadAction<Subscription>) => {
-      state.currentSubscription = action.payload
-    },
-    addPayment: (state, action: PayloadAction<Payment>) => {
-      state.paymentHistory.unshift(action.payload)
-    },
-    cancelSubscription: (state) => {
-      if (state.currentSubscription) {
-        state.currentSubscription.status = 'canceled'
-        state.currentSubscription.auto_renew = false
-      }
+    clearError: (state) => {
+      state.error = null
     }
+  },
+  extraReducers: (builder) => {
+    builder
+      // Fetch membership data
+      .addCase(fetchPlayerMembershipData.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(fetchPlayerMembershipData.fulfilled, (state, action) => {
+        state.loading = false
+        const payload = action.payload as {
+          currentSubscription: Subscription | null
+          availablePlans: SubscriptionPlan[]
+          paymentHistory: Payment[]
+          stats: PlayerMembershipState['stats']
+        }
+        state.currentSubscription = payload.currentSubscription
+        state.availablePlans = payload.availablePlans
+        state.paymentHistory = payload.paymentHistory
+        state.stats = payload.stats
+      })
+      .addCase(fetchPlayerMembershipData.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload as string
+      })
+      
+      // Subscribe to plan
+      .addCase(subscribeToPlan.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(subscribeToPlan.fulfilled, (state, action) => {
+        state.loading = false
+        const payload = action.payload as { subscription: Subscription; payment: Payment }
+        state.currentSubscription = payload.subscription
+        if (payload.payment) {
+          state.paymentHistory.unshift(payload.payment)
+        }
+      })
+      .addCase(subscribeToPlan.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload as string
+      })
+      
+      // Cancel subscription
+      .addCase(cancelPlayerSubscription.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(cancelPlayerSubscription.fulfilled, (state) => {
+        state.loading = false
+        if (state.currentSubscription) {
+          state.currentSubscription.status = 'canceled'
+          state.currentSubscription.auto_renew = false
+        }
+      })
+      .addCase(cancelPlayerSubscription.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload as string
+      })
+      
+      // Renew subscription
+      .addCase(renewSubscription.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(renewSubscription.fulfilled, (state, action) => {
+        state.loading = false
+        const payload = action.payload as { subscription: Subscription; payment: Payment }
+        state.currentSubscription = payload.subscription
+        if (payload.payment) {
+          state.paymentHistory.unshift(payload.payment)
+        }
+      })
+      .addCase(renewSubscription.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload as string
+      })
+      
+      // Update payment method
+      .addCase(updatePaymentMethod.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(updatePaymentMethod.fulfilled, (state, action) => {
+        state.loading = false
+        const payload = action.payload as { subscription: Subscription }
+        state.currentSubscription = payload.subscription
+      })
+      .addCase(updatePaymentMethod.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload as string
+      })
   }
 })
 
-export const {
-  setLoading,
-  setError,
-  setMembershipData,
-  updateSubscription,
-  addPayment,
-  cancelSubscription
-} = playerMembershipSlice.actions
-
-// API Functions
-export const fetchPlayerMembershipData = () => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Loading membership data...'))
-  
-  try {
-    dispatch(setError(null))
-    const response = await api.get('/api/player/membership')
-    const responseData = response.data as {
-      currentSubscription: Subscription | null
-      availablePlans: SubscriptionPlan[]
-      paymentHistory: Payment[]
-      stats: PlayerMembershipState['stats']
-    }
-    dispatch(setMembershipData(responseData))
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to fetch membership data'))
-  } finally {
-    dispatch(stopLoading())
-  }
-}
-
-export const subscribeToPlan = (planId: number, paymentData: {
-  payment_method: string
-  billing_cycle: 'monthly' | 'yearly'
-}) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Subscribing to plan...'))
-  
-  try {
-    dispatch(setError(null))
-    const response = await api.post('/api/player/membership/subscribe', {
-      plan_id: planId,
-      ...paymentData
-    })
-    
-    const responseData = response.data as { subscription: Subscription; payment: Payment }
-    dispatch(updateSubscription(responseData.subscription))
-    dispatch(addPayment(responseData.payment))
-    
-    return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to subscribe to plan'))
-    throw error
-  } finally {
-    dispatch(stopLoading())
-  }
-}
-
-export const cancelPlayerSubscription = () => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Canceling subscription...'))
-  
-  try {
-    dispatch(setError(null))
-    await api.post('/api/player/membership/cancel')
-    dispatch(cancelSubscription())
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to cancel subscription'))
-    throw error
-  } finally {
-    dispatch(stopLoading())
-  }
-}
-
-export const renewSubscription = (planId: number, paymentData: {
-  payment_method: string
-  billing_cycle: 'monthly' | 'yearly'
-}) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Renewing subscription...'))
-  
-  try {
-    dispatch(setError(null))
-    const response = await api.post('/api/player/membership/renew', {
-      plan_id: planId,
-      ...paymentData
-    })
-    
-    const responseData = response.data as { subscription: Subscription; payment: Payment }
-    dispatch(updateSubscription(responseData.subscription))
-    dispatch(addPayment(responseData.payment))
-    
-    return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to renew subscription'))
-    throw error
-  } finally {
-    dispatch(stopLoading())
-  }
-}
-
-export const updatePaymentMethod = (paymentMethodData: {
-  payment_method: string
-  stripe_payment_method_id?: string
-}) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Updating payment method...'))
-  
-  try {
-    dispatch(setError(null))
-    const response = await api.put('/api/player/membership/payment-method', paymentMethodData)
-    const responseData = response.data as { subscription: Subscription }
-    dispatch(updateSubscription(responseData.subscription))
-    
-    return response.data
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to update payment method'))
-    throw error
-  } finally {
-    dispatch(stopLoading())
-  }
-}
+export const { clearError } = playerMembershipSlice.actions
 
 export default playerMembershipSlice.reducer

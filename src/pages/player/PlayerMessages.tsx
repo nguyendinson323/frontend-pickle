@@ -9,7 +9,7 @@ import {
   startConversation,
   searchPlayers,
   fetchContacts,
-  markMessagesAsRead,
+  markMessagesAsReadAction,
   updateOnlineStatus,
   setActiveConversation,
   setMessageInput,
@@ -45,6 +45,7 @@ const PlayerMessages: React.FC = () => {
     error,
     messageInput,
     searchQuery,
+    conversationsFilter,
     searchResults,
     isSearching,
     newConversationModal,
@@ -90,7 +91,7 @@ const PlayerMessages: React.FC = () => {
       socketService.joinChat(activeConversation.id)
       
       dispatch(fetchMessages(activeConversation.id))
-      dispatch(markMessagesAsRead(activeConversation.id))
+      dispatch(markMessagesAsReadAction(activeConversation.id))
       
       return () => {
         // Leave chat room when switching conversations
@@ -190,7 +191,7 @@ const PlayerMessages: React.FC = () => {
   const emojis = ['😊', '😂', '❤️', '👍', '👏', '🔥', '💯', '🎾', '🏆', '😎']
 
   return (
-    <div className="min-h-screen ">
+    <div className="min-h-screen bg-gray-50">
       <MessagesHeader unreadCount={unreadCount} />
 
       {/* Chat Interface */}
@@ -199,6 +200,7 @@ const PlayerMessages: React.FC = () => {
           <ConversationsList
             conversations={conversations}
             activeConversation={activeConversation}
+            conversationsFilter={conversationsFilter}
             onConversationSelect={handleConversationSelect}
             formatTime={formatTime}
             getOnlineStatus={getOnlineStatus}

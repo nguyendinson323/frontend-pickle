@@ -29,10 +29,13 @@ const PlayerMembershipPage: React.FC = () => {
 
   const handleSubscribe = async (planId: number, billingCycle: 'monthly' | 'yearly') => {
     try {
-      await dispatch(subscribeToPlan(planId, {
-        payment_method: 'credit_card', // In real implementation, this would come from payment form
-        billing_cycle: billingCycle
-      }))
+      await dispatch(subscribeToPlan({ 
+        planId, 
+        paymentData: {
+          payment_method: 'credit_card', // In real implementation, this would come from payment form
+          billing_cycle: billingCycle
+        }
+      })).unwrap()
       setSuccessMessage('Successfully subscribed to plan!')
       setTimeout(() => setSuccessMessage(''), 5000)
     } catch (error) {
@@ -42,7 +45,7 @@ const PlayerMembershipPage: React.FC = () => {
 
   const handleCancelSubscription = async () => {
     try {
-      await dispatch(cancelPlayerSubscription())
+      await dispatch(cancelPlayerSubscription()).unwrap()
       setSuccessMessage('Subscription canceled successfully')
       setTimeout(() => setSuccessMessage(''), 5000)
     } catch (error) {
@@ -52,10 +55,13 @@ const PlayerMembershipPage: React.FC = () => {
 
   const handleRenewSubscription = async (planId: number, billingCycle: 'monthly' | 'yearly') => {
     try {
-      await dispatch(renewSubscription(planId, {
-        payment_method: 'credit_card',
-        billing_cycle: billingCycle
-      }))
+      await dispatch(renewSubscription({ 
+        planId, 
+        paymentData: {
+          payment_method: 'credit_card',
+          billing_cycle: billingCycle
+        }
+      })).unwrap()
       setSuccessMessage('Subscription renewed successfully!')
       setTimeout(() => setSuccessMessage(''), 5000)
     } catch (error) {
@@ -65,7 +71,7 @@ const PlayerMembershipPage: React.FC = () => {
 
   const handleUpdatePaymentMethod = async (paymentData: { payment_method: string; stripe_payment_method_id?: string }) => {
     try {
-      await dispatch(updatePaymentMethod(paymentData))
+      await dispatch(updatePaymentMethod(paymentData)).unwrap()
       setSuccessMessage('Payment method updated successfully!')
       setTimeout(() => setSuccessMessage(''), 5000)
     } catch (error) {
@@ -75,7 +81,7 @@ const PlayerMembershipPage: React.FC = () => {
 
   if (loading && !currentSubscription && availablePlans.length === 0) {
     return (
-      <div className="min-h-screen  flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading your membership information...</p>
@@ -85,7 +91,7 @@ const PlayerMembershipPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen  py-8">
+    <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Success Message */}
         {successMessage && (
