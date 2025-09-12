@@ -40,7 +40,7 @@ const PlayerRecentMatches: React.FC<PlayerRecentMatchesProps> = ({ recentMatches
             </div>
           ))}
           <button
-            onClick={() => navigate('/player/match-history')}
+            onClick={() => navigate('/player/rankings')}
             className="text-indigo-600 hover:text-indigo-500 text-sm font-medium"
           >
             View match history →

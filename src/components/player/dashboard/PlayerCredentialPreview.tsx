@@ -40,7 +40,7 @@ const PlayerCredentialPreview: React.FC<PlayerCredentialPreviewProps> = ({
           <div>
             <h4 className="text-xl font-bold">{profile.fullName}</h4>
             <p className="text-indigo-200">NRTP Level {profile.nrtpLevel}</p>
-            <p className="text-indigo-200">Ranking: #{playerData.currentRanking}</p>
+            <p className="text-indigo-200">Ranking: {playerData.currentRanking > 0 ? `#${playerData.currentRanking}` : 'Unranked'}</p>
             <p className="text-indigo-200">Member since {user.created_at ? new Date(user.created_at).getFullYear() : new Date().getFullYear()}</p>
           </div>
         </div>
@@ -51,7 +51,7 @@ const PlayerCredentialPreview: React.FC<PlayerCredentialPreviewProps> = ({
             </div>
           </div>
           <button
-            onClick={() => navigate('/player/credential')}
+            onClick={() => navigate('/player/profile')}
             className="text-xs text-indigo-200 hover:text-white transition-colors duration-200"
           >
             View Full Credential

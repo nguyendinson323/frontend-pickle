@@ -19,7 +19,7 @@ const PlayerStatsGrid: React.FC<PlayerStatsGridProps> = ({ playerData, profile }
   const stats = [
     { label: 'Tournament Wins', value: playerData.tournamentWins, icon: '🏆', color: 'bg-yellow-600' },
     { label: 'Matches Played', value: playerData.totalMatches, icon: '🏓', color: 'bg-blue-600' },
-    { label: 'Current Ranking', value: `#${playerData.currentRanking}`, icon: '📊', color: 'bg-purple-600' },
+    { label: 'Current Ranking', value: playerData.currentRanking > 0 ? `#${playerData.currentRanking}` : 'Unranked', icon: '📊', color: 'bg-purple-600' },
     { label: 'NRTP Level', value: profile.nrtpLevel, icon: '⭐', color: 'bg-green-600' }
   ]
 

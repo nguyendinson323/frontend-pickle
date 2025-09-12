@@ -10,7 +10,7 @@ const PlayerQuickActions: React.FC = () => {
     { title: 'Find Players', description: 'Connect with other players', icon: '👥', href: '/player/finder' },
     { title: 'My Profile', description: 'Update your player information', icon: '👤', href: '/player/profile' },
     { title: 'Rankings', description: 'View your ranking history', icon: '📈', href: '/player/rankings' },
-    { title: 'Digital Credential', description: 'View your official credentials', icon: '🎫', href: '/player/digital-credentials' }
+    { title: 'Digital Credential', description: 'View your official credentials', icon: '🎫', href: '/player/profile' }
   ]
 
   return (

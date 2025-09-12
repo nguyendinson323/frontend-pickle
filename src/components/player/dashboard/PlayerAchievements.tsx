@@ -35,7 +35,7 @@ const PlayerAchievements: React.FC<PlayerAchievementsProps> = ({ playerData }) =
           </div>
         )}
         
-        {playerData.currentRanking <= 100 && (
+        {playerData.currentRanking > 0 && playerData.currentRanking <= 100 && (
           <div className="flex items-center p-3 bg-purple-50 border border-purple-200 rounded-lg">
             <div className="text-3xl mr-4">⭐</div>
             <div>

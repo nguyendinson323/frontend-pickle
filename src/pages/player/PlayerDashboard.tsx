@@ -75,11 +75,11 @@ const PlayerDashboardPage: React.FC = () => {
   }))
 
   return (
-    <div className="min-h-screen  py-8">
+    <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <PlayerDashboardHeader profile={{
-            fullName: profile.full_name,
+            fullName: profile.full_name || 'Unknown Player',
             nrtpLevel: profile.nrtp_level?.toString() || '1.0',
             profilePhotoUrl: profile.profile_photo_url || undefined,
             state: profile.state?.name || 'Unknown'
@@ -108,7 +108,7 @@ const PlayerDashboardPage: React.FC = () => {
           </div>
 
           <PlayerCredentialPreview profile={{
-            fullName: profile.full_name,
+            fullName: profile.full_name || 'Unknown Player',
             nrtpLevel: profile.nrtp_level?.toString() || '1.0',
             profilePhotoUrl: profile.profile_photo_url || undefined
           }} playerData={{ 

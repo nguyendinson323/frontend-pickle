@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
-import { RootState, AppDispatch } from '../../../store'
-import { updatePlayerProfile, fetchDashboard } from '../../../store/slices/authSlice'
+import { useDispatch } from 'react-redux'
+import { AppDispatch } from '../../../store'
+import { fetchDashboard } from '../../../store/slices/authSlice'
 import { startLoading, stopLoading } from '../../../store/slices/loadingSlice'
-import { Player, User, PlayerDashboard } from '../../../types/auth'
+import { Player, User } from '../../../types/auth'
 import api from '../../../services/api'
 
 interface PlayerProfileFormProps {
@@ -15,7 +14,6 @@ interface PlayerProfileFormProps {
 
 const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onCancel }) => {
   const dispatch = useDispatch<AppDispatch>()
-  const navigate = useNavigate()
   const [states, setStates] = useState<{ id: number, name: string }[]>([])
   
   const [userData, setUserData] = useState({
@@ -40,10 +38,11 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
   useEffect(() => {
     const fetchStates = async () => {
       try {
-        const response = await api.get('/api/player/states')
-        setStates(response.data)
+        const response = await api.get<{ id: number, name: string }[]>('/api/player/states')
+        setStates(response.data || [])
       } catch (error) {
         console.error('Failed to fetch states:', error)
+        setStates([])
       }
     }
     
@@ -73,8 +72,41 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
+    // Basic validation
+    if (!userData.username.trim()) {
+      alert('Username is required')
+      return
+    }
+    
+    if (!userData.email.trim()) {
+      alert('Email is required')
+      return
+    }
+    
+    if (!playerData.full_name.trim()) {
+      alert('Full name is required')
+      return
+    }
+    
+    if (!playerData.birth_date) {
+      alert('Birth date is required')
+      return
+    }
+    
+    if (playerData.nrtp_level < 1.0 || playerData.nrtp_level > 5.0) {
+      alert('NRTP level must be between 1.0 and 5.0')
+      return
+    }
+    
     try {
       dispatch(startLoading('Updating profile...'))
+      
+      // Prepare clean data for submission
+      const cleanPlayerData = {
+        ...playerData,
+        state_id: playerData.state_id === 0 ? null : playerData.state_id,
+        profile_photo_url: playerData.profile_photo_url.trim() || null
+      }
       
       // Update user account information first
       if (userData.username !== user.username || 
@@ -85,7 +117,7 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
       }
       
       // Update player profile information
-      await api.put('/api/player/profile', playerData)
+      await api.put('/api/player/profile', cleanPlayerData)
       
       // Refresh dashboard data to get updated profile
       await dispatch(fetchDashboard('player'))
@@ -93,9 +125,10 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
       // Close editing mode
       onCancel()
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to update profile:', error)
-      // Could show error message to user here
+      const errorMessage = error.response?.data?.message || 'Failed to update profile'
+      alert(errorMessage)
     } finally {
       dispatch(stopLoading())
     }
@@ -115,7 +148,7 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
-                Username
+                Username <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -128,7 +161,7 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
             </div>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email
+                Email <span className="text-red-500">*</span>
               </label>
               <input
                 type="email"
@@ -161,7 +194,7 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label htmlFor="full_name" className="block text-sm font-medium text-gray-700 mb-2">
-                Full Name
+                Full Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -174,7 +207,7 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
             </div>
             <div>
               <label htmlFor="birth_date" className="block text-sm font-medium text-gray-700 mb-2">
-                Birth Date
+                Birth Date <span className="text-red-500">*</span>
               </label>
               <input
                 type="date"
@@ -252,7 +285,7 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
                 type="number"
                 step="0.1"
                 min="1.0"
-                max="10.0"
+                max="5.0"
                 id="nrtp_level"
                 name="nrtp_level"
                 value={playerData.nrtp_level}
@@ -261,17 +294,36 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
               />
             </div>
             <div className="md:col-span-2">
-              <label htmlFor="profile_photo_url" className="block text-sm font-medium text-gray-700 mb-2">
-                Profile Photo URL
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Profile Photo
               </label>
-              <input
-                type="url"
-                id="profile_photo_url"
-                name="profile_photo_url"
-                value={playerData.profile_photo_url}
-                onChange={handlePlayerInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
+              <div className="flex items-center space-x-4">
+                <div className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center">
+                  {playerData.profile_photo_url ? (
+                    <img 
+                      src={playerData.profile_photo_url} 
+                      alt="Profile" 
+                      className="w-24 h-24 rounded-lg object-cover" 
+                    />
+                  ) : (
+                    <span className="text-3xl text-gray-400">📷</span>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <input
+                    type="url"
+                    id="profile_photo_url"
+                    name="profile_photo_url"
+                    placeholder="Enter image URL"
+                    value={playerData.profile_photo_url}
+                    onChange={handlePlayerInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Enter a URL to your profile photo or leave blank
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -312,7 +364,7 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
           <button
             type="button"
             onClick={onCancel}
-            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover: focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             Cancel
           </button>

@@ -36,10 +36,10 @@ const PlayerUpcomingMatches: React.FC<PlayerUpcomingMatchesProps> = ({ upcomingM
             </div>
           ))}
           <button
-            onClick={() => navigate('/player/matches')}
+            onClick={() => navigate('/player/rankings')}
             className="text-indigo-600 hover:text-indigo-500 text-sm font-medium"
           >
-            View all matches →
+            View match history →
           </button>
         </div>
       ) : (
@@ -47,7 +47,7 @@ const PlayerUpcomingMatches: React.FC<PlayerUpcomingMatchesProps> = ({ upcomingM
           <div className="text-4xl mb-4">🏓</div>
           <p className="text-gray-600 mb-4">No upcoming matches</p>
           <button
-            onClick={() => navigate('/player/tournaments')}
+            onClick={() => navigate('/player/tournament-browse')}
             className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
           >
             Join a Tournament

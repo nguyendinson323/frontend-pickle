@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Player, User } from '../../../types/auth'
-import api from '../../../services/api'
 
 interface PlayerProfileViewProps {
   player: Player
@@ -8,40 +7,8 @@ interface PlayerProfileViewProps {
   onEdit: () => void
 }
 
-interface DigitalCredential {
-  id: number
-  credential_type: string
-  title: string
-  description: string
-  issue_date: string
-  expiry_date: string | null
-  qr_code_data: string
-  qr_code_url: string | null
-  is_active: boolean
-}
-
 const PlayerProfileView: React.FC<PlayerProfileViewProps> = ({ player, user, onEdit }) => {
-  const [activeTab, setActiveTab] = useState<'profile' | 'credentials' | 'privacy'>('profile')
-  const [credentials, setCredentials] = useState<DigitalCredential[]>([])
-  const [loadingCredentials, setLoadingCredentials] = useState(false)
-
-  useEffect(() => {
-    if (activeTab === 'credentials') {
-      fetchDigitalCredentials()
-    }
-  }, [activeTab])
-
-  const fetchDigitalCredentials = async () => {
-    try {
-      setLoadingCredentials(true)
-      const response = await api.get('/api/player/credentials')
-      setCredentials(response.data)
-    } catch (error) {
-      console.error('Failed to fetch digital credentials:', error)
-    } finally {
-      setLoadingCredentials(false)
-    }
-  }
+  const [activeTab, setActiveTab] = useState<'credential' | 'account' | 'inbox' | 'connection'>('credential')
 
   return (
     <div className="bg-white rounded-lg shadow-xl overflow-hidden">
@@ -82,9 +49,10 @@ const PlayerProfileView: React.FC<PlayerProfileViewProps> = ({ player, user, onE
       <div className="border-b border-gray-200">
         <nav className="flex space-x-8 px-8">
           {[
-            { key: 'profile', label: 'Profile Information', icon: '👤' },
-            { key: 'credentials', label: 'Digital Credentials', icon: '🏆' },
-            { key: 'privacy', label: 'Privacy Settings', icon: '🔒' }
+            { key: 'credential', label: 'Credential', icon: '🏓' },
+            { key: 'account', label: 'Account', icon: '👤' },
+            { key: 'inbox', label: 'Inbox', icon: '📬' },
+            { key: 'connection', label: 'Connection', icon: '🔗' }
           ].map(tab => (
             <button
               key={tab.key}
@@ -103,8 +71,90 @@ const PlayerProfileView: React.FC<PlayerProfileViewProps> = ({ player, user, onE
       </div>
 
       <div className="p-8">
-        {/* Profile Tab */}
-        {activeTab === 'profile' && (
+        {/* Credential Tab - Official ID-style information */}
+        {activeTab === 'credential' && (
+          <div className="max-w-md mx-auto">
+            {/* Official Player Card */}
+            <div className="bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 rounded-xl p-6 text-white shadow-2xl">
+              <div className="flex items-center justify-between mb-4">
+                <div className="text-xs font-semibold">MEXICAN PICKLEBALL FEDERATION</div>
+                <div className="text-xs">🏓</div>
+              </div>
+              
+              <div className="flex items-center space-x-4 mb-4">
+                <div className="w-20 h-20 rounded-lg overflow-hidden bg-white bg-opacity-20">
+                  {player.profile_photo_url ? (
+                    <img 
+                      src={player.profile_photo_url} 
+                      alt="Profile" 
+                      className="w-full h-full object-cover" 
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <span className="text-2xl">🏓</span>
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold">{player.full_name}</h3>
+                  <p className="text-sm text-indigo-100">NRTP Level {player.nrtp_level || 'N/A'}</p>
+                  <p className="text-sm text-indigo-100">{player.state?.name || 'Mexico'}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 text-xs mb-4">
+                <div>
+                  <div className="text-indigo-200 uppercase tracking-wide">Ranking</div>
+                  <div className="font-semibold">#{player.ranking_position || 'Unranked'}</div>
+                </div>
+                <div>
+                  <div className="text-indigo-200 uppercase tracking-wide">Status</div>
+                  <div className="font-semibold">
+                    {player.affiliation_expires_at && new Date(player.affiliation_expires_at) > new Date() ? 
+                      'Active' : 'Expired'}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-indigo-200 uppercase tracking-wide">Club</div>
+                  <div className="font-semibold">{player.club?.name || 'Independent'}</div>
+                </div>
+                <div>
+                  <div className="text-indigo-200 uppercase tracking-wide">ID</div>
+                  <div className="font-semibold">#{player.id.toString().padStart(6, '0')}</div>
+                </div>
+              </div>
+
+              {player.nationality !== 'Mexico' && (
+                <div className="flex items-center space-x-2 mb-4">
+                  <span className="text-xs text-indigo-200">Nationality:</span>
+                  <span className="text-sm font-semibold">🌎 {player.nationality}</span>
+                </div>
+              )}
+
+              <div className="flex items-center justify-between">
+                <div className="text-xs">
+                  <div className="text-indigo-200">Valid until</div>
+                  <div>{player.affiliation_expires_at ? 
+                    new Date(player.affiliation_expires_at).toLocaleDateString() : 
+                    'No expiration'}</div>
+                </div>
+                <div className="w-16 h-16 bg-white bg-opacity-20 rounded flex items-center justify-center">
+                  <div className="text-xs text-center">
+                    <div>📱</div>
+                    <div className="text-[8px]">QR CODE</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-6 text-center text-sm text-gray-500">
+              Official Player Credential • Mexican Pickleball Federation
+            </div>
+          </div>
+        )}
+
+        {/* Account Tab - Edit personal data */}
+        {activeTab === 'account' && (
           <div className="space-y-8">
             {/* Account Information */}
             <div>
@@ -200,7 +250,7 @@ const PlayerProfileView: React.FC<PlayerProfileViewProps> = ({ player, user, onE
 
             {/* Documents Section */}
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Identity Documents</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Profile & Documents</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-500 mb-2">Profile Photo</label>
@@ -239,117 +289,15 @@ const PlayerProfileView: React.FC<PlayerProfileViewProps> = ({ player, user, onE
               </div>
             </div>
 
-            {/* Additional Information */}
+            {/* Privacy Settings */}
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Additional Information</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-500 mb-1">Affiliation Expires</label>
-                  <p className="text-gray-900">
-                    {player.affiliation_expires_at ? 
-                      new Date(player.affiliation_expires_at).toLocaleDateString() : 
-                      'No expiration date'
-                    }
-                  </p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-500 mb-1">Member Since</label>
-                  <p className="text-gray-900">{new Date(player.created_at).toLocaleDateString()}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-500 mb-1">Last Updated</label>
-                  <p className="text-gray-900">{new Date(player.updated_at).toLocaleDateString()}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-500 mb-1">Last Login</label>
-                  <p className="text-gray-900">
-                    {user.last_login ? 
-                      new Date(user.last_login).toLocaleDateString() : 
-                      'Never logged in'
-                    }
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Digital Credentials Tab */}
-        {activeTab === 'credentials' && (
-          <div>
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-medium text-gray-900">Digital Credentials</h3>
-              <button
-                onClick={fetchDigitalCredentials}
-                className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700"
-              >
-                Refresh
-              </button>
-            </div>
-
-            {loadingCredentials ? (
-              <div className="flex justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-              </div>
-            ) : credentials.length === 0 ? (
-              <div className="text-center py-8">
-                <span className="text-4xl text-gray-400 mb-4 block">🏆</span>
-                <h4 className="text-lg font-medium text-gray-900 mb-2">No Digital Credentials</h4>
-                <p className="text-gray-500">Your digital credentials will appear here once issued.</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {credentials.map(credential => (
-                  <div key={credential.id} className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg p-6 text-white shadow-lg">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="w-12 h-12 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
-                        <span className="text-xl">
-                          {credential.credential_type === 'player_card' ? '🏓' : 
-                           credential.credential_type === 'tournament_badge' ? '🏆' : 
-                           credential.credential_type === 'certification' ? '📜' : '🎖️'}
-                        </span>
-                      </div>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        credential.is_active ? 'bg-green-500 bg-opacity-20 text-green-100' : 'bg-red-500 bg-opacity-20 text-red-100'
-                      }`}>
-                        {credential.is_active ? 'Active' : 'Inactive'}
-                      </span>
-                    </div>
-                    <h4 className="text-lg font-bold mb-2">{credential.title}</h4>
-                    <p className="text-indigo-100 text-sm mb-4">{credential.description}</p>
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-indigo-200">
-                        Issued: {new Date(credential.issue_date).toLocaleDateString()}
-                      </span>
-                      {credential.qr_code_url && (
-                        <button 
-                          onClick={() => window.open(credential.qr_code_url!, '_blank')}
-                          className="bg-white bg-opacity-20 px-3 py-1 rounded-md hover:bg-opacity-30 transition-colors"
-                        >
-                          View QR
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Privacy Settings Tab */}
-        {activeTab === 'privacy' && (
-          <div>
-            <h3 className="text-lg font-medium text-gray-900 mb-6">Privacy Settings</h3>
-            
-            <div className="space-y-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Privacy Settings</h3>
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <h4 className="text-lg font-medium text-gray-900 mb-2">Player Search Visibility</h4>
                     <p className="text-gray-600 text-sm">
-                      Control whether other players can find you in search results. When disabled, 
-                      you will not appear in player search results and other players cannot send you match requests.
+                      Control whether other players can find you in search results.
                     </p>
                   </div>
                   <div className="ml-6">
@@ -371,36 +319,58 @@ const PlayerProfileView: React.FC<PlayerProfileViewProps> = ({ player, user, onE
                   </div>
                 </div>
               </div>
-
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-                <h4 className="text-lg font-medium text-gray-900 mb-4">Data Privacy Information</h4>
-                <div className="space-y-3 text-sm text-gray-600">
-                  <p>• Your profile information is only visible to other registered players</p>
-                  <p>• Tournament results and rankings are public information</p>
-                  <p>• Personal contact information (email, phone) is never shared with other users</p>
-                  <p>• You can request data deletion by contacting support</p>
-                  <p>• All data is stored securely and encrypted</p>
-                </div>
-              </div>
-
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                <h4 className="text-lg font-medium text-gray-900 mb-2">Account Security</h4>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Two-Factor Authentication</span>
-                    <span className="text-sm text-orange-600 font-medium">Coming Soon</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Login Notifications</span>
-                    <span className="text-sm text-green-600 font-medium">Enabled</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Password Last Changed</span>
-                    <span className="text-sm text-gray-600">N/A</span>
-                  </div>
-                </div>
-              </div>
             </div>
+          </div>
+        )}
+
+        {/* Inbox Tab - Notification center */}
+        {activeTab === 'inbox' && (
+          <div>
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-medium text-gray-900">Notifications & Messages</h3>
+              <button className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700">
+                Mark All Read
+              </button>
+            </div>
+
+            <div className="text-center py-16">
+              <span className="text-6xl text-gray-400 mb-4 block">📬</span>
+              <h4 className="text-lg font-medium text-gray-900 mb-2">No Messages</h4>
+              <p className="text-gray-500">
+                Notifications about tournament entries, payments, and federation announcements will appear here.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Connection Tab - Player search (Premium feature) */}
+        {activeTab === 'connection' && (
+          <div>
+            <h3 className="text-lg font-medium text-gray-900 mb-6">Find Players</h3>
+            
+            {!user.is_premium ? (
+              <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-lg p-8 text-center">
+                <span className="text-4xl mb-4 block">🌟</span>
+                <h4 className="text-lg font-medium text-gray-900 mb-2">Premium Feature</h4>
+                <p className="text-gray-600 mb-4">
+                  Search for other players nearby and connect with them to play. This feature is available with a premium subscription.
+                </p>
+                <button className="bg-purple-600 text-white px-6 py-2 rounded-md hover:bg-purple-700">
+                  Upgrade to Premium
+                </button>
+              </div>
+            ) : (
+              <div className="text-center py-16">
+                <span className="text-6xl text-gray-400 mb-4 block">🔗</span>
+                <h4 className="text-lg font-medium text-gray-900 mb-2">Player Connection</h4>
+                <p className="text-gray-500 mb-6">
+                  Search for players in your area and send them match requests.
+                </p>
+                <button className="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700">
+                  Search Players
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>

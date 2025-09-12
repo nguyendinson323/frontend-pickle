@@ -279,8 +279,9 @@ export const updatePlayerProfile = (profileData: Partial<Player>) => async (disp
   dispatch(startLoading('Updating player profile...'))
   
   try {
-    const response = await api.put('/api/auth/profile/player', profileData)
-    dispatch(updateDashboard(response.data as PlayerDashboard))
+    const response = await api.put('/api/player/profile', profileData)
+    // Refresh dashboard to get updated data
+    await dispatch(fetchDashboard('player'))
     return response.data
   } catch (error) {
     throw error
