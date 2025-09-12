@@ -72,8 +72,16 @@ const DigitalCredentials: React.FC = () => {
 
   const handleVerifyCredential = async (qrCodeData: string) => {
     try {
-      const result = await dispatch(verifyCredential(qrCodeData))
-      setVerificationResult(result)
+      const resultAction = await dispatch(verifyCredential(qrCodeData))
+      if (verifyCredential.fulfilled.match(resultAction)) {
+        setVerificationResult(resultAction.payload)
+      } else {
+        setVerificationResult({
+          valid: false,
+          credential: undefined,
+          message: 'Failed to verify credential'
+        })
+      }
     } catch (error) {
       setVerificationResult({
         valid: false,
@@ -84,7 +92,7 @@ const DigitalCredentials: React.FC = () => {
   }
 
   const handleToggleCredentialStatus = (credentialId: number, currentStatus: boolean) => {
-    dispatch(updateCredentialStatus(credentialId, !currentStatus))
+    dispatch(updateCredentialStatus({ credentialId, isActive: !currentStatus }))
   }
 
   const handleDeleteCredential = (credentialId: number) => {

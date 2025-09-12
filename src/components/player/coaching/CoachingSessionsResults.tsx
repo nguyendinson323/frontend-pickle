@@ -1,7 +1,8 @@
 import React from 'react'
+import { CoachingSession } from '../../../store/slices/coachingSessionsSlice'
 
 interface CoachingSessionsResultsProps {
-  sessions: any[]
+  sessions: CoachingSession[]
   searchPerformed: boolean
   onSessionSelect: (sessionId: number) => void
   formatDate: (dateString: string) => string

@@ -1,7 +1,8 @@
 import React from 'react'
+import { Coach } from '../../../store/slices/coachingSessionsSlice'
 
 interface CoachesListProps {
-  coaches: any[]
+  coaches: Coach[]
   onCoachSelect: (coachId: number) => void
 }
 

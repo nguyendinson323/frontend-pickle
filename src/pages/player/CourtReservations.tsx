@@ -4,7 +4,6 @@ import { RootState } from '../../store'
 import { 
   searchCourts,
   getCourtAvailability,
-  getCourtDetails,
   fetchUserReservations,
   makeCourtReservation,
   cancelCourtReservation,
@@ -13,8 +12,7 @@ import {
   setSelectedCourt,
   setUserLocation,
   setLocationPermission,
-  openReservationModal,
-  closeReservationModal
+  openReservationModal
 } from '../../store/slices/courtReservationSlice'
 import { AppDispatch } from '../../store'
 import {
@@ -36,13 +34,11 @@ const CourtReservations: React.FC = () => {
     userReservations,
     filters,
     isLoading,
-    error,
     searchPerformed,
     selectedDate,
     availableTimeSlots,
     reservationModal,
-    userLocation,
-    locationPermission
+    userLocation
   } = useSelector((state: RootState) => state.courtReservation)
 
   useEffect(() => {

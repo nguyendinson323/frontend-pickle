@@ -18,8 +18,8 @@ const PlayerCredentialCard: React.FC<PlayerCredentialCardProps> = ({
     )
   }
 
-  const isExpired = credential?.expiry_date && new Date(credential.expiry_date) < new Date()
-  const isActive = credential?.is_active && !isExpired
+  // Check if credential is expired for future use
+  // const isExpired = credential?.expiry_date && new Date(credential.expiry_date) < new Date()
 
   // Get affiliation status based on expiry
   const getAffiliationStatus = () => {

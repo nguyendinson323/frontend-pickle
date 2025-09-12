@@ -1,5 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { AppDispatch } from '../index'
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import { startLoading, stopLoading } from './loadingSlice'
 import api from '../../services/api'
 
@@ -219,6 +218,61 @@ const digitalCredentialsSlice = createSlice({
         ...action.payload
       }
     }
+  },
+  extraReducers: (builder) => {
+    builder
+      // fetchPlayerCredentials
+      .addCase(fetchPlayerCredentials.fulfilled, (state, action) => {
+        state.credentials = action.payload
+        state.error = null
+      })
+      .addCase(fetchPlayerCredentials.rejected, (state, action) => {
+        state.error = action.payload as string
+      })
+      // fetchPlayerProfile
+      .addCase(fetchPlayerProfile.fulfilled, (state, action) => {
+        state.playerProfile = action.payload
+        state.error = null
+      })
+      .addCase(fetchPlayerProfile.rejected, (state, action) => {
+        state.error = action.payload as string
+      })
+      // fetchCredentialTemplates
+      .addCase(fetchCredentialTemplates.fulfilled, (state, action) => {
+        state.templates = action.payload
+        state.error = null
+      })
+      .addCase(fetchCredentialTemplates.rejected, (state, action) => {
+        state.error = action.payload as string
+      })
+      // createDigitalCredential
+      .addCase(createDigitalCredential.fulfilled, (state, action) => {
+        state.credentials.unshift(action.payload)
+        state.error = null
+      })
+      .addCase(createDigitalCredential.rejected, (state, action) => {
+        state.error = action.payload as string
+      })
+      // updateCredentialStatus
+      .addCase(updateCredentialStatus.fulfilled, (state, action) => {
+        const { credentialId, isActive } = action.payload
+        const index = state.credentials.findIndex(cred => cred.id === credentialId)
+        if (index !== -1) {
+          state.credentials[index].is_active = isActive
+        }
+        state.error = null
+      })
+      .addCase(updateCredentialStatus.rejected, (state, action) => {
+        state.error = action.payload as string
+      })
+      // deleteCredential
+      .addCase(deleteCredential.fulfilled, (state, action) => {
+        state.credentials = state.credentials.filter(cred => cred.id !== action.payload)
+        state.error = null
+      })
+      .addCase(deleteCredential.rejected, (state, action) => {
+        state.error = action.payload as string
+      })
   }
 })
 
@@ -239,142 +293,144 @@ export const {
   updateCreateCredentialFormData
 } = digitalCredentialsSlice.actions
 
-// Thunks
-export const fetchPlayerCredentials = () => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Loading credentials...'))
-  
-  try {
-    dispatch(setError(null))
-    const response = await api.get('/api/digital-credentials/player')
-    dispatch(setCredentials(response.data as DigitalCredential[]))
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch credentials'
-    dispatch(setError(errorMessage))
-  } finally {
-    dispatch(stopLoading())
-  }
-}
-
-export const fetchPlayerProfile = () => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Loading player profile...'))
-  
-  try {
-    dispatch(setError(null))
-    const response = await api.get('/api/digital-credentials/profile')
-    dispatch(setPlayerProfile(response.data as PlayerProfile))
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch player profile'
-    dispatch(setError(errorMessage))
-  } finally {
-    dispatch(stopLoading())
-  }
-}
-
-export const fetchCredentialTemplates = () => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Loading templates...'))
-  
-  try {
-    dispatch(setError(null))
-    const response = await api.get('/api/digital-credentials/templates')
-    dispatch(setTemplates(response.data as CredentialTemplate[]))
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch templates'
-    dispatch(setError(errorMessage))
-  } finally {
-    dispatch(stopLoading())
-  }
-}
-
-export const createDigitalCredential = (credentialData: CreateCredentialData) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Creating credential...'))
-  
-  try {
-    dispatch(setError(null))
-    const response = await api.post('/api/digital-credentials/create', credentialData)
-    dispatch(addCredential(response.data as DigitalCredential))
-    dispatch(closeCreateCredentialModal())
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to create credential'
-    dispatch(setError(errorMessage))
-    throw error
-  } finally {
-    dispatch(stopLoading())
-  }
-}
-
-export const generateCredentialQrCode = (credentialId: number) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Generating QR code...'))
-  
-  try {
-    dispatch(setError(null))
-    const response = await api.post(`/api/digital-credentials/${credentialId}/qr-code`)
-    const responseData = response.data as { credential_id: number; qr_code_url: string }
-    dispatch(openQrCodeModal({
-      credentialId: responseData.credential_id,
-      qrCodeUrl: responseData.qr_code_url
-    }))
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to generate QR code'
-    dispatch(setError(errorMessage))
-    throw error
-  } finally {
-    dispatch(stopLoading())
-  }
-}
-
-export const verifyCredential = (qrCodeData: string) => async (dispatch: AppDispatch): Promise<VerificationResult> => {
-  dispatch(startLoading('Verifying credential...'))
-  
-  try {
-    dispatch(setError(null))
-    const response = await api.get(`/api/digital-credentials/verify/${encodeURIComponent(qrCodeData)}`)
-    return response.data as VerificationResult
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to verify credential'
-    dispatch(setError(errorMessage))
-    return {
-      valid: false,
-      message: errorMessage
+// Async Thunks
+export const fetchPlayerCredentials = createAsyncThunk(
+  'digitalCredentials/fetchPlayerCredentials',
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(startLoading('Loading credentials...'))
+      const response = await api.get('/api/digital-credentials/player')
+      return response.data as DigitalCredential[]
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch credentials'
+      return rejectWithValue(errorMessage)
+    } finally {
+      dispatch(stopLoading())
     }
-  } finally {
-    dispatch(stopLoading())
   }
-}
+)
 
-export const updateCredentialStatus = (credentialId: number, isActive: boolean) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Updating credential status...'))
-  
-  try {
-    dispatch(setError(null))
-    const response = await api.put(`/api/digital-credentials/${credentialId}/status`, {
-      is_active: isActive
-    })
-    
-    const updatedCredential = { ...(response.data as DigitalCredential), is_active: isActive }
-    dispatch(updateCredential(updatedCredential))
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to update credential status'
-    dispatch(setError(errorMessage))
-    throw error
-  } finally {
-    dispatch(stopLoading())
+export const fetchPlayerProfile = createAsyncThunk(
+  'digitalCredentials/fetchPlayerProfile',
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(startLoading('Loading player profile...'))
+      const response = await api.get('/api/digital-credentials/profile')
+      return response.data as PlayerProfile
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch player profile'
+      return rejectWithValue(errorMessage)
+    } finally {
+      dispatch(stopLoading())
+    }
   }
-}
+)
 
-export const deleteCredential = (credentialId: number) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Deleting credential...'))
-  
-  try {
-    dispatch(setError(null))
-    await api.delete(`/api/digital-credentials/${credentialId}`)
-    dispatch(removeCredential(credentialId))
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to delete credential'
-    dispatch(setError(errorMessage))
-    throw error
-  } finally {
-    dispatch(stopLoading())
+export const fetchCredentialTemplates = createAsyncThunk(
+  'digitalCredentials/fetchCredentialTemplates',
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(startLoading('Loading templates...'))
+      const response = await api.get('/api/digital-credentials/templates')
+      return response.data as CredentialTemplate[]
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch templates'
+      return rejectWithValue(errorMessage)
+    } finally {
+      dispatch(stopLoading())
+    }
   }
-}
+)
+
+export const createDigitalCredential = createAsyncThunk(
+  'digitalCredentials/createDigitalCredential',
+  async (credentialData: CreateCredentialData, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(startLoading('Creating credential...'))
+      const response = await api.post('/api/digital-credentials/create', credentialData)
+      dispatch(closeCreateCredentialModal())
+      return response.data as DigitalCredential
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create credential'
+      return rejectWithValue(errorMessage)
+    } finally {
+      dispatch(stopLoading())
+    }
+  }
+)
+
+export const generateCredentialQrCode = createAsyncThunk(
+  'digitalCredentials/generateCredentialQrCode',
+  async (credentialId: number, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(startLoading('Generating QR code...'))
+      const response = await api.post(`/api/digital-credentials/${credentialId}/qr-code`)
+      const responseData = response.data as { credential_id: number; qr_code_url: string }
+      dispatch(openQrCodeModal({
+        credentialId: responseData.credential_id,
+        qrCodeUrl: responseData.qr_code_url
+      }))
+      return responseData
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to generate QR code'
+      return rejectWithValue(errorMessage)
+    } finally {
+      dispatch(stopLoading())
+    }
+  }
+)
+
+export const verifyCredential = createAsyncThunk(
+  'digitalCredentials/verifyCredential',
+  async (qrCodeData: string, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(startLoading('Verifying credential...'))
+      const response = await api.get(`/api/digital-credentials/verify/${encodeURIComponent(qrCodeData)}`)
+      return response.data as VerificationResult
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to verify credential'
+      return rejectWithValue({
+        valid: false,
+        message: errorMessage
+      } as VerificationResult)
+    } finally {
+      dispatch(stopLoading())
+    }
+  }
+)
+
+export const updateCredentialStatus = createAsyncThunk(
+  'digitalCredentials/updateCredentialStatus',
+  async ({ credentialId, isActive }: { credentialId: number; isActive: boolean }, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(startLoading('Updating credential status...'))
+      await api.put(`/api/digital-credentials/${credentialId}/status`, {
+        is_active: isActive
+      })
+      return { credentialId, isActive }
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update credential status'
+      return rejectWithValue(errorMessage)
+    } finally {
+      dispatch(stopLoading())
+    }
+  }
+)
+
+export const deleteCredential = createAsyncThunk(
+  'digitalCredentials/deleteCredential',
+  async (credentialId: number, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(startLoading('Deleting credential...'))
+      await api.delete(`/api/digital-credentials/${credentialId}`)
+      return credentialId
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to delete credential'
+      return rejectWithValue(errorMessage)
+    } finally {
+      dispatch(stopLoading())
+    }
+  }
+)
 
 export default digitalCredentialsSlice.reducer

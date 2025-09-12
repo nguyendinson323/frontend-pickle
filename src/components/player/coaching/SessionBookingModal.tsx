@@ -1,11 +1,11 @@
 import React from 'react'
 import { useDispatch } from 'react-redux'
-import { closeBookingModal } from '../../../store/slices/coachingSessionsSlice'
+import { closeBookingModal, CoachingSession } from '../../../store/slices/coachingSessionsSlice'
 import { AppDispatch } from '../../../store'
 
 interface SessionBookingModalProps {
   isOpen: boolean
-  selectedSession: any
+  selectedSession: CoachingSession | null
   onBookSession: () => void
   isLoading: boolean
   formatDate: (dateString: string) => string

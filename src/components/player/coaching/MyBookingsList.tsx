@@ -1,15 +1,16 @@
 import React from 'react'
+import { SessionBooking } from '../../../store/slices/coachingSessionsSlice'
 
 interface MyBookingsListProps {
-  bookings: any[]
+  bookings: SessionBooking[]
   onTabChange: (tab: 'search' | 'coaches' | 'my-bookings') => void
   onCancelBooking: (bookingId: number) => void
   onOpenReview: (sessionId: number) => void
   formatDate: (dateString: string) => string
   formatTime: (timeString: string) => string
   getStatusColor: (status: string) => string
-  canCancelBooking: (booking: any) => boolean
-  canReviewSession: (booking: any) => boolean
+  canCancelBooking: (booking: SessionBooking) => boolean
+  canReviewSession: (booking: SessionBooking) => boolean
 }
 
 const MyBookingsList: React.FC<MyBookingsListProps> = ({

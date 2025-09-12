@@ -1,10 +1,10 @@
 import React from 'react'
 import { useDispatch } from 'react-redux'
-import { setFilters } from '../../../store/slices/coachingSessionsSlice'
+import { setFilters, SessionFilters } from '../../../store/slices/coachingSessionsSlice'
 import { AppDispatch } from '../../../store'
 
 interface CoachingSessionsFiltersProps {
-  filters: any
+  filters: SessionFilters
   onSearch: () => void
   isLoading: boolean
 }

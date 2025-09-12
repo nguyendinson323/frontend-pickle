@@ -31,8 +31,9 @@ const LoginPage: React.FC = () => {
     }
 
     try {
-      const response = await dispatch(login(formData))
+      const response = await dispatch(login(formData)) as any
       
+      alert(JSON.stringify(response.user.role))
       // Redirect based on user role
       switch (response.user.role) {
         case 'admin':

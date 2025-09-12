@@ -14,7 +14,7 @@ interface SessionReviewModalProps {
 
 const SessionReviewModal: React.FC<SessionReviewModalProps> = ({
   isOpen,
-  sessionId,
+  sessionId: _sessionId,
   rating,
   comment,
   onSubmitReview,

@@ -66,7 +66,7 @@ const CredentialVerification: React.FC<CredentialVerificationProps> = ({
           </div>
 
           {verificationResult.credential && (
-            <div className="mt-4 p-4  rounded-md">
+            <div className="mt-4 p-4 bg-gray-50 rounded-md">
               <h5 className="font-medium text-gray-900 mb-2">Credential Details:</h5>
               <div className="space-y-1 text-sm text-gray-600">
                 <p><span className="font-medium">Title:</span> {verificationResult.credential.title}</p>
