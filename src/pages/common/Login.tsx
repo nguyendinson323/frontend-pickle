@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { login } from '../../store/slices/authSlice'
-import { LoginRequest } from '../../types'
+import { LoginRequest, LoginResponse } from '../../types'
 import { AppDispatch } from '../../store'
 
 const LoginPage: React.FC = () => {
@@ -30,37 +30,51 @@ const LoginPage: React.FC = () => {
       return
     }
 
-    try {
-      const response = await dispatch(login(formData)) as any
-      
-      alert(JSON.stringify(response.user.role))
-      // Redirect based on user role
-      switch (response.user.role) {
-        case 'admin':
-          navigate('/admin/dashboard')
-          break
-        case 'player':
-          navigate('/player/dashboard')
-          break
-        case 'coach':
-          navigate('/coach/dashboard')
-          break
-        case 'club':
-          navigate('/club/dashboard')
-          break
-        case 'partner':
-          navigate('/partner/dashboard')
-          break
-        case 'state':
-          navigate('/state/dashboard')
-          break
-        default:
-          navigate('/dashboard')
-      }
-    } catch (error) {
-      console.error('Login failed:', error)
+    console.log('🚀 Attempting login with:', { username: formData.username })
+    
+    // Dispatch the login action
+    const result = await dispatch(login(formData)) as any
+    
+    // Check if login failed
+    if (result.error) {
+      console.error('❌ Login failed:', result.error)
+      // You can display error to user here if needed
+      // For example: setErrorMessage(result.error)
+      return
     }
     
+    // Login successful
+    const loginData = result as LoginResponse
+    console.log('✅ Login successful, data:', loginData)
+    console.log('👤 User role:', loginData.user.role)
+    
+    // Redirect based on user role
+    const userRole = loginData.user.role
+    console.log('🔄 Redirecting to dashboard for role:', userRole)
+    
+    switch (userRole) {
+      case 'admin':
+        navigate('/admin/dashboard')
+        break
+      case 'player':
+        navigate('/player/dashboard')
+        break
+      case 'coach':
+        navigate('/coach/dashboard')
+        break
+      case 'club':
+        navigate('/club/dashboard')
+        break
+      case 'partner':
+        navigate('/partner/dashboard')
+        break
+      case 'state':
+        navigate('/state/dashboard')
+        break
+      default:
+        console.warn('⚠️ Unknown user role, redirecting to generic dashboard')
+        navigate('/dashboard')
+    }
   }
 
   const handleForgotPassword = () => {

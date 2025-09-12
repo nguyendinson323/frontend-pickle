@@ -76,7 +76,7 @@ const authSlice = createSlice({
     refreshDashboard: (state, action: PayloadAction<PlayerDashboard | CoachDashboard | ClubDashboard | PartnerDashboard | StateDashboard | AdminDashboard>) => {
       state.dashboard = action.payload
     }
-  }
+  },
 })
 
 export const {
@@ -88,16 +88,50 @@ export const {
   refreshDashboard
 } = authSlice.actions
 
-// Login function that handles the backend request
+// Login function that handles the backend request with complete error handling
 export const login = (credentials: LoginRequest) => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Logging in...'))
   
   try {
     const response = await api.post('/api/auth/login', credentials)
+    
+    // Validate response structure BEFORE dispatching
+    if (!response.data) {
+      console.error('❌ No data in response')
+      return { error: 'No data received from server' }
+    }
+    
+    // Type guard to check if response has required fields
+    const responseData = response.data as any
+    if (!responseData.user || !responseData.token) {
+      console.error('❌ Invalid response structure:', responseData)
+      return { error: 'Invalid response structure from server' }
+    }
+    
+    // Only dispatch success if we have valid data
     dispatch(loginSuccess(response.data as LoginResponse))
+    console.log('✅ Login success dispatched')
     return response.data
-  } catch (error) {
-    throw error
+    
+  } catch (error: any) {
+    // Stop loading on any error
+    console.error('❌ Login API Error:', error)
+    
+    // Handle different error types
+    if (error.response) {
+      // Server responded with error status
+      const errorMessage = error.response.data?.message || `Server error: ${error.response.status}`
+      console.error('❌ Server error:', errorMessage)
+      return { error: errorMessage }
+    } else if (error.request) {
+      // Request made but no response
+      console.error('❌ No response from server')
+      return { error: 'No response from server. Please check your connection.' }
+    } else {
+      // Something else happened
+      console.error('❌ Request error:', error.message)
+      return { error: error.message || 'An unexpected error occurred' }
+    }
   } finally {
     dispatch(stopLoading())
   }

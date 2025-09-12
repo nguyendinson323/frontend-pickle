@@ -17,21 +17,21 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
   const [states, setStates] = useState<{ id: number, name: string }[]>([])
   
   const [userData, setUserData] = useState({
-    username: user.username,
-    email: user.email,
+    username: user.username || '',
+    email: user.email || '',
     phone: user.phone || '',
-    is_searchable: user.is_searchable
+    is_searchable: user.is_searchable || false
   })
 
   const [playerData, setPlayerData] = useState({
-    full_name: player.full_name,
-    birth_date: player.birth_date,
-    gender: player.gender,
+    full_name: player.full_name || '',
+    birth_date: player.birth_date || '',
+    gender: player.gender || '',
     state_id: player.state?.id || 0,
     curp: player.curp || '',
     nrtp_level: player.nrtp_level || 0,
     profile_photo_url: player.profile_photo_url || '',
-    nationality: player.nationality
+    nationality: player.nationality || ''
   })
 
   // Fetch states on component mount
