@@ -182,11 +182,19 @@ const coachingSessionsSlice = createSlice({
       state.error = action.payload
     },
     setAvailableSessions: (state, action: PayloadAction<CoachingSession[]>) => {
-      state.availableSessions = action.payload
+      // Deduplicate sessions by ID to prevent React key warnings
+      const uniqueSessions = action.payload.filter((session, index, self) => 
+        index === self.findIndex(s => s.id === session.id)
+      )
+      state.availableSessions = uniqueSessions
       state.searchPerformed = true
     },
     setMyBookings: (state, action: PayloadAction<SessionBooking[]>) => {
-      state.myBookings = action.payload
+      // Deduplicate bookings by ID to prevent React key warnings
+      const uniqueBookings = action.payload.filter((booking, index, self) => 
+        index === self.findIndex(b => b.id === booking.id)
+      )
+      state.myBookings = uniqueBookings
     },
     setSelectedSession: (state, action: PayloadAction<CoachingSession | null>) => {
       state.selectedSession = action.payload

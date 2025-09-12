@@ -269,7 +269,11 @@ const playerRankingsSlice = createSlice({
       type: 'overall' | 'state' | 'club' | 'age_group'
       data: PlayerRanking[]
     }>) => {
-      state.leaderboards[action.payload.type] = action.payload.data
+      // Deduplicate rankings by player_id to prevent React key warnings
+      const uniqueRankings = action.payload.data.filter((ranking, index, self) => 
+        index === self.findIndex(r => r.player_id === ranking.player_id)
+      )
+      state.leaderboards[action.payload.type] = uniqueRankings
     },
     setSelectedRankingType: (state, action: PayloadAction<'overall' | 'state' | 'club' | 'age_group'>) => {
       state.selectedRankingType = action.payload

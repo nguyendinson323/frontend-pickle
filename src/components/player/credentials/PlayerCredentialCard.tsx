@@ -108,8 +108,13 @@ const PlayerCredentialCard: React.FC<PlayerCredentialCardProps> = ({
             <div className="mb-4">
               <p className="text-sm font-medium text-gray-500 mb-1">Nationality</p>
               <div className="flex items-center space-x-2">
-                <span className="text-2xl">🇲🇽</span>
+                <span className="text-2xl">
+                  {playerProfile.nationality === 'Mexico' ? '🇲🇽' : '🏴‍☠️'}
+                </span>
                 <span className="text-lg text-gray-900">{playerProfile.nationality}</span>
+                {playerProfile.nationality !== 'Mexico' && (
+                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">Foreign Player</span>
+                )}
               </div>
             </div>
           </div>

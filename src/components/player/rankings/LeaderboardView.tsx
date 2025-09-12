@@ -46,7 +46,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({
         
         <div className="divide-y divide-gray-200">
           {leaderboards[selectedRankingType].map((player: any, index: number) => (
-            <div key={player.player_id} className="px-6 py-4 flex items-center justify-between">
+            <div key={`${selectedRankingType}-${player.player_id}-${index}`} className="px-6 py-4 flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
                   index < 3 
