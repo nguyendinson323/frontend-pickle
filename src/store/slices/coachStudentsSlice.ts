@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppDispatch } from '../index'
-import { startLoading, stopLoading } from './loadingSlice'
 import api from '../../services/api'
 
 interface Student {
@@ -125,33 +124,34 @@ interface CoachStudentsResponse {
 // API Functions
 export const fetchCoachStudentsData = () => async (dispatch: AppDispatch) => {
   try {
-    dispatch(startLoading('Loading students data...'))
+    dispatch(setLoading(true))
+    dispatch(setError(null))
     const response = await api.get<CoachStudentsResponse>('/api/coach/students')
     dispatch(setCoachStudents(response.data.students))
     dispatch(setStudentsStats(response.data.stats))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
   } catch (error) {
     dispatch(setError('Failed to load students data'))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
     throw error
   }
 }
 
 export const getStudentDetails = (studentId: number) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(startLoading('Loading student details...'))
+    dispatch(setLoading(true))
     const response = await api.get<Student>(`/api/coach/students/${studentId}`)
     dispatch(setSelectedStudent(response.data))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
   } catch (error) {
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
     console.error('Error fetching student details:', error)
   }
 }
 
 export const updateStudentLevel = (studentId: number, newLevel: number) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(startLoading('Updating student level...'))
+    dispatch(setLoading(true))
     await api.put(`/api/coach/students/${studentId}/level`, { 
       nrtp_level: newLevel 
     })
@@ -161,25 +161,25 @@ export const updateStudentLevel = (studentId: number, newLevel: number) => async
     dispatch(setCoachStudents(studentsResponse.data.students))
     dispatch(setStudentsStats(studentsResponse.data.stats))
     
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
   } catch (error) {
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
     console.error('Error updating student level:', error)
   }
 }
 
 export const addStudentNote = (studentId: number, note: string) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(startLoading('Adding student note...'))
+    dispatch(setLoading(true))
     await api.post(`/api/coach/students/${studentId}/notes`, { note })
     
     // Refresh student details
     const response = await api.get<Student>(`/api/coach/students/${studentId}`)
     dispatch(setSelectedStudent(response.data))
     
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
   } catch (error) {
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
     console.error('Error adding student note:', error)
   }
 }

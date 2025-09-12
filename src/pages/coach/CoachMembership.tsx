@@ -27,6 +27,21 @@ const CoachMembershipPage: React.FC = () => {
     dispatch(fetchCoachMembershipData())
   }, [dispatch])
 
+  // Clear success message when error occurs
+  useEffect(() => {
+    if (error) {
+      setSuccessMessage('')
+    }
+  }, [error])
+
+  // Clear success message automatically
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => setSuccessMessage(''), 5000)
+      return () => clearTimeout(timer)
+    }
+  }, [successMessage])
+
   const handleSubscribe = async (planId: number, billingCycle: 'monthly' | 'yearly') => {
     try {
       await dispatch(subscribeToCoachPlan(planId, {
@@ -34,8 +49,8 @@ const CoachMembershipPage: React.FC = () => {
         billing_cycle: billingCycle
       }))
       setSuccessMessage('Successfully subscribed to coaching plan!')
-      setTimeout(() => setSuccessMessage(''), 5000)
     } catch (error) {
+      // Error is already handled in Redux slice and displayed in error state
       console.error('Subscription failed:', error)
     }
   }
@@ -44,8 +59,8 @@ const CoachMembershipPage: React.FC = () => {
     try {
       await dispatch(cancelCoachSubscription())
       setSuccessMessage('Coaching subscription canceled successfully')
-      setTimeout(() => setSuccessMessage(''), 5000)
     } catch (error) {
+      // Error is already handled in Redux slice and displayed in error state
       console.error('Cancellation failed:', error)
     }
   }
@@ -57,8 +72,8 @@ const CoachMembershipPage: React.FC = () => {
         billing_cycle: billingCycle
       }))
       setSuccessMessage('Coaching subscription renewed successfully!')
-      setTimeout(() => setSuccessMessage(''), 5000)
     } catch (error) {
+      // Error is already handled in Redux slice and displayed in error state
       console.error('Renewal failed:', error)
     }
   }
@@ -67,15 +82,15 @@ const CoachMembershipPage: React.FC = () => {
     try {
       await dispatch(updateCoachPaymentMethod(paymentData))
       setSuccessMessage('Payment method updated successfully!')
-      setTimeout(() => setSuccessMessage(''), 5000)
     } catch (error) {
+      // Error is already handled in Redux slice and displayed in error state
       console.error('Payment method update failed:', error)
     }
   }
 
   if (loading && !currentSubscription && availablePlans.length === 0) {
     return (
-      <div className="min-h-screen  flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading your coaching membership information...</p>
@@ -85,7 +100,7 @@ const CoachMembershipPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen  py-8">
+    <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Success Message */}
         {successMessage && (

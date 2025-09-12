@@ -40,11 +40,12 @@ const MembersHeader: React.FC<MembersHeaderProps> = ({
   ]
 
   const skillLevels = [
-    { value: '', label: 'All Skill Levels' },
-    { value: 'beginner', label: 'Beginner' },
-    { value: 'intermediate', label: 'Intermediate' },
-    { value: 'advanced', label: 'Advanced' },
-    { value: 'professional', label: 'Professional' }
+    { value: '', label: 'All NRTP Levels' },
+    { value: '1.0', label: '1.0 - Beginner' },
+    { value: '2.0', label: '2.0 - Novice' },
+    { value: '3.0', label: '3.0 - Intermediate' },
+    { value: '4.0', label: '4.0 - Advanced' },
+    { value: '5.0', label: '5.0 - Professional' }
   ]
 
   const certificationLevels = [
@@ -84,7 +85,7 @@ const MembersHeader: React.FC<MembersHeaderProps> = ({
         </nav>
       </div>
 
-      <div className="px-6 py-4 border-t border-gray-200 ">
+      <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">

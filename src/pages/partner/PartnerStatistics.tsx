@@ -94,7 +94,7 @@ const PartnerStatistics: React.FC = () => {
 
   if (loading && !revenueData.length) {
     return (
-      <div className="min-h-screen  py-8">
+      <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="animate-pulse space-y-6">
             <div className="h-32 bg-gray-200 rounded-lg"></div>
@@ -112,7 +112,7 @@ const PartnerStatistics: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen  py-8">
+      <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-red-50 border border-red-200 rounded-lg p-8 text-center">
             <svg className="mx-auto h-12 w-12 text-red-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

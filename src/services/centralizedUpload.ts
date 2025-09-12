@@ -13,6 +13,7 @@ export type UploadType =
   | 'club-logo'
   | 'state-logo'
   | 'partner-logo'
+  | 'partner-logo-auth'
   | 'coach-photo'
   | 'coach-document'
 
@@ -64,6 +65,15 @@ export const uploadConfigs: Record<UploadType, UploadConfig> = {
   },
   'partner-logo': {
     endpoint: '/api/upload/partner-logo-registration',
+    folder: 'partner_logos',
+    description: 'Business Logo',
+    acceptedFormats: 'PNG, JPG up to 5MB',
+    maxSize: '5MB',
+    cropShape: 'rect',
+    aspectRatio: 1
+  },
+  'partner-logo-auth': {
+    endpoint: '/api/upload/partner-logo',
     folder: 'partner_logos',
     description: 'Business Logo',
     acceptedFormats: 'PNG, JPG up to 5MB',

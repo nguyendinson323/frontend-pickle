@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState, AppDispatch } from '../../store'
-import { fetchCoachDashboard } from '../../store/slices/coachDashboardSlice'
+import { fetchCoachProfile } from '../../store/slices/coachProfileSlice'
 
 // Import tab components
 import CoachCredentialTab from '../../components/coach/profile/CoachCredentialTab'
@@ -16,7 +16,7 @@ const CoachProfilePage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
   const { user } = useSelector((state: RootState) => state.auth)
-  const { dashboardData, isLoading, error } = useSelector((state: RootState) => state.coachDashboard)
+  const { profile, isLoading, error } = useSelector((state: RootState) => state.coachProfile)
   const [activeTab, setActiveTab] = useState<'credential' | 'account' | 'inbox' | 'connection' | 'certifications'>('credential')
   const [isEditing, setIsEditing] = useState(false)
 
@@ -26,10 +26,10 @@ const CoachProfilePage: React.FC = () => {
       return
     }
     
-    if (!dashboardData) {
-      dispatch(fetchCoachDashboard())
+    if (!profile) {
+      dispatch(fetchCoachProfile())
     }
-  }, [user, navigate, dispatch, dashboardData])
+  }, [user, navigate, dispatch, profile])
 
   if (!user || user.role !== 'coach') {
     return (
@@ -39,7 +39,7 @@ const CoachProfilePage: React.FC = () => {
     )
   }
 
-  if (isLoading || !dashboardData) {
+  if (isLoading || !profile) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-green-600"></div>
@@ -53,7 +53,7 @@ const CoachProfilePage: React.FC = () => {
         <div className="text-center">
           <div className="text-red-600 text-lg font-medium">{error}</div>
           <button 
-            onClick={() => dispatch(fetchCoachDashboard())} 
+            onClick={() => dispatch(fetchCoachProfile())} 
             className="mt-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
           >
             Retry
@@ -63,7 +63,7 @@ const CoachProfilePage: React.FC = () => {
     )
   }
 
-  const profile = dashboardData.profile
+  const profileData = profile
 
   const tabs = [
     { id: 'credential' as const, name: 'Credential', icon: '🏆' },
@@ -84,26 +84,26 @@ const CoachProfilePage: React.FC = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'credential':
-        return <CoachCredentialTab profile={profile} user={user} />
+        return <CoachCredentialTab profile={profileData} user={user} />
       case 'account':
         return isEditing ? (
-          <CoachAccountForm profile={profile} user={user} onCancel={handleCancel} />
+          <CoachAccountForm profile={profileData} onCancel={handleCancel} />
         ) : (
-          <CoachAccountView profile={profile} user={user} onEdit={handleEdit} />
+          <CoachAccountView profile={profileData} onEdit={handleEdit} />
         )
       case 'inbox':
-        return <CoachInboxTab user={user} />
+        return <CoachInboxTab />
       case 'connection':
         return <CoachConnectionTab user={user} />
       case 'certifications':
-        return <CoachCertificationsTab certifications={dashboardData.certifications} />
+        return <CoachCertificationsTab certifications={[]} />
       default:
         return null
     }
   }
 
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation Breadcrumb */}
@@ -150,9 +150,9 @@ const CoachProfilePage: React.FC = () => {
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
           <div className="flex items-center">
             <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mr-6">
-              {profile.profile_photo_url ? (
+              {profileData.profile_photo_url ? (
                 <img 
-                  src={profile.profile_photo_url} 
+                  src={profileData.profile_photo_url} 
                   alt="Profile" 
                   className="w-16 h-16 rounded-full object-cover" 
                 />
@@ -161,12 +161,12 @@ const CoachProfilePage: React.FC = () => {
               )}
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900">{profile.full_name}</h2>
+              <h2 className="text-xl font-bold text-gray-900">{profileData.full_name}</h2>
               <p className="text-gray-600">
-                NRTP Level {profile.nrtp_level || 'N/A'} • {profile.state_name || 'Unknown State'}
+                NRTP Level {profileData.nrtp_level || 'N/A'} • {profileData.state_name || 'Unknown State'}
               </p>
               <p className="text-green-600 font-medium">
-                ${profile.hourly_rate || 'Not set'}/hour
+                ${profileData.hourly_rate || 'Not set'}/hour
               </p>
             </div>
           </div>

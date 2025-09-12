@@ -1,13 +1,13 @@
 import React from 'react'
 import { User } from '../../../types/auth'
-import { CoachProfile } from '../../../store/slices/coachDashboardSlice'
+import { CoachProfileData } from '../../../store/slices/coachProfileSlice'
 
 interface CoachCredentialTabProps {
-  profile: CoachProfile
+  profile: CoachProfileData
   user: User
 }
 
-const CoachCredentialTab: React.FC<CoachCredentialTabProps> = ({ profile, user }) => {
+const CoachCredentialTab: React.FC<CoachCredentialTabProps> = ({ profile }) => {
   // Generate QR code URL (placeholder - in real app would use actual QR code library)
   const qrCodeUrl = `data:image/svg+xml,${encodeURIComponent(`
     <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
@@ -166,11 +166,11 @@ const CoachCredentialTab: React.FC<CoachCredentialTabProps> = ({ profile, user }
               <p className="text-sm text-gray-600">Account verification status with the federation</p>
             </div>
             <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-              user.is_verified 
+              profile.user.is_verified 
                 ? 'bg-green-100 text-green-800' 
                 : 'bg-yellow-100 text-yellow-800'
             }`}>
-              {user.is_verified ? 'Verified' : 'Pending Verification'}
+              {profile.user.is_verified ? 'Verified' : 'Pending Verification'}
             </span>
           </div>
         </div>

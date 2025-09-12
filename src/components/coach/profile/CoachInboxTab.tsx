@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { User } from '../../../types/auth'
 import api from '../../../services/api'
 
 interface Message {
@@ -15,11 +14,9 @@ interface Message {
   sender_name?: string
 }
 
-interface CoachInboxTabProps {
-  user: User
-}
+interface CoachInboxTabProps {}
 
-const CoachInboxTab: React.FC<CoachInboxTabProps> = ({ user }) => {
+const CoachInboxTab: React.FC<CoachInboxTabProps> = () => {
   const [messages, setMessages] = useState<Message[]>([])
   const [filteredMessages, setFilteredMessages] = useState<Message[]>([])
   const [activeFilter, setActiveFilter] = useState<string>('all')
@@ -37,7 +34,7 @@ const CoachInboxTab: React.FC<CoachInboxTabProps> = ({ user }) => {
   const fetchMessages = async () => {
     try {
       setIsLoading(true)
-      const response = await api.get('/api/messages')
+      const response = await api.get<{ messages: Message[] }>('/api/messages')
       setMessages(response.data.messages || [])
       setError(null)
     } catch (err: any) {

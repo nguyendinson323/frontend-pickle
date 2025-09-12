@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppDispatch } from '../index'
-import { startLoading, stopLoading } from './loadingSlice'
 import api from '../../services/api'
 
 interface CoachingSession {
@@ -154,54 +153,61 @@ interface CoachSessionsResponse {
 // API Functions
 export const fetchCoachSessionsData = () => async (dispatch: AppDispatch) => {
   try {
-    dispatch(startLoading('Loading sessions data...'))
+    dispatch(setLoading(true))
+    dispatch(setError(null))
     const response = await api.get<CoachSessionsResponse>('/api/coach/sessions')
     dispatch(setCoachSessions(response.data.sessions))
     dispatch(setCoachAvailability(response.data.availability))
     dispatch(setSessionStats(response.data.stats))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
   } catch (error) {
     dispatch(setError('Failed to load sessions data'))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
     throw error
   }
 }
 
 export const updateCoachSessionStatus = (sessionId: number, status: string) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(startLoading('Updating session status...'))
+    dispatch(setLoading(true))
+    dispatch(setError(null))
     const response = await api.put(`/api/coach/sessions/${sessionId}/status`, { status })
     dispatch(updateSessionStatus({ sessionId, status }))
     if ((response.data as any).stats) {
       dispatch(setSessionStats((response.data as { stats: SessionStats }).stats))
     }
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
   } catch (error) {
-    dispatch(stopLoading())
+    dispatch(setError('Failed to update session status'))
+    dispatch(setLoading(false))
     console.error('Error updating session status:', error)
   }
 }
 
 export const addCoachAvailability = (availabilityData: Partial<CoachAvailability>) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(startLoading('Adding availability slot...'))
+    dispatch(setLoading(true))
+    dispatch(setError(null))
     const response = await api.post<CoachAvailability>('/api/coach/availability', availabilityData)
     dispatch(addAvailabilitySlot(response.data as CoachAvailability))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
   } catch (error) {
-    dispatch(stopLoading())
+    dispatch(setError('Failed to add availability slot'))
+    dispatch(setLoading(false))
     console.error('Error adding availability:', error)
   }
 }
 
 export const removeCoachAvailability = (availabilityId: number) => async (dispatch: AppDispatch) => {
   try {
-    dispatch(startLoading('Removing availability slot...'))
+    dispatch(setLoading(true))
+    dispatch(setError(null))
     await api.delete(`/api/coach/availability/${availabilityId}`)
     dispatch(removeAvailabilitySlot(availabilityId))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
   } catch (error) {
-    dispatch(stopLoading())
+    dispatch(setError('Failed to remove availability slot'))
+    dispatch(setLoading(false))
     console.error('Error removing availability:', error)
   }
 }

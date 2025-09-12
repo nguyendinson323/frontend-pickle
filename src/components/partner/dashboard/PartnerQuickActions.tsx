@@ -5,12 +5,12 @@ const PartnerQuickActions: React.FC = () => {
   const navigate = useNavigate()
 
   const quickActions = [
-    { title: 'Court Management', description: 'Manage court availability and pricing', icon: '🎾', href: '/partner/courts' },
-    { title: 'Booking System', description: 'View and manage reservations', icon: '📅', href: '/partner/bookings' },
-    { title: 'Event Hosting', description: 'Create and manage events', icon: '🎉', href: '/partner/events' },
+    { title: 'Court Management', description: 'Manage court availability and pricing', icon: '🎾', href: '/partner/management' },
+    { title: 'Tournament Hosting', description: 'Create and manage tournaments', icon: '🏆', href: '/partner/management' },
     { title: 'Business Microsite', description: 'Manage your business website', icon: '🌐', href: '/partner/microsite' },
-    { title: 'Revenue Analytics', description: 'Track earnings and performance', icon: '📊', href: '/partner/analytics' },
-    { title: 'Partner Profile', description: 'Update business information', icon: '🏨', href: '/partner/profile' }
+    { title: 'Revenue Analytics', description: 'Track earnings and performance', icon: '📊', href: '/partner/statistics' },
+    { title: 'Partner Profile', description: 'Update business information', icon: '🏨', href: '/partner/profile' },
+    { title: 'Documents & Invoices', description: 'Manage documents and payments', icon: '📄', href: '/partner/documents' }
   ]
 
   return (

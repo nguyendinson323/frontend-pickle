@@ -156,7 +156,7 @@ const ClubsTab: React.FC<ClubsTabProps> = ({
               </div>
 
               {(club.affiliation_expires_at || club.premium_expires_at) && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 p-3  rounded-lg">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 p-3 bg-gray-50 rounded-lg">
                   {club.affiliation_expires_at && (
                     <div>
                       <div className="text-sm text-gray-500">Affiliation Expires</div>

@@ -25,7 +25,7 @@ const MembersStatsCard: React.FC<MembersStatsCardProps> = ({ stats }) => {
         <div className="mt-4">
           <div className="flex justify-between text-xs">
             <span className="text-green-600">Active: {stats.active_players}</span>
-            <span className="text-red-600">Suspended: {stats.suspended_players}</span>
+            <span className="text-red-600">Inactive: {stats.inactive_players}</span>
           </div>
         </div>
       </div>
@@ -44,7 +44,7 @@ const MembersStatsCard: React.FC<MembersStatsCardProps> = ({ stats }) => {
         </div>
         <div className="mt-4">
           <div className="text-xs text-green-600">
-            Verified: {stats.verified_coaches} of {stats.total_coaches}
+            Active: {stats.active_coaches} of {stats.total_coaches}
           </div>
         </div>
       </div>
@@ -107,11 +107,11 @@ const MembersStatsCard: React.FC<MembersStatsCardProps> = ({ stats }) => {
             <span className="text-sm font-medium text-gray-900">{stats.recent_registrations}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-600">Coaches by Certification</span>
+            <span className="text-sm text-gray-600">Coaches by Level</span>
             <div className="text-right">
-              {Object.entries(stats.coaches_by_certification).map(([cert, count]) => (
-                <div key={cert} className="text-xs text-gray-500 capitalize">
-                  {cert}: {count}
+              {Object.entries(stats.coaches_by_level).map(([level, count]) => (
+                <div key={level} className="text-xs text-gray-500">
+                  NRTP {level}: {count}
                 </div>
               ))}
             </div>

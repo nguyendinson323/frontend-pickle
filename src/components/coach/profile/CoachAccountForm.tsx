@@ -1,25 +1,23 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../../../store'
-import { User } from '../../../types/auth'
-import { CoachProfile } from '../../../store/slices/coachDashboardSlice'
-import api from '../../../services/api'
+import { CoachProfileData, updateCoachProfile, uploadProfilePhoto } from '../../../store/slices/coachProfileSlice'
+import CentralizedImageUpload from '../../common/CentralizedImageUpload'
 
 interface CoachAccountFormProps {
-  profile: CoachProfile
-  user: User
+  profile: CoachProfileData
   onCancel: () => void
 }
 
-const CoachAccountForm: React.FC<CoachAccountFormProps> = ({ profile, user, onCancel }) => {
+const CoachAccountForm: React.FC<CoachAccountFormProps> = ({ profile, onCancel }) => {
   const dispatch = useDispatch<AppDispatch>()
   const [formData, setFormData] = useState({
     full_name: profile.full_name || '',
-    email: user.email || '',
-    phone: user.phone || '',
+    email: profile.user.email || '',
+    phone: profile.user.phone || '',
     hourly_rate: profile.hourly_rate || '',
     nrtp_level: profile.nrtp_level || '',
-    is_searchable: user.is_searchable
+    is_searchable: profile.user.is_searchable
   })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -31,18 +29,16 @@ const CoachAccountForm: React.FC<CoachAccountFormProps> = ({ profile, user, onCa
     setErrors({})
 
     try {
-      const response = await api.put('/api/coach/profile', formData)
-      
-      // Update profile data in local storage if needed
-      const currentUser = JSON.parse(localStorage.getItem('user') || '{}')
-      if (currentUser.dashboard) {
-        currentUser.dashboard.profile = response.data.profile
-        localStorage.setItem('user', JSON.stringify(currentUser))
+      const updateData = {
+        ...formData,
+        hourly_rate: typeof formData.hourly_rate === 'string' ? 
+          (formData.hourly_rate === '' ? undefined : parseFloat(formData.hourly_rate)) : 
+          formData.hourly_rate,
+        nrtp_level: typeof formData.nrtp_level === 'string' ? 
+          (formData.nrtp_level === '' ? undefined : parseFloat(formData.nrtp_level)) : 
+          formData.nrtp_level
       }
-      
-      // Refresh the page data by reloading the dashboard
-      window.location.reload()
-      
+      await dispatch(updateCoachProfile(updateData))
       onCancel() // Close edit mode
     } catch (error: any) {
       console.error('Failed to update profile:', error)
@@ -223,33 +219,19 @@ const CoachAccountForm: React.FC<CoachAccountFormProps> = ({ profile, user, onCa
       </div>
 
       {/* Profile Photo Section */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h4 className="text-md font-semibold text-gray-900 mb-4">Profile Photo</h4>
-        <div className="flex items-center space-x-6">
-          <div className="w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center">
-            {profile.profile_photo_url ? (
-              <img 
-                src={profile.profile_photo_url} 
-                alt="Profile" 
-                className="w-20 h-20 rounded-full object-cover" 
-              />
-            ) : (
-              <span className="text-2xl text-gray-500">👨‍🏫</span>
-            )}
-          </div>
-          <div>
-            <p className="text-sm text-gray-600 mb-2">
-              Upload a professional photo for your coaching profile
-            </p>
-            <button
-              type="button"
-              className="px-4 py-2 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50"
-            >
-              Change Photo
-            </button>
-          </div>
-        </div>
-      </div>
+      <CentralizedImageUpload
+        uploadType="coach-photo"
+        value={profile.profile_photo_url || ''}
+        onChange={async (photoUrl) => {
+          try {
+            await dispatch(uploadProfilePhoto(photoUrl))
+          } catch (error) {
+            console.error('Failed to update profile photo:', error)
+          }
+        }}
+        color="green"
+        className="bg-white rounded-lg border border-gray-200"
+      />
     </form>
   )
 }

@@ -124,7 +124,7 @@ const StudentsList: React.FC<StudentsListProps> = ({
         {filteredStudents.map((student) => {
           const activity = getActivityBadge(student)
           return (
-            <div key={student.id} className="p-6 hover: transition-colors duration-200">
+            <div key={student.id} className="p-6 hover:bg-gray-50 transition-colors duration-200">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   {/* Student Photo */}

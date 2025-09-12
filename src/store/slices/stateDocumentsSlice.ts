@@ -9,15 +9,10 @@ interface Document {
   title: string
   description: string | null
   document_url: string
-  file_name: string
   file_type: string | null
-  file_size: number
-  document_type: string
-  related_entity_type: string | null
-  related_entity_id: number | null
   is_public: boolean
   created_at: string
-  created_by_user: {
+  owner: {
     id: number
     username: string
     email: string
@@ -113,7 +108,7 @@ const stateDocumentsSlice = createSlice({
           state.stats.private_documents += 1
         }
         // Update documents by type
-        const docType = action.payload.document_type || 'other'
+        const docType = action.payload.file_type || 'other'
         state.stats.documents_by_type[docType] = (state.stats.documents_by_type[docType] || 0) + 1
       }
     },
@@ -135,7 +130,7 @@ const stateDocumentsSlice = createSlice({
           state.stats.private_documents -= 1
         }
         // Update documents by type
-        const docType = document.document_type || 'other'
+        const docType = document.file_type || 'other'
         if (state.stats.documents_by_type[docType] > 0) {
           state.stats.documents_by_type[docType] -= 1
         }
@@ -170,7 +165,7 @@ export const fetchStateDocuments = (filters?: Partial<StateDocumentsState['filte
     }
     
     const params: any = {}
-    if (currentFilters.file_type) params.document_type = currentFilters.file_type
+    if (currentFilters.file_type) params.file_type = currentFilters.file_type
     if (currentFilters.is_public !== null) params.is_public = currentFilters.is_public
     if (currentFilters.search) params.search = currentFilters.search
     if (currentFilters.date_range.start_date) params.start_date = currentFilters.date_range.start_date
@@ -254,10 +249,27 @@ export const downloadStateDocument = (documentId: number) => async (dispatch: Ap
   try {
     dispatch(setError(null))
     
-    const response = await api.get(`/api/state/documents/${documentId}/download`)
-    // This will redirect to the document URL
-    window.open(response.request.responseURL, '_blank')
+    const response = await api.get(`/api/state/documents/${documentId}/download`, {
+      maxRedirects: 0,
+      validateStatus: (status) => status === 302 || status === 200
+    })
+    
+    // If redirect response, get the location header
+    if (response.status === 302 && response.headers.location) {
+      window.open(response.headers.location, '_blank')
+    } else if (response.data && (response.data as any).url) {
+      window.open((response.data as any).url, '_blank')
+    } else {
+      // Fallback: try to get the URL directly
+      const urlResponse = await api.get(`/api/state/documents/${documentId}/download`)
+      window.open(urlResponse.request.responseURL, '_blank')
+    }
   } catch (error: any) {
+    if (error.response?.status === 302) {
+      // Handle redirect manually
+      window.open(error.response.headers.location, '_blank')
+      return
+    }
     dispatch(setError(error.response?.data?.message || 'Failed to download document'))
     throw error
   }
@@ -265,8 +277,42 @@ export const downloadStateDocument = (documentId: number) => async (dispatch: Ap
 
 export default stateDocumentsSlice.reducer
 
+// Placeholder types for future invoice functionality
+interface StateInvoice {
+  id: number
+  owner_id: number
+  title: string
+  amount: number
+  status: 'pending' | 'paid' | 'overdue'
+  created_at: string
+  invoice_number?: string
+  invoice_type?: string
+  recipient_type?: string
+  recipient_id?: number
+  recipient_name?: string
+  tax_amount?: number
+  due_date?: string
+  description?: string
+  total_amount?: number
+}
+
+// Placeholder types for future template functionality
+interface DocumentTemplate {
+  id: number
+  owner_id: number
+  name: string
+  content: string
+  template_type: string
+  created_at: string
+  description?: string
+  variables?: any[]
+  is_active?: boolean
+}
+
 // Export types
 export type {
   Document,
-  DocumentsStats
+  DocumentsStats,
+  StateInvoice,
+  DocumentTemplate
 }

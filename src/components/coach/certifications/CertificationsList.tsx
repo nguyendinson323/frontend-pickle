@@ -1,25 +1,11 @@
 import React from 'react'
-
-interface CoachCertification {
-  id: number
-  coach_id: number
-  name: string
-  issuer: string
-  issue_date: string
-  expiry_date: string | null
-  certificate_url: string
-  created_at: string
-}
+import { CoachCertification, CertificationFilters } from '../../../types/coach'
 
 interface CertificationsListProps {
   certifications: CoachCertification[]
-  filters: {
-    status: string
-    issuer: string
-    search: string
-  }
+  filters: CertificationFilters
   onEdit: (certification: CoachCertification) => void
-  onDelete: (certificationId: number) => void
+  onDelete: (certification: CoachCertification) => void
   onDownload: (certificationId: number) => void
 }
 
@@ -48,14 +34,14 @@ const CertificationsList: React.FC<CertificationsListProps> = ({
     }
 
     // Issuer filter
-    if (filters.issuer && !cert.issuer.toLowerCase().includes(filters.issuer.toLowerCase())) {
+    if (filters.issuer && cert.issuer && !cert.issuer.toLowerCase().includes(filters.issuer.toLowerCase())) {
       return false
     }
 
     // Search filter
     if (filters.search && 
         !cert.name.toLowerCase().includes(filters.search.toLowerCase()) &&
-        !cert.issuer.toLowerCase().includes(filters.search.toLowerCase())) {
+        !(cert.issuer && cert.issuer.toLowerCase().includes(filters.search.toLowerCase()))) {
       return false
     }
 
@@ -166,7 +152,7 @@ const CertificationsList: React.FC<CertificationsListProps> = ({
                   </button>
 
                   <button
-                    onClick={() => onDelete(cert.id)}
+                    onClick={() => onDelete(cert)}
                     className="px-3 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors duration-200"
                     title="Delete Certification"
                   >

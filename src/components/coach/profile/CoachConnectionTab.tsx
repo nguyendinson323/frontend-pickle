@@ -47,7 +47,7 @@ const CoachConnectionTab: React.FC<CoachConnectionTabProps> = ({ user }) => {
         level: searchFilters.level
       })
 
-      const response = await api.get(`/api/users/search?${params}`)
+      const response = await api.get<{ users: SearchUser[] }>(`/api/users/search?${params}`)
       setSearchResults(response.data.users || [])
     } catch (error: any) {
       console.error('Search failed:', error)

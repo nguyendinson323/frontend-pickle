@@ -51,7 +51,7 @@ const PartnerPerformanceMetrics: React.FC<PartnerPerformanceMetricsProps> = ({ p
         </div>
 
         <button
-          onClick={() => navigate('/partner/analytics')}
+          onClick={() => navigate('/partner/statistics')}
           className="text-orange-600 hover:text-orange-500 text-sm font-medium"
         >
           View detailed analytics →

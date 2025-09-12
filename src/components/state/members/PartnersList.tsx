@@ -21,22 +21,15 @@ const PartnersList: React.FC<PartnersListProps> = ({
     })
   }
 
-  const formatCurrency = (amount: number | null) => {
-    if (!amount) return '-'
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(amount)
-  }
 
-  const getPartnerTypeColor = (type: string) => {
+  const getPartnerTypeColor = (type: string | null) => {
     const colors = {
       sponsor: 'bg-purple-100 text-purple-800',
       vendor: 'bg-blue-100 text-blue-800',
       facility: 'bg-green-100 text-green-800',
       other: 'bg-gray-100 text-gray-800'
     }
-    return colors[type as keyof typeof colors] || colors.other
+    return colors[(type as keyof typeof colors) || 'other']
   }
 
   if (loading) {
@@ -79,13 +72,13 @@ const PartnersList: React.FC<PartnersListProps> = ({
                 Contact
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Partnership
+                Details
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Contract Period
+                Premium Expires
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Contribution
+                Website
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Status
@@ -100,63 +93,54 @@ const PartnersList: React.FC<PartnersListProps> = ({
               <tr key={partner.id} className="hover:">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div>
-                    <div className="text-sm font-medium text-gray-900">{partner.name}</div>
-                    {partner.description && (
-                      <div className="text-sm text-gray-500 max-w-xs truncate">
-                        {partner.description}
-                      </div>
-                    )}
+                    <div className="text-sm font-medium text-gray-900">{partner.business_name}</div>
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPartnerTypeColor(partner.type)}`}>
-                    {partner.type}
+                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPartnerTypeColor(partner.partner_type)}`}>
+                    {partner.partner_type}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div>
-                    {partner.contact_email && (
-                      <div className="text-sm text-gray-900">{partner.contact_email}</div>
+                    {partner.contact_name && (
+                      <div className="text-sm text-gray-900">{partner.contact_name}</div>
                     )}
-                    {partner.contact_phone && (
-                      <div className="text-sm text-gray-500">{partner.contact_phone}</div>
+                    {partner.contact_title && (
+                      <div className="text-sm text-gray-500">{partner.contact_title}</div>
                     )}
-                    {partner.website_url && (
-                      <div className="text-xs text-blue-600 hover:text-blue-800">
-                        <a href={partner.website_url} target="_blank" rel="noopener noreferrer">
-                          Website
-                        </a>
-                      </div>
+                    {partner.user.email && (
+                      <div className="text-xs text-gray-500">{partner.user.email}</div>
+                    )}
+                    {partner.user.phone && (
+                      <div className="text-xs text-gray-500">{partner.user.phone}</div>
                     )}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-900">
-                    {partner.partnership_type || '-'}
+                    {partner.partner_type || '-'}
                   </div>
-                  {partner.services_provided && (
-                    <div className="text-xs text-gray-500 max-w-xs truncate">
-                      {partner.services_provided}
+                  {partner.has_courts && (
+                    <div className="text-xs text-gray-500">
+                      Has Courts
                     </div>
                   )}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {partner.contract_start_date && partner.contract_end_date ? (
-                      <>
-                        <div>{formatDate(partner.contract_start_date)}</div>
-                        <div className="text-xs text-gray-500">to {formatDate(partner.contract_end_date)}</div>
-                      </>
-                    ) : (
-                      '-'
-                    )}
-                  </div>
-                </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {formatCurrency(partner.contribution_amount)}
+                  {formatDate(partner.premium_expires_at)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {partner.is_active ? (
+                  {partner.website ? (
+                    <a href={partner.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 text-sm">
+                      Visit
+                    </a>
+                  ) : (
+                    '-'
+                  )}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {partner.membership_status === 'active' ? (
                     <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
                       Active
                     </span>
@@ -168,7 +152,7 @@ const PartnersList: React.FC<PartnersListProps> = ({
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex justify-end space-x-2">
-                    {!partner.is_active ? (
+                    {partner.membership_status !== 'active' ? (
                       <button
                         onClick={() => onUpdateStatus(partner.id, true)}
                         className="text-green-600 hover:text-green-900 transition-colors"

@@ -33,7 +33,7 @@ interface Tournament {
   id: number
   name: string
   description: string | null
-  tournament_type: string
+  tournament_type: 'singles' | 'doubles' | 'mixed' | 'junior' | 'senior'
   skill_level: 'beginner' | 'intermediate' | 'advanced' | 'open'  // Not in database but expected by frontend
   start_date: string
   end_date: string
@@ -45,7 +45,7 @@ interface Tournament {
   prize_pool: number | null  // Not in database but expected by frontend
   venue_name: string | null
   venue_address: string | null
-  status: 'upcoming' | 'ongoing' | 'completed' | 'canceled'  // Database values
+  status: 'upcoming' | 'ongoing' | 'completed' | 'canceled'
   rules: string | null  // Not in database but expected by frontend
   contact_info: string | null  // Not in database but expected by frontend
   created_at: string

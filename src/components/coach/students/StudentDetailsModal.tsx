@@ -115,7 +115,7 @@ const StudentDetailsModal: React.FC<StudentDetailsModalProps> = ({
         ) : (
           <div className="p-6 space-y-6">
             {/* Contact Information */}
-            <div className=" p-4 rounded-lg">
+            <div className="bg-gray-50 p-4 rounded-lg">
               <h3 className="text-lg font-semibold text-gray-900 mb-3">Contact Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -227,7 +227,7 @@ const StudentDetailsModal: React.FC<StudentDetailsModalProps> = ({
             )}
 
             {/* Add Note */}
-            <div className=" p-4 rounded-lg">
+            <div className="bg-gray-50 p-4 rounded-lg">
               <h3 className="text-lg font-semibold text-gray-900 mb-3">Add Note</h3>
               <div className="flex space-x-2">
                 <textarea

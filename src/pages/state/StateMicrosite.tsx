@@ -119,7 +119,7 @@ const StateMicrosite: React.FC = () => {
 
   if (error && !micrositeInfo) {
     return (
-      <div className="min-h-screen  py-8">
+      <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
             {error}
@@ -131,7 +131,7 @@ const StateMicrosite: React.FC = () => {
 
   if (!micrositeInfo) {
     return (
-      <div className="min-h-screen  py-8">
+      <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center py-12">
             <h3 className="mt-2 text-sm font-medium text-gray-900">Microsite not found</h3>
@@ -150,7 +150,7 @@ const StateMicrosite: React.FC = () => {
   // Check if microsite is public for public views
   if (isPublicView && !micrositeInfo.is_public) {
     return (
-      <div className="min-h-screen  py-8">
+      <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center py-12">
             <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -167,7 +167,7 @@ const StateMicrosite: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen  py-8">
+    <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
         <MicrositeHeader

@@ -41,7 +41,7 @@ const PartnerUpcomingEvents: React.FC<PartnerUpcomingEventsProps> = ({ upcomingE
             </div>
           ))}
           <button
-            onClick={() => navigate('/partner/events')}
+            onClick={() => navigate('/partner/management')}
             className="text-orange-600 hover:text-orange-500 text-sm font-medium"
           >
             View all events →
@@ -52,10 +52,10 @@ const PartnerUpcomingEvents: React.FC<PartnerUpcomingEventsProps> = ({ upcomingE
           <div className="text-4xl mb-4">🎉</div>
           <p className="text-gray-600 mb-4">No upcoming events</p>
           <button
-            onClick={() => navigate('/partner/create-event')}
+            onClick={() => navigate('/partner/management')}
             className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
           >
-            Create Event
+            Create Tournament
           </button>
         </div>
       )}

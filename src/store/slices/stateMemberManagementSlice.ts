@@ -6,93 +6,124 @@ import { AppDispatch, RootState } from '../index'
 interface StatePlayer {
   id: number
   user_id: number
+  full_name: string
+  birth_date: string
+  gender: 'Male' | 'Female' | 'Other' | null
   state_id: number
-  skill_level: string
-  date_of_birth: string
-  gender: string
-  phone_number: string | null
-  emergency_contact: string | null
-  medical_conditions: string | null
-  membership_status: 'active' | 'inactive' | 'suspended'
-  registration_date: string
-  last_activity: string | null
-  total_tournaments: number
-  current_ranking: number | null
+  curp: string | null
+  nrtp_level: number | null
+  profile_photo_url: string | null
+  id_document_url: string
+  nationality: string
+  club_id: number | null
+  ranking_position: number | null
+  affiliation_expires_at: string | null
+  membership_status: 'active' | 'inactive'
+  age: number
+  created_at: string
+  updated_at: string
   user: {
     id: number
     username: string
     email: string
-    first_name: string
-    last_name: string
+    phone: string | null
+  }
+  state: {
+    name: string
   }
 }
 
 interface StateCoach {
   id: number
   user_id: number
+  full_name: string
+  birth_date: string
+  gender: 'Male' | 'Female' | 'Other' | null
   state_id: number
-  certification_level: string
-  specialization: string[] 
+  curp: string | null
+  nrtp_level: number | null
+  profile_photo_url: string | null
+  id_document_url: string
   hourly_rate: number | null
-  bio: string | null
-  experience_years: number | null
-  phone_number: string | null
-  availability_schedule: string | null
-  is_verified: boolean
-  verification_date: string | null
-  total_students: number
-  average_rating: number | null
+  affiliation_expires_at: string | null
+  membership_status: 'active' | 'inactive'
+  age: number
+  created_at: string
+  updated_at: string
   user: {
     id: number
     username: string
     email: string
-    first_name: string
-    last_name: string
+    phone: string | null
+  }
+  state: {
+    name: string
   }
 }
 
 interface StateClub {
   id: number
+  user_id: number
   name: string
-  description: string | null
-  address: string | null
-  contact_email: string | null
-  contact_phone: string | null
-  website_url: string | null
+  rfc: string | null
+  manager_name: string | null
+  manager_title: string | null
   state_id: number
-  total_courts: number
-  membership_fee: number | null
-  amenities: string | null
-  operating_hours: string | null
-  is_active: boolean
-  registration_date: string
-  total_members: number
-  upcoming_tournaments: number
+  club_type: string | null
+  website: string | null
+  social_media: string | null
+  logo_url: string | null
+  has_courts: boolean
+  premium_expires_at: string | null
+  affiliation_expires_at: string | null
+  membership_status: 'active' | 'inactive'
+  created_at: string
+  updated_at: string
+  user: {
+    id: number
+    username: string
+    email: string
+    phone: string | null
+  }
+  state: {
+    name: string
+  }
 }
 
 interface StatePartner {
   id: number
-  name: string
-  type: 'sponsor' | 'vendor' | 'facility' | 'other'
-  description: string | null
-  contact_email: string | null
-  contact_phone: string | null
-  website_url: string | null
+  user_id: number
+  business_name: string
+  rfc: string | null
+  contact_name: string | null
+  contact_title: string | null
+  partner_type: string | null
   state_id: number
-  partnership_type: string | null
-  contract_start_date: string | null
-  contract_end_date: string | null
-  is_active: boolean
-  contribution_amount: number | null
-  services_provided: string | null
+  website: string | null
+  social_media: string | null
+  logo_url: string | null
+  has_courts: boolean
+  premium_expires_at: string | null
+  membership_status: 'active' | 'inactive'
+  created_at: string
+  updated_at: string
+  user: {
+    id: number
+    username: string
+    email: string
+    phone: string | null
+  }
+  state: {
+    name: string
+  }
 }
 
 interface MemberStats {
   total_players: number
   active_players: number
-  suspended_players: number
+  inactive_players: number
   total_coaches: number
-  verified_coaches: number
+  active_coaches: number
   total_clubs: number
   active_clubs: number
   total_partners: number
@@ -100,7 +131,7 @@ interface MemberStats {
   players_by_skill: {
     [key: string]: number
   }
-  coaches_by_certification: {
+  coaches_by_level: {
     [key: string]: number
   }
   recent_registrations: number

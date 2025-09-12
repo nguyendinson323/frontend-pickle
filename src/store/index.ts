@@ -20,6 +20,7 @@ import coachStudentsReducer from './slices/coachStudentsSlice'
 import playerMembershipReducer from './slices/playerMembershipSlice'
 import coachMembershipReducer from './slices/coachMembershipSlice'
 import coachDashboardReducer from './slices/coachDashboardSlice'
+import coachProfileReducer from './slices/coachProfileSlice'
 import clubDashboardReducer from './slices/clubDashboardSlice'
 import clubCourtsReducer from './slices/clubCourtsSlice'
 import clubMembersReducer from './slices/clubMembersSlice'
@@ -73,6 +74,7 @@ export const store = configureStore({
     playerMembership: playerMembershipReducer,
     coachMembership: coachMembershipReducer,
     coachDashboard: coachDashboardReducer,
+    coachProfile: coachProfileReducer,
     clubDashboard: clubDashboardReducer,
     clubCourts: clubCourtsReducer,
     clubMembers: clubMembersReducer,

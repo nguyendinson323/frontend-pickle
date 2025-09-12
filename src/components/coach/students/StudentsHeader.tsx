@@ -36,7 +36,7 @@ const StudentsHeader: React.FC<StudentsHeaderProps> = ({
           <div className="text-xs text-gray-500">(Upcoming sessions)</div>
         </div>
         
-        <div className=" p-4 rounded-lg">
+        <div className="bg-gray-50 p-4 rounded-lg">
           <div className="text-2xl font-bold text-gray-600">{inactiveStudents}</div>
           <div className="text-sm text-gray-600">Inactive</div>
         </div>

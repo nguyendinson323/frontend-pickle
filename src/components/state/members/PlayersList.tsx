@@ -29,14 +29,18 @@ const PlayersList: React.FC<PlayersListProps> = ({
     return colors[status as keyof typeof colors] || colors.inactive
   }
 
-  const getSkillLevelColor = (level: string) => {
+  const getSkillLevelColor = (level: number | null) => {
+    if (!level) return 'bg-gray-100 text-gray-800'
+    
     const colors = {
-      beginner: 'bg-blue-100 text-blue-800',
-      intermediate: 'bg-yellow-100 text-yellow-800',
-      advanced: 'bg-orange-100 text-orange-800',
-      professional: 'bg-purple-100 text-purple-800'
+      1: 'bg-blue-100 text-blue-800',
+      2: 'bg-green-100 text-green-800', 
+      3: 'bg-yellow-100 text-yellow-800',
+      4: 'bg-orange-100 text-orange-800',
+      5: 'bg-purple-100 text-purple-800'
     }
-    return colors[level as keyof typeof colors] || 'bg-gray-100 text-gray-800'
+    const roundedLevel = Math.floor(level)
+    return colors[roundedLevel as keyof typeof colors] || 'bg-gray-100 text-gray-800'
   }
 
   if (loading) {
@@ -67,7 +71,7 @@ const PlayersList: React.FC<PlayersListProps> = ({
     <div className="bg-white rounded-lg shadow border border-gray-200">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="">
+          <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Player
@@ -94,27 +98,27 @@ const PlayersList: React.FC<PlayersListProps> = ({
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {players.map((player) => (
-              <tr key={player.id} className="hover:">
+              <tr key={player.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
                     <div className="h-10 w-10 flex-shrink-0">
                       <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
                         <span className="text-sm font-medium text-blue-600">
-                          {player.user.first_name[0]}{player.user.last_name[0]}
+                          {player.full_name.charAt(0).toUpperCase()}
                         </span>
                       </div>
                     </div>
                     <div className="ml-4">
                       <div className="text-sm font-medium text-gray-900">
-                        {player.user.first_name} {player.user.last_name}
+                        {player.full_name}
                       </div>
                       <div className="text-sm text-gray-500">{player.user.email}</div>
                     </div>
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getSkillLevelColor(player.skill_level)}`}>
-                    {player.skill_level}
+                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getSkillLevelColor(player.nrtp_level)}`}>
+                    {player.nrtp_level || 'N/A'}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
@@ -123,13 +127,13 @@ const PlayersList: React.FC<PlayersListProps> = ({
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {player.total_tournaments}
+                  -
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {player.current_ranking ? `#${player.current_ranking}` : '-'}
+                  {player.ranking_position ? `#${player.ranking_position}` : '-'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {formatDate(player.registration_date)}
+                  {formatDate(player.created_at)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex justify-end space-x-2">
@@ -143,16 +147,8 @@ const PlayersList: React.FC<PlayersListProps> = ({
                     )}
                     {player.membership_status === 'active' && (
                       <button
-                        onClick={() => onUpdateStatus(player.id, 'suspended')}
-                        className="text-red-600 hover:text-red-900 transition-colors"
-                      >
-                        Suspend
-                      </button>
-                    )}
-                    {player.membership_status === 'suspended' && (
-                      <button
                         onClick={() => onUpdateStatus(player.id, 'inactive')}
-                        className="text-gray-600 hover:text-gray-900 transition-colors"
+                        className="text-red-600 hover:text-red-900 transition-colors"
                       >
                         Deactivate
                       </button>

@@ -1,28 +1,10 @@
 import React from 'react'
-
-interface CoachCertification {
-  id: number
-  coach_id: number
-  name: string
-  issuer: string
-  issue_date: string
-  expiry_date: string | null
-  certificate_url: string
-  created_at: string
-}
+import { CoachCertification, CertificationFilters } from '../../../types/coach'
 
 interface CertificationsFiltersProps {
-  filters: {
-    status: string
-    issuer: string
-    search: string
-  }
+  filters: CertificationFilters
   certifications: CoachCertification[]
-  onFiltersChange: (filters: Partial<{
-    status: string
-    issuer: string
-    search: string
-  }>) => void
+  onFiltersChange: (filters: Partial<CertificationFilters>) => void
   onClearFilters: () => void
   onAddNew: () => void
 }

@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { RootState, AppDispatch } from '../../../store'
+import { AppDispatch } from '../../../store'
 import { updateCoachProfile } from '../../../store/slices/authSlice'
-import { Coach, User, CoachDashboard } from '../../../types/auth'
+import { Coach, User } from '../../../types/auth'
 
 interface CoachProfileFormProps {
   coach: Coach
@@ -31,13 +31,13 @@ const CoachProfileForm: React.FC<CoachProfileFormProps> = ({ coach, user, onCanc
     hourly_rate: coach.hourly_rate || 0
   })
 
-  const mexicanStates = [
-    'Aguascalientes', 'Baja California', 'Baja California Sur', 'Campeche', 'Chiapas', 'Chihuahua',
-    'Coahuila', 'Colima', 'Durango', 'Guanajuato', 'Guerrero', 'Hidalgo', 'Jalisco', 'México',
-    'Michoacán', 'Morelos', 'Nayarit', 'Nuevo León', 'Oaxaca', 'Puebla', 'Querétaro',
-    'Quintana Roo', 'San Luis Potosí', 'Sinaloa', 'Sonora', 'Tabasco', 'Tamaulipas', 'Tlaxcala',
-    'Veracruz', 'Yucatán', 'Zacatecas', 'Ciudad de México'
-  ]
+  // const mexicanStates = [
+  //   'Aguascalientes', 'Baja California', 'Baja California Sur', 'Campeche', 'Chiapas', 'Chihuahua',
+  //   'Coahuila', 'Colima', 'Durango', 'Guanajuato', 'Guerrero', 'Hidalgo', 'Jalisco', 'México',
+  //   'Michoacán', 'Morelos', 'Nayarit', 'Nuevo León', 'Oaxaca', 'Puebla', 'Querétaro',
+  //   'Quintana Roo', 'San Luis Potosí', 'Sinaloa', 'Sonora', 'Tabasco', 'Tamaulipas', 'Tlaxcala',
+  //   'Veracruz', 'Yucatán', 'Zacatecas', 'Ciudad de México'
+  // ]
 
   const handleUserInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target

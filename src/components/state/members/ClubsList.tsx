@@ -20,13 +20,6 @@ const ClubsList: React.FC<ClubsListProps> = ({
     })
   }
 
-  const formatCurrency = (amount: number | null) => {
-    if (!amount) return '-'
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(amount)
-  }
 
   if (loading) {
     return (
@@ -56,28 +49,28 @@ const ClubsList: React.FC<ClubsListProps> = ({
     <div className="bg-white rounded-lg shadow border border-gray-200">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="">
+          <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Club
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Contact
+                Manager
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Type
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Courts
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Members
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Membership Fee
+                Contact
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Status
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Registered
+                Created
               </th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
@@ -86,68 +79,61 @@ const ClubsList: React.FC<ClubsListProps> = ({
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {clubs.map((club) => (
-              <tr key={club.id} className="hover:">
+              <tr key={club.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div>
                     <div className="text-sm font-medium text-gray-900">{club.name}</div>
-                    {club.description && (
-                      <div className="text-sm text-gray-500 max-w-xs truncate">
-                        {club.description}
+                    {club.rfc && (
+                      <div className="text-sm text-gray-500">
+                        RFC: {club.rfc}
                       </div>
                     )}
-                    {club.address && (
-                      <div className="text-xs text-gray-400 max-w-xs truncate">
-                        {club.address}
-                      </div>
-                    )}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div>
-                    {club.contact_email && (
-                      <div className="text-sm text-gray-900">{club.contact_email}</div>
-                    )}
-                    {club.contact_phone && (
-                      <div className="text-sm text-gray-500">{club.contact_phone}</div>
-                    )}
-                    {club.website_url && (
+                    {club.website && (
                       <div className="text-xs text-blue-600 hover:text-blue-800">
-                        <a href={club.website_url} target="_blank" rel="noopener noreferrer">
+                        <a href={club.website} target="_blank" rel="noopener noreferrer">
                           Website
                         </a>
                       </div>
                     )}
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {club.total_courts}
-                </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">{club.total_members}</div>
-                  <div className="text-xs text-gray-500">
-                    {club.upcoming_tournaments} upcoming tournaments
+                  <div>
+                    {club.manager_name && (
+                      <div className="text-sm text-gray-900">{club.manager_name}</div>
+                    )}
+                    {club.manager_title && (
+                      <div className="text-sm text-gray-500">{club.manager_title}</div>
+                    )}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {formatCurrency(club.membership_fee)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {club.is_active ? (
-                    <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                      Active
-                    </span>
-                  ) : (
-                    <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
-                      Inactive
-                    </span>
-                  )}
+                  {club.club_type || '-'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {formatDate(club.registration_date)}
+                  {club.has_courts ? 'Yes' : 'No'}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div>
+                    {club.user.email && (
+                      <div className="text-sm text-gray-900">{club.user.email}</div>
+                    )}
+                    {club.user.phone && (
+                      <div className="text-sm text-gray-500">{club.user.phone}</div>
+                    )}
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${club.membership_status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                    {club.membership_status}
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {formatDate(club.created_at)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex justify-end space-x-2">
-                    {!club.is_active ? (
+                    {club.membership_status !== 'active' ? (
                       <button
                         onClick={() => onUpdateStatus(club.id, true)}
                         className="text-green-600 hover:text-green-900 transition-colors"

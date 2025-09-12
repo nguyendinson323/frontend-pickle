@@ -162,12 +162,13 @@ export const fetchCoachDashboard = () => async (dispatch: AppDispatch) => {
       api.get('/api/coach/students')
     ])
 
-    const dashboardData = dashboardResponse.data
+    const dashboardData: any = dashboardResponse.data
     const coachProfile = dashboardData.profile
     const user = dashboardData.user
     
     // Transform sessions data to separate upcoming from recent
-    const allSessions = sessionsResponse.data.sessions || []
+    const sessionsData: any = sessionsResponse.data
+    const allSessions = sessionsData.sessions || []
     const upcomingSessions = allSessions.filter((session: any) => 
       session.status === 'scheduled' && new Date(session.session_date) >= new Date()
     ).map((session: any) => ({
@@ -202,7 +203,8 @@ export const fetchCoachDashboard = () => async (dispatch: AppDispatch) => {
     }))
 
     // Transform students data for progress
-    const studentProgress = studentsResponse.data.students?.map((student: any) => ({
+    const studentsData: any = studentsResponse.data
+    const studentProgress = studentsData.students?.map((student: any) => ({
       id: student.id,
       player_id: student.id,
       player_name: student.full_name,
@@ -213,9 +215,10 @@ export const fetchCoachDashboard = () => async (dispatch: AppDispatch) => {
     })) || []
 
     // Aggregate stats from multiple sources
-    const sessionStats = sessionsResponse.data.stats || {}
-    const certStats = certificationsResponse.data.stats || {}
-    const studentStats = studentsResponse.data.stats || {}
+    const sessionStats = sessionsData.stats || {}
+    const certificationsData: any = certificationsResponse.data
+    const certStats = certificationsData.stats || {}
+    const studentStats = studentsData.stats || {}
 
     const aggregatedStats: CoachStats = {
       totalSessions: sessionStats.total_sessions || 0,
@@ -244,7 +247,7 @@ export const fetchCoachDashboard = () => async (dispatch: AppDispatch) => {
       stats: aggregatedStats,
       upcomingSessions,
       recentSessions,
-      certifications: certificationsResponse.data.certifications || [],
+      certifications: certificationsData.certifications || [],
       studentProgress
     }
 

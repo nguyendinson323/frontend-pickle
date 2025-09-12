@@ -1,5 +1,4 @@
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
 
 interface CoachingSession {
   id: number
@@ -47,8 +46,6 @@ const CoachSessionsList: React.FC<CoachSessionsListProps> = ({
   onStatusChange,
   onViewDetails
 }) => {
-  const navigate = useNavigate()
-
   // Filter sessions based on current filters
   const filteredSessions = sessions.filter(session => {
     // Status filter

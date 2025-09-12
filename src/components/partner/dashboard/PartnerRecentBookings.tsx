@@ -39,7 +39,7 @@ const PartnerRecentBookings: React.FC<PartnerRecentBookingsProps> = ({ recentBoo
             </div>
           ))}
           <button
-            onClick={() => navigate('/partner/bookings')}
+            onClick={() => navigate('/partner/management')}
             className="text-orange-600 hover:text-orange-500 text-sm font-medium"
           >
             View all bookings →
@@ -50,7 +50,7 @@ const PartnerRecentBookings: React.FC<PartnerRecentBookingsProps> = ({ recentBoo
           <div className="text-4xl mb-4">📅</div>
           <p className="text-gray-600 mb-4">No recent bookings</p>
           <button
-            onClick={() => navigate('/partner/courts')}
+            onClick={() => navigate('/partner/management')}
             className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
           >
             Manage Courts

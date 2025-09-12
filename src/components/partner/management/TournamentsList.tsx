@@ -27,15 +27,12 @@ const TournamentsList: React.FC<TournamentsListProps> = ({
 }) => {
   const getStatusColor = (status: string) => {
     const colors = {
-      draft: 'bg-gray-100 text-gray-800',
-      published: 'bg-blue-100 text-blue-800',
-      registration_open: 'bg-green-100 text-green-800',
-      registration_closed: 'bg-yellow-100 text-yellow-800',
+      upcoming: 'bg-blue-100 text-blue-800',
       ongoing: 'bg-purple-100 text-purple-800',
       completed: 'bg-teal-100 text-teal-800',
-      cancelled: 'bg-red-100 text-red-800'
+      canceled: 'bg-red-100 text-red-800'
     }
-    return colors[status as keyof typeof colors] || colors.draft
+    return colors[status as keyof typeof colors] || colors.upcoming
   }
 
   const formatCurrency = (amount: number) => `$${amount.toFixed(2)}`
@@ -61,9 +58,9 @@ const TournamentsList: React.FC<TournamentsListProps> = ({
     return true
   })
 
-  const canPublish = (tournament: Tournament) => tournament.status === 'draft'
-  const canCancel = (tournament: Tournament) => !['completed', 'cancelled'].includes(tournament.status)
-  const canDelete = (tournament: Tournament) => tournament.status === 'draft' || tournament.current_participants === 0
+  const canPublish = (tournament: Tournament) => tournament.status === 'upcoming'
+  const canCancel = (tournament: Tournament) => !['completed', 'canceled'].includes(tournament.status)
+  const canDelete = (tournament: Tournament) => tournament.status === 'upcoming' && tournament.current_participants === 0
 
   return (
     <div className="bg-white rounded-lg shadow border border-gray-200">
@@ -91,13 +88,10 @@ const TournamentsList: React.FC<TournamentsListProps> = ({
               className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
             >
               <option value="">All Statuses</option>
-              <option value="draft">Draft</option>
-              <option value="published">Published</option>
-              <option value="registration_open">Registration Open</option>
-              <option value="registration_closed">Registration Closed</option>
+              <option value="upcoming">Upcoming</option>
               <option value="ongoing">Ongoing</option>
               <option value="completed">Completed</option>
-              <option value="cancelled">Cancelled</option>
+              <option value="canceled">Canceled</option>
             </select>
           </div>
         </div>

@@ -11,6 +11,7 @@ interface Payment {
   reference_type: string
   reference_id: number | null
   stripe_payment_id: string | null
+  transaction_date?: string
   created_at: string
   updated_at: string
 }

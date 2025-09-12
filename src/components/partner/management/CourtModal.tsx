@@ -120,11 +120,11 @@ const CourtModal: React.FC<CourtModalProps> = ({
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
-  const handleOperatingHoursChange = (index: number, field: string, value: any) => {
-    const updatedHours = [...formData.operating_hours]
-    updatedHours[index] = { ...updatedHours[index], [field]: value }
-    setFormData(prev => ({ ...prev, operating_hours: updatedHours }))
-  }
+  // const handleOperatingHoursChange = (index: number, field: string, value: any) => {
+  //   const updatedHours = [...formData.operating_hours]
+  //   updatedHours[index] = { ...updatedHours[index], [field]: value }
+  //   setFormData(prev => ({ ...prev, operating_hours: updatedHours }))
+  // }
 
   const addAmenity = () => {
     if (newAmenity.trim() && !formData.amenities.includes(newAmenity.trim())) {
@@ -401,7 +401,7 @@ const CourtModal: React.FC<CourtModalProps> = ({
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover: disabled:cursor-not-allowed transition-colors"
+              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed transition-colors"
             >
               Cancel
             </button>

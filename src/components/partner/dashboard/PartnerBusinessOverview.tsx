@@ -92,10 +92,10 @@ const PartnerBusinessOverview: React.FC<PartnerBusinessOverviewProps> = ({ partn
           Manage Business Website
         </button>
         <button
-          onClick={() => navigate('/partner/support')}
+          onClick={() => navigate('/partner/inbox')}
           className="border border-orange-600 text-orange-600 hover:bg-orange-50 px-6 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
         >
-          Partner Support
+          Partner Inbox
         </button>
       </div>
     </div>

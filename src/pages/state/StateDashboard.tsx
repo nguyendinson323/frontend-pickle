@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState, AppDispatch } from '../../store'
-import { fetchStateDashboard, fetchStatePerformanceMetrics } from '../../store/slices/stateDashboardSlice'
+import { fetchStateDashboard } from '../../store/slices/stateDashboardSlice'
 import {
   StateStatsGrid,
   StateQuickActions,
@@ -93,7 +93,7 @@ const StateDashboardPage: React.FC = () => {
   const recentActivity = dashboardData?.recentActivity || []
 
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation Breadcrumb */}

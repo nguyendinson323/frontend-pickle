@@ -1,14 +1,12 @@
 import React from 'react'
-import { User } from '../../../types/auth'
-import { CoachProfile } from '../../../store/slices/coachDashboardSlice'
+import { CoachProfileData } from '../../../store/slices/coachProfileSlice'
 
 interface CoachAccountViewProps {
-  profile: CoachProfile
-  user: User
+  profile: CoachProfileData
   onEdit: () => void
 }
 
-const CoachAccountView: React.FC<CoachAccountViewProps> = ({ profile, user, onEdit }) => {
+const CoachAccountView: React.FC<CoachAccountViewProps> = ({ profile, onEdit }) => {
   return (
     <div className="space-y-6">
       {/* Action Button */}
@@ -78,53 +76,53 @@ const CoachAccountView: React.FC<CoachAccountViewProps> = ({ profile, user, onEd
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-500 mb-1">Username</label>
-            <p className="text-gray-900">{user.username}</p>
+            <p className="text-gray-900">{profile.user.username}</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-500 mb-1">Email</label>
-            <p className="text-gray-900">{user.email}</p>
+            <p className="text-gray-900">{profile.user.email}</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-500 mb-1">Phone</label>
-            <p className="text-gray-900">{user.phone || 'Not Provided'}</p>
+            <p className="text-gray-900">{profile.user.phone || 'Not Provided'}</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-500 mb-1">Account Status</label>
             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-              user.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+              profile.user.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
             }`}>
-              {user.is_active ? 'Active' : 'Inactive'}
+              {profile.user.is_active ? 'Active' : 'Inactive'}
             </span>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-500 mb-1">Verification Status</label>
             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-              user.is_verified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+              profile.user.is_verified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
             }`}>
-              {user.is_verified ? 'Verified' : 'Pending'}
+              {profile.user.is_verified ? 'Verified' : 'Pending'}
             </span>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-500 mb-1">Premium Status</label>
             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-              user.is_premium ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'
+              profile.user.is_premium ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'
             }`}>
-              {user.is_premium ? 'Premium' : 'Standard'}
+              {profile.user.is_premium ? 'Premium' : 'Standard'}
             </span>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-500 mb-1">Searchable</label>
             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-              user.is_searchable ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+              profile.user.is_searchable ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
             }`}>
-              {user.is_searchable ? 'Discoverable' : 'Hidden'}
+              {profile.user.is_searchable ? 'Discoverable' : 'Hidden'}
             </span>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-500 mb-1">Last Login</label>
             <p className="text-gray-900">
-              {user.last_login ? 
-                new Date(user.last_login).toLocaleDateString() : 
+              {profile.user.last_login ? 
+                new Date(profile.user.last_login).toLocaleDateString() : 
                 'Never logged in'
               }
             </p>
@@ -145,15 +143,15 @@ const CoachAccountView: React.FC<CoachAccountViewProps> = ({ profile, user, onEd
             </div>
             <div className="flex items-center">
               <span className={`mr-3 text-sm font-medium ${
-                user.is_searchable ? 'text-green-600' : 'text-gray-500'
+                profile.user.is_searchable ? 'text-green-600' : 'text-gray-500'
               }`}>
-                {user.is_searchable ? 'Visible' : 'Hidden'}
+                {profile.user.is_searchable ? 'Visible' : 'Hidden'}
               </span>
               <div className={`w-10 h-6 rounded-full ${
-                user.is_searchable ? 'bg-green-500' : 'bg-gray-300'
+                profile.user.is_searchable ? 'bg-green-500' : 'bg-gray-300'
               } relative cursor-not-allowed`}>
                 <div className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-transform ${
-                  user.is_searchable ? 'translate-x-5' : 'translate-x-1'
+                  profile.user.is_searchable ? 'translate-x-5' : 'translate-x-1'
                 }`}></div>
               </div>
             </div>
@@ -167,7 +165,7 @@ const CoachAccountView: React.FC<CoachAccountViewProps> = ({ profile, user, onEd
               </p>
             </div>
             <div className="flex items-center">
-              {user.is_premium ? (
+              {profile.user.is_premium ? (
                 <span className="text-purple-600 font-medium">Active</span>
               ) : (
                 <button className="bg-purple-600 text-white px-4 py-2 rounded-md text-sm hover:bg-purple-700">

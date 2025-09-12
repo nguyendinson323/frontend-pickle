@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../../../../store'
 import { updatePartnerProfile, PartnerProfile } from '../../../../store/slices/partnerProfileSlice'
+import CentralizedImageUpload from '../../../common/CentralizedImageUpload'
 
 interface PartnerAccountTabProps {
   profile: PartnerProfile | null
@@ -253,17 +254,13 @@ export const PartnerAccountTab: React.FC<PartnerAccountTabProps> = ({ profile })
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
               </div>
-              <div>
-                <label htmlFor="logo_url" className="block text-sm font-medium text-gray-700 mb-2">
-                  Logo URL
-                </label>
-                <input
-                  type="url"
-                  id="logo_url"
-                  name="logo_url"
+              <div className="md:col-span-2">
+                <CentralizedImageUpload
+                  uploadType="partner-logo-auth"
                   value={formData.logo_url}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  onChange={(imageUrl) => setFormData(prev => ({ ...prev, logo_url: imageUrl }))}
+                  color="purple"
+                  className="bg-gray-50 border border-gray-200"
                 />
               </div>
               <div className="md:col-span-2">

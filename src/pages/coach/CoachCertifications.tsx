@@ -4,7 +4,7 @@ import { RootState, AppDispatch } from '../../store'
 import { 
   fetchCoachCertificationsData, 
   setFilters, 
-  setSelectedCertification, 
+  setError,
   addCoachCertification,
   updateCoachCertification,
   deleteCoachCertification,
@@ -18,20 +18,11 @@ import {
   DeleteConfirmationModal
 } from '../../components/coach/certifications'
 
-interface CoachCertification {
-  id: number
-  coach_id: number
-  name: string
-  issuer: string
-  issue_date: string
-  expiry_date: string | null
-  certificate_url: string
-  created_at: string
-}
+import { CoachCertification } from '../../types/coach'
 
 const CoachCertificationsPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
-  const { certifications, stats, selectedCertification, filters, isLoading } = useSelector((state: RootState) => state.coachCertifications)
+  const { certifications, stats, filters, isLoading, error } = useSelector((state: RootState) => state.coachCertifications)
   
   const [isFormModalOpen, setIsFormModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
@@ -111,8 +102,33 @@ const CoachCertificationsPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen  py-8">
+    <div className="min-h-screen py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Error Display */}
+        {error && (
+          <div className="mb-6 bg-red-50 border-l-4 border-red-400 p-4 rounded-r-lg">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-red-700">{error}</p>
+              </div>
+              <div className="ml-auto pl-3">
+                <button
+                  onClick={() => dispatch(setError(null))}
+                  className="text-red-400 hover:text-red-600"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         {/* Header */}
         {stats && (
           <CertificationsHeader

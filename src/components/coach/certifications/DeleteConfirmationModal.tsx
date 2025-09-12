@@ -1,15 +1,5 @@
 import React from 'react'
-
-interface CoachCertification {
-  id: number
-  coach_id: number
-  name: string
-  issuer: string
-  issue_date: string
-  expiry_date: string | null
-  certificate_url: string
-  created_at: string
-}
+import { CoachCertification } from '../../../types/coach'
 
 interface DeleteConfirmationModalProps {
   isOpen: boolean
@@ -54,7 +44,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
               Are you sure you want to delete this certification? This action cannot be undone.
             </p>
             
-            <div className=" rounded-lg p-4">
+            <div className="bg-gray-50 rounded-lg p-4">
               <div className="text-sm">
                 <div className="font-medium text-gray-900">{certification.name}</div>
                 <div className="text-gray-600">Issued by: {certification.issuer}</div>

@@ -1,15 +1,5 @@
 import React, { useState, useEffect } from 'react'
-
-interface CoachCertification {
-  id: number
-  coach_id: number
-  name: string
-  issuer: string
-  issue_date: string
-  expiry_date: string | null
-  certificate_url: string
-  created_at: string
-}
+import { CoachCertification } from '../../../types/coach'
 
 interface CertificationFormModalProps {
   isOpen: boolean
@@ -68,17 +58,22 @@ const CertificationFormModal: React.FC<CertificationFormModalProps> = ({
 
     setIsSubmitting(true)
 
-    const submitData: Partial<CoachCertification> = {
-      name: formData.name,
-      issuer: formData.issuer,
-      issue_date: formData.issue_date,
-      certificate_url: formData.certificate_url,
-      expiry_date: formData.has_expiry ? formData.expiry_date || null : null
-    }
+    try {
+      const submitData: Partial<CoachCertification> = {
+        name: formData.name.trim(),
+        issuer: formData.issuer.trim(),
+        issue_date: formData.issue_date,
+        certificate_url: formData.certificate_url.trim(),
+        expiry_date: formData.has_expiry && formData.expiry_date ? formData.expiry_date : null
+      }
 
-    await onSubmit(submitData)
-    setIsSubmitting(false)
-    onClose()
+      await onSubmit(submitData)
+      onClose()
+    } catch (error) {
+      console.error('Error submitting certification:', error)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleInputChange = (field: string, value: string | boolean) => {

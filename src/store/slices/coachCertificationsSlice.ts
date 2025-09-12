@@ -2,34 +2,13 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppDispatch } from '../index'
 import { startLoading, stopLoading } from './loadingSlice'
 import api from '../../services/api'
-
-interface CoachCertification {
-  id: number
-  coach_id: number
-  name: string
-  issuer: string
-  issue_date: string
-  expiry_date: string | null
-  certificate_url: string
-  created_at: string
-}
-
-interface CertificationStats {
-  total_certifications: number
-  active_certifications: number
-  expired_certifications: number
-  expiring_soon: number
-}
+import { CoachCertification, CertificationStats, CertificationFilters } from '../../types/coach'
 
 interface CoachCertificationsState {
   certifications: CoachCertification[]
   stats: CertificationStats | null
   selectedCertification: CoachCertification | null
-  filters: {
-    status: string
-    issuer: string
-    search: string
-  }
+  filters: CertificationFilters
   isLoading: boolean
   error: string | null
 }
@@ -134,9 +113,12 @@ export const addCoachCertification = (certificationData: Partial<CoachCertificat
     const response = await api.post<CertificationResponse>('/api/coach/certifications', certificationData)
     dispatch(addCertification(response.data.certification))
     dispatch(stopLoading())
+    return response.data.certification
   } catch (error) {
     dispatch(stopLoading())
+    dispatch(setError('Failed to add certification'))
     console.error('Error adding certification:', error)
+    throw error
   }
 }
 
@@ -146,9 +128,12 @@ export const updateCoachCertification = (certificationId: number, certificationD
     const response = await api.put<CertificationResponse>(`/api/coach/certifications/${certificationId}`, certificationData)
     dispatch(updateCertification(response.data.certification))
     dispatch(stopLoading())
+    return response.data.certification
   } catch (error) {
     dispatch(stopLoading())
+    dispatch(setError('Failed to update certification'))
     console.error('Error updating certification:', error)
+    throw error
   }
 }
 
@@ -160,31 +145,33 @@ export const deleteCoachCertification = (certificationId: number) => async (disp
     dispatch(stopLoading())
   } catch (error) {
     dispatch(stopLoading())
+    dispatch(setError('Failed to delete certification'))
     console.error('Error deleting certification:', error)
+    throw error
   }
 }
 
 export const downloadCertificate = (certificationId: number) => async (dispatch: AppDispatch) => {
   try {
     dispatch(startLoading('Downloading certificate...'))
-    const response = await api.get(`/api/coach/certifications/${certificationId}/download`, {
-      responseType: 'blob'
-    })
+    const response = await api.get(`/api/coach/certifications/${certificationId}/download`)
     
-    // Create download link
-    const blob = new Blob([response.data], { type: 'application/pdf' })
-    const url = window.URL.createObjectURL(blob)
+    // Get the download URL from the response
+    const { download_url, filename } = response.data
+    
+    // Open the URL in a new tab for download
     const link = document.createElement('a')
-    link.href = url
-    link.download = `certification-${certificationId}.pdf`
+    link.href = download_url
+    link.download = filename || `certification-${certificationId}.pdf`
+    link.target = '_blank'
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
     
     dispatch(stopLoading())
   } catch (error) {
     dispatch(stopLoading())
+    dispatch(setError('Failed to download certificate'))
     console.error('Error downloading certificate:', error)
   }
 }

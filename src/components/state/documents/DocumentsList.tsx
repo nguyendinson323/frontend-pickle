@@ -22,12 +22,6 @@ const DocumentsList: React.FC<DocumentsListProps> = ({
     })
   }
 
-  const formatFileSize = (bytes: number) => {
-    const sizes = ['Bytes', 'KB', 'MB', 'GB']
-    if (bytes === 0) return '0 Bytes'
-    const i = Math.floor(Math.log(bytes) / Math.log(1024))
-    return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i]
-  }
 
   const getDocumentTypeColor = (type: string) => {
     const colors = {
@@ -41,19 +35,6 @@ const DocumentsList: React.FC<DocumentsListProps> = ({
     return colors[type as keyof typeof colors] || colors.other
   }
 
-  const getEntityTypeColor = (type: string | null) => {
-    if (!type) return 'bg-gray-100 text-gray-800'
-    
-    const colors = {
-      tournament: 'bg-blue-100 text-blue-800',
-      club: 'bg-green-100 text-green-800',
-      partner: 'bg-purple-100 text-purple-800',
-      player: 'bg-yellow-100 text-yellow-800',
-      coach: 'bg-orange-100 text-orange-800',
-      general: 'bg-gray-100 text-gray-800'
-    }
-    return colors[type as keyof typeof colors] || colors.general
-  }
 
   if (loading) {
     return (
@@ -117,7 +98,7 @@ const DocumentsList: React.FC<DocumentsListProps> = ({
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div>
                     <div className="text-sm font-medium text-gray-900">{document.title}</div>
-                    <div className="text-sm text-gray-500">{document.file_name}</div>
+                    <div className="text-sm text-gray-500">{document.file_type || 'Unknown type'}</div>
                     {document.description && (
                       <div className="text-xs text-gray-400 mt-1 max-w-xs truncate">
                         {document.description}
@@ -126,25 +107,19 @@ const DocumentsList: React.FC<DocumentsListProps> = ({
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getDocumentTypeColor(document.document_type)}`}>
-                    {document.document_type}
+                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getDocumentTypeColor(document.file_type || '')}`}>
+                    {document.file_type || 'Unknown'}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {document.related_entity_type ? (
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getEntityTypeColor(document.related_entity_type)}`}>
-                      {document.related_entity_type}
-                    </span>
-                  ) : (
-                    <span className="text-gray-400 text-sm">-</span>
-                  )}
+                  <span className="text-gray-400 text-sm">-</span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {formatFileSize(document.file_size)}
+                  -
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">{document.created_by_user.username}</div>
-                  <div className="text-sm text-gray-500">{document.created_by_user.email}</div>
+                  <div className="text-sm text-gray-900">{document.owner.username}</div>
+                  <div className="text-sm text-gray-500">{document.owner.email}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {formatDate(document.created_at)}

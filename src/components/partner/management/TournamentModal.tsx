@@ -437,7 +437,7 @@ const TournamentModal: React.FC<TournamentModalProps> = ({
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover: disabled:cursor-not-allowed transition-colors"
+              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed transition-colors"
             >
               Cancel
             </button>
