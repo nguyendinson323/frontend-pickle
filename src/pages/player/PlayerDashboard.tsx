@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom'
 import { RootState, AppDispatch } from '../../store'
 import { PlayerDashboard } from '../../types'
 import { fetchDashboard } from '../../store/slices/authSlice'
-import { startLoading, stopLoading } from '../../store/slices/loadingSlice'
 import {
   PlayerDashboardHeader,
   PlayerStatsGrid,

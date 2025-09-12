@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppDispatch } from '../index'
-import { startLoading, stopLoading } from './loadingSlice'
 import api from '../../services/api'
 
 interface TournamentCategory {
@@ -211,17 +210,17 @@ interface MatchUpdateResponse {
 
 // API Functions
 export const fetchClubTournamentsData = () => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Loading tournaments data...'))
+  dispatch(setLoading(true))
   
   try {
     dispatch(setError(null))
     const response = await api.get<ClubTournamentsResponse>('/api/club/tournaments')
     dispatch(setTournamentsData(response.data))
+    dispatch(setLoading(false))
   } catch (error: unknown) {
     dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch tournaments data'))
+    dispatch(setLoading(false))
     throw error
-  } finally {
-    dispatch(stopLoading())
   }
 }
 
@@ -250,112 +249,112 @@ export const createTournament = (tournamentData: {
     max_participants?: number
   }>
 }) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Creating tournament...'))
+  dispatch(setLoading(true))
   
   try {
     dispatch(setError(null))
     const response = await api.post<TournamentResponse>('/api/club/tournaments', tournamentData)
     dispatch(addTournament(response.data.tournament))
+    dispatch(setLoading(false))
     return response.data
   } catch (error: unknown) {
     dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to create tournament'))
+    dispatch(setLoading(false))
     throw error
-  } finally {
-    dispatch(stopLoading())
   }
 }
 
 export const updateTournamentInfo = (tournamentId: number, tournamentData: Partial<ClubTournament>) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Updating tournament...'))
+  dispatch(setLoading(true))
   
   try {
     dispatch(setError(null))
     const response = await api.put<TournamentResponse>(`/api/club/tournaments/${tournamentId}`, tournamentData)
     dispatch(updateTournament(response.data.tournament))
+    dispatch(setLoading(false))
     return response.data
   } catch (error: unknown) {
     dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to update tournament'))
+    dispatch(setLoading(false))
     throw error
-  } finally {
-    dispatch(stopLoading())
   }
 }
 
 export const deleteTournamentInfo = (tournamentId: number) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Deleting tournament...'))
+  dispatch(setLoading(true))
   
   try {
     dispatch(setError(null))
     await api.delete(`/api/club/tournaments/${tournamentId}`)
     dispatch(deleteTournament(tournamentId))
+    dispatch(setLoading(false))
   } catch (error: unknown) {
     dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to delete tournament'))
+    dispatch(setLoading(false))
     throw error
-  } finally {
-    dispatch(stopLoading())
   }
 }
 
 export const updateTournamentStatusInfo = (tournamentId: number, status: string) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Updating tournament status...'))
+  dispatch(setLoading(true))
   
   try {
     dispatch(setError(null))
     await api.put(`/api/club/tournaments/${tournamentId}/status`, { status })
     dispatch(updateTournamentStatus({ id: tournamentId, status }))
+    dispatch(setLoading(false))
   } catch (error: unknown) {
     dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to update tournament status'))
+    dispatch(setLoading(false))
     throw error
-  } finally {
-    dispatch(stopLoading())
   }
 }
 
 export const fetchTournamentRegistrations = (tournamentId: number) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Loading tournament registrations...'))
+  dispatch(setLoading(true))
   
   try {
     dispatch(setError(null))
     const response = await api.get<RegistrationsResponse>(`/api/club/tournaments/${tournamentId}/registrations`)
     dispatch(setTournamentRegistrations(response.data.registrations))
+    dispatch(setLoading(false))
     return response.data
   } catch (error: unknown) {
     dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch registrations'))
+    dispatch(setLoading(false))
     throw error
-  } finally {
-    dispatch(stopLoading())
   }
 }
 
 export const generateTournamentMatches = (tournamentId: number) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Generating tournament matches...'))
+  dispatch(setLoading(true))
   
   try {
     dispatch(setError(null))
     const response = await api.post<MatchesResponse>(`/api/club/tournaments/${tournamentId}/matches/generate`)
     dispatch(setTournamentMatches(response.data.matches))
+    dispatch(setLoading(false))
     return response.data
   } catch (error: unknown) {
     dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to generate matches'))
+    dispatch(setLoading(false))
     throw error
-  } finally {
-    dispatch(stopLoading())
   }
 }
 
 export const fetchTournamentMatches = (tournamentId: number) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Loading tournament matches...'))
+  dispatch(setLoading(true))
   
   try {
     dispatch(setError(null))
     const response = await api.get<MatchesResponse>(`/api/club/tournaments/${tournamentId}/matches`)
     dispatch(setTournamentMatches(response.data.matches))
+    dispatch(setLoading(false))
     return response.data
   } catch (error: unknown) {
     dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch matches'))
+    dispatch(setLoading(false))
     throw error
-  } finally {
-    dispatch(stopLoading())
   }
 }
 
@@ -364,17 +363,17 @@ export const updateMatchResult = (matchId: number, matchData: {
   winner_side: number
   status: string
 }) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Updating match result...'))
+  dispatch(setLoading(true))
   
   try {
     dispatch(setError(null))
     const response = await api.put<MatchUpdateResponse>(`/api/club/tournaments/matches/${matchId}`, matchData)
+    dispatch(setLoading(false))
     return response.data
   } catch (error: unknown) {
     dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to update match result'))
+    dispatch(setLoading(false))
     throw error
-  } finally {
-    dispatch(stopLoading())
   }
 }
 

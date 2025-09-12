@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppDispatch } from '../index'
-import { startLoading, stopLoading } from './loadingSlice'
 import api from '../../services/api'
 
 interface ClubMicrositeData {
@@ -67,6 +66,7 @@ interface ClubMicrositeState {
   stats: MicrositeStats | null
   customization: MicrositeCustomization | null
   analytics: MicrositeAnalytics | null
+  loading: boolean
   error: string | null
   previewMode: boolean
 }
@@ -76,6 +76,7 @@ const initialState: ClubMicrositeState = {
   stats: null,
   customization: null,
   analytics: null,
+  loading: false,
   error: null,
   previewMode: false
 }
@@ -84,6 +85,9 @@ const clubMicrositeSlice = createSlice({
   name: 'clubMicrosite',
   initialState,
   reducers: {
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.loading = action.payload
+    },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload
     },
@@ -112,6 +116,7 @@ const clubMicrositeSlice = createSlice({
 })
 
 export const {
+  setLoading,
   setError,
   setMicrositeData,
   updateMicrositeData,
@@ -160,16 +165,16 @@ interface AnalyticsResponse {
 
 // API Functions
 export const fetchClubMicrositeData = () => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Loading club microsite...'))
+  dispatch(setLoading(true))
   
   try {
     dispatch(setError(null))
     const response = await api.get<ClubMicrositeResponse>('/api/club/microsite')
     dispatch(setMicrositeData(response.data))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
   } catch (error: unknown) {
     dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch microsite data'))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
   }
 }
 
@@ -182,23 +187,23 @@ export const updateClubMicrositeData = (micrositeData: {
   social_media?: string
   logo_url?: string
 }) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Updating club microsite...'))
+  dispatch(setLoading(true))
   
   try {
     dispatch(setError(null))
     const response = await api.put<MicrositeUpdateResponse>('/api/club/microsite', micrositeData)
     dispatch(updateMicrositeData(response.data.micrositeData))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
     return response.data
   } catch (error: unknown) {
     dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to update microsite data'))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
     throw error
   }
 }
 
 export const uploadClubLogo = (formData: FormData) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Uploading club logo...'))
+  dispatch(setLoading(true))
   
   try {
     dispatch(setError(null))
@@ -209,32 +214,32 @@ export const uploadClubLogo = (formData: FormData) => async (dispatch: AppDispat
     })
     
     dispatch(updateMicrositeData({ logo_url: response.data.logo_url }))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
     return response.data
   } catch (error: unknown) {
     dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to upload logo'))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
     throw error
   }
 }
 
 export const publishMicrosite = () => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Publishing microsite...'))
+  dispatch(setLoading(true))
   
   try {
     dispatch(setError(null))
     const response = await api.post<PublishResponse>('/api/club/microsite/publish')
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
     return response.data
   } catch (error: unknown) {
     dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to publish microsite'))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
     throw error
   }
 }
 
 export const uploadBannerImage = (formData: FormData) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Uploading banner image...'))
+  dispatch(setLoading(true))
   
   try {
     dispatch(setError(null))
@@ -244,11 +249,11 @@ export const uploadBannerImage = (formData: FormData) => async (dispatch: AppDis
       },
     })
     
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
     return response.data
   } catch (error: unknown) {
     dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to upload banner'))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
     throw error
   }
 }
@@ -258,48 +263,48 @@ export const updateMicrositeCustomization = (customizationData: {
   secondary_color?: string
   description?: string
 }) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Updating customization...'))
+  dispatch(setLoading(true))
   
   try {
     dispatch(setError(null))
     const response = await api.put<CustomizationResponse>('/api/club/microsite/customization', customizationData)
     dispatch(setCustomization(customizationData))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
     return response.data
   } catch (error: unknown) {
     dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to update customization'))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
     throw error
   }
 }
 
 export const fetchMicrositeAnalytics = () => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Loading analytics...'))
+  dispatch(setLoading(true))
   
   try {
     dispatch(setError(null))
     const response = await api.get<AnalyticsResponse>('/api/club/microsite/analytics')
     dispatch(setAnalytics(response.data.analytics))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
     return response.data
   } catch (error: unknown) {
     dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch analytics'))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
     throw error
   }
 }
 
 export const unpublishMicrosite = () => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Unpublishing microsite...'))
+  dispatch(setLoading(true))
   
   try {
     dispatch(setError(null))
     const response = await api.post('/api/club/microsite/unpublish')
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
     return response.data
   } catch (error: unknown) {
     dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to unpublish microsite'))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
     throw error
   }
 }

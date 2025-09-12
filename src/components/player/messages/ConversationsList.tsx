@@ -25,10 +25,15 @@ const ConversationsList: React.FC<ConversationsListProps> = ({
   const dispatch = useDispatch<AppDispatch>()
 
   // Filter conversations based on search query
-  const filteredConversations = conversations.filter(conversation => 
-    conversation.participant?.full_name?.toLowerCase().includes(conversationsFilter.toLowerCase()) ||
-    conversation.last_message?.content?.toLowerCase().includes(conversationsFilter.toLowerCase())
-  )
+  const filteredConversations = conversations.filter(conversation => {
+    if (!conversation.participant || !conversation.participant.full_name) {
+      return false;
+    }
+    return (
+      conversation.participant.full_name.toLowerCase().includes(conversationsFilter.toLowerCase()) ||
+      (conversation.last_message?.content?.toLowerCase().includes(conversationsFilter.toLowerCase()) ?? false)
+    );
+  })
 
   return (
     <div className="w-1/3 border-r border-gray-200 flex flex-col">
@@ -69,7 +74,7 @@ const ConversationsList: React.FC<ConversationsListProps> = ({
                 <div className="relative">
                   <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">
                     <span className="text-white font-medium text-sm">
-                      {conversation.participant.full_name.charAt(0)}
+                      {conversation.participant?.full_name?.charAt(0) || '?'}
                     </span>
                   </div>
                   <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white ${
@@ -80,7 +85,7 @@ const ConversationsList: React.FC<ConversationsListProps> = ({
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-start">
                     <p className="text-sm font-medium text-gray-900 truncate">
-                      {conversation.participant.full_name}
+                      {conversation.participant?.full_name || 'Unknown User'}
                     </p>
                     <div className="flex flex-col items-end">
                       {conversation.last_message && (
@@ -105,7 +110,7 @@ const ConversationsList: React.FC<ConversationsListProps> = ({
                     </p>
                   )}
                   
-                  {conversation.participant.skill_level && (
+                  {conversation.participant?.skill_level && (
                     <p className="text-xs text-gray-400">
                       {conversation.participant.skill_level}
                     </p>

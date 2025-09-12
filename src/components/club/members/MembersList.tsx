@@ -163,7 +163,7 @@ const MembersList: React.FC<MembersListProps> = ({
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="">
+          <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 <input
@@ -200,7 +200,7 @@ const MembersList: React.FC<MembersListProps> = ({
             {members.map((member) => {
               const membershipStatus = getMembershipStatus(member.affiliation_expires_at)
               return (
-                <tr key={member.id} className="hover:">
+                <tr key={member.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <input
                       type="checkbox"

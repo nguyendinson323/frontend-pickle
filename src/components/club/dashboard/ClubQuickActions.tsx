@@ -16,7 +16,6 @@ const ClubQuickActions: React.FC = () => {
     { title: 'Court Management', description: 'Manage court schedules and bookings', icon: '🎾', href: '/club/courts' },
     { title: 'Organize Tournament', description: 'Create and manage tournaments', icon: '🏆', href: '/club/tournaments' },
     { title: 'Club Microsite', description: 'Manage your club\'s website', icon: '🌐', href: '/club/microsite' },
-    { title: 'Financial Reports', description: 'View revenue and expenses', icon: '📊', href: '/club/finances' },
     { title: 'Club Profile', description: 'Update club information', icon: '🏢', href: '/club/profile' }
   ]
 

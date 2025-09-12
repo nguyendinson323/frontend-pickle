@@ -111,7 +111,14 @@ interface MemberResponse {
 
 interface InviteResponse {
   message: string
-  invitation_id: number
+  type: 'invitation_sent' | 'direct_add'
+  invitation_details?: {
+    email: string
+    full_name: string
+    phone?: string
+    club_name: string
+    custom_message?: string
+  }
 }
 
 interface BulkUpdateResponse {

@@ -10,7 +10,6 @@ import {
   updateMicrositeCustomization,
   fetchMicrositeAnalytics,
   publishMicrosite,
-  unpublishMicrosite,
   setPreviewMode
 } from '../../store/slices/clubMicrositeSlice'
 
@@ -139,7 +138,7 @@ const ClubMicrosite: React.FC = () => {
     if (window.confirm('Are you ready to publish your microsite? It will become publicly visible.')) {
       try {
         const result = await dispatch(publishMicrosite())
-        setPublishResult(result.payload || result)
+        setPublishResult(result)
         
         // Show success message and optionally redirect
         setTimeout(() => {
@@ -160,7 +159,7 @@ const ClubMicrosite: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen  py-8">
+    <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <MicrositeHeader
           stats={stats}

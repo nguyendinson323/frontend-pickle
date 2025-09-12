@@ -8,7 +8,7 @@ interface InviteMemberModalProps {
     full_name: string
     phone?: string
     message?: string
-  }) => Promise<void>
+  }) => Promise<any>
   loading: boolean
 }
 

@@ -53,7 +53,7 @@ const NewConversationModal: React.FC<NewConversationModalProps> = ({
                   {searchResults.map(player => (
                     <div
                       key={player.id}
-                      onClick={() => onStartConversation(player.id)}
+                      onClick={() => onStartConversation(player.user?.id)}
                       className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-md cursor-pointer"
                     >
                       <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
@@ -78,7 +78,7 @@ const NewConversationModal: React.FC<NewConversationModalProps> = ({
                   {contacts.slice(0, 5).map(contact => (
                     <div
                       key={contact.id}
-                      onClick={() => onStartConversation(contact.id)}
+                      onClick={() => onStartConversation(contact.user_id)}
                       className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-md cursor-pointer"
                     >
                       <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">

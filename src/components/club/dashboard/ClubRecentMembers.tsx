@@ -65,7 +65,7 @@ const ClubRecentMembers: React.FC<ClubRecentMembersProps> = ({ members }) => {
           <div className="text-4xl mb-4">👥</div>
           <p className="text-gray-600 mb-4">No new members this month</p>
           <button
-            onClick={() => navigate('/club/invite')}
+            onClick={() => navigate('/club/members')}
             className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
           >
             Invite Members

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
-import { RootState, AppDispatch } from '../../../store'
+import { useDispatch } from 'react-redux'
+import { AppDispatch } from '../../../store'
 import { updateClubProfile } from '../../../store/slices/authSlice'
 import { Club, User, State } from '../../../types/auth'
 import api from '../../../services/api'
@@ -14,8 +13,6 @@ interface ClubProfileFormProps {
 
 const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel }) => {
   const dispatch = useDispatch<AppDispatch>()
-  const navigate = useNavigate()
-  const { isLoading } = useSelector((state: RootState) => state.loading)
   
   const [states, setStates] = useState<State[]>([])
   const [logoFile, setLogoFile] = useState<File | null>(null)
@@ -32,12 +29,23 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
     phone: user.phone || ''
   })
 
-  const [clubData, setClubData] = useState({
+  const [clubData, setClubData] = useState<{
+    name: string
+    rfc: string
+    manager_name: string
+    manager_title: string
+    state_id: number | null
+    club_type: string
+    website: string
+    social_media: string
+    logo_url: string
+    has_courts: boolean
+  }>({
     name: club.name,
     rfc: club.rfc || '',
     manager_name: club.manager_name || '',
     manager_title: club.manager_title || '',
-    state_id: club.state_id || '',
+    state_id: club.state_id || null,
     club_type: club.club_type || '',
     website: club.website || '',
     social_media: club.social_media || '',
@@ -50,7 +58,7 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
     const fetchStates = async () => {
       try {
         const response = await api.get('/api/common/states')
-        setStates(response.data)
+        setStates(response.data as State[])
       } catch (error) {
         console.error('Error fetching states:', error)
       }
@@ -76,7 +84,12 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
       const checked = (e.target as HTMLInputElement).checked
       setClubData(prev => ({ ...prev, [name]: checked }))
     } else {
-      setClubData(prev => ({ ...prev, [name]: value }))
+      // Handle state_id as number
+      if (name === 'state_id') {
+        setClubData(prev => ({ ...prev, [name]: value ? parseInt(value) : null }))
+      } else {
+        setClubData(prev => ({ ...prev, [name]: value }))
+      }
     }
   }
 
@@ -139,16 +152,15 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
     setIsUploading(true)
     try {
       const formData = new FormData()
-      formData.append('file', logoFile)
-      formData.append('upload_preset', 'club_logos') // You'll need to set this up in Cloudinary
+      formData.append('logo', logoFile)
       
-      const response = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`, {
-        method: 'POST',
-        body: formData
+      const response = await api.post('/api/upload/club-logo', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       })
       
-      const data = await response.json()
-      return data.secure_url
+      return (response.data as { secure_url: string }).secure_url
     } catch (error) {
       console.error('Error uploading logo:', error)
       return null
@@ -192,7 +204,7 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
         user_data: userData
       }
 
-      await dispatch(updateClubProfile(updateData)).unwrap()
+      await dispatch(updateClubProfile(updateData))
       setSuccess(true)
       
       // Close form after successful update
@@ -423,7 +435,7 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
               <select
                 id="state_id"
                 name="state_id"
-                value={clubData.state_id}
+                value={clubData.state_id || ''}
                 onChange={handleClubInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
               >

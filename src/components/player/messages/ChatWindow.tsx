@@ -1,7 +1,7 @@
-import React, { useRef, useEffect } from 'react'
-import { useDispatch } from 'react-redux'
-import { openImagePreviewModal } from '../../../store/slices/playerMessagesSlice'
-import { AppDispatch } from '../../../store'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { openImagePreviewModal, openNewConversationModal } from '../../../store/slices/playerMessagesSlice'
+import { AppDispatch, RootState } from '../../../store'
 
 interface ChatWindowProps {
   activeConversation: any
@@ -9,6 +9,7 @@ interface ChatWindowProps {
   formatTime: (dateString: string) => string
   getOnlineStatus: (participant: any) => string
   getStatusColor: (status: string) => string
+  messagesEndRef: React.RefObject<HTMLDivElement>
 }
 
 const ChatWindow: React.FC<ChatWindowProps> = ({
@@ -16,10 +17,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   messages,
   formatTime,
   getOnlineStatus,
-  getStatusColor
+  getStatusColor,
+  messagesEndRef
 }) => {
   const dispatch = useDispatch<AppDispatch>()
-  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const { user } = useSelector((state: RootState) => state.auth)
+  const currentUserId = user?.id
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -51,7 +54,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           <div className="relative">
             <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
               <span className="text-white font-medium text-sm">
-                {activeConversation.participant.full_name.charAt(0)}
+                {activeConversation.participant?.full_name?.charAt(0) || '?'}
               </span>
             </div>
             <div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border border-white ${
@@ -60,12 +63,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           </div>
           <div>
             <h3 className="text-sm font-medium text-gray-900">
-              {activeConversation.participant.full_name}
+              {activeConversation.participant?.full_name || 'Unknown User'}
             </h3>
             <p className="text-xs text-gray-500">
               {getOnlineStatus(activeConversation.participant) === 'online' 
                 ? 'Online' 
-                : activeConversation.participant.last_seen 
+                : activeConversation.participant?.last_seen 
                 ? `Last seen ${formatTime(activeConversation.participant.last_seen)}`
                 : 'Offline'
               }
@@ -87,13 +90,13 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
             <div
               key={message.id}
               className={`flex ${
-                message.sender_id === activeConversation.participant.id ? 'justify-start' : 'justify-end'
+                message.sender_id === currentUserId ? 'justify-end' : 'justify-start'
               }`}
             >
               <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                message.sender_id === activeConversation.participant.id
-                  ? 'bg-gray-100 text-gray-900'
-                  : 'bg-green-600 text-white'
+                message.sender_id === currentUserId
+                  ? 'bg-green-600 text-white'
+                  : 'bg-gray-100 text-gray-900'
               }`}>
                 {message.message_type === 'image' ? (
                   <div>
@@ -110,14 +113,14 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                 
                 <div className="flex items-center justify-between mt-1">
                   <p className={`text-xs ${
-                    message.sender_id === activeConversation.participant.id
-                      ? 'text-gray-500'
-                      : 'text-green-100'
+                    message.sender_id === currentUserId
+                      ? 'text-green-100'
+                      : 'text-gray-500'
                   }`}>
                     {formatTime(message.sent_at)}
                   </p>
                   
-                  {message.sender_id !== activeConversation.participant.id && (
+                  {message.sender_id === currentUserId && (
                     <span className={`text-xs ml-2 ${
                       message.is_read ? 'text-green-200' : 'text-green-100'
                     }`}>

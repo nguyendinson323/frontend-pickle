@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppDispatch } from '../index'
-import { startLoading, stopLoading } from './loadingSlice'
 import api from '../../services/api'
 
 interface ClubProfile {
@@ -23,7 +22,7 @@ interface ClubProfile {
   state: {
     id: number
     name: string
-    code: string
+    short_code: string
   }
 }
 
@@ -132,18 +131,13 @@ interface ClubDashboardResponse {
 
 // API Functions
 export const fetchClubDashboard = () => async (dispatch: AppDispatch) => {
+  dispatch(setLoading(true))
+  
   try {
-    dispatch(startLoading('Loading club dashboard...'))
+    dispatch(setError(null))
     
-    // Fetch dashboard data from auth endpoint
+    // Fetch dashboard data from auth endpoint (this contains all the necessary data)
     const dashboardResponse = await api.get<ClubDashboardResponse>('/api/auth/dashboard')
-    
-    // Fetch additional dashboard stats from multiple endpoints
-    const [membersResponse, courtsResponse, tournamentsResponse] = await Promise.all([
-      api.get('/api/club/members'),
-      api.get('/api/club/courts'),
-      api.get('/api/club/tournaments')
-    ])
     
     const combinedStats: ClubStats = {
       totalMembers: dashboardResponse.data.stats?.totalMembers || 0,
@@ -166,10 +160,10 @@ export const fetchClubDashboard = () => async (dispatch: AppDispatch) => {
     }
     
     dispatch(setClubDashboardData(dashboardData))
-    dispatch(stopLoading())
-  } catch (error) {
-    dispatch(setError('Failed to load club dashboard data'))
-    dispatch(stopLoading())
+    dispatch(setLoading(false))
+  } catch (error: unknown) {
+    dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to load club dashboard data'))
+    dispatch(setLoading(false))
     throw error
   }
 }

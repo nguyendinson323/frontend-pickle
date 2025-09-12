@@ -20,7 +20,7 @@ interface ClubProfile {
   state: {
     id: number
     name: string
-    code: string
+    short_code: string
   }
 }
 

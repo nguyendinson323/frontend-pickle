@@ -559,7 +559,7 @@ export const fetchContacts = () => async (dispatch: AppDispatch) => {
 // Mark messages as read
 export const markMessagesAsReadAction = (conversationId: number) => async (dispatch: AppDispatch) => {
   try {
-    await api.post(`/api/player-messages/conversations/${conversationId}/read`)
+    await api.put(`/api/player-messages/conversations/${conversationId}/mark-read`)
     dispatch(markConversationAsRead(conversationId))
   } catch (error) {
     console.error('Failed to mark messages as read:', error)
@@ -584,7 +584,7 @@ export const deleteMessage = (messageId: number) => async (dispatch: AppDispatch
 // Update online status
 export const updateOnlineStatus = (isOnline: boolean) => async (dispatch: AppDispatch) => {
   try {
-    await api.post('/api/player-messages/online-status', { is_online: isOnline })
+    await api.put('/api/player-messages/status', { is_online: isOnline })
     dispatch(updateLastActiveTime())
   } catch (error) {
     console.error('Failed to update online status:', error)

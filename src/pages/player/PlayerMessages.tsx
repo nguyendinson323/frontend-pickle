@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../store'
+import { RootState, AppDispatch } from '../../store'
 import socketService from '../../services/socketService'
 import { 
   fetchConversations,
@@ -15,12 +15,9 @@ import {
   setMessageInput,
   setSearchQuery,
   setSearchResults,
-  openNewConversationModal,
   closeNewConversationModal,
-  openImagePreviewModal,
   closeImagePreviewModal
 } from '../../store/slices/playerMessagesSlice'
-import { AppDispatch } from '../../store'
 import {
   MessagesHeader,
   ConversationsList,
@@ -29,7 +26,140 @@ import {
   NewConversationModal,
   ImagePreviewModal
 } from '../../components/player/messages'
+import { Conversation, Message } from '../../store/slices/playerMessagesSlice'
 
+// Constants
+const SEARCH_DEBOUNCE_DELAY = 300
+const STATUS_UPDATE_INTERVAL = 30000
+const MIN_SEARCH_LENGTH = 2
+
+// Custom hooks
+const useSocketConnection = (dispatch: AppDispatch) => {
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    
+    if (token && !socketService.isSocketConnected()) {
+      socketService.connect(token)
+    }
+    
+    return () => {
+      socketService.disconnect()
+    }
+  }, [dispatch])
+}
+
+const useOnlineStatus = (dispatch: AppDispatch) => {
+  useEffect(() => {
+    dispatch(updateOnlineStatus(true))
+
+    const statusInterval = setInterval(() => {
+      dispatch(updateOnlineStatus(true))
+    }, STATUS_UPDATE_INTERVAL)
+
+    const handleUnload = () => {
+      dispatch(updateOnlineStatus(false))
+    }
+    
+    window.addEventListener('beforeunload', handleUnload)
+
+    return () => {
+      clearInterval(statusInterval)
+      window.removeEventListener('beforeunload', handleUnload)
+      dispatch(updateOnlineStatus(false))
+    }
+  }, [dispatch])
+}
+
+const useActiveConversation = (
+  activeConversation: Conversation | null,
+  dispatch: AppDispatch
+) => {
+  useEffect(() => {
+    if (activeConversation) {
+      socketService.joinChat(activeConversation.id)
+      dispatch(fetchMessages(activeConversation.id))
+      dispatch(markMessagesAsReadAction(activeConversation.id))
+      
+      return () => {
+        socketService.leaveChat(activeConversation.id)
+      }
+    }
+  }, [activeConversation, dispatch])
+}
+
+const useSearchDebounce = (searchQuery: string, dispatch: AppDispatch) => {
+  useEffect(() => {
+    if (searchQuery.length >= MIN_SEARCH_LENGTH) {
+      const searchTimeout = setTimeout(() => {
+        dispatch(searchPlayers(searchQuery))
+      }, SEARCH_DEBOUNCE_DELAY)
+      
+      return () => clearTimeout(searchTimeout)
+    } else {
+      dispatch(setSearchResults([]))
+    }
+  }, [searchQuery, dispatch])
+}
+
+const useAutoScroll = (messages: Message[], messagesEndRef: React.RefObject<HTMLDivElement>) => {
+  const scrollToBottom = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messagesEndRef])
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages, scrollToBottom])
+
+  return scrollToBottom
+}
+
+// Utility functions
+const formatTime = (dateString: string): string => {
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60)
+  
+  if (diffInHours < 24) {
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    })
+  } else {
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric'
+    })
+  }
+}
+
+const getOnlineStatus = (participant: any): 'online' | 'recently' | 'away' | 'offline' => {
+  if (participant.is_online) return 'online'
+  
+  if (participant.last_seen) {
+    const lastSeen = new Date(participant.last_seen)
+    const now = new Date()
+    const diffInMinutes = (now.getTime() - lastSeen.getTime()) / (1000 * 60)
+    
+    if (diffInMinutes < 5) return 'recently'
+    if (diffInMinutes < 60) return 'away'
+  }
+  
+  return 'offline'
+}
+
+const getStatusColor = (status: string): string => {
+  const statusColors = {
+    online: 'bg-green-500',
+    recently: 'bg-yellow-500',
+    away: 'bg-orange-500',
+    offline: 'bg-gray-400'
+  }
+  
+  return statusColors[status as keyof typeof statusColors] || statusColors.offline
+}
+
+// Main component
 const PlayerMessages: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -40,7 +170,6 @@ const PlayerMessages: React.FC = () => {
     activeConversation,
     messages,
     contacts,
-    selectedContact,
     isLoading,
     error,
     messageInput,
@@ -53,78 +182,25 @@ const PlayerMessages: React.FC = () => {
     unreadCount
   } = useSelector((state: RootState) => state.playerMessages)
 
+  // Custom hooks for side effects
+  useSocketConnection(dispatch)
+  useOnlineStatus(dispatch)
+  useActiveConversation(activeConversation, dispatch)
+  useSearchDebounce(searchQuery, dispatch)
+  useAutoScroll(messages, messagesEndRef)
+
+  // Initialize data on mount
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    
-    // Initialize socket connection
-    if (token && !socketService.isSocketConnected()) {
-      socketService.connect(token)
-    }
-    
     dispatch(fetchConversations())
     dispatch(fetchContacts())
-    dispatch(updateOnlineStatus(true))
-
-    // Update online status periodically
-    const statusInterval = setInterval(() => {
-      dispatch(updateOnlineStatus(true))
-    }, 30000) // Every 30 seconds
-
-    // Set offline when page unloads
-    const handleUnload = () => {
-      dispatch(updateOnlineStatus(false))
-      socketService.disconnect()
-    }
-    
-    window.addEventListener('beforeunload', handleUnload)
-
-    return () => {
-      clearInterval(statusInterval)
-      window.removeEventListener('beforeunload', handleUnload)
-      dispatch(updateOnlineStatus(false))
-    }
   }, [dispatch])
 
-  useEffect(() => {
-    if (activeConversation) {
-      // Join the chat room for real-time updates
-      socketService.joinChat(activeConversation.id)
-      
-      dispatch(fetchMessages(activeConversation.id))
-      dispatch(markMessagesAsReadAction(activeConversation.id))
-      
-      return () => {
-        // Leave chat room when switching conversations
-        socketService.leaveChat(activeConversation.id)
-      }
-    }
-  }, [activeConversation, dispatch])
-
-  useEffect(() => {
-    scrollToBottom()
-  }, [messages])
-
-  useEffect(() => {
-    if (searchQuery.length >= 2) {
-      const searchTimeout = setTimeout(() => {
-        dispatch(searchPlayers(searchQuery))
-      }, 300)
-      
-      return () => clearTimeout(searchTimeout)
-    } else {
-      dispatch(setSearchResults([]))
-    }
-  }, [searchQuery, dispatch])
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
-
-  const handleConversationSelect = (conversation: any) => {
+  // Memoized handlers
+  const handleConversationSelect = useCallback((conversation: Conversation) => {
     dispatch(setActiveConversation(conversation))
-  }
+  }, [dispatch])
 
-  const handleSendMessage = () => {
+  const handleSendMessage = useCallback(() => {
     if (messageInput.trim() && activeConversation) {
       dispatch(sendMessage({
         conversation_id: activeConversation.id,
@@ -133,114 +209,173 @@ const PlayerMessages: React.FC = () => {
         message_type: 'text'
       }))
     }
-  }
+  }, [messageInput, activeConversation, dispatch])
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       handleSendMessage()
     }
-  }
+  }, [handleSendMessage])
 
-  const handleStartConversation = (playerId: number) => {
+  const handleStartConversation = useCallback((playerId: number) => {
     dispatch(startConversation(playerId))
     dispatch(closeNewConversationModal())
-  }
+  }, [dispatch])
 
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60)
-    
-    if (diffInHours < 24) {
-      return date.toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-      })
-    } else {
-      return date.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric'
-      })
+  const handleSearchQueryChange = useCallback((query: string) => {
+    dispatch(setSearchQuery(query))
+  }, [dispatch])
+
+  const handleMessageInputChange = useCallback((input: string) => {
+    dispatch(setMessageInput(input))
+  }, [dispatch])
+
+
+  const handleCloseNewConversation = useCallback(() => {
+    dispatch(closeNewConversationModal())
+  }, [dispatch])
+
+  const handleCloseImagePreview = useCallback(() => {
+    dispatch(closeImagePreviewModal())
+  }, [dispatch])
+
+  // Memoized values
+  const conversationListProps = useMemo(() => ({
+    conversations,
+    activeConversation,
+    conversationsFilter,
+    onConversationSelect: handleConversationSelect,
+    formatTime,
+    getOnlineStatus,
+    getStatusColor
+  }), [conversations, activeConversation, conversationsFilter, handleConversationSelect])
+
+  const chatWindowProps = useMemo(() => ({
+    activeConversation,
+    messages,
+    formatTime,
+    getOnlineStatus,
+    getStatusColor,
+    messagesEndRef
+  }), [activeConversation, messages])
+
+  const messageInputProps = useMemo(() => ({
+    messageInput,
+    isLoading,
+    showEmojiPicker,
+    onSendMessage: handleSendMessage,
+    onKeyPress: handleKeyPress,
+    onInputChange: handleMessageInputChange,
+    onEmojiToggle: () => setShowEmojiPicker(!showEmojiPicker),
+    onEmojiSelect: (emoji: string) => {
+      handleMessageInputChange(messageInput + emoji)
+      setShowEmojiPicker(false)
     }
-  }
+  }), [
+    messageInput,
+    isLoading,
+    showEmojiPicker,
+    handleSendMessage,
+    handleKeyPress,
+    handleMessageInputChange
+  ])
 
-  const getOnlineStatus = (participant: any) => {
-    if (participant.is_online) return 'online'
-    if (participant.last_seen) {
-      const lastSeen = new Date(participant.last_seen)
-      const now = new Date()
-      const diffInMinutes = (now.getTime() - lastSeen.getTime()) / (1000 * 60)
-      
-      if (diffInMinutes < 5) return 'recently'
-      if (diffInMinutes < 60) return 'away'
-    }
-    return 'offline'
-  }
+  const newConversationModalProps = useMemo(() => ({
+    isOpen: newConversationModal.isOpen,
+    searchQuery,
+    searchResults,
+    contacts,
+    isSearching,
+    onStartConversation: handleStartConversation,
+    onClose: handleCloseNewConversation,
+    onSearchQueryChange: handleSearchQueryChange
+  }), [
+    newConversationModal.isOpen,
+    searchQuery,
+    searchResults,
+    contacts,
+    isSearching,
+    handleStartConversation,
+    handleCloseNewConversation,
+    handleSearchQueryChange
+  ])
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'online': return 'bg-green-500'
-      case 'recently': return 'bg-yellow-500'
-      case 'away': return 'bg-orange-500'
-      default: return 'bg-gray-400'
-    }
-  }
+  const imagePreviewModalProps = useMemo(() => ({
+    isOpen: imagePreviewModal.isOpen,
+    imageUrl: imagePreviewModal.imageUrl,
+    onClose: handleCloseImagePreview
+  }), [imagePreviewModal.isOpen, imagePreviewModal.imageUrl, handleCloseImagePreview])
 
-  const emojis = ['😊', '😂', '❤️', '👍', '👏', '🔥', '💯', '🎾', '🏆', '😎']
+  // Error handling
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-600 text-lg font-medium mb-4">
+            Error loading messages: {error}
+          </div>
+          <button 
+            onClick={() => {
+              dispatch(fetchConversations())
+              dispatch(fetchContacts())
+            }}
+            className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
       <MessagesHeader unreadCount={unreadCount} />
 
-      {/* Chat Interface */}
+      {/* Main Chat Interface */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 h-96 md:h-[600px] flex">
-          <ConversationsList
-            conversations={conversations}
-            activeConversation={activeConversation}
-            conversationsFilter={conversationsFilter}
-            onConversationSelect={handleConversationSelect}
-            formatTime={formatTime}
-            getOnlineStatus={getOnlineStatus}
-            getStatusColor={getStatusColor}
-          />
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 h-96 md:h-[600px] flex overflow-hidden">
+          {/* Conversations List */}
+          <div className="w-full md:w-1/3 border-r border-gray-200 flex flex-col">
+            <ConversationsList {...conversationListProps} />
+          </div>
           
-          <div className="flex-1 flex flex-col">
-            <ChatWindow
-              activeConversation={activeConversation}
-              messages={messages}
-              formatTime={formatTime}
-              getOnlineStatus={getOnlineStatus}
-              getStatusColor={getStatusColor}
-            />
-            
-            {activeConversation && (
-              <MessageInput
-                messageInput={messageInput}
-                isLoading={isLoading}
-                onSendMessage={handleSendMessage}
-                onKeyPress={handleKeyPress}
-              />
+          {/* Chat Area */}
+          <div className="hidden md:flex md:flex-1 flex-col">
+            {activeConversation ? (
+              <>
+                <ChatWindow {...chatWindowProps} />
+                <MessageInput {...messageInputProps} />
+              </>
+            ) : (
+              <div className="flex-1 flex items-center justify-center bg-gray-50">
+                <div className="text-center">
+                  <div className="text-4xl mb-4">💬</div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    Select a conversation
+                  </h3>
+                  <p className="text-gray-600">
+                    Choose a conversation from the list to start messaging
+                  </p>
+                </div>
+              </div>
             )}
           </div>
         </div>
       </div>
 
-      <NewConversationModal
-        isOpen={newConversationModal.isOpen}
-        searchQuery={searchQuery}
-        searchResults={searchResults}
-        contacts={contacts}
-        isSearching={isSearching}
-        onStartConversation={handleStartConversation}
-      />
+      {/* Mobile Chat View */}
+      {activeConversation && (
+        <div className="md:hidden fixed inset-0 bg-white z-50 flex flex-col">
+          <ChatWindow {...chatWindowProps} />
+          <MessageInput {...messageInputProps} />
+        </div>
+      )}
 
-      <ImagePreviewModal
-        isOpen={imagePreviewModal.isOpen}
-        imageUrl={imagePreviewModal.imageUrl}
-      />
+      {/* Modals */}
+      <NewConversationModal {...newConversationModalProps} />
+      <ImagePreviewModal {...imagePreviewModalProps} />
     </div>
   )
 }

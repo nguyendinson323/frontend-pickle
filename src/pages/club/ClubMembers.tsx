@@ -10,7 +10,6 @@ import {
   inviteNewMember,
   bulkUpdateMembers,
   updateMemberData,
-  setSelectedMember,
   ClubMember
 } from '../../store/slices/clubMembersSlice'
 
@@ -165,11 +164,11 @@ const ClubMembers: React.FC = () => {
     try {
       const result = await dispatch(inviteNewMember(inviteData))
       
-      if (result.payload?.type === 'direct_add') {
+      if (result.type === 'direct_add') {
         await fetchData()
       }
       
-      return result.payload
+      return result
     } catch (error) {
       console.error('Error inviting member:', error)
       throw error
@@ -218,7 +217,7 @@ const ClubMembers: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen  py-8">
+    <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <MembersHeader
           stats={stats}

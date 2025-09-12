@@ -20,7 +20,7 @@ const ClubPerformanceSection: React.FC<ClubPerformanceSectionProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         {/* Growth Metrics */}
-        <div className="text-center p-4  rounded-lg">
+        <div className="text-center p-4 bg-gray-50 rounded-lg">
           <div className="text-3xl mb-2">📈</div>
           <h4 className="font-semibold text-gray-900 mb-1">Member Growth</h4>
           <p className="text-2xl font-bold text-green-600">+{memberGrowth}%</p>
@@ -28,7 +28,7 @@ const ClubPerformanceSection: React.FC<ClubPerformanceSectionProps> = ({
         </div>
 
         {/* Revenue */}
-        <div className="text-center p-4  rounded-lg">
+        <div className="text-center p-4 bg-gray-50 rounded-lg">
           <div className="text-3xl mb-2">💰</div>
           <h4 className="font-semibold text-gray-900 mb-1">Revenue</h4>
           <p className="text-2xl font-bold text-blue-600">${monthlyRevenue.toLocaleString()}</p>
@@ -36,7 +36,7 @@ const ClubPerformanceSection: React.FC<ClubPerformanceSectionProps> = ({
         </div>
 
         {/* Satisfaction */}
-        <div className="text-center p-4  rounded-lg">
+        <div className="text-center p-4 bg-gray-50 rounded-lg">
           <div className="text-3xl mb-2">⭐</div>
           <h4 className="font-semibold text-gray-900 mb-1">Member Satisfaction</h4>
           <p className="text-2xl font-bold text-purple-600">{memberSatisfaction}/5</p>
@@ -46,7 +46,7 @@ const ClubPerformanceSection: React.FC<ClubPerformanceSectionProps> = ({
 
       <div className="mt-6 flex flex-col sm:flex-row gap-4">
         <button
-          onClick={() => navigate('/club/analytics')}
+          onClick={() => navigate('/club/dashboard')}
           className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
         >
           View Detailed Analytics

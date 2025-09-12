@@ -87,7 +87,7 @@ const CourtsList: React.FC<CourtsListProps> = ({
 
       <div className="divide-y divide-gray-200">
         {courts.map((court) => (
-          <div key={court.id} className="p-6 hover: transition-colors duration-200">
+          <div key={court.id} className="p-6 hover:bg-gray-50 transition-colors duration-200">
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <div className="flex items-center space-x-3 mb-2">
@@ -181,7 +181,7 @@ const CourtsList: React.FC<CourtsListProps> = ({
             <div className="flex space-x-2">
               <button
                 onClick={() => setShowDeleteModal(null)}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover: transition-colors duration-200"
+                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors duration-200"
               >
                 Cancel
               </button>
