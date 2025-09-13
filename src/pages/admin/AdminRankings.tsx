@@ -2,29 +2,35 @@ import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState, AppDispatch } from '../../store'
-import { 
+import {
   fetchPlayerRankings,
   fetchRankingChanges,
   fetchRankingStats,
   fetchRankingPeriods,
-  fetchRankingCategories
+  fetchRankingCategories,
+  getPlayerRankingHistory,
+  setSelectedPlayer
 } from '../../store/slices/adminRankingsSlice'
 import {
   RankingsTable,
   RankingStats,
   RankingFilters,
   RankingChanges,
-  RankingActions
+  RankingActions,
+  PlayerDetailModal
 } from '../../components/admin/rankings'
 
 const AdminRankings: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
   const { user } = useSelector((state: RootState) => state.auth)
-  const { rankingFilter, error } = useSelector((state: RootState) => state.adminRankings)
+  const { rankingFilter, error, playerRankings, selectedPlayer } = useSelector((state: RootState) => state.adminRankings)
   
   const [activeTab, setActiveTab] = useState<'rankings' | 'changes' | 'management'>('rankings')
   const [selectedPlayerId, setSelectedPlayerId] = useState<number | null>(null)
+  const [showPlayerModal, setShowPlayerModal] = useState(false)
+  const [playerHistory, setPlayerHistory] = useState<any[]>([])
+  const [loadingHistory, setLoadingHistory] = useState(false)
 
   useEffect(() => {
     if (!user || user.role !== 'admin') {
@@ -49,9 +55,34 @@ const AdminRankings: React.FC = () => {
     }
   }, [dispatch, rankingFilter, activeTab])
 
-  const handlePlayerSelect = (playerId: number) => {
+  const handlePlayerSelect = async (playerId: number) => {
     setSelectedPlayerId(playerId)
-    // Additional logic for showing player details could be added here
+
+    // Find the selected player from current rankings
+    const selectedPlayerData = playerRankings.find(p => p.player_id === playerId)
+    if (selectedPlayerData) {
+      dispatch(setSelectedPlayer(selectedPlayerData))
+    }
+
+    // Fetch player history and show modal
+    setLoadingHistory(true)
+    try {
+      const historyData = await dispatch(getPlayerRankingHistory(playerId))
+      setPlayerHistory((historyData as any).payload?.history || [])
+    } catch (error) {
+      console.error('Failed to fetch player history:', error)
+      setPlayerHistory([])
+    } finally {
+      setLoadingHistory(false)
+      setShowPlayerModal(true)
+    }
+  }
+
+  const handleClosePlayerModal = () => {
+    setShowPlayerModal(false)
+    setSelectedPlayerId(null)
+    setPlayerHistory([])
+    dispatch(setSelectedPlayer(null))
   }
 
   if (!user || user.role !== 'admin') {
@@ -144,7 +175,7 @@ const AdminRankings: React.FC = () => {
           {activeTab === 'rankings' && (
             <>
               <RankingFilters />
-              <RankingsTable onPlayerSelect={handlePlayerSelect} />
+              <RankingsTable onPlayerSelect={handlePlayerSelect} selectedPlayerId={selectedPlayerId} />
             </>
           )}
 
@@ -206,6 +237,14 @@ const AdminRankings: React.FC = () => {
           )}
         </div>
       </div>
+
+      <PlayerDetailModal
+        isOpen={showPlayerModal && selectedPlayerId !== null && selectedPlayer !== null}
+        onClose={handleClosePlayerModal}
+        selectedPlayer={selectedPlayer}
+        playerHistory={playerHistory}
+        loadingHistory={loadingHistory}
+      />
     </div>
   )
 }

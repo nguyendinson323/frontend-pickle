@@ -198,7 +198,7 @@ export const fetchReservations = (filters?: Record<string, string | number>) => 
       })
     }
 
-    const response = await api.get(`/api/admin/courts/reservations?${queryParams.toString()}`)
+    const response = await api.get(`/api/admin/reservations-test?${queryParams.toString()}`)
 
     dispatch(setReservations(response.data as CourtReservation[]))
     dispatch(stopLoading())

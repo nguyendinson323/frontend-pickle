@@ -88,8 +88,9 @@ const adminMicrositesSlice = createSlice({
     },
     updateMicrositeStatus: (state, action: PayloadAction<{ micrositeId: number; status: 'active' | 'inactive' | 'suspended' | 'pending' | 'approved' | 'rejected' }>) => {
       const micrositeIndex = state.microsites.findIndex(m => m.id === action.payload.micrositeId)
-      if (micrositeIndex !== -1) {
+      if (micrositeIndex !== -1 && state.microsites[micrositeIndex]) {
         state.microsites[micrositeIndex].status = action.payload.status
+        state.microsites[micrositeIndex].updated_at = new Date().toISOString()
       }
     }
   }
@@ -120,14 +121,15 @@ export const fetchMicrosites = (filters?: Partial<MicrositeFilter>) => async (di
     }
 
     const response = await api.get(`/api/admin/microsites?${queryParams.toString()}`)
+    const responseData = response.data as { microsites: MicrositeAdmin[], stats: typeof initialState.micrositeStats }
 
-    dispatch(setMicrosites(response.data.microsites as MicrositeAdmin[]))
-    dispatch(setMicrositeStats(response.data.stats))
+    dispatch(setMicrosites(responseData.microsites))
+    dispatch(setMicrositeStats(responseData.stats))
     dispatch(stopLoading())
-  } catch (error) {
-    dispatch(setError('Failed to fetch microsites'))
+  } catch (error: any) {
+    dispatch(setError(error?.response?.data?.message || 'Failed to fetch microsites'))
     dispatch(stopLoading())
-    throw error
+    console.error('Error fetching microsites:', error)
   }
 }
 
@@ -141,10 +143,10 @@ export const getMicrositeDetails = (micrositeId: number) => async (dispatch: App
 
     dispatch(setSelectedMicrosite(response.data as MicrositeAdmin))
     dispatch(stopLoading())
-  } catch (error) {
-    dispatch(setError('Failed to fetch microsite details'))
+  } catch (error: any) {
+    dispatch(setError(error?.response?.data?.message || 'Failed to fetch microsite details'))
     dispatch(stopLoading())
-    throw error
+    console.error('Error fetching microsite details:', error)
   }
 }
 
@@ -168,13 +170,13 @@ export const updateMicrositeStatusAction = (micrositeId: number, status: 'active
 
 export const approveMicrosite = (micrositeId: number) => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Approving microsite...'))
-  
+
   try {
     dispatch(setError(null))
 
     const response = await api.post(`/api/admin/microsites/${micrositeId}/approve`)
 
-    dispatch(fetchMicrosites())
+    dispatch(updateMicrositeStatus({ micrositeId, status: 'approved' }))
     dispatch(stopLoading())
     return response.data
   } catch (error) {
@@ -186,13 +188,13 @@ export const approveMicrosite = (micrositeId: number) => async (dispatch: AppDis
 
 export const rejectMicrosite = (micrositeId: number, reason: string) => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Rejecting microsite...'))
-  
+
   try {
     dispatch(setError(null))
 
     const response = await api.post(`/api/admin/microsites/${micrositeId}/reject`, { reason })
 
-    dispatch(fetchMicrosites())
+    dispatch(updateMicrositeStatus({ micrositeId, status: 'rejected' }))
     dispatch(stopLoading())
     return response.data
   } catch (error) {
@@ -222,21 +224,24 @@ export const suspendMicrosite = (micrositeId: number, reason: string) => async (
 
 export const exportMicrosites = (filters: Partial<MicrositeFilter>, format: 'csv' | 'excel' | 'pdf') => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Exporting microsites...'))
-  
+
   try {
     dispatch(setError(null))
 
     const queryParams = new URLSearchParams()
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value) queryParams.append(key, value)
-    })
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value) queryParams.append(key, value)
+      })
+    }
     queryParams.append('format', format)
 
     const response = await api.get(`/api/admin/microsites/export?${queryParams.toString()}`, {
       responseType: 'blob'
     })
 
-    const url = window.URL.createObjectURL(new Blob([response.data]))
+    const blob = response.data as Blob
+    const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
     link.setAttribute('download', `microsites-export-${new Date().toISOString().split('T')[0]}.${format}`)
@@ -247,10 +252,10 @@ export const exportMicrosites = (filters: Partial<MicrositeFilter>, format: 'csv
 
     dispatch(stopLoading())
     return response.data
-  } catch (error) {
-    dispatch(setError('Failed to export microsites'))
+  } catch (error: any) {
+    dispatch(setError(error?.response?.data?.message || 'Failed to export microsites'))
     dispatch(stopLoading())
-    throw error
+    console.error('Error exporting microsites:', error)
   }
 }
 

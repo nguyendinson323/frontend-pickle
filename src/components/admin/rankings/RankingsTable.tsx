@@ -8,9 +8,10 @@ import {
 
 interface RankingsTableProps {
   onPlayerSelect: (playerId: number) => void
+  selectedPlayerId?: number | null
 }
 
-const RankingsTable: React.FC<RankingsTableProps> = ({ onPlayerSelect }) => {
+const RankingsTable: React.FC<RankingsTableProps> = ({ onPlayerSelect, selectedPlayerId }) => {
   const dispatch = useDispatch<AppDispatch>()
   const { playerRankings } = useSelector((state: RootState) => state.adminRankings)
   const { isLoading: loading } = useSelector((state: RootState) => state.loading)
@@ -137,7 +138,14 @@ const RankingsTable: React.FC<RankingsTableProps> = ({ onPlayerSelect }) => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {playerRankings.map((player) => (
-                <tr key={player.player_id} className="hover:bg-gray-50">
+                <tr
+                  key={player.player_id}
+                  className={`hover:bg-gray-50 transition-colors ${
+                    selectedPlayerId === player.player_id
+                      ? 'bg-indigo-50 border-l-4 border-indigo-500'
+                      : ''
+                  }`}
+                >
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="text-lg font-bold text-gray-900">
@@ -151,9 +159,17 @@ const RankingsTable: React.FC<RankingsTableProps> = ({ onPlayerSelect }) => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">
-                      {player.player_name}
-                    </div>
+                    <button
+                      onClick={() => handleViewHistory(player.player_id)}
+                      className="text-left hover:bg-gray-50 rounded px-2 py-1 transition-colors"
+                    >
+                      <div className="text-sm font-medium text-indigo-600 hover:text-indigo-800">
+                        {player.player_name}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        Click to view details
+                      </div>
+                    </button>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
