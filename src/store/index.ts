@@ -26,6 +26,7 @@ import clubCourtsReducer from './slices/clubCourtsSlice'
 import clubMembersReducer from './slices/clubMembersSlice'
 import clubTournamentsReducer from './slices/clubTournamentsSlice'
 import clubMicrositeReducer from './slices/clubMicrositeSlice'
+import clubMembershipReducer from './slices/clubMembershipSlice'
 import stateDashboardReducer from './slices/stateDashboardSlice'
 import stateManagementReducer from './slices/stateManagementSlice'
 import stateInboxReducer from './slices/stateInboxSlice'
@@ -33,6 +34,7 @@ import stateMicrositeReducer from './slices/stateMicrositeSlice'
 import stateStatisticsReducer from './slices/stateStatisticsSlice'
 import stateDocumentsReducer from './slices/stateDocumentsSlice'
 import stateMemberManagementReducer from './slices/stateMemberManagementSlice'
+import stateMembershipReducer from './slices/stateMembershipSlice'
 import partnerInboxReducer from './slices/partnerInboxSlice'
 import partnerMicrositeReducer from './slices/partnerMicrositeSlice'
 import partnerStatisticsReducer from './slices/partnerStatisticsSlice'
@@ -40,6 +42,7 @@ import partnerDocumentsReducer from './slices/partnerDocumentsSlice'
 import partnerManagementReducer from './slices/partnerManagementSlice'
 import partnerDashboardReducer from './slices/partnerDashboardSlice'
 import partnerProfileReducer from './slices/partnerProfileSlice'
+import partnerMembershipReducer from './slices/partnerMembershipSlice'
 import adminUserManagementReducer from './slices/adminUserManagementSlice'
 import adminMessagingReducer from './slices/adminMessagingSlice'
 import adminRankingsReducer from './slices/adminRankingsSlice'
@@ -80,6 +83,7 @@ export const store = configureStore({
     clubMembers: clubMembersReducer,
     clubTournaments: clubTournamentsReducer,
     clubMicrosite: clubMicrositeReducer,
+    clubMembership: clubMembershipReducer,
     stateDashboard: stateDashboardReducer,
     stateManagement: stateManagementReducer,
     stateInbox: stateInboxReducer,
@@ -87,6 +91,7 @@ export const store = configureStore({
     stateStatistics: stateStatisticsReducer,
     stateDocuments: stateDocumentsReducer,
     stateMemberManagement: stateMemberManagementReducer,
+    stateMembership: stateMembershipReducer,
     partnerInbox: partnerInboxReducer,
     partnerMicrosite: partnerMicrositeReducer,
     partnerStatistics: partnerStatisticsReducer,
@@ -94,6 +99,7 @@ export const store = configureStore({
     partnerManagement: partnerManagementReducer,
     partnerDashboard: partnerDashboardReducer,
     partnerProfile: partnerProfileReducer,
+    partnerMembership: partnerMembershipReducer,
     adminUserManagement: adminUserManagementReducer,
     adminMessaging: adminMessagingReducer,
     adminRankings: adminRankingsReducer,

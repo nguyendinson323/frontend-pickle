@@ -57,14 +57,12 @@ const Header: React.FC = () => {
         { label: 'Coaching Sessions', path: '/player/coaching', roles: ['player'] },
         { label: 'Messages', path: '/player/messages', roles: ['player'] },
         { label: 'Digital Credentials', path: '/player/credentials', roles: ['player'] },
-        { label: 'Rankings', path: '/player/rankings', roles: ['player'] },
-        { label: 'Membership', path: '/player/membership', roles: ['player'] }
+        { label: 'Rankings', path: '/player/rankings', roles: ['player'] }
       ],
       coach: [
         { label: 'My Sessions', path: '/coach/sessions', roles: ['coach'] },
         { label: 'Certifications', path: '/coach/certifications', roles: ['coach'] },
-        { label: 'Students', path: '/coach/students', roles: ['coach'] },
-        { label: 'Membership', path: '/coach/membership', roles: ['coach'] }
+        { label: 'Students', path: '/coach/students', roles: ['coach'] }
       ],
       club: [
         { label: 'My Courts', path: '/club/courts', roles: ['club'] },
@@ -252,7 +250,7 @@ const Header: React.FC = () => {
                       {/* Additional Options */}
                       <div className="py-1">
                         <button
-                          onClick={() => handleNavigation('/membership')}
+                          onClick={() => handleNavigation(`/${user?.role}/membership`)}
                           className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         >
                           Membership
@@ -365,7 +363,7 @@ const Header: React.FC = () => {
                     </button>
                   ))}
                   <button
-                    onClick={() => handleNavigation('/membership')}
+                    onClick={() => handleNavigation(`/${user?.role}/membership`)}
                     className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:"
                   >
                     Membership

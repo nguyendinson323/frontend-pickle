@@ -44,6 +44,7 @@ import ClubCourtsPage from './pages/club/ClubCourts'
 import ClubMembersPage from './pages/club/ClubMembers'
 import ClubTournamentsPage from './pages/club/ClubTournaments'
 import ClubMicrositePage from './pages/club/ClubMicrosite'
+import ClubMembershipPage from './pages/club/ClubMembership'
 import StateManagementPage from './pages/state/StateManagement'
 import StateInboxPage from './pages/state/StateInbox'
 import StateMicrositePage from './pages/state/StateMicrosite'
@@ -56,7 +57,9 @@ import PartnerMicrositePage from './pages/partner/PartnerMicrosite'
 import PartnerStatisticsPage from './pages/partner/PartnerStatistics'
 import PartnerDocumentsPage from './pages/partner/PartnerDocuments'
 import PartnerManagementPage from './pages/partner/PartnerManagement'
+import PartnerMembershipPage from './pages/partner/PartnerMembership'
 import StateDashboardPage from './pages/state/StateDashboard'
+import StateMembershipPage from './pages/state/StateMembership'
 
 // Profile pages
 import AdminProfilePage from './pages/admin/AdminProfile'
@@ -373,6 +376,13 @@ const routes: RouteConfig[] = [
         requiredRoles: ['club']
     },
     {
+        path: "/club/membership",
+        key: "club-membership",
+        public: false,
+        element: <ClubMembershipPage />,
+        requiredRoles: ['club']
+    },
+    {
         path: "/partner/dashboard", 
         key: "partner-dashboard",
         public: false,
@@ -426,6 +436,13 @@ const routes: RouteConfig[] = [
         key: "state-members",
         public: false,
         element: <StateMemberManagementPage />,
+        requiredRoles: ['state']
+    },
+    {
+        path: "/state/membership",
+        key: "state-membership",
+        public: false,
+        element: <StateMembershipPage />,
         requiredRoles: ['state']
     },
     {
@@ -511,6 +528,13 @@ const routes: RouteConfig[] = [
         key: "partner-management",
         public: false,
         element: <PartnerManagementPage />,
+        requiredRoles: ['partner']
+    },
+    {
+        path: "/partner/membership",
+        key: "partner-membership",
+        public: false,
+        element: <PartnerMembershipPage />,
         requiredRoles: ['partner']
     },
     {
