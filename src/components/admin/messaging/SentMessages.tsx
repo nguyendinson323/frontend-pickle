@@ -94,7 +94,7 @@ const SentMessages: React.FC = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {sentMessages.map((message) => (
-                  <tr key={message.id} className="hover:">
+                  <tr key={message.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4">
                       <div>
                         <div className="text-sm font-medium text-gray-900 truncate max-w-xs">

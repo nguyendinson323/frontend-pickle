@@ -87,9 +87,34 @@ const AdminProfileView: React.FC<AdminProfileViewProps> = ({ user, onEdit }) => 
         {/* Profile Overview Tab */}
         {activeTab === 'overview' && (
           <>
+            {/* Profile Photo Section */}
+            <div className="mb-8">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Administrator Profile</h3>
+              <div className="flex items-center space-x-6">
+                <div className="flex-shrink-0">
+                  {user.profile_photo_url ? (
+                    <img
+                      src={user.profile_photo_url}
+                      alt="Admin Profile"
+                      className="w-24 h-24 rounded-full object-cover border-4 border-gray-200"
+                    />
+                  ) : (
+                    <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center">
+                      <span className="text-3xl text-gray-600">👤</span>
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <h4 className="text-xl font-semibold text-gray-900">{user.username}</h4>
+                  <p className="text-gray-600">System Administrator</p>
+                  <p className="text-sm text-gray-500 mt-1">Full system access and management privileges</p>
+                </div>
+              </div>
+            </div>
+
             {/* Account Information */}
             <div className="mb-8">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Administrator Account Information</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Account Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-500 mb-1">Username</label>

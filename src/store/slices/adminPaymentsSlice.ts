@@ -37,6 +37,12 @@ export interface PaymentMethod {
   card_brand: string
   is_default: boolean
   created_at: string
+  user?: {
+    id: number
+    username: string
+    email: string
+    role: string
+  }
 }
 
 export interface PaymentStats {

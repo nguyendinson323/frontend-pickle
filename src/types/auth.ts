@@ -10,6 +10,7 @@ export interface User {
   is_verified: boolean
   is_premium: boolean
   is_searchable: boolean
+  profile_photo_url: string | null
   last_login: string | null
   created_at: string
   updated_at: string

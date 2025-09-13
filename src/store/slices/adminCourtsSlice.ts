@@ -172,7 +172,7 @@ export const fetchCourts = (filters?: Partial<CourtFilter>) => async (dispatch: 
       })
     }
 
-    const response = await api.get(`/api/admin/courts-test?${queryParams.toString()}`)
+    const response = await api.get(`/api/admin/courts${queryParams.toString()}`)
     const responseData = response.data as { courts: CourtInfo[], stats: typeof initialState.courtStats }
 
     dispatch(setCourts(responseData.courts))
@@ -198,7 +198,7 @@ export const fetchReservations = (filters?: Record<string, string | number>) => 
       })
     }
 
-    const response = await api.get(`/api/admin/reservations-test?${queryParams.toString()}`)
+    const response = await api.get(`/api/admin/courts/reservations?${queryParams.toString()}`)
 
     dispatch(setReservations(response.data as CourtReservation[]))
     dispatch(stopLoading())
@@ -215,7 +215,7 @@ export const getCourtDetails = (courtId: number) => async (dispatch: AppDispatch
   try {
     dispatch(setError(null))
 
-    const response = await api.get(`/api/admin/courts-test/${courtId}`)
+    const response = await api.get(`/api/admin/courts/${courtId}`)
 
     dispatch(setSelectedCourt(response.data as CourtInfo))
     dispatch(stopLoading())

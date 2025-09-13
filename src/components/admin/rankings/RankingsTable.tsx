@@ -137,9 +137,9 @@ const RankingsTable: React.FC<RankingsTableProps> = ({ onPlayerSelect, selectedP
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {playerRankings.map((player) => (
+              {playerRankings.map((player, index) => (
                 <tr
-                  key={player.player_id}
+                  key={`player-${player.player_id}-${player.current_position}-${index}`}
                   className={`hover:bg-gray-50 transition-colors ${
                     selectedPlayerId === player.player_id
                       ? 'bg-indigo-50 border-l-4 border-indigo-500'

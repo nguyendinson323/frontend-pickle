@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../../../store'
 import { updateAdminProfile, changeAdminPassword, updateAdminSecuritySettings } from '../../../store/slices/authSlice'
 import { User } from '../../../types/auth'
+import CentralizedImageUpload from '../../common/CentralizedImageUpload'
 
 interface AdminProfileFormProps {
   user: User
@@ -18,7 +19,8 @@ const AdminProfileForm: React.FC<AdminProfileFormProps> = ({ user, onCancel }) =
   const [userData, setUserData] = useState({
     username: user.username,
     email: user.email,
-    phone: user.phone || ''
+    phone: user.phone || '',
+    profile_photo_url: user.profile_photo_url || ''
   })
 
   const [passwordData, setPasswordData] = useState({
@@ -34,6 +36,10 @@ const AdminProfileForm: React.FC<AdminProfileFormProps> = ({ user, onCancel }) =
   const handleUserInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setUserData(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handlePhotoUpload = (url: string) => {
+    setUserData(prev => ({ ...prev, profile_photo_url: url }))
   }
 
   const handlePasswordInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -181,6 +187,23 @@ const AdminProfileForm: React.FC<AdminProfileFormProps> = ({ user, onCancel }) =
         {/* Profile Information Tab */}
         {activeTab === 'profile' && (
           <form onSubmit={handleProfileSubmit} className="space-y-6">
+            {/* Profile Photo Section */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Administrator Profile Photo</h3>
+              <CentralizedImageUpload
+                uploadType="admin-photo"
+                value={userData.profile_photo_url}
+                onChange={handlePhotoUpload}
+                disabled={isSubmitting}
+                className="bg-gray-50 border border-gray-200"
+                color="indigo"
+                icon={
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                }
+              />
+            </div>
             <div>
               <h3 className="text-lg font-medium text-gray-900 mb-4">Account Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

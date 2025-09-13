@@ -21,11 +21,13 @@ const AdminStatsGrid: React.FC<AdminStatsGridProps> = ({ stats }) => {
     { label: 'Total Tournaments', value: stats.totalTournaments, icon: '🏆', color: 'bg-yellow-600' },
     { label: 'Active Tournaments', value: stats.activeTournaments, icon: '🏛️', color: 'bg-red-600' },
     { label: 'Total Courts', value: stats.totalCourts, icon: '🎾', color: 'bg-indigo-600' },
-    { label: 'Active Courts', value: stats.activeCourts, icon: '🎾', color: 'bg-teal-600' }
+    { label: 'Active Courts', value: stats.activeCourts, icon: '⚡', color: 'bg-teal-600' },
+    { label: 'Total Messages', value: stats.totalMessages, icon: '📧', color: 'bg-slate-600' },
+    { label: 'Unread Messages', value: stats.unreadMessages, icon: '📬', color: 'bg-pink-600' }
   ]
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
       {statCards.map((stat) => (
         <div
           key={stat.label}

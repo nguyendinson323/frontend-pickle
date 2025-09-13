@@ -40,15 +40,24 @@ const Header: React.FC = () => {
 
   const getPrivateDropdownItems = (role: UserRole): NavigationItem[] => {
     const baseItems: NavigationItem[] = [
-      { label: 'Dashboard', path: '/dashboard', roles: ['admin', 'player', 'coach', 'club', 'partner', 'state'] },
-      { label: 'Profile', path: `/${role}/profile`, roles: ['admin', 'player', 'coach', 'club', 'partner', 'state'] }
+      { label: 'Dashboard', path: `/${role}/dashboard`, roles: ['admin', 'player', 'coach', 'club', 'partner', 'state'] }
     ]
+
+    // Add Profile for all roles except admin (admin doesn't need membership/profile management)
+    if (role !== 'admin') {
+      baseItems.push({ label: 'Profile', path: `/${role}/profile`, roles: ['player', 'coach', 'club', 'partner', 'state'] })
+    }
 
     const roleSpecificItems: Record<UserRole, NavigationItem[]> = {
       admin: [
         { label: 'User Management', path: '/admin/users', roles: ['admin'] },
-        { label: 'System Reports', path: '/admin/reports', roles: ['admin'] },
-        { label: 'Settings', path: '/admin/settings', roles: ['admin'] }
+        { label: 'Messaging Inbox', path: '/admin/messaging', roles: ['admin'] },
+        { label: 'Rankings System', path: '/admin/rankings', roles: ['admin'] },
+        { label: 'Microsites Management', path: '/admin/microsites', roles: ['admin'] },
+        { label: 'Courts Monitoring', path: '/admin/courts', roles: ['admin'] },
+        { label: 'Tournaments', path: '/admin/tournaments', roles: ['admin'] },
+        { label: 'Payments', path: '/admin/payments', roles: ['admin'] },
+        { label: 'Reports & Analytics', path: '/admin/reports', roles: ['admin'] }
       ],
       player: [
         { label: 'Find Players', path: '/player/finder', roles: ['player'] },
@@ -249,12 +258,14 @@ const Header: React.FC = () => {
                       
                       {/* Additional Options */}
                       <div className="py-1">
-                        <button
-                          onClick={() => handleNavigation(`/${user?.role}/membership`)}
-                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        >
-                          Membership
-                        </button>
+                        {user?.role !== 'admin' && (
+                          <button
+                            onClick={() => handleNavigation(`/${user?.role}/membership`)}
+                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          >
+                            Membership
+                          </button>
+                        )}
                         
                         <button
                           onClick={handleLogout}

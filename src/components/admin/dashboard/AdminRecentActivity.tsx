@@ -44,8 +44,8 @@ const AdminRecentActivity: React.FC<AdminRecentActivityProps> = ({ recentActivit
         {recentActivity.length === 0 ? (
           <p className="text-gray-500 text-center py-4">No recent activity</p>
         ) : (
-          recentActivity.map((activity) => (
-            <div key={activity.id} className="flex items-start">
+          recentActivity.map((activity, index) => (
+            <div key={`${activity.type}-${activity.id}-${index}`} className="flex items-start">
               <div className="text-2xl mr-3">{getActivityIcon(activity.type)}</div>
               <div className="flex-1">
                 <p className="text-sm font-medium text-gray-900">{activity.title}</p>

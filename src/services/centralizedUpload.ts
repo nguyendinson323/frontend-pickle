@@ -7,15 +7,16 @@ export interface UploadResponse {
   height: number
 }
 
-export type UploadType = 
+export type UploadType =
   | 'player-photo'
-  | 'player-document' 
+  | 'player-document'
   | 'club-logo'
   | 'state-logo'
   | 'partner-logo'
   | 'partner-logo-auth'
   | 'coach-photo'
   | 'coach-document'
+  | 'admin-photo'
 
 export interface UploadConfig {
   endpoint: string
@@ -96,6 +97,15 @@ export const uploadConfigs: Record<UploadType, UploadConfig> = {
     description: 'ID Document',
     acceptedFormats: 'PNG, JPG, PDF up to 5MB',
     maxSize: '5MB'
+  },
+  'admin-photo': {
+    endpoint: '/api/upload/admin-photo',
+    folder: 'admin_photos',
+    description: 'Admin Profile Photo',
+    acceptedFormats: 'PNG, JPG up to 5MB',
+    maxSize: '5MB',
+    cropShape: 'round',
+    aspectRatio: 1
   }
 }
 

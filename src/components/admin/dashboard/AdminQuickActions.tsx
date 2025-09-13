@@ -12,12 +12,12 @@ const AdminQuickActions: React.FC = () => {
   const navigate = useNavigate()
 
   const quickActions: QuickAction[] = [
-    { title: 'User Management', description: 'Manage all federation users', icon: '👥', href: '/admin/users' },
-    { title: 'Tournament Oversight', description: 'Review and approve tournaments', icon: '🏆', href: '/admin/tournaments' },
-    { title: 'Court Management', description: 'Oversee court registrations', icon: '🎾', href: '/admin/courts' },
-    { title: 'System Settings', description: 'Configure platform settings', icon: '⚙️', href: '/admin/settings' },
-    { title: 'Reports & Analytics', description: 'View detailed reports', icon: '📊', href: '/admin/reports' },
-    { title: 'Content Management', description: 'Manage platform content', icon: '📝', href: '/admin/content' }
+    { title: 'Messaging Inbox', description: 'Send announcements to clubs, players, and committees', icon: '📧', href: '/admin/messaging' },
+    { title: 'User Management', description: 'View affiliations and manage all federation users', icon: '👥', href: '/admin/users' },
+    { title: 'Rankings System', description: 'Control player rankings and position changes', icon: '📊', href: '/admin/rankings' },
+    { title: 'Microsites Management', description: 'Supervise and manage state & club microsites', icon: '🌐', href: '/admin/microsites' },
+    { title: 'Courts Monitoring', description: 'Monitor court activity and performance', icon: '🎾', href: '/admin/courts' },
+    { title: 'Reports & Analytics', description: 'Generate CSV reports and analytics', icon: '📈', href: '/admin/reports' }
   ]
 
   return (

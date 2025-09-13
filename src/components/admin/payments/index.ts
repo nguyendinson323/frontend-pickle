@@ -1,5 +1,6 @@
 export { default as PaymentStats } from './PaymentStats'
 export { default as PaymentFilters } from './PaymentFilters'
 export { default as PaymentsTable } from './PaymentsTable'
+export { default as PaymentMethods } from './PaymentMethods'
 export { default as PaymentDetailsModal } from './PaymentDetailsModal'
 export { default as RefundModal } from './RefundModal'

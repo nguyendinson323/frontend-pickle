@@ -223,10 +223,9 @@ export const fetchPlayerRankings = (filters?: Partial<RankingFilter>) => async (
 
 export const fetchRankingChanges = (filters?: Partial<RankingFilter>) => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Loading ranking changes...'))
-  
+ 
   try {
     dispatch(setError(null))
-
     const queryParams = new URLSearchParams()
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
@@ -238,11 +237,11 @@ export const fetchRankingChanges = (filters?: Partial<RankingFilter>) => async (
     const responseData = response.data as { changes: RankingChange[] }
 
     dispatch(setRankingChanges(responseData.changes))
-    dispatch(stopLoading())
   } catch (error) {
     dispatch(setError('Failed to fetch ranking changes'))
-    dispatch(stopLoading())
     throw error
+  } finally {
+    dispatch(stopLoading())
   }
 }
 

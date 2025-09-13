@@ -166,7 +166,7 @@ export const fetchTemplates = () => async (dispatch: AppDispatch) => {
   try {
     dispatch(setError(null))
 
-    const response = await api.get('/api/admin/messaging-templates-test')
+    const response = await api.get('/api/admin/messaging/templates')
 
     dispatch(setTemplates(response.data as MessageTemplate[]))
     dispatch(stopLoading())
@@ -190,7 +190,7 @@ export const fetchSentMessages = (filters?: Partial<MessageFilter>) => async (di
       })
     }
 
-    const response = await api.get(`/api/admin/messaging-sent-test?${queryParams.toString()}`)
+    const response = await api.get(`/api/admin/messaging/sent?${queryParams.toString()}`)
     const responseData = response.data as { messages: SentMessage[], stats: typeof initialState.messageStats }
 
     dispatch(setSentMessages(responseData.messages))
