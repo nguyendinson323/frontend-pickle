@@ -15,6 +15,7 @@ import {
   openReservationModal
 } from '../../store/slices/courtReservationSlice'
 import { AppDispatch } from '../../store'
+import { showErrorToast } from '../../store/slices/toastSlice'
 import {
   CourtReservationsHeader,
   CourtReservationsTabs,
@@ -41,9 +42,13 @@ const CourtReservations: React.FC = () => {
     userLocation
   } = useSelector((state: RootState) => state.courtReservation)
 
+  const { isAuthenticated, user } = useSelector((state: RootState) => state.auth)
+
   useEffect(() => {
-    dispatch(fetchUserReservations())
-  }, [dispatch])
+    if (isAuthenticated) {
+      dispatch(fetchUserReservations())
+    }
+  }, [dispatch, isAuthenticated])
 
   const handleGetLocation = () => {
     if (navigator.geolocation) {
@@ -86,6 +91,11 @@ const CourtReservations: React.FC = () => {
   }
 
   const handleTimeSlotSelect = (courtId: number, timeSlot: any) => {
+    if (!isAuthenticated) {
+      dispatch(showErrorToast('Please log in to make a reservation'))
+      return
+    }
+
     if (timeSlot.available) {
       dispatch(openReservationModal({
         courtId,
@@ -109,6 +119,10 @@ const CourtReservations: React.FC = () => {
   }
 
   const handleCancelReservation = (reservationId: number) => {
+    if (!isAuthenticated) {
+      dispatch(showErrorToast('Please log in to cancel reservations'))
+      return
+    }
     dispatch(cancelCourtReservation(reservationId))
   }
 
@@ -144,15 +158,34 @@ const CourtReservations: React.FC = () => {
               onCourtSelect={handleCourtSelect}
               onDateChange={handleDateChange}
               onTimeSlotSelect={handleTimeSlotSelect}
+              isAuthenticated={isAuthenticated}
             />
           </div>
         )}
 
         {activeTab === 'my-reservations' && (
-          <CourtReservationsList
-            userReservations={userReservations}
-            onCancelReservation={handleCancelReservation}
-          />
+          !isAuthenticated ? (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
+              <div className="text-gray-400 mb-4">
+                <span className="text-4xl">🔐</span>
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Login Required</h3>
+              <p className="text-gray-500 mb-4">
+                Please log in to view and manage your court reservations.
+              </p>
+              <a
+                href="/login"
+                className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              >
+                Log In
+              </a>
+            </div>
+          ) : (
+            <CourtReservationsList
+              userReservations={userReservations}
+              onCancelReservation={handleCancelReservation}
+            />
+          )
         )}
       </div>
 

@@ -425,11 +425,31 @@ export const bookCoachingSession = (sessionData: {
 }
 
 // Cancel a session booking
-export const cancelSessionBooking = (bookingId: number) => async (dispatch: AppDispatch) => {
+export const cancelSessionBooking = (sessionId: number) => async (dispatch: AppDispatch, getState: any) => {
   try {
     dispatch(startLoading('Canceling booking...'))
-    const response = await api.put<SessionBooking>(`/api/coaching-sessions/bookings/${bookingId}/cancel`)
-    dispatch(updateBooking(response.data as SessionBooking))
+    const response = await api.put(`/api/coaching-sessions/bookings/${sessionId}/cancel`)
+
+    // The backend returns the updated session, not booking
+    // Find the booking in our state and update it
+    const state = getState()
+    const bookingToUpdate = state.coachingSessions.myBookings.find((booking: SessionBooking) =>
+      booking.session.id === sessionId
+    )
+
+    if (bookingToUpdate) {
+      const updatedBooking = {
+        ...bookingToUpdate,
+        status: 'canceled' as const,
+        session: {
+          ...bookingToUpdate.session,
+          status: 'canceled' as const,
+          payment_status: 'refunded' as const
+        }
+      }
+      dispatch(updateBooking(updatedBooking))
+    }
+
     dispatch(stopLoading())
     return response.data
   } catch (error) {

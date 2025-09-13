@@ -10,12 +10,16 @@ export interface UploadResponse {
 export type UploadType =
   | 'player-photo'
   | 'player-document'
+  | 'player-photo-auth'
+  | 'player-document-auth'
   | 'club-logo'
   | 'state-logo'
   | 'partner-logo'
   | 'partner-logo-auth'
   | 'coach-photo'
   | 'coach-document'
+  | 'coach-photo-auth'
+  | 'coach-document-auth'
   | 'admin-photo'
 
 export interface UploadConfig {
@@ -93,6 +97,38 @@ export const uploadConfigs: Record<UploadType, UploadConfig> = {
   },
   'coach-document': {
     endpoint: '/api/upload/coach-document-registration',
+    folder: 'coach_documents',
+    description: 'ID Document',
+    acceptedFormats: 'PNG, JPG, PDF up to 5MB',
+    maxSize: '5MB'
+  },
+  'player-photo-auth': {
+    endpoint: '/api/upload/player-photo',
+    folder: 'player_photos',
+    description: 'Profile Photo',
+    acceptedFormats: 'PNG, JPG up to 5MB',
+    maxSize: '5MB',
+    cropShape: 'round',
+    aspectRatio: 1
+  },
+  'player-document-auth': {
+    endpoint: '/api/upload/player-document',
+    folder: 'player_documents',
+    description: 'ID Document',
+    acceptedFormats: 'PNG, JPG, PDF up to 5MB',
+    maxSize: '5MB'
+  },
+  'coach-photo-auth': {
+    endpoint: '/api/upload/coach-photo',
+    folder: 'coach_photos',
+    description: 'Profile Photo',
+    acceptedFormats: 'PNG, JPG up to 5MB',
+    maxSize: '5MB',
+    cropShape: 'round',
+    aspectRatio: 1
+  },
+  'coach-document-auth': {
+    endpoint: '/api/upload/coach-document',
     folder: 'coach_documents',
     description: 'ID Document',
     acceptedFormats: 'PNG, JPG, PDF up to 5MB',

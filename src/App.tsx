@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { ProtectedRoute } from './routes'
 import { GlobalLoader } from './components/common/GlobalLoader'
+import ToastNotification from './components/common/ToastNotification'
 import Header from './components/layout/Header'
 import Footer from './components/layout/Footer'
 import routes from './Routelist'
@@ -9,6 +10,7 @@ function App() {
   return (
     <div className="min-h-screen flex flex-col">
       <GlobalLoader />
+      <ToastNotification />
       <Header />
       
       <main className="flex-1">

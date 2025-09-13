@@ -43,16 +43,22 @@ const CourtReservationModal: React.FC<CourtReservationModalProps> = ({
           </h3>
           
           {reservationModal.selectedSlot && (
-            <div className="text-left  p-4 rounded-md mb-4">
-              <p className="text-sm text-gray-600 mb-1">Court: {selectedCourt?.name}</p>
+            <div className="text-left bg-gray-50 p-4 rounded-md mb-4">
+              <h4 className="font-medium text-gray-900 mb-2">Reservation Details</h4>
               <p className="text-sm text-gray-600 mb-1">
-                Date: {reservationModal.selectedDate ? new Date(reservationModal.selectedDate).toLocaleDateString() : ''}
+                <span className="font-medium">Court:</span> {selectedCourt?.name}
               </p>
               <p className="text-sm text-gray-600 mb-1">
-                Time: {formatTime(reservationModal.selectedSlot.start_time)} - {formatTime(reservationModal.selectedSlot.end_time)}
+                <span className="font-medium">Address:</span> {selectedCourt?.address}
               </p>
-              <p className="text-sm font-medium text-gray-900">
-                Price: ${reservationModal.selectedSlot.price}
+              <p className="text-sm text-gray-600 mb-1">
+                <span className="font-medium">Date:</span> {reservationModal.selectedDate ? new Date(reservationModal.selectedDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : ''}
+              </p>
+              <p className="text-sm text-gray-600 mb-1">
+                <span className="font-medium">Time:</span> {formatTime(reservationModal.selectedSlot.start_time)} - {formatTime(reservationModal.selectedSlot.end_time)}
+              </p>
+              <p className="text-lg font-semibold text-green-600 mt-3">
+                Total: ${reservationModal.selectedSlot.price}
               </p>
             </div>
           )}

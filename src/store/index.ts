@@ -6,6 +6,7 @@ import messagesReducer from './slices/messagesSlice'
 import notificationsReducer from './slices/notificationsSlice'
 import commonReducer from './slices/commonSlice'
 import loadingReducer from './slices/loadingSlice'
+import toastReducer from './slices/toastSlice'
 import playerReducer from './slices/playerSlice'
 import playerFinderReducer from './slices/playerFinderSlice'
 import tournamentBrowseReducer from './slices/tournamentBrowseSlice'
@@ -63,6 +64,7 @@ export const store = configureStore({
     notifications: notificationsReducer,
     common: commonReducer,
     loading: loadingReducer,
+    toast: toastReducer,
     player: playerReducer,
     playerFinder: playerFinderReducer,
     tournamentBrowse: tournamentBrowseReducer,

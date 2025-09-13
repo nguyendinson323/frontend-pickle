@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { AppDispatch } from '../../../store'
 import { updateCoachProfile } from '../../../store/slices/authSlice'
 import { Coach, User } from '../../../types/auth'
+import CentralizedImageUpload from '../../common/CentralizedImageUpload'
 
 interface CoachProfileFormProps {
   coach: Coach
@@ -51,6 +52,10 @@ const CoachProfileForm: React.FC<CoachProfileFormProps> = ({ coach, user, onCanc
     } else {
       setCoachData(prev => ({ ...prev, [name]: value }))
     }
+  }
+
+  const handleProfilePhotoChange = (url: string) => {
+    setCoachData(prev => ({ ...prev, profile_photo_url: url }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -210,16 +215,16 @@ const CoachProfileForm: React.FC<CoachProfileFormProps> = ({ coach, user, onCanc
               />
             </div>
             <div className="md:col-span-2">
-              <label htmlFor="profile_photo_url" className="block text-sm font-medium text-gray-700 mb-2">
-                Profile Photo URL
-              </label>
-              <input
-                type="url"
-                id="profile_photo_url"
-                name="profile_photo_url"
+              <CentralizedImageUpload
+                uploadType="coach-photo-auth"
                 value={coachData.profile_photo_url}
-                onChange={handleCoachInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                onChange={handleProfilePhotoChange}
+                title="Profile Photo"
+                color="green"
+                className="bg-gray-50 border border-gray-200"
+                icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>}
               />
             </div>
           </div>

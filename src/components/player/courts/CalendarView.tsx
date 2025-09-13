@@ -7,6 +7,7 @@ interface CalendarViewProps {
   availableTimeSlots: TimeSlot[]
   onTimeSlotSelect: (timeSlot: TimeSlot) => void
   courtName?: string
+  isAuthenticated?: boolean
 }
 
 const CalendarView: React.FC<CalendarViewProps> = ({
@@ -14,7 +15,8 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   onDateChange,
   availableTimeSlots,
   onTimeSlotSelect,
-  courtName
+  courtName,
+  isAuthenticated = true
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date(selectedDate || new Date()))
   const [viewMode, setViewMode] = useState<'month' | 'week'>('month')
@@ -153,17 +155,17 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
         <div className="grid grid-cols-7 gap-px bg-gray-200">
           {dayNames.map(day => (
-            <div key={day} className=" p-2 text-center text-sm font-medium text-gray-500">
+            <div key={day} className="bg-gray-50 p-2 text-center text-sm font-medium text-gray-500">
               {day}
             </div>
           ))}
           {days.map((day, index) => (
             <div
               key={index}
-              className={`bg-white p-2 h-12 flex items-center justify-center text-sm cursor-pointer hover: ${
-                day && isPastDate(day) ? 'text-gray-300 cursor-not-allowed' : ''
+              className={`bg-white p-2 h-12 flex items-center justify-center text-sm cursor-pointer hover:bg-gray-50 ${
+                day && isPastDate(day) ? 'text-gray-300 cursor-not-allowed hover:bg-white' : ''
               } ${
-                day && isSelected(day) ? 'bg-green-100 text-green-800 font-semibold' : ''
+                day && isSelected(day) ? 'bg-green-100 text-green-800 font-semibold hover:bg-green-200' : ''
               } ${
                 day && isToday(day) ? 'bg-blue-50 text-blue-800 font-semibold' : ''
               }`}
@@ -212,10 +214,10 @@ const CalendarView: React.FC<CalendarViewProps> = ({
           {weekDays.map((day, index) => (
             <div
               key={index}
-              className={`bg-white p-4 min-h-32 cursor-pointer hover: ${
-                isPastDate(day) ? 'text-gray-300 cursor-not-allowed' : ''
+              className={`bg-white p-4 min-h-32 cursor-pointer hover:bg-gray-50 ${
+                isPastDate(day) ? 'text-gray-300 cursor-not-allowed hover:bg-white' : ''
               } ${
-                isSelected(day) ? 'bg-green-100 text-green-800' : ''
+                isSelected(day) ? 'bg-green-100 text-green-800 hover:bg-green-200' : ''
               } ${
                 isToday(day) ? 'bg-blue-50 text-blue-800' : ''
               }`}
@@ -263,6 +265,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                   ? 'border-green-300 bg-green-50 text-green-800 hover:bg-green-100 hover:shadow-md transform hover:scale-105'
                   : 'border-red-200 bg-red-50 text-red-400 cursor-not-allowed'
               }`}
+              title={!isAuthenticated && slot.available ? 'Please log in to make a reservation' : ''}
             >
               <div className="font-medium">
                 {formatTime(slot.start_time)} - {formatTime(slot.end_time)}

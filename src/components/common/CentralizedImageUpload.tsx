@@ -159,22 +159,40 @@ const CentralizedImageUpload: React.FC<CentralizedImageUploadProps> = ({
         <label className="block text-sm font-medium text-gray-700 mb-2">
           {config.description} {required && '*'}
         </label>
-        <div className={`border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:${colors.border} transition-colors duration-200`}>
-          {preview ? (
+        <div className={`border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:${colors.border} transition-colors duration-200 ${isUploading ? 'bg-gray-50' : ''}`}>
+          {isUploading && !preview ? (
             <div className="space-y-4">
-              <img 
-                src={preview} 
-                alt={`${config.description} preview`} 
-                className={`w-24 h-24 mx-auto object-cover ${isRound ? 'rounded-full' : 'rounded-lg'}`} 
-              />
+              <div className={`animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-${color}-600 mx-auto`}></div>
+              <div className="space-y-2">
+                <p className="text-lg font-medium text-gray-900">Uploading to Cloudinary...</p>
+                <p className="text-sm text-gray-600">Please wait while we process your image</p>
+                <div className="w-full bg-gray-200 rounded-full h-2 mx-auto max-w-xs">
+                  <div className={`bg-${color}-600 h-2 rounded-full animate-pulse`} style={{width: '70%'}}></div>
+                </div>
+              </div>
+            </div>
+          ) : preview ? (
+            <div className="space-y-4">
+              <div className="relative">
+                <img
+                  src={preview}
+                  alt={`${config.description} preview`}
+                  className={`w-24 h-24 mx-auto object-cover ${isRound ? 'rounded-full' : 'rounded-lg'} ${isUploading ? 'opacity-50' : ''}`}
+                />
+                {isUploading && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className={`animate-spin rounded-full h-8 w-8 border-2 border-white border-t-transparent`}></div>
+                  </div>
+                )}
+              </div>
               <p className="text-sm text-green-600">Uploaded successfully</p>
               <button
                 type="button"
                 onClick={handleRemove}
-                className={`text-sm ${colors.text} hover:opacity-75`}
+                className={`text-sm ${colors.text} hover:opacity-75 disabled:opacity-50`}
                 disabled={disabled || isUploading}
               >
-                Remove {config.description.toLowerCase()}
+                {isUploading ? 'Processing...' : `Remove ${config.description.toLowerCase()}`}
               </button>
             </div>
           ) : (

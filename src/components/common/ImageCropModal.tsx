@@ -13,7 +13,6 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({
   src,
   onCropComplete,
   onCancel,
-  aspectRatio = 1,
   cropShape = 'round',
   isUploading = false
 }) => {
@@ -90,7 +89,6 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({
     const startMouseX = e.clientX
     const startMouseY = e.clientY
     const startWidth = crop.width
-    const startHeight = crop.height
     
     const handleResizeMouseMove = (e: MouseEvent) => {
       const deltaX = e.clientX - startMouseX
@@ -173,7 +171,9 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4">
-        <h3 className="text-xl font-semibold mb-4">Crop Your Logo</h3>
+        <h3 className="text-xl font-semibold mb-4">
+          {isUploading ? 'Uploading Image...' : 'Crop Your Image'}
+        </h3>
         
         <div className="relative mb-6">
           <div 
@@ -225,7 +225,7 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({
 
         <div className="flex justify-between items-center">
           <p className="text-sm text-gray-600">
-            Drag to move the crop area, drag the handle to resize
+            {isUploading ? 'Processing your image...' : 'Drag to move the crop area, drag the handle to resize'}
           </p>
           
           <div className="flex space-x-3">
@@ -244,7 +244,7 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({
               {isUploading && (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
               )}
-              <span>{isUploading ? 'Uploading...' : 'Crop & Upload'}</span>
+              <span>{isUploading ? 'Uploading to Cloudinary...' : 'Crop & Upload'}</span>
             </button>
           </div>
         </div>

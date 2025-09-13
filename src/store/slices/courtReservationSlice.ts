@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppDispatch } from '../index'
 import { startLoading, stopLoading } from './loadingSlice'
+import { showSuccessToast, showErrorToast } from './toastSlice'
 import api from '../../services/api'
 
 export interface CourtSchedule {
@@ -287,6 +288,7 @@ export const searchCourts = (filters: Partial<CourtFilters>) => async (dispatch:
     dispatch(stopLoading())
   } catch (error) {
     dispatch(setError('Failed to search courts'))
+    dispatch(showErrorToast('Failed to search courts. Please try again.'))
     dispatch(stopLoading())
     throw error
   }
@@ -302,6 +304,7 @@ export const getCourtAvailability = (courtId: number, date: string) => async (di
     dispatch(stopLoading())
   } catch (error) {
     dispatch(setError('Failed to load availability'))
+    dispatch(showErrorToast('Failed to load court availability. Please try again.'))
     dispatch(stopLoading())
     throw error
   }
@@ -350,10 +353,12 @@ export const makeCourtReservation = (reservationData: {
     const response = await api.post('/api/court-reservations', reservationData)
     dispatch(addReservation(response.data as CourtReservation))
     dispatch(closeReservationModal())
+    dispatch(showSuccessToast('Court reservation made successfully!'))
     dispatch(stopLoading())
     return response.data
   } catch (error) {
     dispatch(setError('Failed to make reservation'))
+    dispatch(showErrorToast('Failed to make reservation. Please try again.'))
     dispatch(stopLoading())
     throw error
   }
@@ -366,10 +371,12 @@ export const cancelCourtReservation = (reservationId: number) => async (dispatch
   try {
     const response = await api.put(`/api/court-reservations/${reservationId}/cancel`)
     dispatch(updateReservation(response.data as CourtReservation))
+    dispatch(showSuccessToast('Reservation canceled successfully.'))
     dispatch(stopLoading())
     return response.data
   } catch (error) {
     dispatch(setError('Failed to cancel reservation'))
+    dispatch(showErrorToast('Failed to cancel reservation. Please try again.'))
     dispatch(stopLoading())
     throw error
   }

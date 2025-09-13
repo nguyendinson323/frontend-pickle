@@ -18,6 +18,15 @@ const CourtReservationsList: React.FC<CourtReservationsListProps> = ({
     return `${displayHour}:${minutes} ${ampm}`
   }
 
+  const isPastReservation = (reservation: CourtReservation) => {
+    const reservationDateTime = new Date(`${reservation.date}T${reservation.end_time}`)
+    return reservationDateTime < new Date()
+  }
+
+  const canCancelReservation = (reservation: CourtReservation) => {
+    return reservation.status !== 'canceled' && !isPastReservation(reservation)
+  }
+
   return (
     <div>
       <h3 className="text-lg font-medium text-gray-900 mb-4">My Reservations</h3>
@@ -31,7 +40,11 @@ const CourtReservationsList: React.FC<CourtReservationsListProps> = ({
           {userReservations.map(reservation => (
             <div
               key={reservation.id}
-              className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
+              className={`bg-white rounded-lg shadow-sm border p-6 ${
+                isPastReservation(reservation)
+                  ? 'border-gray-200 bg-gray-50'
+                  : 'border-gray-200'
+              }`}
             >
               <div className="flex justify-between items-start">
                 <div>
@@ -41,16 +54,24 @@ const CourtReservationsList: React.FC<CourtReservationsListProps> = ({
                   <p className="text-sm text-gray-600">
                     {reservation.court?.address}
                   </p>
-                  <div className="mt-2 space-y-1">
-                    <p className="text-sm text-gray-700">
-                      📅 {new Date(reservation.date).toLocaleDateString()}
-                    </p>
-                    <p className="text-sm text-gray-700">
-                      ⏰ {formatTime(reservation.start_time)} - {formatTime(reservation.end_time)}
-                    </p>
-                    <p className="text-sm text-gray-700">
-                      💰 ${reservation.amount}
-                    </p>
+                  <div className="mt-2 space-y-2">
+                    <div className="flex items-center text-sm text-gray-700">
+                      <span className="mr-2">📅</span>
+                      <span>{new Date(reservation.date).toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })}</span>
+                    </div>
+                    <div className="flex items-center text-sm text-gray-700">
+                      <span className="mr-2">⏰</span>
+                      <span>{formatTime(reservation.start_time)} - {formatTime(reservation.end_time)}</span>
+                    </div>
+                    <div className="flex items-center text-sm text-gray-700">
+                      <span className="mr-2">💰</span>
+                      <span className="font-medium">${reservation.amount}</span>
+                    </div>
                   </div>
                 </div>
                 
@@ -76,12 +97,18 @@ const CourtReservationsList: React.FC<CourtReservationsListProps> = ({
                     </span>
                   </div>
                   
-                  {reservation.status !== 'canceled' && (
+                  {isPastReservation(reservation) && (
+                    <span className="inline-block mt-2 text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded">
+                      Past Reservation
+                    </span>
+                  )}
+
+                  {canCancelReservation(reservation) && (
                     <button
                       onClick={() => onCancelReservation(reservation.id)}
                       className="mt-2 text-sm text-red-600 hover:text-red-800 font-medium"
                     >
-                      Cancel
+                      Cancel Reservation
                     </button>
                   )}
                 </div>

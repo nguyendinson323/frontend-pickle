@@ -78,9 +78,9 @@ const CoachingSessions: React.FC = () => {
     }
   }
 
-  const handleCancelBooking = (bookingId: number) => {
+  const handleCancelBooking = (sessionId: number) => {
     if (confirm('Are you sure you want to cancel this booking?')) {
-      dispatch(cancelSessionBooking(bookingId))
+      dispatch(cancelSessionBooking(sessionId))
     }
   }
 
@@ -187,7 +187,13 @@ const CoachingSessions: React.FC = () => {
           <MyBookingsList
             bookings={myBookings}
             onTabChange={setActiveTab}
-            onCancelBooking={handleCancelBooking}
+            onCancelBooking={(bookingId: number) => {
+              // Find the booking and pass the session ID instead
+              const booking = myBookings.find(b => b.id === bookingId)
+              if (booking) {
+                handleCancelBooking(booking.session.id)
+              }
+            }}
             onOpenReview={handleOpenReview}
             formatDate={formatDate}
             formatTime={formatTime}
