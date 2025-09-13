@@ -4,6 +4,7 @@ import { AppDispatch } from '../../../store'
 import { updateClubProfile } from '../../../store/slices/authSlice'
 import { Club, User, State } from '../../../types/auth'
 import api from '../../../services/api'
+import CentralizedImageUpload from '../../common/CentralizedImageUpload'
 
 interface ClubProfileFormProps {
   club: Club
@@ -15,9 +16,6 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
   const dispatch = useDispatch<AppDispatch>()
   
   const [states, setStates] = useState<State[]>([])
-  const [logoFile, setLogoFile] = useState<File | null>(null)
-  const [logoPreview, setLogoPreview] = useState<string | null>(club.logo_url)
-  const [isUploading, setIsUploading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
@@ -93,21 +91,11 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
     }
   }
 
-  // Handle logo file selection
-  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      setLogoFile(file)
-      // Create preview URL
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        setLogoPreview(e.target?.result as string)
-      }
-      reader.readAsDataURL(file)
-    }
+  // Handle logo URL change from CentralizedImageUpload
+  const handleLogoChange = (url: string) => {
+    setClubData(prev => ({ ...prev, logo_url: url }))
   }
 
-  // Upload logo to Cloudinary
   // Validation function
   const validateForm = () => {
     const errors: Record<string, string> = {}
@@ -146,28 +134,6 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
     return Object.keys(errors).length === 0
   }
 
-  const uploadLogo = async (): Promise<string | null> => {
-    if (!logoFile) return null
-    
-    setIsUploading(true)
-    try {
-      const formData = new FormData()
-      formData.append('logo', logoFile)
-      
-      const response = await api.post('/api/upload/club-logo', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-      
-      return (response.data as { secure_url: string }).secure_url
-    } catch (error) {
-      console.error('Error uploading logo:', error)
-      return null
-    } finally {
-      setIsUploading(false)
-    }
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -184,23 +150,8 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
     setIsSubmitting(true)
     
     try {
-      let logoUrl = clubData.logo_url
-      
-      // Upload logo if a new file was selected
-      if (logoFile) {
-        const uploadedUrl = await uploadLogo()
-        if (uploadedUrl) {
-          logoUrl = uploadedUrl
-        } else {
-          setError('Failed to upload logo. Please try again.')
-          setIsSubmitting(false)
-          return
-        }
-      }
-
       const updateData = {
         ...clubData,
-        logo_url: logoUrl,
         user_data: userData
       }
 
@@ -448,38 +399,14 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
               </select>
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Club Logo
-              </label>
-              
-              {/* Current Logo Preview */}
-              {logoPreview && (
-                <div className="mb-4">
-                  <div className="text-sm text-gray-600 mb-2">Current Logo:</div>
-                  <img
-                    src={logoPreview}
-                    alt="Club logo"
-                    className="w-24 h-24 object-cover rounded-lg border border-gray-200"
-                  />
-                </div>
-              )}
-              
-              {/* File Upload */}
-              <div className="mt-2">
-                <input
-                  type="file"
-                  id="logo_file"
-                  accept="image/*"
-                  onChange={handleLogoChange}
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Upload a logo image (JPG, PNG, GIF up to 10MB)
-                </p>
-                {isUploading && (
-                  <p className="text-sm text-purple-600 mt-1">Uploading logo...</p>
-                )}
-              </div>
+              <CentralizedImageUpload
+                uploadType="club-logo"
+                value={clubData.logo_url}
+                onChange={handleLogoChange}
+                disabled={isSubmitting}
+                color="purple"
+                className="bg-gray-50"
+              />
             </div>
             <div className="md:col-span-2">
               <div className="flex items-center">
@@ -504,23 +431,23 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
           <button
             type="button"
             onClick={onCancel}
-            disabled={isSubmitting || isUploading}
+            disabled={isSubmitting}
             className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
           <button
             type="submit"
-            disabled={isSubmitting || isUploading || success}
+            disabled={isSubmitting || success}
             className="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
           >
-            {(isSubmitting || isUploading) && (
+            {isSubmitting && (
               <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
             )}
-            {success ? 'Saved!' : (isSubmitting ? 'Saving...' : (isUploading ? 'Uploading...' : 'Save Changes'))}
+            {success ? 'Saved!' : (isSubmitting ? 'Saving...' : 'Save Changes')}
           </button>
         </div>
       </form>

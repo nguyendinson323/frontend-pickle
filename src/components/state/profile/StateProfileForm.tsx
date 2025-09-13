@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { RootState, AppDispatch } from '../../../store'
 import { updateStateProfile } from '../../../store/slices/stateDashboardSlice'
 import { StateCommittee, User } from '../../../types/auth'
+import CentralizedImageUpload from '../../common/CentralizedImageUpload'
 
 interface StateProfileFormProps {
   stateCommittee: StateCommittee
@@ -45,11 +46,15 @@ const StateProfileForm: React.FC<StateProfileFormProps> = ({ stateCommittee, use
     setStateData(prev => ({ ...prev, [name]: value }))
   }
 
+  const handleLogoUpload = (imageUrl: string) => {
+    setStateData(prev => ({ ...prev, logo_url: imageUrl }))
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
     setSuccessMessage(null)
-    
+
     try {
       const updateData = {
         ...stateData,
@@ -58,7 +63,7 @@ const StateProfileForm: React.FC<StateProfileFormProps> = ({ stateCommittee, use
 
       await dispatch(updateStateProfile(updateData))
       setSuccessMessage('Profile updated successfully!')
-      
+
       // Navigate back to profile view after a short delay
       setTimeout(() => {
         onCancel() // This will switch back to view mode
@@ -244,17 +249,31 @@ const StateProfileForm: React.FC<StateProfileFormProps> = ({ stateCommittee, use
               />
             </div>
             <div className="md:col-span-2">
-              <label htmlFor="logo_url" className="block text-sm font-medium text-gray-700 mb-2">
-                Logo URL
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Committee Logo
               </label>
-              <input
-                type="url"
-                id="logo_url"
-                name="logo_url"
-                value={stateData.logo_url}
-                onChange={handleStateInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
-              />
+              <div className="flex items-start space-x-4">
+                <div className="flex-1">
+                  <CentralizedImageUpload
+                    uploadType="state-logo"
+                    value={stateData.logo_url}
+                    onChange={handleLogoUpload}
+                    className="w-full"
+                  />
+                </div>
+                {stateData.logo_url && (
+                  <div className="flex-shrink-0">
+                    <img
+                      src={stateData.logo_url}
+                      alt="Current logo"
+                      className="w-20 h-20 object-cover rounded-lg border-2 border-gray-200"
+                    />
+                  </div>
+                )}
+              </div>
+              <p className="mt-1 text-sm text-gray-500">
+                Upload a logo for your state committee (PNG, JPG up to 5MB)
+              </p>
             </div>
           </div>
         </div>

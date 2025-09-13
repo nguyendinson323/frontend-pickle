@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { AppDispatch } from '../../../../store'
+import React, { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { AppDispatch, RootState } from '../../../../store'
 import { updatePartnerProfile, PartnerProfile } from '../../../../store/slices/partnerProfileSlice'
+import { fetchCommonData } from '../../../../store/slices/commonSlice'
 import CentralizedImageUpload from '../../../common/CentralizedImageUpload'
 
 interface PartnerAccountTabProps {
@@ -10,6 +11,7 @@ interface PartnerAccountTabProps {
 
 export const PartnerAccountTab: React.FC<PartnerAccountTabProps> = ({ profile }) => {
   const dispatch = useDispatch<AppDispatch>()
+  const { data: commonData } = useSelector((state: RootState) => state.common)
   const [isEditing, setIsEditing] = useState(false)
   const [formData, setFormData] = useState({
     business_name: profile?.business_name || '',
@@ -17,6 +19,7 @@ export const PartnerAccountTab: React.FC<PartnerAccountTabProps> = ({ profile })
     contact_name: profile?.contact_name || '',
     contact_title: profile?.contact_title || '',
     partner_type: profile?.partner_type || '',
+    state_id: profile?.state_id || null,
     website: profile?.website || '',
     social_media: profile?.social_media || '',
     logo_url: profile?.logo_url || '',
@@ -27,6 +30,12 @@ export const PartnerAccountTab: React.FC<PartnerAccountTabProps> = ({ profile })
       phone: profile?.user?.phone || ''
     }
   })
+
+  useEffect(() => {
+    if (!commonData) {
+      dispatch(fetchCommonData())
+    }
+  }, [dispatch, commonData])
 
   const partnerTypes = [
     { value: 'hotel', label: 'Hotel' },
@@ -51,6 +60,9 @@ export const PartnerAccountTab: React.FC<PartnerAccountTabProps> = ({ profile })
     } else if (type === 'checkbox') {
       const checked = (e.target as HTMLInputElement).checked
       setFormData(prev => ({ ...prev, [name]: checked }))
+    } else if (name === 'state_id') {
+      const numericValue = value === '' ? null : parseInt(value, 10)
+      setFormData(prev => ({ ...prev, [name]: numericValue }))
     } else {
       setFormData(prev => ({ ...prev, [name]: value }))
     }
@@ -73,6 +85,7 @@ export const PartnerAccountTab: React.FC<PartnerAccountTabProps> = ({ profile })
       contact_name: profile?.contact_name || '',
       contact_title: profile?.contact_title || '',
       partner_type: profile?.partner_type || '',
+      state_id: profile?.state_id || null,
       website: profile?.website || '',
       social_media: profile?.social_media || '',
       logo_url: profile?.logo_url || '',
@@ -227,6 +240,25 @@ export const PartnerAccountTab: React.FC<PartnerAccountTabProps> = ({ profile })
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
+              </div>
+              <div>
+                <label htmlFor="state_id" className="block text-sm font-medium text-gray-700 mb-2">
+                  State
+                </label>
+                <select
+                  id="state_id"
+                  name="state_id"
+                  value={formData.state_id?.toString() || ''}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                >
+                  <option value="">Select state</option>
+                  {commonData?.states?.map((state) => (
+                    <option key={state.id} value={state.id}>
+                      {state.name}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label htmlFor="website" className="block text-sm font-medium text-gray-700 mb-2">

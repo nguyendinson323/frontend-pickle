@@ -26,7 +26,10 @@ export const PartnerAffiliationTab: React.FC<PartnerAffiliationTabProps> = ({ af
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-lg font-medium text-gray-900">Affiliation Status</h3>
         {!isPremium && (
-          <button className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
+          <button
+            onClick={() => window.location.href = '/partner/membership'}
+            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          >
             Upgrade to Premium
           </button>
         )}
@@ -154,7 +157,10 @@ export const PartnerAffiliationTab: React.FC<PartnerAffiliationTabProps> = ({ af
                   </p>
                 </div>
                 <div className="mt-4">
-                  <button className="bg-yellow-100 px-3 py-2 rounded-md text-sm font-medium text-yellow-800 hover:bg-yellow-200">
+                  <button
+                    onClick={() => window.location.href = '/partner/membership'}
+                    className="bg-yellow-100 px-3 py-2 rounded-md text-sm font-medium text-yellow-800 hover:bg-yellow-200"
+                  >
                     Renew Membership
                   </button>
                 </div>
@@ -180,7 +186,10 @@ export const PartnerAffiliationTab: React.FC<PartnerAffiliationTabProps> = ({ af
                 </div>
               </div>
               <div className="text-center">
-                <button className="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white">
+                <button
+                  onClick={() => window.location.href = '/partner/membership'}
+                  className="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white"
+                >
                   Upgrade Now
                 </button>
                 <p className="text-purple-100 text-sm mt-2">Starting at $29/month</p>

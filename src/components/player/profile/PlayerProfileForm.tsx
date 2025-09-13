@@ -5,6 +5,7 @@ import { fetchDashboard } from '../../../store/slices/authSlice'
 import { startLoading, stopLoading } from '../../../store/slices/loadingSlice'
 import { Player, User } from '../../../types/auth'
 import api from '../../../services/api'
+import CentralizedImageUpload from '../../common/CentralizedImageUpload'
 
 interface PlayerProfileFormProps {
   player: Player
@@ -31,6 +32,7 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
     curp: player.curp || '',
     nrtp_level: player.nrtp_level || 0,
     profile_photo_url: player.profile_photo_url || '',
+    id_document_url: player.id_document_url || '',
     nationality: player.nationality || ''
   })
 
@@ -69,6 +71,14 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
     }
   }
 
+  const handleProfilePhotoChange = (url: string) => {
+    setPlayerData(prev => ({ ...prev, profile_photo_url: url }))
+  }
+
+  const handleDocumentChange = (url: string) => {
+    setPlayerData(prev => ({ ...prev, id_document_url: url }))
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
@@ -105,7 +115,8 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
       const cleanPlayerData = {
         ...playerData,
         state_id: playerData.state_id === 0 ? null : playerData.state_id,
-        profile_photo_url: playerData.profile_photo_url.trim() || null
+        profile_photo_url: playerData.profile_photo_url.trim() || null,
+        id_document_url: playerData.id_document_url.trim() || null
       }
       
       // Update user account information first
@@ -294,36 +305,24 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
               />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Profile Photo
-              </label>
-              <div className="flex items-center space-x-4">
-                <div className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center">
-                  {playerData.profile_photo_url ? (
-                    <img 
-                      src={playerData.profile_photo_url} 
-                      alt="Profile" 
-                      className="w-24 h-24 rounded-lg object-cover" 
-                    />
-                  ) : (
-                    <span className="text-3xl text-gray-400">📷</span>
-                  )}
-                </div>
-                <div className="flex-1">
-                  <input
-                    type="url"
-                    id="profile_photo_url"
-                    name="profile_photo_url"
-                    placeholder="Enter image URL"
-                    value={playerData.profile_photo_url}
-                    onChange={handlePlayerInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Enter a URL to your profile photo or leave blank
-                  </p>
-                </div>
-              </div>
+              <CentralizedImageUpload
+                uploadType="player-photo"
+                value={playerData.profile_photo_url}
+                onChange={handleProfilePhotoChange}
+                title="Profile Photo"
+                color="indigo"
+                className="bg-gray-50 border border-gray-200"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <CentralizedImageUpload
+                uploadType="player-document"
+                value={playerData.id_document_url}
+                onChange={handleDocumentChange}
+                title="ID Document"
+                color="indigo"
+                className="bg-gray-50 border border-gray-200"
+              />
             </div>
           </div>
         </div>

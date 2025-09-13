@@ -47,7 +47,7 @@ export const uploadConfigs: Record<UploadType, UploadConfig> = {
     maxSize: '5MB'
   },
   'club-logo': {
-    endpoint: '/api/upload/club-logo-registration',
+    endpoint: '/api/upload/club-logo',
     folder: 'club_logos',
     description: 'Club Logo',
     acceptedFormats: 'PNG, JPG up to 5MB',

@@ -26,13 +26,6 @@ const Header: React.FC = () => {
     return () => document.removeEventListener('click', handleClickOutside)
   }, [])
 
-  const publicNavItems: NavigationItem[] = [
-    { label: 'Home', path: '/' },
-    { label: 'About', path: '/about' },
-    { label: 'Tournaments', path: '/tournaments' },
-    { label: 'Courts', path: '/courts' }
-  ]
-
   const getPublicNavItems = (): NavigationItem[] => [
     { label: 'Tournaments', path: '/tournaments', roles: [] },
     { label: 'Courts', path: '/courts', roles: [] }

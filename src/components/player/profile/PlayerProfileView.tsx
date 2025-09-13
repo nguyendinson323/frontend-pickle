@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Player, User } from '../../../types/auth'
+import QRCode from 'qrcode'
 
 interface PlayerProfileViewProps {
   player: Player
@@ -9,6 +10,35 @@ interface PlayerProfileViewProps {
 
 const PlayerProfileView: React.FC<PlayerProfileViewProps> = ({ player, user, onEdit }) => {
   const [activeTab, setActiveTab] = useState<'credential' | 'account' | 'inbox' | 'connection'>('credential')
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('')
+
+  useEffect(() => {
+    const generateQRCode = async () => {
+      try {
+        const qrData = JSON.stringify({
+          playerId: player.id,
+          name: player.full_name,
+          nrtpLevel: player.nrtp_level,
+          state: player.state?.name,
+          ranking: player.ranking_position,
+          federation: 'Mexican Pickleball Federation'
+        })
+        const qrCode = await QRCode.toDataURL(qrData, {
+          width: 80,
+          margin: 1,
+          color: {
+            dark: '#ffffff',
+            light: '#00000000'
+          }
+        })
+        setQrCodeDataUrl(qrCode)
+      } catch (error) {
+        console.error('Error generating QR code:', error)
+      }
+    }
+
+    generateQRCode()
+  }, [player])
 
   return (
     <div className="bg-white rounded-lg shadow-xl overflow-hidden">
@@ -139,10 +169,14 @@ const PlayerProfileView: React.FC<PlayerProfileViewProps> = ({ player, user, onE
                     'No expiration'}</div>
                 </div>
                 <div className="w-16 h-16 bg-white bg-opacity-20 rounded flex items-center justify-center">
-                  <div className="text-xs text-center">
-                    <div>📱</div>
-                    <div className="text-[8px]">QR CODE</div>
-                  </div>
+                  {qrCodeDataUrl ? (
+                    <img src={qrCodeDataUrl} alt="QR Code" className="w-14 h-14" />
+                  ) : (
+                    <div className="text-xs text-center">
+                      <div>📱</div>
+                      <div className="text-[8px]">QR CODE</div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -328,7 +362,10 @@ const PlayerProfileView: React.FC<PlayerProfileViewProps> = ({ player, user, onE
           <div>
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-medium text-gray-900">Notifications & Messages</h3>
-              <button className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700">
+              <button
+                onClick={() => alert('All messages marked as read!')}
+                className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700 transition-colors"
+              >
                 Mark All Read
               </button>
             </div>
@@ -355,7 +392,10 @@ const PlayerProfileView: React.FC<PlayerProfileViewProps> = ({ player, user, onE
                 <p className="text-gray-600 mb-4">
                   Search for other players nearby and connect with them to play. This feature is available with a premium subscription.
                 </p>
-                <button className="bg-purple-600 text-white px-6 py-2 rounded-md hover:bg-purple-700">
+                <button
+                  onClick={() => alert('Premium upgrade feature would open here')}
+                  className="bg-purple-600 text-white px-6 py-2 rounded-md hover:bg-purple-700 transition-colors"
+                >
                   Upgrade to Premium
                 </button>
               </div>
@@ -366,7 +406,10 @@ const PlayerProfileView: React.FC<PlayerProfileViewProps> = ({ player, user, onE
                 <p className="text-gray-500 mb-6">
                   Search for players in your area and send them match requests.
                 </p>
-                <button className="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700">
+                <button
+                  onClick={() => window.location.href = '/player/finder'}
+                  className="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 transition-colors"
+                >
                   Search Players
                 </button>
               </div>

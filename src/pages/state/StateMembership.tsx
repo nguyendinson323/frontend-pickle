@@ -6,7 +6,6 @@ import {
   fetchAffiliationRequirements,
   renewStateAffiliation,
   submitComplianceReport,
-  updateStateCommitteeInformation,
   clearError
 } from '../../store/slices/stateMembershipSlice'
 
@@ -220,7 +219,7 @@ const StateMembership: React.FC = () => {
             {recentActivities.length > 0 ? (
               <div className="space-y-4">
                 {recentActivities.map((activity, index) => (
-                  <div key={activity.id} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+                  <div key={activity.id + index } className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
                     <div className="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                     <div className="flex-1">
                       <p className="font-medium">{activity.name}</p>
