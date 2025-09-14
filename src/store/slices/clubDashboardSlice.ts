@@ -95,6 +95,11 @@ const clubDashboardSlice = createSlice({
     clearClubDashboardData: (state) => {
       state.dashboardData = null
       state.error = null
+    },
+    updateClubLogo: (state, action: PayloadAction<string>) => {
+      if (state.dashboardData && state.dashboardData.profile) {
+        state.dashboardData.profile.logo_url = action.payload
+      }
     }
   }
 })
@@ -103,7 +108,8 @@ export const {
   setLoading,
   setError,
   setClubDashboardData,
-  clearClubDashboardData
+  clearClubDashboardData,
+  updateClubLogo
 } = clubDashboardSlice.actions
 
 // Define response interface
@@ -138,6 +144,8 @@ export const fetchClubDashboard = () => async (dispatch: AppDispatch) => {
     
     // Fetch dashboard data from auth endpoint (this contains all the necessary data)
     const dashboardResponse = await api.get<ClubDashboardResponse>('/api/auth/dashboard')
+
+    console.log('Dashboard response:', dashboardResponse.data) // Debug log
     
     const combinedStats: ClubStats = {
       totalMembers: dashboardResponse.data.stats?.totalMembers || 0,
@@ -164,6 +172,24 @@ export const fetchClubDashboard = () => async (dispatch: AppDispatch) => {
   } catch (error: unknown) {
     dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to load club dashboard data'))
     dispatch(setLoading(false))
+    throw error
+  }
+}
+
+export const updateClubLogoAPI = (logoUrl: string) => async (dispatch: AppDispatch) => {
+  try {
+    dispatch(setError(null))
+
+    const response = await api.put('/api/auth/profile', {
+      logo_url: logoUrl
+    })
+
+    dispatch(updateClubLogo(logoUrl))
+
+    return response.data
+  } catch (error: unknown) {
+    const errorMessage = (error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to update club logo'
+    dispatch(setError(errorMessage))
     throw error
   }
 }

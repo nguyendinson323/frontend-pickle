@@ -6,8 +6,15 @@ import {
   subscribeToClubPlan,
   cancelClubSubscription,
   changeClubPlan,
+  downloadPaymentReceipt,
+  updateClubPaymentMethod,
+  toggleAutoRenewal,
   clearError
 } from '../../store/slices/clubMembershipSlice'
+import MembershipHeader from '../../components/club/membership/MembershipHeader'
+import PaymentMethodModal from '../../components/club/membership/PaymentMethodModal'
+import BillingContactModal from '../../components/club/membership/BillingContactModal'
+import EnhancedPaymentModal from '../../components/club/membership/EnhancedPaymentModal'
 
 const ClubMembership: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -24,7 +31,9 @@ const ClubMembership: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'benefits' | 'billing'>('overview')
   const [selectedPlan, setSelectedPlan] = useState<number | null>(null)
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly')
-  const [showPaymentModal, setShowPaymentModal] = useState(false)
+  const [showPaymentMethodModal, setShowPaymentMethodModal] = useState(false)
+  const [showBillingContactModal, setShowBillingContactModal] = useState(false)
+  const [showEnhancedPaymentModal, setShowEnhancedPaymentModal] = useState(false)
 
   useEffect(() => {
     dispatch(fetchClubMembershipData())
@@ -39,13 +48,12 @@ const ClubMembership: React.FC = () => {
     }
   }, [error, dispatch])
 
-  const handleSubscribe = async (planId: number) => {
+  const handleSubscribe = async (paymentData: { payment_method: string; billing_cycle: 'monthly' | 'yearly'; stripe_payment_method_id?: string }) => {
+    if (!selectedPlan) return
+
     try {
-      await dispatch(subscribeToClubPlan(planId, {
-        payment_method: 'credit_card',
-        billing_cycle: billingCycle
-      }))
-      setShowPaymentModal(false)
+      await dispatch(subscribeToClubPlan(selectedPlan, paymentData))
+      setShowEnhancedPaymentModal(false)
       setSelectedPlan(null)
     } catch (error) {
       console.error('Subscription failed:', error)
@@ -68,6 +76,59 @@ const ClubMembership: React.FC = () => {
     } catch (error) {
       console.error('Plan change failed:', error)
     }
+  }
+
+  const handleDownloadReceipt = async (paymentId: number) => {
+    try {
+      await dispatch(downloadPaymentReceipt(paymentId))
+    } catch (error) {
+      console.error('Receipt download failed:', error)
+    }
+  }
+
+  const handleUpdatePaymentMethod = async (paymentData: { payment_method: string; stripe_payment_method_id?: string }) => {
+    try {
+      await dispatch(updateClubPaymentMethod(paymentData))
+      setShowPaymentMethodModal(false)
+    } catch (error) {
+      console.error('Payment method update failed:', error)
+    }
+  }
+
+  const handleUpdateBillingContact = async (contactData: {
+    billing_contact_name: string
+    billing_contact_email: string
+    billing_contact_phone: string
+    billing_address: string
+    billing_city: string
+    billing_state: string
+    billing_zip: string
+  }) => {
+    try {
+      // In a real implementation, this would call an API endpoint
+      // For now, we'll simulate success
+      setShowBillingContactModal(false)
+      console.log('Billing contact updated:', contactData)
+    } catch (error) {
+      console.error('Billing contact update failed:', error)
+    }
+  }
+
+  const handleToggleAutoRenewal = async () => {
+    try {
+      const newAutoRenewal = !currentSubscription?.auto_renew
+      await dispatch(toggleAutoRenewal(newAutoRenewal))
+    } catch (error) {
+      console.error('Auto renewal toggle failed:', error)
+    }
+  }
+
+  const handleUpgradeClick = () => {
+    setActiveTab('benefits')
+  }
+
+  const handleRenewClick = () => {
+    setActiveTab('benefits')
   }
 
   const membershipFeatures = [
@@ -123,12 +184,12 @@ const ClubMembership: React.FC = () => {
       )}
 
       {/* Header */}
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg p-8 mb-8 text-white">
-        <h1 className="text-3xl font-bold mb-2">Club Membership</h1>
-        <p className="text-indigo-100">
-          {clubInfo?.name ? `Manage ${clubInfo.name}'s membership and unlock premium features` : 'Manage your club membership and unlock premium features'}
-        </p>
-      </div>
+      <MembershipHeader
+        clubInfo={clubInfo}
+        stats={stats}
+        onUpgradeClick={handleUpgradeClick}
+        onRenewClick={handleRenewClick}
+      />
 
       {/* Tabs */}
       <div className="border-b border-gray-200 mb-6">
@@ -326,7 +387,7 @@ const ClubMembership: React.FC = () => {
                         <button
                           onClick={() => {
                             setSelectedPlan(plan.id)
-                            setShowPaymentModal(true)
+                            setShowEnhancedPaymentModal(true)
                           }}
                           className={`w-full py-2 rounded-lg font-medium ${
                             isFeatured
@@ -383,11 +444,8 @@ const ClubMembership: React.FC = () => {
                       {currentSubscription ? 'Credit Card' : 'No payment method on file'}
                     </p>
                   </div>
-                  <button 
-                    onClick={() => {
-                      // In a real implementation, this would open a payment method update modal
-                      console.log('Update payment method')
-                    }}
+                  <button
+                    onClick={() => setShowPaymentMethodModal(true)}
                     className="text-indigo-600 hover:text-indigo-700 text-sm font-medium"
                   >
                     Update
@@ -402,7 +460,10 @@ const ClubMembership: React.FC = () => {
                       {clubInfo?.name || 'Club billing information'}
                     </p>
                   </div>
-                  <button className="text-indigo-600 hover:text-indigo-700 text-sm font-medium">
+                  <button
+                    onClick={() => setShowBillingContactModal(true)}
+                    className="text-indigo-600 hover:text-indigo-700 text-sm font-medium"
+                  >
                     Edit
                   </button>
                 </div>
@@ -416,8 +477,12 @@ const ClubMembership: React.FC = () => {
                         {currentSubscription.auto_renew ? 'Enabled' : 'Disabled'}
                       </p>
                     </div>
-                    <button className="text-indigo-600 hover:text-indigo-700 text-sm font-medium">
-                      {currentSubscription.auto_renew ? 'Disable' : 'Enable'}
+                    <button
+                      onClick={handleToggleAutoRenewal}
+                      disabled={loading}
+                      className="text-indigo-600 hover:text-indigo-700 text-sm font-medium disabled:opacity-50"
+                    >
+                      {loading ? 'Updating...' : (currentSubscription.auto_renew ? 'Disable' : 'Enable')}
                     </button>
                   </div>
                 </div>
@@ -464,14 +529,12 @@ const ClubMembership: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                           {payment.status === 'completed' ? (
-                            <button 
-                              onClick={() => {
-                                // In a real implementation, this would download the receipt
-                                console.log('Download receipt for payment:', payment.id)
-                              }}
+                            <button
+                              onClick={() => handleDownloadReceipt(payment.id)}
                               className="text-indigo-600 hover:text-indigo-700"
+                              disabled={loading}
                             >
-                              Download
+                              {loading ? 'Loading...' : 'Download'}
                             </button>
                           ) : (
                             <span className="text-gray-400">N/A</span>
@@ -552,62 +615,33 @@ const ClubMembership: React.FC = () => {
         </div>
       )}
 
-      {/* Simple Payment Modal */}
-      {showPaymentModal && selectedPlan && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div className="mt-3">
-              <h3 className="text-lg font-medium text-gray-900 text-center">
-                Confirm Subscription
-              </h3>
-              <div className="mt-4 px-7 py-3">
-                <p className="text-sm text-gray-500 text-center">
-                  You are about to subscribe to the selected plan for {billingCycle} billing.
-                </p>
-                <div className="mt-4 space-y-2">
-                  <div className="flex justify-between">
-                    <span>Plan:</span>
-                    <span className="font-medium">
-                      {availablePlans.find(p => p.id === selectedPlan)?.name}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Billing Cycle:</span>
-                    <span className="font-medium capitalize">{billingCycle}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Amount:</span>
-                    <span className="font-medium">
-                      {formatPrice(billingCycle === 'yearly' 
-                        ? availablePlans.find(p => p.id === selectedPlan)?.yearly_price || 0
-                        : availablePlans.find(p => p.id === selectedPlan)?.monthly_price || 0
-                      )}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex justify-center space-x-4 mt-6">
-                <button
-                  onClick={() => {
-                    setShowPaymentModal(false)
-                    setSelectedPlan(null)
-                  }}
-                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => handleSubscribe(selectedPlan)}
-                  disabled={loading}
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
-                >
-                  {loading ? 'Processing...' : 'Confirm'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Modals */}
+      <EnhancedPaymentModal
+        isOpen={showEnhancedPaymentModal}
+        onClose={() => {
+          setShowEnhancedPaymentModal(false)
+          setSelectedPlan(null)
+        }}
+        plan={selectedPlan ? availablePlans.find(p => p.id === selectedPlan) || null : null}
+        billingCycle={billingCycle}
+        onConfirm={handleSubscribe}
+        loading={loading}
+      />
+
+      <PaymentMethodModal
+        isOpen={showPaymentMethodModal}
+        onClose={() => setShowPaymentMethodModal(false)}
+        onUpdate={handleUpdatePaymentMethod}
+        loading={loading}
+      />
+
+      <BillingContactModal
+        isOpen={showBillingContactModal}
+        onClose={() => setShowBillingContactModal(false)}
+        clubInfo={clubInfo}
+        onUpdate={handleUpdateBillingContact}
+        loading={loading}
+      />
     </div>
   )
 }

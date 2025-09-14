@@ -66,32 +66,12 @@ const ClubMicrosite: React.FC = () => {
     }
   }
 
-  const handleUploadLogo = async (file: File) => {
-    try {
-      const formData = new FormData()
-      formData.append('logo', file)
-      await dispatch(uploadClubLogo(formData))
-    } catch (error) {
-      console.error('Error uploading logo:', error)
-      throw error
-    }
-  }
-
-  const handleUploadBanner = async (file: File) => {
-    try {
-      const formData = new FormData()
-      formData.append('banner', file)
-      await dispatch(uploadBannerImage(formData))
-    } catch (error) {
-      console.error('Error uploading banner:', error)
-      throw error
-    }
-  }
 
   const handleSaveCustomization = async (customizationData: {
     primary_color?: string
     secondary_color?: string
     description?: string
+    banner_url?: string
   }) => {
     try {
       await dispatch(updateMicrositeCustomization(customizationData))
@@ -245,7 +225,6 @@ const ClubMicrosite: React.FC = () => {
               <MicrositeEditor
                 micrositeData={micrositeData}
                 onSave={handleSaveMicrositeData}
-                onUploadLogo={handleUploadLogo}
                 loading={loading}
               />
             )}
@@ -254,7 +233,6 @@ const ClubMicrosite: React.FC = () => {
               <MicrositeCustomization
                 customization={customization}
                 onSaveCustomization={handleSaveCustomization}
-                onUploadBanner={handleUploadBanner}
                 loading={loading}
               />
             )}

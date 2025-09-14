@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { ClubMember } from '../../../store/slices/clubMembersSlice'
+import CentralizedImageUpload from '../../common/CentralizedImageUpload'
 
 interface EditMemberModalProps {
   isOpen: boolean
@@ -9,6 +10,7 @@ interface EditMemberModalProps {
     full_name: string
     nrtp_level: number
     affiliation_expires_at: string | null
+    profile_photo_url?: string
   }) => Promise<void>
   loading: boolean
 }
@@ -23,7 +25,8 @@ const EditMemberModal: React.FC<EditMemberModalProps> = ({
   const [formData, setFormData] = useState({
     full_name: '',
     nrtp_level: 1.0,
-    affiliation_expires_at: ''
+    affiliation_expires_at: '',
+    profile_photo_url: ''
   })
 
   useEffect(() => {
@@ -31,7 +34,8 @@ const EditMemberModal: React.FC<EditMemberModalProps> = ({
       setFormData({
         full_name: member.full_name,
         nrtp_level: member.nrtp_level,
-        affiliation_expires_at: member.affiliation_expires_at ? member.affiliation_expires_at.split('T')[0] : ''
+        affiliation_expires_at: member.affiliation_expires_at ? member.affiliation_expires_at.split('T')[0] : '',
+        profile_photo_url: member.profile_photo_url || ''
       })
     }
   }, [member, isOpen])
@@ -45,7 +49,8 @@ const EditMemberModal: React.FC<EditMemberModalProps> = ({
       await onUpdate(member.id, {
         full_name: formData.full_name,
         nrtp_level: formData.nrtp_level,
-        affiliation_expires_at: formData.affiliation_expires_at || null
+        affiliation_expires_at: formData.affiliation_expires_at || null,
+        profile_photo_url: formData.profile_photo_url || undefined
       })
       onClose()
     } catch (error) {
@@ -58,6 +63,13 @@ const EditMemberModal: React.FC<EditMemberModalProps> = ({
     setFormData(prev => ({
       ...prev,
       [name]: name === 'nrtp_level' ? parseFloat(value) : value
+    }))
+  }
+
+  const handleProfilePhotoChange = (url: string) => {
+    setFormData(prev => ({
+      ...prev,
+      profile_photo_url: url
     }))
   }
 
@@ -104,6 +116,18 @@ const EditMemberModal: React.FC<EditMemberModalProps> = ({
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Profile Photo
+              </label>
+              <CentralizedImageUpload
+                uploadType="player-photo"
+                value={formData.profile_photo_url}
+                onChange={handleProfilePhotoChange}
+                color="blue"
+              />
+            </div>
+
             <div>
               <label htmlFor="full_name" className="block text-sm font-medium text-gray-700">
                 Full Name *

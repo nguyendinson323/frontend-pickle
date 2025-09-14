@@ -451,7 +451,7 @@ export const fetchLeaderboard = (rankingType: 'overall' | 'state' | 'club' | 'ag
 }
 
 // Search players for comparison
-export const searchPlayersForComparison = (query: string) => async (dispatch: AppDispatch) => {
+export const searchPlayersForComparison = (query: string) => async () => {
   try {
     const response = await api.get<PlayerRanking[]>(`/api/player-rankings/search?q=${encodeURIComponent(query)}`)
     return response.data

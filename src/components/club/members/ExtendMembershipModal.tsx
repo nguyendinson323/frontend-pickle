@@ -79,7 +79,7 @@ const ExtendMembershipModal: React.FC<ExtendMembershipModalProps> = ({
             </button>
           </div>
 
-          <div className="mb-4 p-4  rounded-lg">
+          <div className="mb-4 p-4 bg-gray-50 rounded-lg">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 {member.profile_photo_url ? (
@@ -142,7 +142,7 @@ const ExtendMembershipModal: React.FC<ExtendMembershipModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:"
+                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
                 disabled={loading}
               >
                 Cancel

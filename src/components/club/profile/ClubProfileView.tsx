@@ -1,5 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
+import { useDispatch } from 'react-redux'
+import { AppDispatch } from '../../../store'
+import { updateClubProfile } from '../../../store/slices/authSlice'
 import { Club, User } from '../../../types/auth'
+import CentralizedImageUpload from '../../common/CentralizedImageUpload'
 
 interface ClubProfileViewProps {
   club: Club
@@ -10,7 +14,24 @@ interface ClubProfileViewProps {
 type TabType = 'account' | 'inbox' | 'microsite' | 'statistics' | 'documents' | 'affiliation' | 'management' | 'members'
 
 const ClubProfileView: React.FC<ClubProfileViewProps> = ({ club, user, onEdit }) => {
+  const dispatch = useDispatch<AppDispatch>()
   const [activeTab, setActiveTab] = useState<TabType>('account')
+  const [isEditingLogo, setIsEditingLogo] = useState(false)
+  const logoUploadRef = useRef<HTMLDivElement>(null)
+
+  // Handle click outside to close logo upload
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (logoUploadRef.current && !logoUploadRef.current.contains(event.target as Node)) {
+        setIsEditingLogo(false)
+      }
+    }
+
+    if (isEditingLogo) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isEditingLogo])
 
   const tabs = [
     { id: 'account' as TabType, label: 'Account', icon: '👤' },
@@ -22,6 +43,15 @@ const ClubProfileView: React.FC<ClubProfileViewProps> = ({ club, user, onEdit })
     { id: 'management' as TabType, label: 'Management', icon: '⚙️' },
     { id: 'members' as TabType, label: 'Member Management', icon: '👥' }
   ]
+
+  const handleLogoUpdate = async (logoUrl: string) => {
+    try {
+      await dispatch(updateClubProfile({ logo_url: logoUrl }))
+      setIsEditingLogo(false)
+    } catch (error) {
+      console.error('Failed to update logo:', error)
+    }
+  }
 
   const renderAccountTab = () => (
     <>
@@ -216,15 +246,42 @@ const ClubProfileView: React.FC<ClubProfileViewProps> = ({ club, user, onEdit })
       <div className="bg-purple-600 text-white p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <div className="w-20 h-20 bg-purple-700 rounded-full flex items-center justify-center mr-6">
-              {club.logo_url ? (
-                <img 
-                  src={club.logo_url} 
-                  alt="Club Logo" 
-                  className="w-20 h-20 rounded-full object-cover" 
-                />
-              ) : (
-                <span className="text-3xl text-white">🏟️</span>
+            <div className="relative">
+              <div className="w-20 h-20 bg-purple-700 rounded-full flex items-center justify-center mr-6 group cursor-pointer">
+                {club.logo_url ? (
+                  <img
+                    src={club.logo_url}
+                    alt="Club Logo"
+                    className="w-20 h-20 rounded-full object-cover"
+                    onClick={() => setIsEditingLogo(true)}
+                  />
+                ) : (
+                  <span
+                    className="text-3xl text-white"
+                    onClick={() => setIsEditingLogo(true)}
+                  >
+                    🏟️
+                  </span>
+                )}
+                <div
+                  className="absolute inset-0 bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer"
+                  onClick={() => setIsEditingLogo(true)}
+                >
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                  </svg>
+                </div>
+              </div>
+              {isEditingLogo && (
+                <div ref={logoUploadRef} className="absolute top-0 left-0 z-50">
+                  <CentralizedImageUpload
+                    uploadType="club-logo"
+                    value={club.logo_url || ''}
+                    onChange={handleLogoUpdate}
+                    color="purple"
+                    title="Upload Club Logo"
+                  />
+                </div>
               )}
             </div>
             <div>

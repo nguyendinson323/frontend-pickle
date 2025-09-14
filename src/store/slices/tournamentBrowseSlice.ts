@@ -78,6 +78,11 @@ export interface TournamentRegistration {
     full_name: string
     nrtp_level: number
   } | null
+  partnerPlayer?: {
+    id: number
+    full_name: string
+    nrtp_level: number
+  } | null
 }
 
 export interface TournamentFilters {
@@ -180,7 +185,10 @@ const tournamentBrowseSlice = createSlice({
         tournamentId: action.payload.tournamentId,
         selectedCategory: action.payload.category,
         partnerRequired: action.payload.partnerRequired,
-        selectedPartner: null
+        selectedPartner: null,
+        partnerSearchQuery: '',
+        partnerSearchResults: [],
+        isSearchingPartners: false
       }
     },
     closeRegistrationModal: (state) => {
@@ -377,7 +385,12 @@ export const searchPartners = (query: string) => async (dispatch: AppDispatch) =
   dispatch(setIsSearchingPartners(true))
   
   try {
-    const response = await api.get(`/api/player-messages/search?q=${encodeURIComponent(query)}`)
+    const response = await api.get<Array<{
+      id: number
+      full_name: string
+      nrtp_level: number
+      profile_photo_url?: string
+    }>>(`/api/player-messages/search?q=${encodeURIComponent(query)}`)
     dispatch(setPartnerSearchResults(response.data))
   } catch (error) {
     console.error('Failed to search partners:', error)

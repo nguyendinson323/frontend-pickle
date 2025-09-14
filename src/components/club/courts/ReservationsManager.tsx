@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import CourtCalendarView from './CourtCalendarView'
 
 interface CourtReservation {
   id: number
@@ -40,6 +41,7 @@ const ReservationsManager: React.FC<ReservationsManagerProps> = ({
 }) => {
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [dateFilter, setDateFilter] = useState<string>('all')
+  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list')
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString('en-US', {
@@ -112,6 +114,28 @@ const ReservationsManager: React.FC<ReservationsManagerProps> = ({
           <h3 className="text-lg font-medium text-gray-900">
             Reservations ({filteredReservations.length})
           </h3>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setViewMode('list')}
+              className={`px-3 py-1 text-sm rounded-md transition-colors duration-200 ${
+                viewMode === 'list'
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              List View
+            </button>
+            <button
+              onClick={() => setViewMode('calendar')}
+              className={`px-3 py-1 text-sm rounded-md transition-colors duration-200 ${
+                viewMode === 'calendar'
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Calendar View
+            </button>
+          </div>
         </div>
 
         {/* Filters */}
@@ -146,7 +170,12 @@ const ReservationsManager: React.FC<ReservationsManagerProps> = ({
         </div>
       </div>
 
-      {filteredReservations.length === 0 ? (
+      {viewMode === 'calendar' ? (
+        <CourtCalendarView
+          reservations={reservations}
+          selectedCourtId={selectedCourtId}
+        />
+      ) : filteredReservations.length === 0 ? (
         <div className="text-center py-8">
           <div className="text-gray-500">
             <div className="text-4xl mb-2">📅</div>

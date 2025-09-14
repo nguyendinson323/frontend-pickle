@@ -13,6 +13,8 @@ export type UploadType =
   | 'player-photo-auth'
   | 'player-document-auth'
   | 'club-logo'
+  | 'club-banner'
+  | 'tournament-banner'
   | 'state-logo'
   | 'partner-logo'
   | 'partner-logo-auth'
@@ -142,6 +144,24 @@ export const uploadConfigs: Record<UploadType, UploadConfig> = {
     maxSize: '5MB',
     cropShape: 'round',
     aspectRatio: 1
+  },
+  'club-banner': {
+    endpoint: '/api/upload/club-banner',
+    folder: 'club_banners',
+    description: 'Club Banner',
+    acceptedFormats: 'PNG, JPG up to 5MB',
+    maxSize: '5MB',
+    cropShape: 'rect',
+    aspectRatio: 3
+  },
+  'tournament-banner': {
+    endpoint: '/api/upload/tournament-banner',
+    folder: 'tournament_banners',
+    description: 'Tournament Banner',
+    acceptedFormats: 'PNG, JPG up to 5MB',
+    maxSize: '5MB',
+    cropShape: 'rect',
+    aspectRatio: 3
   }
 }
 

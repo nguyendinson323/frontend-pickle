@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { MicrositeCustomization as CustomizationData } from '../../../store/slices/clubMicrositeSlice'
+import CentralizedImageUpload from '../../common/CentralizedImageUpload'
 
 interface MicrositeCustomizationProps {
   customization: CustomizationData | null
@@ -7,21 +8,21 @@ interface MicrositeCustomizationProps {
     primary_color?: string
     secondary_color?: string
     description?: string
+    banner_url?: string
   }) => Promise<void>
-  onUploadBanner: (file: File) => Promise<void>
   loading: boolean
 }
 
 const MicrositeCustomization: React.FC<MicrositeCustomizationProps> = ({
   customization,
   onSaveCustomization,
-  onUploadBanner,
   loading
 }) => {
   const [formData, setFormData] = useState({
     primary_color: '#3B82F6',
     secondary_color: '#EFF6FF',
-    description: ''
+    description: '',
+    banner_url: ''
   })
   
   const [hasChanges, setHasChanges] = useState(false)
@@ -31,7 +32,8 @@ const MicrositeCustomization: React.FC<MicrositeCustomizationProps> = ({
       setFormData({
         primary_color: customization.primary_color || '#3B82F6',
         secondary_color: customization.secondary_color || '#EFF6FF',
-        description: customization.description || ''
+        description: customization.description || '',
+        banner_url: customization.banner_url || ''
       })
       setHasChanges(false)
     }
@@ -57,15 +59,12 @@ const MicrositeCustomization: React.FC<MicrositeCustomizationProps> = ({
     }
   }
 
-  const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      try {
-        await onUploadBanner(file)
-      } catch (error) {
-        console.error('Error uploading banner:', error)
-      }
-    }
+  const handleBannerChange = (url: string) => {
+    setFormData(prev => ({
+      ...prev,
+      banner_url: url
+    }))
+    setHasChanges(true)
   }
 
   const resetColors = () => {
@@ -192,43 +191,14 @@ const MicrositeCustomization: React.FC<MicrositeCustomizationProps> = ({
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Banner Image
           </label>
-          <div className="space-y-3">
-            {customization?.banner_url && (
-              <div className="relative">
-                <img
-                  src={customization.banner_url}
-                  alt="Current banner"
-                  className="w-full h-32 object-cover rounded-lg border border-gray-200"
-                />
-                <div className="absolute top-2 right-2 bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">
-                  Current Banner
-                </div>
-              </div>
-            )}
-            
-            <div className="flex items-center justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-              <div className="space-y-1 text-center">
-                <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                  <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                <div className="flex text-sm text-gray-600">
-                  <label htmlFor="banner-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
-                    <span>Upload a banner image</span>
-                    <input
-                      id="banner-upload"
-                      name="banner-upload"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleBannerUpload}
-                      className="sr-only"
-                    />
-                  </label>
-                  <p className="pl-1">or drag and drop</p>
-                </div>
-                <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB. Recommended size: 1200x400px</p>
-              </div>
-            </div>
-          </div>
+          <CentralizedImageUpload
+            uploadType="club-banner"
+            value={formData.banner_url}
+            onChange={handleBannerChange}
+            color="purple"
+            title="Upload Banner Image"
+          />
+          <p className="text-xs text-gray-500 mt-2">Recommended size: 1200x400px for best display quality.</p>
         </div>
 
         {/* Action Buttons */}
@@ -240,7 +210,8 @@ const MicrositeCustomization: React.FC<MicrositeCustomizationProps> = ({
                 setFormData({
                   primary_color: customization.primary_color || '#3B82F6',
                   secondary_color: customization.secondary_color || '#EFF6FF',
-                  description: customization.description || ''
+                  description: customization.description || '',
+                  banner_url: customization.banner_url || ''
                 })
                 setHasChanges(false)
               }

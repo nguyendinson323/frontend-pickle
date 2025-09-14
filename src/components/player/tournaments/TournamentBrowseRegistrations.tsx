@@ -69,9 +69,9 @@ const TournamentBrowseRegistrations: React.FC<TournamentBrowseRegistrationsProps
                       )}
                     </div>
                   )}
-                  {registration.partner && (
+                  {registration.partnerPlayer && (
                     <div className="mt-1 text-sm text-gray-600">
-                      Partner: {registration.partner.full_name} (Level {registration.partner.nrtp_level})
+                      Partner: {registration.partnerPlayer.full_name} (Level {registration.partnerPlayer.nrtp_level})
                     </div>
                   )}
                 </div>

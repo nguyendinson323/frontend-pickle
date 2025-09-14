@@ -25,7 +25,7 @@ const TournamentBrowseFilters: React.FC<TournamentBrowseFiltersProps> = ({
         <h3 className="text-lg leading-6 font-medium text-gray-900">Search Filters</h3>
       </div>
       <div className="p-6 space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           
           {/* State Filter */}
           <div>
@@ -118,6 +118,41 @@ const TournamentBrowseFilters: React.FC<TournamentBrowseFiltersProps> = ({
             >
               <option value="">All Tournaments</option>
               <option value="true">Available Spots Only</option>
+            </select>
+          </div>
+
+          {/* Date Range Filters */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Start Date From</label>
+            <input
+              type="date"
+              value={filters.start_date_from || ''}
+              onChange={(e) => onFilterChange('start_date_from', e.target.value || null)}
+              className="mt-1 block w-full pl-3 pr-3 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Start Date To</label>
+            <input
+              type="date"
+              value={filters.start_date_to || ''}
+              onChange={(e) => onFilterChange('start_date_to', e.target.value || null)}
+              className="mt-1 block w-full pl-3 pr-3 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+            />
+          </div>
+
+          {/* Ranking Filter */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Ranking Status</label>
+            <select
+              value={filters.is_ranking === null ? '' : filters.is_ranking ? 'true' : 'false'}
+              onChange={(e) => onFilterChange('is_ranking', e.target.value === '' ? null : e.target.value === 'true')}
+              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+            >
+              <option value="">All Tournaments</option>
+              <option value="true">Ranking Tournaments Only</option>
+              <option value="false">Non-Ranking Only</option>
             </select>
           </div>
 

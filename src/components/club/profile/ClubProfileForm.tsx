@@ -126,8 +126,8 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
       errors.website = 'Please enter a valid URL (starting with http:// or https://)'
     }
     
-    if (clubData.rfc && !/^[A-Z]{3,4}\d{6}[A-Z0-9]{3}$/.test(clubData.rfc.toUpperCase())) {
-      errors.rfc = 'Please enter a valid RFC format'
+    if (clubData.rfc && !/^[A-Z]{3,4}\d{6}[A-Z0-9]{3}$/i.test(clubData.rfc)) {
+      errors.rfc = 'Please enter a valid RFC format (e.g., ABC123456789)'
     }
     
     setValidationErrors(errors)
@@ -265,8 +265,15 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
                 name="phone"
                 value={userData.phone}
                 onChange={handleUserInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                  validationErrors.phone
+                    ? 'border-red-300 focus:ring-red-500'
+                    : 'border-gray-300 focus:ring-purple-500'
+                }`}
               />
+              {validationErrors.phone && (
+                <p className="mt-1 text-sm text-red-600">{validationErrors.phone}</p>
+              )}
             </div>
           </div>
         </div>
@@ -324,8 +331,15 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
                 name="rfc"
                 value={clubData.rfc}
                 onChange={handleClubInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                  validationErrors.rfc
+                    ? 'border-red-300 focus:ring-red-500'
+                    : 'border-gray-300 focus:ring-purple-500'
+                }`}
               />
+              {validationErrors.rfc && (
+                <p className="mt-1 text-sm text-red-600">{validationErrors.rfc}</p>
+              )}
             </div>
             <div>
               <label htmlFor="manager_name" className="block text-sm font-medium text-gray-700 mb-2">
@@ -363,8 +377,15 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
                 name="website"
                 value={clubData.website}
                 onChange={handleClubInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                  validationErrors.website
+                    ? 'border-red-300 focus:ring-red-500'
+                    : 'border-gray-300 focus:ring-purple-500'
+                }`}
               />
+              {validationErrors.website && (
+                <p className="mt-1 text-sm text-red-600">{validationErrors.website}</p>
+              )}
             </div>
             <div>
               <label htmlFor="social_media" className="block text-sm font-medium text-gray-700 mb-2">

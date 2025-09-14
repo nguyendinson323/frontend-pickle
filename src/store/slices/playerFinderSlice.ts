@@ -382,6 +382,11 @@ export const updatePlayerSearchability = createAsyncThunk(
       await api.put('/api/player-finder/searchability', {
         is_searchable: isSearchable
       })
+
+      // Update user data in auth slice immediately
+      const { updateUser } = await import('./authSlice')
+      dispatch(updateUser({ is_searchable: isSearchable }))
+
       return isSearchable
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to update searchability'

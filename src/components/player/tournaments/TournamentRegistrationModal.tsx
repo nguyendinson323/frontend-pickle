@@ -9,22 +9,13 @@ import {
 } from '../../../store/slices/tournamentBrowseSlice'
 import { AppDispatch } from '../../../store'
 
-interface RegistrationForm {
-  partnerName: string
-  partnerLevel: string
-}
-
 interface TournamentRegistrationModalProps {
   registrationModal: TournamentBrowseState['registrationModal']
-  registrationForm: RegistrationForm
-  onFormChange: (form: RegistrationForm) => void
   onSubmit: () => void
 }
 
 const TournamentRegistrationModal: React.FC<TournamentRegistrationModalProps> = ({
   registrationModal,
-  registrationForm,
-  onFormChange,
   onSubmit
 }) => {
   const dispatch = useDispatch<AppDispatch>()
@@ -144,7 +135,8 @@ const TournamentRegistrationModal: React.FC<TournamentRegistrationModalProps> = 
           <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
             <button
               onClick={onSubmit}
-              className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+              disabled={registrationModal.partnerRequired && !registrationModal.selectedPartner}
+              className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
               Register
             </button>

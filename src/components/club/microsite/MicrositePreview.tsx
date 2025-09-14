@@ -42,7 +42,7 @@ const MicrositePreview: React.FC<MicrositePreviewProps> = ({
         </div>
 
         {/* Preview Content */}
-        <div className=" p-6 min-h-screen">
+        <div className="bg-gray-50 p-6 min-h-screen">
           {/* Hero Section */}
           <div className="bg-white rounded-lg shadow-md mb-8">
             <div className="relative">
@@ -137,7 +137,7 @@ const MicrositePreview: React.FC<MicrositePreviewProps> = ({
                 </p>
 
                 {micrositeData.manager_name && (
-                  <div className="mt-6 p-4  rounded-lg">
+                  <div className="mt-6 p-4 bg-gray-50 rounded-lg">
                     <h3 className="font-medium text-gray-900 mb-2">Club Management</h3>
                     <div className="flex items-center">
                       <div className="h-10 w-10 bg-gray-300 rounded-full flex items-center justify-center">

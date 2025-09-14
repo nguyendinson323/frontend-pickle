@@ -42,10 +42,6 @@ const TournamentBrowsePage: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<'browse' | 'registered'>('browse')
   const [selectedTournamentId, setSelectedTournamentId] = useState<number | null>(null)
-  const [registrationForm, setRegistrationForm] = useState({
-    partnerName: '',
-    partnerLevel: ''
-  })
 
   useEffect(() => {
     if (!user || user.role !== 'player') {
@@ -180,8 +176,6 @@ const TournamentBrowsePage: React.FC = () => {
 
       <TournamentRegistrationModal
         registrationModal={registrationModal}
-        registrationForm={registrationForm}
-        onFormChange={setRegistrationForm}
         onSubmit={handleRegistrationSubmit}
       />
     </div>

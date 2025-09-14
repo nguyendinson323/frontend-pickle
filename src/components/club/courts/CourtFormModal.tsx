@@ -170,6 +170,9 @@ const CourtFormModal: React.FC<CourtFormModalProps> = ({
               <option value="Synthetic">Synthetic</option>
               <option value="Concrete">Concrete</option>
               <option value="Asphalt">Asphalt</option>
+              <option value="Cushioned">Cushioned</option>
+              <option value="Acrylic">Acrylic</option>
+              <option value="Artificial Turf">Artificial Turf</option>
             </select>
           </div>
 

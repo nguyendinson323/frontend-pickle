@@ -330,11 +330,17 @@ export const updateCoachProfile = (profileData: Partial<Coach>) => async (dispat
   }
 }
 
-export const updateClubProfile = (profileData: Partial<Club>) => async (dispatch: AppDispatch) => {
+export const updateClubProfile = (profileData: Partial<Club> & { user_data?: Partial<User> }) => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Updating club profile...'))
-  
+
   try {
     const response = await api.put('/api/auth/profile/club', profileData)
+
+    // Update both dashboard and user data if user_data was provided
+    if (profileData.user_data && response.data.user) {
+      dispatch(updateUser(response.data.user))
+    }
+
     dispatch(updateDashboard(response.data as ClubDashboard))
     return response.data
   } catch (error) {

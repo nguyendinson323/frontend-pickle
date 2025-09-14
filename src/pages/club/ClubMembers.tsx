@@ -189,6 +189,7 @@ const ClubMembers: React.FC = () => {
     full_name: string
     nrtp_level: number
     affiliation_expires_at: string | null
+    profile_photo_url?: string
   }) => {
     try {
       await dispatch(updateMemberData(memberId, updateData))

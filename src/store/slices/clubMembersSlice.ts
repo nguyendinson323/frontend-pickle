@@ -205,6 +205,7 @@ export const updateMemberData = (memberId: number, updateData: {
   full_name: string
   nrtp_level: number
   affiliation_expires_at: string | null
+  profile_photo_url?: string
 }) => async (dispatch: AppDispatch) => {
   try {
     dispatch(startLoading('Updating member information...'))

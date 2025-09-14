@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState, AppDispatch } from '../../store'
-import { 
+import {
   fetchClubCourtsData,
   createCourt,
   updateCourtInfo,
@@ -9,15 +9,17 @@ import {
   updateReservationStatusInfo,
   createCourtMaintenance,
   updateMaintenanceInfo,
+  updateCourtScheduleInfo,
   setSelectedCourt
 } from '../../store/slices/clubCourtsSlice'
-import { 
+import {
   CourtsHeader,
   CourtsList,
   CourtFormModal,
   ReservationsManager,
   MaintenanceManager
 } from '../../components/club/courts'
+import CourtScheduleManager from '../../components/club/courts/CourtScheduleManager'
 
 interface Court {
   id: number
@@ -39,9 +41,9 @@ interface Court {
 
 const ClubCourtsPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
-  const { courts, reservations, maintenance, stats, selectedCourt, loading, error } = useSelector((state: RootState) => state.clubCourts)
-  
-  const [activeTab, setActiveTab] = useState<'courts' | 'reservations' | 'maintenance'>('courts')
+  const { courts, courtSchedules, reservations, maintenance, stats, selectedCourt, loading, error } = useSelector((state: RootState) => state.clubCourts)
+
+  const [activeTab, setActiveTab] = useState<'courts' | 'reservations' | 'maintenance' | 'schedules'>('courts')
   const [isCourtFormOpen, setIsCourtFormOpen] = useState(false)
   const [editingCourt, setEditingCourt] = useState<Court | null>(null)
   const [successMessage, setSuccessMessage] = useState('')
@@ -91,9 +93,8 @@ const ClubCourtsPage: React.FC = () => {
   }
 
   const handleManageSchedule = (court: Court) => {
-    // Navigate to court schedule management (could be a separate page or modal)
     dispatch(setSelectedCourt(court))
-    showSuccessMessage(`Schedule management for ${court.name} - Feature coming soon!`)
+    setActiveTab('schedules')
   }
 
   const handleViewReservations = (court: Court) => {
@@ -125,6 +126,15 @@ const ClubCourtsPage: React.FC = () => {
       showSuccessMessage('Maintenance record updated successfully!')
     } catch (error) {
       console.error('Error updating maintenance:', error)
+    }
+  }
+
+  const handleUpdateSchedule = async (scheduleId: number, scheduleData: any) => {
+    try {
+      await dispatch(updateCourtScheduleInfo(scheduleId, scheduleData))
+      showSuccessMessage('Court schedule updated successfully!')
+    } catch (error) {
+      console.error('Error updating schedule:', error)
     }
   }
 
@@ -219,6 +229,16 @@ const ClubCourtsPage: React.FC = () => {
               >
                 Maintenance ({maintenance.length})
               </button>
+              <button
+                onClick={() => setActiveTab('schedules')}
+                className={`py-4 px-6 border-b-2 font-medium text-sm ${
+                  activeTab === 'schedules'
+                    ? 'border-indigo-500 text-indigo-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                Schedules ({courtSchedules.length})
+              </button>
             </nav>
           </div>
         </div>
@@ -249,6 +269,15 @@ const ClubCourtsPage: React.FC = () => {
             courts={courts}
             onAddMaintenance={handleAddMaintenance}
             onUpdateMaintenance={handleUpdateMaintenance}
+          />
+        )}
+
+        {activeTab === 'schedules' && (
+          <CourtScheduleManager
+            schedules={courtSchedules}
+            courts={courts}
+            selectedCourtId={selectedCourt?.id}
+            onUpdateSchedule={handleUpdateSchedule}
           />
         )}
 

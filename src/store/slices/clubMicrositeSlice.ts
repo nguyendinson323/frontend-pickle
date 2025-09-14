@@ -262,6 +262,7 @@ export const updateMicrositeCustomization = (customizationData: {
   primary_color?: string
   secondary_color?: string
   description?: string
+  banner_url?: string
 }) => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true))
   

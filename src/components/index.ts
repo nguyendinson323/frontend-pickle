@@ -1,7 +1,7 @@
 // Layout components
-export { default as Layout } from './layout/Layout'
-export { default as Header } from './layout/Header'
-export { default as Footer } from './layout/Footer'
+// export { default as Layout } from './layout/Layout' // Component not found
+// export { default as Header } from './layout/Header'
+// export { default as Footer } from './layout/Footer'
 
 // Common components
 export * from './common'

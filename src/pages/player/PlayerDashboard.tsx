@@ -58,18 +58,18 @@ const PlayerDashboardPage: React.FC = () => {
   
   // Map backend data to component expected format
   const upcomingMatches = (playerData.upcomingMatches || []).map(match => ({
-    tournamentName: match.tournamentName,
+    tournamentName: match.tournamentName || 'Tournament',
     opponent: match.opponent || 'TBD',
-    date: match.date,
+    date: match.date || new Date().toLocaleDateString(),
     time: match.time || 'TBD',
-    status: match.status
+    status: match.status || 'registered'
   }))
   
   const recentMatches = (playerData.recentMatches || []).map(match => ({
     opponent: match.opponent || 'Unknown',
     tournament: match.tournament || 'Tournament',
-    date: match.date ? new Date(match.date).toLocaleDateString() : '',
-    result: match.result || 'N/A',
+    date: match.date ? (typeof match.date === 'string' ? new Date(match.date).toLocaleDateString() : match.date) : new Date().toLocaleDateString(),
+    result: (match.result === 'win' || match.result === 'loss' || match.result === 'draw') ? match.result : 'draw' as 'win' | 'loss' | 'draw',
     score: match.score || 'N/A'
   }))
 
@@ -84,7 +84,7 @@ const PlayerDashboardPage: React.FC = () => {
             state: profile.state?.name || 'Unknown'
           }} />
 
-          <PlayerStatsGrid playerData={{ 
+          <PlayerStatsGrid playerData={{
             tournamentWins: playerData.tournamentWins || 0,
             totalMatches: playerData.totalMatches || 0,
             currentRanking: playerData.currentRanking?.current_rank || 0
@@ -99,9 +99,9 @@ const PlayerDashboardPage: React.FC = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
             <PlayerRecentMatches recentMatches={recentMatches} />
-            <PlayerAchievements playerData={{ 
-              tournamentWins: playerData.tournamentWins,
-              totalMatches: playerData.totalMatches,
+            <PlayerAchievements playerData={{
+              tournamentWins: playerData.tournamentWins || 0,
+              totalMatches: playerData.totalMatches || 0,
               currentRanking: playerData.currentRanking?.current_rank || 0
             }} />
           </div>

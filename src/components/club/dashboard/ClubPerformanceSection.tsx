@@ -39,8 +39,8 @@ const ClubPerformanceSection: React.FC<ClubPerformanceSectionProps> = ({
         <div className="text-center p-4 bg-gray-50 rounded-lg">
           <div className="text-3xl mb-2">⭐</div>
           <h4 className="font-semibold text-gray-900 mb-1">Member Satisfaction</h4>
-          <p className="text-2xl font-bold text-purple-600">{memberSatisfaction}/5</p>
-          <p className="text-sm text-gray-600">Average rating</p>
+          <p className="text-2xl font-bold text-purple-600">{memberSatisfaction}%</p>
+          <p className="text-sm text-gray-600">Satisfaction score</p>
         </div>
       </div>
 

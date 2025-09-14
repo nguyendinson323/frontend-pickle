@@ -290,24 +290,80 @@ export const updateClubPaymentMethod = (paymentMethodData: {
 
 export const changeClubPlan = (planId: number, billingCycle: 'monthly' | 'yearly') => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true))
-  
+
   try {
     dispatch(setError(null))
-    
+
     const response = await api.put<SubscriptionResponse>('/api/club/membership/change-plan', {
       plan_id: planId,
       billing_cycle: billingCycle
     })
-    
+
     dispatch(updateCurrentSubscription(response.data.subscription))
     if (response.data.payment) {
       dispatch(addPayment(response.data.payment))
     }
-    
+
     return response.data
-    
+
   } catch (error: any) {
     const errorMessage = error.response?.data?.message || 'Failed to change plan'
+    dispatch(setError(errorMessage))
+    throw error
+  } finally {
+    dispatch(setLoading(false))
+  }
+}
+
+export const downloadPaymentReceipt = (paymentId: number) => async (dispatch: AppDispatch) => {
+  try {
+    dispatch(setError(null))
+
+    const response = await api.get(`/api/club/membership/receipt/${paymentId}`, {
+      responseType: 'blob'
+    })
+
+    // Create blob link to download the file
+    const url = window.URL.createObjectURL(new Blob([response.data]))
+    const link = document.createElement('a')
+    link.href = url
+
+    // Try to get filename from response headers
+    const contentDisposition = response.headers['content-disposition']
+    let filename = `receipt-${paymentId}.pdf`
+    if (contentDisposition && contentDisposition.includes('filename=')) {
+      filename = contentDisposition.split('filename=')[1].replace(/"/g, '')
+    }
+
+    link.setAttribute('download', filename)
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    window.URL.revokeObjectURL(url)
+
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.message || 'Failed to download receipt'
+    dispatch(setError(errorMessage))
+    throw error
+  }
+}
+
+export const toggleAutoRenewal = (enable: boolean) => async (dispatch: AppDispatch) => {
+  dispatch(setLoading(true))
+
+  try {
+    dispatch(setError(null))
+
+    const response = await api.put<{ subscription: Subscription; message: string }>('/api/club/membership/auto-renewal', {
+      auto_renew: enable
+    })
+
+    dispatch(updateCurrentSubscription(response.data.subscription))
+
+    return response.data
+
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.message || 'Failed to update auto renewal'
     dispatch(setError(errorMessage))
     throw error
   } finally {
