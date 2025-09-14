@@ -30,8 +30,6 @@ const LoginPage: React.FC = () => {
       return
     }
 
-    console.log('🚀 Attempting login with:', { username: formData.username })
-    
     // Dispatch the login action
     const result = await dispatch(login(formData)) as any
     
@@ -45,9 +43,6 @@ const LoginPage: React.FC = () => {
     
     // Login successful
     const loginData = result as LoginResponse
-    console.log('✅ Login successful, data:', loginData)
-    console.log('👤 User role:', loginData.user.role)
-    
     // Redirect based on user role
     const userRole = loginData.user.role
     console.log('🔄 Redirecting to dashboard for role:', userRole)

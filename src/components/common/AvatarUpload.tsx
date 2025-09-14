@@ -72,7 +72,6 @@ const AvatarUpload: React.FC<AvatarUploadProps> = ({
         },
       })
 
-      console.log('Avatar upload successful:', response.data.secure_url)
       onAvatarChange(response.data.secure_url)
     } catch (error: any) {
       console.error('Avatar upload failed:', error)

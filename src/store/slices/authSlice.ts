@@ -42,19 +42,12 @@ const authSlice = createSlice({
       state.isLoading = action.payload
     },
     loginSuccess: (state, action: PayloadAction<LoginResponse>) => {
-      console.log('🔍 Login Success - Full Response:', action.payload)
-      console.log('👤 User Data:', action.payload.user)
-      console.log('📊 Dashboard Data:', action.payload.dashboard)
-      
       state.user = action.payload.user
       state.dashboard = action.payload.dashboard
       state.token = action.payload.token
       state.isAuthenticated = true
       state.isLoading = false
       localStorage.setItem('token', action.payload.token)
-      
-      console.log('✅ Redux State Updated - isAuthenticated:', state.isAuthenticated)
-      console.log('✅ Redux State Updated - user role:', state.user?.role)
     },
     updateUser: (state, action: PayloadAction<Partial<User>>) => {
       if (state.user) {
@@ -110,7 +103,6 @@ export const login = (credentials: LoginRequest) => async (dispatch: AppDispatch
     
     // Only dispatch success if we have valid data
     dispatch(loginSuccess(response.data as LoginResponse))
-    console.log('✅ Login success dispatched')
     return response.data
     
   } catch (error: any) {

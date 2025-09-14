@@ -29,6 +29,8 @@ const CentralizedImageUpload: React.FC<CentralizedImageUploadProps> = ({
   const [showCropModal, setShowCropModal] = useState(false)
   const [cropSrc, setCropSrc] = useState<string | null>(null)
   const [preview, setPreview] = useState<string | null>(value || null)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [error, setError] = useState<string | null>(null)
 
   const config = getUploadConfig(uploadType)
   const needsCropping = supportsCropping(uploadType)
@@ -86,6 +88,22 @@ const CentralizedImageUpload: React.FC<CentralizedImageUploadProps> = ({
     const file = e.target.files?.[0]
     if (!file) return
 
+    setError(null) // Clear any previous errors
+
+    // Validate file size (5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
+      setError('File size must be less than 5MB')
+      return
+    }
+
+    // Validate file type
+    if (!file.type.match(/^image\/(jpeg|jpg|png|gif)$/)) {
+      if (!uploadType.includes('document') || !file.type.match(/^(image\/|application\/pdf)/)) {
+        setError('Please select a valid image file (JPG, PNG, GIF) or PDF document')
+        return
+      }
+    }
+
     if (needsCropping) {
       const reader = new FileReader()
       reader.onload = (e) => {
@@ -98,17 +116,37 @@ const CentralizedImageUpload: React.FC<CentralizedImageUploadProps> = ({
       // Direct upload without cropping
       handleDirectUpload(file)
     }
+
+    // Clear the input so the same file can be selected again
+    e.target.value = ''
   }
 
   const handleDirectUpload = async (file: File) => {
     setIsUploading(true)
-    
+    setError(null)
+    setUploadProgress(0)
+
     try {
+      // Simulate progress for better UX
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => Math.min(prev + 10, 90))
+      }, 200)
+
       const uploadResponse = await uploadFile(file, uploadType)
-      setPreview(uploadResponse.secure_url)
-      onChange(uploadResponse.secure_url)
-    } catch (error) {
+
+      clearInterval(progressInterval)
+      setUploadProgress(100)
+
+      setTimeout(() => {
+        setPreview(uploadResponse.secure_url)
+        onChange(uploadResponse.secure_url)
+        setUploadProgress(0)
+      }, 300)
+
+    } catch (error: any) {
       console.error('Upload failed:', error)
+      setError(error.response?.data?.message || 'Upload failed. Please try again.')
+      setUploadProgress(0)
     } finally {
       setIsUploading(false)
     }
@@ -116,15 +154,32 @@ const CentralizedImageUpload: React.FC<CentralizedImageUploadProps> = ({
 
   const handleCropComplete = async (croppedBlob: Blob) => {
     setIsUploading(true)
-    
+    setError(null)
+    setUploadProgress(0)
+
     try {
+      // Simulate progress for better UX
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => Math.min(prev + 10, 90))
+      }, 200)
+
       const uploadResponse = await uploadFile(croppedBlob, uploadType)
-      setPreview(uploadResponse.secure_url)
-      onChange(uploadResponse.secure_url)
-      setShowCropModal(false)
-      setCropSrc(null)
-    } catch (error) {
+
+      clearInterval(progressInterval)
+      setUploadProgress(100)
+
+      setTimeout(() => {
+        setPreview(uploadResponse.secure_url)
+        onChange(uploadResponse.secure_url)
+        setShowCropModal(false)
+        setCropSrc(null)
+        setUploadProgress(0)
+      }, 300)
+
+    } catch (error: any) {
       console.error('Upload failed:', error)
+      setError(error.response?.data?.message || 'Upload failed. Please try again.')
+      setUploadProgress(0)
     } finally {
       setIsUploading(false)
     }
@@ -138,6 +193,8 @@ const CentralizedImageUpload: React.FC<CentralizedImageUploadProps> = ({
   const handleRemove = () => {
     setPreview(null)
     onChange('')
+    setError(null)
+    setUploadProgress(0)
   }
 
   const displayTitle = title || config.description
@@ -159,6 +216,30 @@ const CentralizedImageUpload: React.FC<CentralizedImageUploadProps> = ({
         <label className="block text-sm font-medium text-gray-700 mb-2">
           {config.description} {required && '*'}
         </label>
+
+        {/* Error Message */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+            <div className="flex items-start justify-between">
+              <div className="flex">
+                <svg className="w-5 h-5 text-red-400 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p className="text-sm text-red-600">{error}</p>
+              </div>
+              <button
+                onClick={() => setError(null)}
+                className="text-red-400 hover:text-red-600 ml-2"
+                title="Dismiss error"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className={`border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:${colors.border} transition-colors duration-200 ${isUploading ? 'bg-gray-50' : ''}`}>
           {isUploading && !preview ? (
             <div className="space-y-4">
@@ -167,8 +248,12 @@ const CentralizedImageUpload: React.FC<CentralizedImageUploadProps> = ({
                 <p className="text-lg font-medium text-gray-900">Uploading to Cloudinary...</p>
                 <p className="text-sm text-gray-600">Please wait while we process your image</p>
                 <div className="w-full bg-gray-200 rounded-full h-2 mx-auto max-w-xs">
-                  <div className={`bg-${color}-600 h-2 rounded-full animate-pulse`} style={{width: '70%'}}></div>
+                  <div
+                    className={`bg-${color}-600 h-2 rounded-full transition-all duration-300`}
+                    style={{width: `${uploadProgress}%`}}
+                  ></div>
                 </div>
+                <p className="text-xs text-gray-500">{uploadProgress}% complete</p>
               </div>
             </div>
           ) : preview ? (
@@ -185,7 +270,12 @@ const CentralizedImageUpload: React.FC<CentralizedImageUploadProps> = ({
                   </div>
                 )}
               </div>
-              <p className="text-sm text-green-600">Uploaded successfully</p>
+              <div className="flex items-center justify-center text-sm text-green-600">
+                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Uploaded successfully
+              </div>
               <button
                 type="button"
                 onClick={handleRemove}

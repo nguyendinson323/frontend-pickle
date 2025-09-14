@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../../../store'
-import { fetchDashboard } from '../../../store/slices/authSlice'
+import { fetchDashboard, updateUser } from '../../../store/slices/authSlice'
 import { startLoading, stopLoading } from '../../../store/slices/loadingSlice'
 import { Player, User } from '../../../types/auth'
 import api from '../../../services/api'
@@ -35,6 +35,40 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
     id_document_url: player.id_document_url || '',
     nationality: player.nationality || ''
   })
+
+  // Debug logging to check if user data is being passed correctly
+  useEffect(() => {
+    console.log('🔍 PlayerProfileForm - User data received:', {
+      username: user.username,
+      email: user.email,
+      phone: user.phone,
+      is_searchable: user.is_searchable
+    })
+  }, [user])
+
+  // Update form state when user/player props change (in case data loads asynchronously)
+  useEffect(() => {
+    setUserData({
+      username: user.username || '',
+      email: user.email || '',
+      phone: user.phone || '',
+      is_searchable: user.is_searchable || false
+    })
+  }, [user])
+
+  useEffect(() => {
+    setPlayerData({
+      full_name: player.full_name || '',
+      birth_date: player.birth_date || '',
+      gender: player.gender || '',
+      state_id: player.state?.id || 0,
+      curp: player.curp || '',
+      nrtp_level: player.nrtp_level || 0,
+      profile_photo_url: player.profile_photo_url || '',
+      id_document_url: player.id_document_url || '',
+      nationality: player.nationality || ''
+    })
+  }, [player])
 
   // Fetch states on component mount
   useEffect(() => {
@@ -121,11 +155,13 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
       }
       
       // Update user account information first
-      if (userData.username !== user.username || 
-          userData.email !== user.email || 
-          userData.phone !== user.phone || 
+      if (userData.username !== user.username ||
+          userData.email !== user.email ||
+          userData.phone !== user.phone ||
           userData.is_searchable !== user.is_searchable) {
-        await api.put('/api/player/account', userData)
+        const accountResponse = await api.put('/api/player/account', userData) as any
+        // Update user data in Redux immediately after successful account update
+        dispatch(updateUser(accountResponse.data))
       }
       
       // Update player profile information

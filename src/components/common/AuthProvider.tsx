@@ -29,7 +29,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           // const userData = await authService.validateToken(storedToken)
           // dispatch(loginSuccess(userData))
           
-          console.log('Token found in localStorage, would validate here')
         } catch (error) {
           // Token is invalid, remove it
           localStorage.removeItem('token')
