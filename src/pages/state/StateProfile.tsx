@@ -5,6 +5,7 @@ import { RootState, AppDispatch } from '../../store'
 import { fetchStateDashboard } from '../../store/slices/stateDashboardSlice'
 import { StateAccountTab } from '../../components/state/profile/tabs/StateAccountTab'
 import { StateInboxTab } from '../../components/state/profile/tabs/StateInboxTab'
+import { StateManagementTab } from '../../components/state/profile/tabs/StateManagementTab'
 import { StateMicrositeTab } from '../../components/state/profile/tabs/StateMicrositeTab'
 import { StateStatisticsTab } from '../../components/state/profile/tabs/StateStatisticsTab'
 import { StateDocumentsTab } from '../../components/state/profile/tabs/StateDocumentsTab'
@@ -16,7 +17,7 @@ const StateProfilePage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
   const { user } = useSelector((state: RootState) => state.auth)
   const { dashboardData, isLoading, error } = useSelector((state: RootState) => state.stateDashboard)
-  const [activeTab, setActiveTab] = useState<'account' | 'inbox' | 'microsite' | 'statistics' | 'documents' | 'members' | 'membership'>('account')
+  const [activeTab, setActiveTab] = useState<'account' | 'inbox' | 'management' | 'microsite' | 'statistics' | 'documents' | 'members' | 'membership'>('account')
 
   useEffect(() => {
     if (!user || user.role !== 'state') {
@@ -66,6 +67,7 @@ const StateProfilePage: React.FC = () => {
   const tabs = [
     { id: 'account' as const, name: 'Account', icon: '⚙️' },
     { id: 'inbox' as const, name: 'Inbox', icon: '📮' },
+    { id: 'management' as const, name: 'Management', icon: '🎯' },
     { id: 'microsite' as const, name: 'Microsite', icon: '🌐' },
     { id: 'statistics' as const, name: 'Statistics', icon: '📊' },
     { id: 'documents' as const, name: 'Documents', icon: '📄' },
@@ -79,6 +81,8 @@ const StateProfilePage: React.FC = () => {
         return <StateAccountTab profile={profile} user={user} />
       case 'inbox':
         return <StateInboxTab />
+      case 'management':
+        return <StateManagementTab />
       case 'microsite':
         return <StateMicrositeTab />
       case 'statistics':

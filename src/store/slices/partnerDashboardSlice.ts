@@ -130,19 +130,19 @@ export const {
 export const fetchPartnerDashboard = () => async (dispatch: AppDispatch) => {
   try {
     dispatch(startLoading())
-    const response = await api.get<PartnerDashboardResponse>('/api/auth/dashboard')
-    
+    const response = await api.get('/api/auth/dashboard')
+
     const dashboardData: PartnerDashboardData = {
       profile: response.data.profile,
-      upcomingEvents: response.data.upcomingEvents,
-      recentBookings: response.data.recentBookings,
+      upcomingEvents: response.data.upcomingEvents || [],
+      recentBookings: response.data.recentBookings || [],
       stats: response.data.stats,
       premium_status: response.data.premiumStatus
     }
-    
+
     dispatch(setPartnerDashboardData(dashboardData))
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch partner dashboard data'
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.message || error.message || 'Failed to fetch partner dashboard data'
     dispatch(setError(errorMessage))
   } finally {
     dispatch(stopLoading())

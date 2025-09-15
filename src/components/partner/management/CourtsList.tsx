@@ -47,7 +47,7 @@ const CourtsList: React.FC<CourtsListProps> = ({
       return (
         court.name.toLowerCase().includes(searchLower) ||
         court.address.toLowerCase().includes(searchLower) ||
-        court.city.toLowerCase().includes(searchLower)
+        (court.description && court.description.toLowerCase().includes(searchLower))
       )
     }
     return true

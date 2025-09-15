@@ -111,7 +111,9 @@ export const addCoachCertification = (certificationData: Partial<CoachCertificat
   try {
     dispatch(startLoading('Adding certification...'))
     const response = await api.post<CertificationResponse>('/api/coach/certifications', certificationData)
-    dispatch(addCertification(response.data.certification))
+
+    // Refresh all data to update stats and list
+    await dispatch(fetchCoachCertificationsData())
     dispatch(stopLoading())
     return response.data.certification
   } catch (error) {
@@ -126,7 +128,9 @@ export const updateCoachCertification = (certificationId: number, certificationD
   try {
     dispatch(startLoading('Updating certification...'))
     const response = await api.put<CertificationResponse>(`/api/coach/certifications/${certificationId}`, certificationData)
-    dispatch(updateCertification(response.data.certification))
+
+    // Refresh all data to update stats and list
+    await dispatch(fetchCoachCertificationsData())
     dispatch(stopLoading())
     return response.data.certification
   } catch (error) {
@@ -141,7 +145,9 @@ export const deleteCoachCertification = (certificationId: number) => async (disp
   try {
     dispatch(startLoading('Deleting certification...'))
     await api.delete(`/api/coach/certifications/${certificationId}`)
-    dispatch(removeCertification(certificationId))
+
+    // Refresh all data to update stats and list
+    await dispatch(fetchCoachCertificationsData())
     dispatch(stopLoading())
   } catch (error) {
     dispatch(stopLoading())

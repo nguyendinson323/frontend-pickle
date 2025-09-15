@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { PartnerMicrositeInfo } from '../../../store/slices/partnerMicrositeSlice'
+import CentralizedImageUpload from '../../common/CentralizedImageUpload'
 
 interface MicrositeEditModalProps {
   micrositeInfo: PartnerMicrositeInfo | null
@@ -184,36 +185,34 @@ const MicrositeEditModal: React.FC<MicrositeEditModalProps> = ({
           {/* Media */}
           <div className="space-y-4">
             <h4 className="text-lg font-medium text-gray-900">Media</h4>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Logo URL
+                Logo Image
               </label>
-              <input
-                type="url"
+              <CentralizedImageUpload
+                uploadType="partner-logo-auth"
                 value={formData.logo_url}
-                onChange={(e) => handleInputChange('logo_url', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="https://example.com/logo.png"
+                onChange={(url) => handleInputChange('logo_url', url)}
+                className="w-full"
               />
               <p className="mt-1 text-sm text-gray-500">
-                Enter a URL for your logo image (recommended: 200x200px)
+                Upload your logo image (square format recommended)
               </p>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Banner URL
+                Banner Image
               </label>
-              <input
-                type="url"
+              <CentralizedImageUpload
+                uploadType="club-banner"
                 value={formData.banner_url}
-                onChange={(e) => handleInputChange('banner_url', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="https://example.com/banner.jpg"
+                onChange={(url) => handleInputChange('banner_url', url)}
+                className="w-full"
               />
               <p className="mt-1 text-sm text-gray-500">
-                Enter a URL for your banner image (recommended: 1200x400px)
+                Upload your banner image (3:1 aspect ratio recommended)
               </p>
             </div>
           </div>

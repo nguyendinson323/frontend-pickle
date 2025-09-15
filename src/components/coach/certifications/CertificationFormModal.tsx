@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { CoachCertification } from '../../../types/coach'
+import CentralizedImageUpload from '../../common/CentralizedImageUpload'
 
 interface CertificationFormModalProps {
   isOpen: boolean
@@ -80,6 +81,13 @@ const CertificationFormModal: React.FC<CertificationFormModalProps> = ({
     setFormData(prev => ({
       ...prev,
       [field]: value
+    }))
+  }
+
+  const handleCertificateUpload = (url: string) => {
+    setFormData(prev => ({
+      ...prev,
+      certificate_url: url
     }))
   }
 
@@ -185,22 +193,28 @@ const CertificationFormModal: React.FC<CertificationFormModalProps> = ({
               </div>
             )}
 
-            {/* Certificate URL */}
+            {/* Certificate Upload */}
             <div>
-              <label htmlFor="certificate_url" className="block text-sm font-medium text-gray-700 mb-2">
-                Certificate File URL <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Certificate File <span className="text-red-500">*</span>
               </label>
-              <input
-                type="url"
-                id="certificate_url"
-                value={formData.certificate_url}
-                onChange={(e) => handleInputChange('certificate_url', e.target.value)}
-                placeholder="https://example.com/certificate.pdf"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                required
-              />
+              <div className="space-y-2">
+                <CentralizedImageUpload
+                  uploadType="coach-certification"
+                  value={formData.certificate_url}
+                  onChange={handleCertificateUpload}
+                  color="indigo"
+                  title="Upload Certificate"
+                  className="w-full"
+                />
+                {formData.certificate_url && (
+                  <div className="text-sm text-green-600">
+                    ✅ Certificate file uploaded successfully
+                  </div>
+                )}
+              </div>
               <p className="text-xs text-gray-500 mt-1">
-                Upload your certificate to a cloud service (like Cloudinary) and paste the URL here
+                Upload your certificate file (PDF, PNG, or JPG). The file will be securely stored in the cloud.
               </p>
             </div>
           </div>

@@ -255,49 +255,52 @@ export const {
 
 // API Functions
 export const fetchStateStatisticsData = (dateRange?: { start_date: string, end_date: string }) => async (dispatch: AppDispatch, getState: any) => {
-  dispatch(startLoading('Loading statistics data...'))
-  
   try {
+    dispatch(startLoading('Loading statistics data...'))
     dispatch(setError(null))
-    
+
     const state = getState()
     const currentDateRange = dateRange || state.stateStatistics.dateRange
-    
+
     // Update date range if provided
     if (dateRange) {
       dispatch(setDateRange(dateRange))
     }
-    
+
     const response = await api.get('/api/state/statistics', {
       params: {
         start_date: currentDateRange.start_date,
         end_date: currentDateRange.end_date
       }
     })
-    
-    dispatch(setStatisticsData(response.data as {
-      tournamentAnalytics: TournamentAnalytics
-      playerAnalytics: PlayerAnalytics
-      courtAnalytics: CourtAnalytics
-      clubAnalytics: ClubAnalytics
-      partnerAnalytics: PartnerAnalytics
-      financialAnalytics: FinancialAnalytics
-      comparativeAnalytics: ComparativeAnalytics
-    }))
+
+    if (response.data) {
+      dispatch(setStatisticsData(response.data as {
+        tournamentAnalytics: TournamentAnalytics
+        playerAnalytics: PlayerAnalytics
+        courtAnalytics: CourtAnalytics
+        clubAnalytics: ClubAnalytics
+        partnerAnalytics: PartnerAnalytics
+        financialAnalytics: FinancialAnalytics
+        comparativeAnalytics: ComparativeAnalytics
+      }))
+    }
+
     dispatch(stopLoading())
+    return response.data
   } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to fetch statistics data'))
+    const errorMessage = error.response?.data?.message || error.message || 'Failed to fetch statistics data'
+    dispatch(setError(errorMessage))
     dispatch(stopLoading())
     throw error
   }
 }
 
 export const exportStatisticsReport = (dateRange: { start_date: string, end_date: string }, format: 'pdf' | 'excel') => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Exporting statistics report...'))
-  
   try {
+    dispatch(startLoading('Exporting statistics report...'))
     dispatch(setError(null))
-    
+
     const response = await api.get('/api/state/statistics/export', {
       params: {
         start_date: dateRange.start_date,
@@ -306,20 +309,24 @@ export const exportStatisticsReport = (dateRange: { start_date: string, end_date
       },
       responseType: 'blob'
     })
-    
-    // Create download link
-    const url = window.URL.createObjectURL(new Blob([response.data as BlobPart]))
-    const link = document.createElement('a')
-    link.href = url
-    link.setAttribute('download', `state-statistics-${dateRange.start_date}-to-${dateRange.end_date}.${format === 'pdf' ? 'pdf' : 'xlsx'}`)
-    document.body.appendChild(link)
-    link.click()
-    link.remove()
-    window.URL.revokeObjectURL(url)
-    
+
+    if (response.data) {
+      // Create download link
+      const url = window.URL.createObjectURL(new Blob([response.data as BlobPart]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', `state-statistics-${dateRange.start_date}-to-${dateRange.end_date}.${format === 'pdf' ? 'pdf' : 'xlsx'}`)
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.URL.revokeObjectURL(url)
+    }
+
     dispatch(stopLoading())
+    return response.data
   } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to export statistics report'))
+    const errorMessage = error.response?.data?.message || error.message || 'Failed to export statistics report'
+    dispatch(setError(errorMessage))
     dispatch(stopLoading())
     throw error
   }

@@ -220,7 +220,7 @@ const CoachAccountForm: React.FC<CoachAccountFormProps> = ({ profile, onCancel }
 
       {/* Profile Photo Section */}
       <CentralizedImageUpload
-        uploadType="coach-photo"
+        uploadType="coach-photo-auth"
         value={profile.profile_photo_url || ''}
         onChange={async (photoUrl) => {
           try {

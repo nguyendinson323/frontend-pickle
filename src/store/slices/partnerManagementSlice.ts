@@ -7,24 +7,13 @@ interface Court {
   id: number
   name: string
   address: string
-  city: string  // Not in database but expected by frontend
-  state: string  // Not in database but expected by frontend
-  zip_code: string  // Not in database but expected by frontend
   court_count: number
-  surface_type: 'hard' | 'clay' | 'grass' | 'indoor' | 'outdoor'
+  surface_type: string | null
   indoor: boolean
   lights: boolean
   description: string | null
-  hourly_rate: number  // Not in database but expected by frontend
   status: 'active' | 'maintenance' | 'inactive'
   amenities: string[]
-  operating_hours: {  // Not in database but expected by frontend
-    day: string
-    open_time: string
-    close_time: string
-    is_closed: boolean
-  }[]
-  images: string[]  // Not in database but expected by frontend
   created_at: string
   updated_at: string
 }
@@ -33,21 +22,16 @@ interface Tournament {
   id: number
   name: string
   description: string | null
-  tournament_type: 'singles' | 'doubles' | 'mixed' | 'junior' | 'senior'
-  skill_level: 'beginner' | 'intermediate' | 'advanced' | 'open'  // Not in database but expected by frontend
+  tournament_type: string | null
   start_date: string
   end_date: string
   registration_start: string
   registration_end: string
   max_participants: number | null
-  current_participants: number  // Not in database but expected by frontend
   entry_fee: number | null
-  prize_pool: number | null  // Not in database but expected by frontend
   venue_name: string | null
   venue_address: string | null
   status: 'upcoming' | 'ongoing' | 'completed' | 'canceled'
-  rules: string | null  // Not in database but expected by frontend
-  contact_info: string | null  // Not in database but expected by frontend
   created_at: string
   updated_at: string
 }

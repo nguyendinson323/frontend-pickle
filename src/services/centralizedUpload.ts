@@ -18,10 +18,12 @@ export type UploadType =
   | 'state-logo'
   | 'partner-logo'
   | 'partner-logo-auth'
+  | 'partner-document'
   | 'coach-photo'
   | 'coach-document'
   | 'coach-photo-auth'
   | 'coach-document-auth'
+  | 'coach-certification'
   | 'admin-photo'
 
 export interface UploadConfig {
@@ -88,6 +90,13 @@ export const uploadConfigs: Record<UploadType, UploadConfig> = {
     cropShape: 'rect',
     aspectRatio: 1
   },
+  'partner-document': {
+    endpoint: '/api/partner/documents/upload',
+    folder: 'partner_documents',
+    description: 'Document',
+    acceptedFormats: 'PNG, JPG, PDF, DOC, DOCX up to 10MB',
+    maxSize: '10MB'
+  },
   'coach-photo': {
     endpoint: '/api/upload/coach-photo-registration',
     folder: 'coach_photos',
@@ -135,6 +144,13 @@ export const uploadConfigs: Record<UploadType, UploadConfig> = {
     description: 'ID Document',
     acceptedFormats: 'PNG, JPG, PDF up to 5MB',
     maxSize: '5MB'
+  },
+  'coach-certification': {
+    endpoint: '/api/upload/coach-certification',
+    folder: 'coach_certifications',
+    description: 'Certification Document',
+    acceptedFormats: 'PNG, JPG, PDF up to 10MB',
+    maxSize: '10MB'
   },
   'admin-photo': {
     endpoint: '/api/upload/admin-photo',
@@ -226,10 +242,10 @@ export const supportsCropping = (uploadType: UploadType): boolean => {
 export const getAcceptedFiles = (uploadType: UploadType): string => {
   const config = uploadConfigs[uploadType]
   if (!config) return 'image/*'
-  
+
   // Return appropriate accept string for HTML input
-  if (uploadType.includes('document')) {
-    return 'image/*,.pdf'
+  if (uploadType.includes('document') || uploadType.includes('certification')) {
+    return 'image/*,.pdf,.doc,.docx'
   }
   return 'image/*'
 }

@@ -22,9 +22,7 @@ const PartnerMembership: React.FC = () => {
   } = useSelector((state: RootState) => state.partnerMembership)
 
   const [activeTab, setActiveTab] = useState<'overview' | 'benefits' | 'billing'>('overview')
-  const [selectedPlan, setSelectedPlan] = useState<number | null>(null)
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly')
-  const [showPaymentModal, setShowPaymentModal] = useState(false)
 
   useEffect(() => {
     dispatch(fetchPartnerMembershipData())
@@ -45,7 +43,6 @@ const PartnerMembership: React.FC = () => {
         payment_method: 'credit_card',
         billing_cycle: billingCycle
       }))
-      setShowPaymentModal(false)
     } catch (error) {
       console.error('Subscription failed:', error)
     }
@@ -74,6 +71,56 @@ const PartnerMembership: React.FC = () => {
     }
   }
 
+  const handleDownloadReceipt = async (paymentId: number) => {
+    try {
+      // Fetch receipt data from backend
+      const response = await fetch(`/api/partner/membership/receipt/${paymentId}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch receipt data')
+      }
+
+      const data = await response.json()
+      const receipt = data.receipt
+
+      const receiptData = `
+PARTNER MEMBERSHIP RECEIPT
+========================
+
+Payment ID: ${receipt.paymentId}
+Date: ${formatDate(receipt.date)}
+Amount: ${formatCurrency(receipt.amount)}
+Currency: ${receipt.currency}
+Status: ${receipt.status}
+Payment Type: ${receipt.paymentType}
+Payment Method: ${receipt.paymentMethod}
+Stripe Payment ID: ${receipt.stripePaymentId || 'N/A'}
+
+Partner: ${receipt.partnerName}
+
+Thank you for your partnership!
+Mexican Pickleball Federation
+      `
+
+      const blob = new Blob([receiptData], { type: 'text/plain' })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `receipt-${receipt.paymentId}.txt`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('Failed to download receipt:', error)
+    }
+  }
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -84,9 +131,9 @@ const PartnerMembership: React.FC = () => {
 
   const formatCurrency = (amount: number | string) => {
     const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('es-MX', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'MXN'
     }).format(numAmount)
   }
 
@@ -404,7 +451,13 @@ const PartnerMembership: React.FC = () => {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <button className="text-purple-600 hover:text-purple-700">Download</button>
+                          <button
+                            onClick={() => handleDownloadReceipt(payment.id)}
+                            className="text-purple-600 hover:text-purple-700 disabled:opacity-50"
+                            disabled={loading}
+                          >
+                            Download
+                          </button>
                         </td>
                       </tr>
                     ))}

@@ -19,26 +19,13 @@ const CourtModal: React.FC<CourtModalProps> = ({
   const [formData, setFormData] = useState({
     name: '',
     address: '',
-    city: '',
-    state: '',
-    zip_code: '',
     court_count: 1,
-    surface_type: 'hard' as 'hard' | 'clay' | 'grass' | 'indoor' | 'outdoor',
+    surface_type: 'hard' as string,
     indoor: false,
     lights: false,
     description: '',
-    hourly_rate: 0,
     status: 'active' as 'active' | 'maintenance' | 'inactive',
-    amenities: [] as string[],
-    operating_hours: [
-      { day: 'Monday', open_time: '08:00', close_time: '20:00', is_closed: false },
-      { day: 'Tuesday', open_time: '08:00', close_time: '20:00', is_closed: false },
-      { day: 'Wednesday', open_time: '08:00', close_time: '20:00', is_closed: false },
-      { day: 'Thursday', open_time: '08:00', close_time: '20:00', is_closed: false },
-      { day: 'Friday', open_time: '08:00', close_time: '20:00', is_closed: false },
-      { day: 'Saturday', open_time: '08:00', close_time: '20:00', is_closed: false },
-      { day: 'Sunday', open_time: '08:00', close_time: '20:00', is_closed: false }
-    ]
+    amenities: [] as string[]
   })
   const [error, setError] = useState('')
   const [newAmenity, setNewAmenity] = useState('')
@@ -47,44 +34,26 @@ const CourtModal: React.FC<CourtModalProps> = ({
     if (court) {
       setFormData({
         name: court.name,
-        address: court.address,
-        city: court.city,
-        state: court.state,
-        zip_code: court.zip_code,
+        address: court.address || '',
         court_count: court.court_count,
-        surface_type: court.surface_type,
+        surface_type: court.surface_type || 'hard',
         indoor: court.indoor,
         lights: court.lights,
         description: court.description || '',
-        hourly_rate: court.hourly_rate,
         status: court.status,
-        amenities: court.amenities || [],
-        operating_hours: court.operating_hours.length > 0 ? court.operating_hours : formData.operating_hours
+        amenities: court.amenities || []
       })
     } else {
       setFormData({
         name: '',
         address: '',
-        city: '',
-        state: '',
-        zip_code: '',
         court_count: 1,
         surface_type: 'hard',
         indoor: false,
         lights: false,
         description: '',
-        hourly_rate: 0,
         status: 'active',
-        amenities: [],
-        operating_hours: [
-          { day: 'Monday', open_time: '08:00', close_time: '20:00', is_closed: false },
-          { day: 'Tuesday', open_time: '08:00', close_time: '20:00', is_closed: false },
-          { day: 'Wednesday', open_time: '08:00', close_time: '20:00', is_closed: false },
-          { day: 'Thursday', open_time: '08:00', close_time: '20:00', is_closed: false },
-          { day: 'Friday', open_time: '08:00', close_time: '20:00', is_closed: false },
-          { day: 'Saturday', open_time: '08:00', close_time: '20:00', is_closed: false },
-          { day: 'Sunday', open_time: '08:00', close_time: '20:00', is_closed: false }
-        ]
+        amenities: []
       })
     }
     setError('')
@@ -94,7 +63,7 @@ const CourtModal: React.FC<CourtModalProps> = ({
     e.preventDefault()
     setError('')
 
-    if (!formData.name.trim() || !formData.address.trim() || !formData.city.trim()) {
+    if (!formData.name.trim() || !formData.address.trim()) {
       setError('Please fill in all required fields')
       return
     }

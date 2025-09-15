@@ -215,22 +215,48 @@ export const fetchCoachDashboard = () => async (dispatch: AppDispatch) => {
     })) || []
 
     // Aggregate stats from multiple sources
-    const sessionStats = sessionsData.stats || {}
     const certificationsData: any = certificationsResponse.data
-    const certStats = certificationsData.stats || {}
-    const studentStats = studentsData.stats || {}
+    const certifications = certificationsData.certifications || []
+
+    // Calculate certification stats from actual data
+    const activeCertifications = certifications.filter((cert: any) => {
+      if (!cert.expiry_date) return true // No expiry means always active
+      return new Date(cert.expiry_date) > new Date()
+    }).length
+
+    // Calculate session stats from actual data
+    const completedSessions = allSessions.filter((s: any) => s.status === 'completed').length
+    const cancelledSessions = allSessions.filter((s: any) => s.status === 'canceled').length
+
+    // Calculate average rating from completed sessions
+    const ratedSessions = allSessions.filter((s: any) => s.status === 'completed' && s.rating)
+    const averageRating = ratedSessions.length > 0
+      ? ratedSessions.reduce((sum: number, s: any) => sum + (s.rating || 0), 0) / ratedSessions.length
+      : 0
+
+    // Calculate monthly revenue (current month)
+    const currentMonth = new Date().getMonth()
+    const currentYear = new Date().getFullYear()
+    const monthlyRevenue = allSessions
+      .filter((s: any) => {
+        const sessionDate = new Date(s.session_date)
+        return sessionDate.getMonth() === currentMonth &&
+               sessionDate.getFullYear() === currentYear &&
+               s.status === 'completed'
+      })
+      .reduce((sum: number, s: any) => sum + parseFloat(s.price || 0), 0)
 
     const aggregatedStats: CoachStats = {
-      totalSessions: sessionStats.total_sessions || 0,
+      totalSessions: allSessions.length,
       upcomingSessionsCount: upcomingSessions.length,
-      totalStudents: studentStats.total_students || 0,
-      activeStudents: studentStats.active_students || 0,
-      totalCertifications: certStats.total_certifications || 0,
-      activeCertifications: certStats.active_certifications || 0,
-      monthlyRevenue: sessionStats.total_earnings || 0,
-      averageRating: sessionStats.average_rating || 0,
-      completedSessions: sessionStats.completed_sessions || 0,
-      cancelledSessions: sessionStats.canceled_sessions || 0
+      totalStudents: studentProgress.length,
+      activeStudents: studentProgress.filter((s: any) => s.last_session_date).length,
+      totalCertifications: certifications.length,
+      activeCertifications,
+      monthlyRevenue,
+      averageRating: Math.round(averageRating * 10) / 10, // Round to 1 decimal
+      completedSessions,
+      cancelledSessions
     }
 
     // Aggregate dashboard data

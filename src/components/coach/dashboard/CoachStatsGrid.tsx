@@ -13,11 +13,64 @@ interface CoachStatsGridProps {
 }
 
 const CoachStatsGrid: React.FC<CoachStatsGridProps> = ({ stats }) => {
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount)
+  }
+
   const statCards: StatCard[] = [
-    { label: 'Total Sessions', value: stats.totalSessions, icon: '📅', color: 'bg-blue-600' },
-    { label: 'Active Certifications', value: stats.activeCertifications, icon: '🎓', color: 'bg-green-600' },
-    { label: 'Total Students', value: stats.totalStudents, icon: '👥', color: 'bg-purple-600' },
-    { label: 'Average Rating', value: `${stats.averageRating}/5`, icon: '⭐', color: 'bg-yellow-600' }
+    {
+      label: 'Total Sessions',
+      value: stats.totalSessions,
+      icon: '📅',
+      color: 'bg-blue-600'
+    },
+    {
+      label: 'Monthly Revenue',
+      value: formatCurrency(stats.monthlyRevenue),
+      icon: '💰',
+      color: 'bg-green-600'
+    },
+    {
+      label: 'Active Students',
+      value: stats.activeStudents,
+      icon: '👥',
+      color: 'bg-purple-600'
+    },
+    {
+      label: 'Average Rating',
+      value: stats.averageRating > 0 ? `${stats.averageRating}/5` : 'N/A',
+      icon: '⭐',
+      color: 'bg-yellow-600'
+    },
+    {
+      label: 'Upcoming Sessions',
+      value: stats.upcomingSessionsCount,
+      icon: '📋',
+      color: 'bg-indigo-600'
+    },
+    {
+      label: 'Active Certifications',
+      value: stats.activeCertifications,
+      icon: '🎓',
+      color: 'bg-emerald-600'
+    },
+    {
+      label: 'Completed Sessions',
+      value: stats.completedSessions,
+      icon: '✅',
+      color: 'bg-teal-600'
+    },
+    {
+      label: 'Total Students',
+      value: stats.totalStudents,
+      icon: '🎯',
+      color: 'bg-orange-600'
+    }
   ]
 
   return (

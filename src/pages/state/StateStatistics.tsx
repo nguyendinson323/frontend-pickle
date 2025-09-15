@@ -28,15 +28,23 @@ const StateStatistics: React.FC = () => {
     error
   } = useSelector((state: RootState) => state.stateStatistics)
   
-  const { user } = useSelector((state: RootState) => state.auth)
+  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth)
 
   useEffect(() => {
-    if (user && user.role === 'state') {
-      fetchData()
-    } else {
-      navigate('/dashboard')
+    if (!isAuthenticated) {
+      navigate('/login')
+      return
     }
-  }, [user, navigate])
+
+    if (user?.role !== 'state') {
+      navigate('/dashboard')
+      return
+    }
+
+    if (!tournamentAnalytics) {
+      fetchData()
+    }
+  }, [isAuthenticated, user, navigate, tournamentAnalytics])
 
   const fetchData = async () => {
     try {
@@ -47,8 +55,12 @@ const StateStatistics: React.FC = () => {
   }
 
   const handleDateRangeChange = async (newDateRange: { start_date: string, end_date: string }) => {
-    dispatch(setDateRange(newDateRange))
-    await dispatch(fetchStateStatisticsData(newDateRange))
+    try {
+      dispatch(setDateRange(newDateRange))
+      await dispatch(fetchStateStatisticsData(newDateRange))
+    } catch (error) {
+      console.error('Error fetching statistics with new date range:', error)
+    }
   }
 
   const handleExport = async (format: 'pdf' | 'excel') => {

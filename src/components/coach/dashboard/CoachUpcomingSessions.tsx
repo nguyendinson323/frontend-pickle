@@ -12,24 +12,48 @@ const CoachUpcomingSessions: React.FC<CoachUpcomingSessionsProps> = ({ sessions 
   const navigate = useNavigate()
   const dispatch = useDispatch<AppDispatch>()
   const [updatingSession, setUpdatingSession] = useState<number | null>(null)
+  const [updateError, setUpdateError] = useState<string | null>(null)
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric'
-    })
+    const date = new Date(dateString)
+    const today = new Date()
+    const tomorrow = new Date(today)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+
+    if (date.toDateString() === today.toDateString()) {
+      return 'Today'
+    } else if (date.toDateString() === tomorrow.toDateString()) {
+      return 'Tomorrow'
+    } else {
+      return date.toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric'
+      })
+    }
   }
 
   const formatTime = (timeString: string) => {
-    return timeString
+    // Parse time string (assumes format HH:MM:SS or HH:MM)
+    const [hours, minutes] = timeString.split(':').map(Number)
+    const date = new Date()
+    date.setHours(hours, minutes, 0, 0)
+
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    })
   }
 
   const handleStatusUpdate = async (sessionId: number, newStatus: 'completed' | 'canceled') => {
     try {
       setUpdatingSession(sessionId)
+      setUpdateError(null)
       await dispatch(updateCoachSessionStatus(sessionId, newStatus))
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to update session status:', error)
+      setUpdateError(`Failed to ${newStatus === 'completed' ? 'complete' : 'cancel'} session. Please try again.`)
     } finally {
       setUpdatingSession(null)
     }
@@ -38,6 +62,30 @@ const CoachUpcomingSessions: React.FC<CoachUpcomingSessionsProps> = ({ sessions 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <h3 className="text-xl font-semibold text-gray-900 mb-6">Upcoming Sessions</h3>
+
+      {/* Error Message */}
+      {updateError && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+          <div className="flex items-start justify-between">
+            <div className="flex">
+              <svg className="w-5 h-5 text-red-400 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-sm text-red-600">{updateError}</p>
+            </div>
+            <button
+              onClick={() => setUpdateError(null)}
+              className="text-red-400 hover:text-red-600 ml-2"
+              title="Dismiss error"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+
       {sessions.length > 0 ? (
         <div className="space-y-4">
           {sessions.slice(0, 3).map((session) => (

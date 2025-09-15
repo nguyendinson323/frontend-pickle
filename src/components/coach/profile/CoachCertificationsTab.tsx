@@ -1,9 +1,9 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CoachCertificationSummary } from '../../../store/slices/coachDashboardSlice'
+import { CoachCertification } from '../../../types/coach'
 
 interface CoachCertificationsTabProps {
-  certifications: CoachCertificationSummary[]
+  certifications: CoachCertification[]
 }
 
 const CoachCertificationsTab: React.FC<CoachCertificationsTabProps> = ({ certifications }) => {

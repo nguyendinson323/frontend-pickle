@@ -40,23 +40,41 @@ const CoachDashboardPage: React.FC = () => {
 
   if (isLoading || !dashboardData) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-indigo-600 mx-auto mb-4"></div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Loading Dashboard</h3>
+          <p className="text-gray-600 text-sm">Please wait while we load your coaching data...</p>
+        </div>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-red-600 text-lg font-medium">{error}</div>
-          <button 
-            onClick={() => dispatch(fetchCoachDashboard())} 
-            className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-          >
-            Retry
-          </button>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center max-w-md mx-auto p-6">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Unable to load dashboard</h3>
+          <p className="text-red-600 text-sm mb-6">{error}</p>
+          <div className="space-y-3">
+            <button
+              onClick={() => dispatch(fetchCoachDashboard())}
+              className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200 font-medium"
+            >
+              Try Again
+            </button>
+            <button
+              onClick={() => navigate('/coach/profile')}
+              className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+            >
+              Go to Profile
+            </button>
+          </div>
         </div>
       </div>
     )
