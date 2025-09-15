@@ -1,4 +1,5 @@
 import React from 'react'
+import { FiUser, FiMail, FiLock, FiPhone } from 'react-icons/fi'
 import { ClubRegisterRequest } from '../../../../types'
 
 interface AccountInfoSectionProps {
@@ -8,78 +9,108 @@ interface AccountInfoSectionProps {
 
 const AccountInfoSection: React.FC<AccountInfoSectionProps> = ({ formData, onInputChange }) => {
   return (
-    <div className=" p-6 rounded-lg">
-      <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-        <svg className="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-        </svg>
+    <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-8 rounded-2xl border border-purple-200">
+      <h3 className="text-2xl font-bold text-gray-900 mb-8 flex items-center">
+        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mr-4">
+          <FiUser className="w-5 h-5 text-white" />
+        </div>
         Account Information
       </h3>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Username *</label>
-          <input
-            type="text"
-            name="username"
-            value={formData.username}
-            onChange={onInputChange}
-            required
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200"
-            placeholder="Choose a unique username"
-          />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="group">
+          <label className="block text-sm font-bold text-gray-700 mb-3 flex items-center">
+            <FiUser className="w-4 h-4 mr-2 text-purple-600" />
+            Username *
+          </label>
+          <div className="relative">
+            <input
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={onInputChange}
+              required
+              className="w-full px-4 py-4 pl-12 border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500 transition-all duration-300 bg-white/80 backdrop-blur-sm hover:border-purple-400 group-hover:shadow-lg"
+              placeholder="Choose a unique username"
+            />
+            <FiUser className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-purple-500 transition-colors duration-300" />
+          </div>
         </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={onInputChange}
-            required
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200"
-            placeholder="club@example.com"
-          />
+
+        <div className="group">
+          <label className="block text-sm font-bold text-gray-700 mb-3 flex items-center">
+            <FiMail className="w-4 h-4 mr-2 text-purple-600" />
+            Email Address *
+          </label>
+          <div className="relative">
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={onInputChange}
+              required
+              className="w-full px-4 py-4 pl-12 border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500 transition-all duration-300 bg-white/80 backdrop-blur-sm hover:border-purple-400 group-hover:shadow-lg"
+              placeholder="club@example.com"
+            />
+            <FiMail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-purple-500 transition-colors duration-300" />
+          </div>
         </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Password *</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={onInputChange}
-            required
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200"
-            placeholder="Create a secure password"
-          />
+
+        <div className="group">
+          <label className="block text-sm font-bold text-gray-700 mb-3 flex items-center">
+            <FiLock className="w-4 h-4 mr-2 text-purple-600" />
+            Password *
+          </label>
+          <div className="relative">
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={onInputChange}
+              required
+              className="w-full px-4 py-4 pl-12 border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500 transition-all duration-300 bg-white/80 backdrop-blur-sm hover:border-purple-400 group-hover:shadow-lg"
+              placeholder="Create a secure password"
+            />
+            <FiLock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-purple-500 transition-colors duration-300" />
+          </div>
         </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Confirm Password *</label>
-          <input
-            type="password"
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={onInputChange}
-            required
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200"
-            placeholder="Confirm your password"
-          />
+
+        <div className="group">
+          <label className="block text-sm font-bold text-gray-700 mb-3 flex items-center">
+            <FiLock className="w-4 h-4 mr-2 text-purple-600" />
+            Confirm Password *
+          </label>
+          <div className="relative">
+            <input
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={onInputChange}
+              required
+              className="w-full px-4 py-4 pl-12 border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500 transition-all duration-300 bg-white/80 backdrop-blur-sm hover:border-purple-400 group-hover:shadow-lg"
+              placeholder="Confirm your password"
+            />
+            <FiLock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-purple-500 transition-colors duration-300" />
+          </div>
         </div>
-        
-        <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
-          <input
-            type="tel"
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={onInputChange}
-            required
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200"
-            placeholder="+52 55 1234 5678"
-          />
+
+        <div className="md:col-span-2 group">
+          <label className="block text-sm font-bold text-gray-700 mb-3 flex items-center">
+            <FiPhone className="w-4 h-4 mr-2 text-purple-600" />
+            Phone Number *
+          </label>
+          <div className="relative">
+            <input
+              type="tel"
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={onInputChange}
+              required
+              className="w-full px-4 py-4 pl-12 border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500 transition-all duration-300 bg-white/80 backdrop-blur-sm hover:border-purple-400 group-hover:shadow-lg"
+              placeholder="+52 55 1234 5678"
+            />
+            <FiPhone className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-purple-500 transition-colors duration-300" />
+          </div>
         </div>
       </div>
     </div>

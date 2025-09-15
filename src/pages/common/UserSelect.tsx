@@ -140,22 +140,31 @@ const UserSelectPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-cyan-50 to-blue-50 py-12 relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-20 left-10 w-32 h-32 bg-emerald-300 rounded-full blur-xl animate-pulse" />
+        <div className="absolute top-1/4 right-20 w-48 h-48 bg-cyan-300 rounded-full blur-2xl animate-bounce opacity-20" />
+        <div className="absolute bottom-20 left-1/4 w-40 h-40 bg-blue-300 rounded-full blur-xl animate-ping opacity-25" />
+        <div className="absolute bottom-10 right-10 w-24 h-24 bg-emerald-400 rounded-full blur-lg animate-pulse opacity-30" />
+        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-gradient-to-r from-cyan-200 to-blue-200 rounded-full blur-3xl animate-spin opacity-10" style={{ animationDuration: '20s' }} />
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <UserSelectHeader />
-        
-        <UserTypeGrid 
+
+        <UserTypeGrid
           userTypes={userTypes}
           selectedType={selectedType}
           onTypeSelect={handleTypeSelect}
         />
-        
-        <UserSelectActions 
+
+        <UserSelectActions
           selectedType={selectedType}
           userTypes={userTypes}
         />
-        
-        <UserSelectDetails 
+
+        <UserSelectDetails
           selectedType={selectedType}
           userTypes={userTypes}
         />

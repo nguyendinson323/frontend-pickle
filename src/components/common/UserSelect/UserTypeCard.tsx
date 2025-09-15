@@ -1,4 +1,5 @@
 import React from 'react'
+import { FiCheck, FiFileText, FiDollarSign, FiStar } from 'react-icons/fi'
 import { UserRole } from '../../../types'
 
 interface UserTypeOption {
@@ -18,74 +19,127 @@ interface UserTypeCardProps {
 }
 
 const UserTypeCard: React.FC<UserTypeCardProps> = ({ type, selectedType, onSelect }) => {
+  const getCardGradient = (value: UserRole) => {
+    switch (value) {
+      case 'player':
+        return 'from-emerald-500 to-cyan-600'
+      case 'coach':
+        return 'from-blue-500 to-indigo-600'
+      case 'club':
+        return 'from-purple-500 to-pink-600'
+      case 'partner':
+        return 'from-orange-500 to-red-600'
+      case 'state':
+        return 'from-teal-500 to-green-600'
+      default:
+        return 'from-gray-500 to-slate-600'
+    }
+  }
+
+  const isSelected = selectedType === type.value
+
   return (
     <div
-      className={`bg-white rounded-lg shadow-lg p-6 cursor-pointer transition-all duration-300 transform hover:scale-105 hover:shadow-xl ${
-        selectedType === type.value 
-          ? 'ring-4 ring-indigo-500 bg-indigo-50' 
-          : 'hover:shadow-lg'
+      className={`group relative bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 cursor-pointer transition-all duration-500 transform hover:scale-[1.02] hover:shadow-2xl border-2 ${
+        isSelected
+          ? `ring-4 ring-offset-2 ring-emerald-400 bg-gradient-to-br from-emerald-50 to-cyan-50 border-emerald-300 shadow-2xl scale-[1.02]`
+          : 'border-gray-200 hover:border-gray-300'
       }`}
       onClick={() => onSelect(type.value)}
     >
+      {/* Selection Indicator */}
+      {isSelected && (
+        <div className="absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-br from-emerald-500 to-cyan-600 rounded-full flex items-center justify-center shadow-lg animate-bounce">
+          <FiCheck className="w-4 h-4 text-white font-bold" />
+        </div>
+      )}
+
+      {/* Header */}
       <div className="text-center mb-6">
-        <div className="text-4xl mb-3">{type.icon}</div>
-        <h3 className="text-xl font-bold text-gray-900 mb-2">
+        <div className={`w-16 h-16 bg-gradient-to-br ${getCardGradient(type.value)} rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+          <span className="text-white text-2xl">{type.icon}</span>
+        </div>
+        <h3 className={`text-2xl font-bold mb-3 ${isSelected ? 'text-emerald-800' : 'text-gray-900'}`}>
           {type.label}
         </h3>
-        <p className="text-gray-600 text-sm">
+        <p className={`text-sm leading-relaxed ${isSelected ? 'text-emerald-700' : 'text-gray-600'}`}>
           {type.description}
         </p>
       </div>
 
+      {/* Key Features */}
       <div className="mb-6">
-        <h4 className="font-semibold text-gray-900 mb-3">Key Features</h4>
-        <ul className="space-y-1">
+        <div className="flex items-center mb-4">
+          <div className={`w-6 h-6 bg-gradient-to-br ${getCardGradient(type.value)} rounded-lg flex items-center justify-center mr-2`}>
+            <FiStar className="w-3 h-3 text-white" />
+          </div>
+          <h4 className={`font-bold ${isSelected ? 'text-emerald-800' : 'text-gray-900'}`}>Key Features</h4>
+        </div>
+        <ul className="space-y-2">
           {type.features.map((feature, idx) => (
-            <li key={idx} className="flex items-center text-sm text-gray-600">
-              <svg className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              {feature}
+            <li key={idx} className="flex items-center text-sm">
+              <div className="w-5 h-5 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                <FiCheck className="w-3 h-3 text-white" />
+              </div>
+              <span className={isSelected ? 'text-emerald-700 font-medium' : 'text-gray-600'}>{feature}</span>
             </li>
           ))}
         </ul>
       </div>
 
+      {/* Required Information */}
       <div className="mb-6">
-        <h4 className="font-semibold text-gray-900 mb-3">Required Information</h4>
-        <ul className="space-y-1">
+        <div className="flex items-center mb-4">
+          <div className={`w-6 h-6 bg-gradient-to-br ${getCardGradient(type.value)} rounded-lg flex items-center justify-center mr-2`}>
+            <FiFileText className="w-3 h-3 text-white" />
+          </div>
+          <h4 className={`font-bold ${isSelected ? 'text-emerald-800' : 'text-gray-900'}`}>Requirements</h4>
+        </div>
+        <ul className="space-y-2">
           {type.requirements.slice(0, 3).map((req, idx) => (
-            <li key={idx} className="flex items-center text-sm text-gray-600">
-              <svg className="w-4 h-4 text-blue-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              {req}
+            <li key={idx} className="flex items-center text-sm">
+              <div className="w-5 h-5 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                <span className="text-white text-xs font-bold">{idx + 1}</span>
+              </div>
+              <span className={isSelected ? 'text-emerald-700' : 'text-gray-600'}>{req}</span>
             </li>
           ))}
           {type.requirements.length > 3 && (
-            <li className="text-sm text-gray-500 ml-6">
-              +{type.requirements.length - 3} more requirements
+            <li className="flex items-center text-sm ml-8">
+              <span className={`${isSelected ? 'text-emerald-600' : 'text-gray-500'} font-medium`}>
+                +{type.requirements.length - 3} more requirements
+              </span>
             </li>
           )}
         </ul>
       </div>
 
-      <div className="border-t pt-4">
-        <div className="flex items-center text-sm">
-          <svg className="w-4 h-4 text-yellow-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-          </svg>
-          <span className="text-gray-600 font-medium">{type.fees}</span>
+      {/* Fees */}
+      <div className={`border-t-2 pt-4 ${isSelected ? 'border-emerald-200' : 'border-gray-200'}`}>
+        <div className="flex items-center">
+          <div className={`w-6 h-6 bg-gradient-to-br ${getCardGradient(type.value)} rounded-lg flex items-center justify-center mr-3`}>
+            <FiDollarSign className="w-3 h-3 text-white" />
+          </div>
+          <span className={`text-sm font-semibold ${isSelected ? 'text-emerald-700' : 'text-gray-700'}`}>
+            {type.fees}
+          </span>
         </div>
       </div>
 
-      {selectedType === type.value && (
-        <div className="mt-4 flex items-center justify-center">
-          <div className="bg-indigo-600 text-white px-4 py-2 rounded-full text-sm font-medium">
-            Selected
+      {/* Selection Badge */}
+      {isSelected && (
+        <div className="mt-6 flex items-center justify-center">
+          <div className="bg-gradient-to-r from-emerald-500 to-cyan-600 text-white px-6 py-3 rounded-full text-sm font-bold shadow-lg flex items-center space-x-2">
+            <FiCheck className="w-4 h-4" />
+            <span>Selected Account Type</span>
           </div>
         </div>
       )}
+
+      {/* Hover Effect Overlay */}
+      <div className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none ${
+        isSelected ? '' : 'bg-gradient-to-br from-gray-50/50 to-white/50'
+      }`}></div>
     </div>
   )
 }

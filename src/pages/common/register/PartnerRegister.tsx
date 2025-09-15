@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { FiBriefcase, FiDollarSign, FiStar, FiShield, FiCheck } from 'react-icons/fi'
 import { useDispatch as useReduxDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../../../store'
 import { registerPartner } from '../../../store/slices/authSlice'
@@ -82,37 +83,91 @@ const PartnerRegisterPage: React.FC = () => {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-100 py-12">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <PartnerRegisterHeader />
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-orange-100 py-12 relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-20 left-10 w-32 h-32 bg-orange-300 rounded-full blur-xl animate-pulse" />
+        <div className="absolute top-1/4 right-20 w-48 h-48 bg-red-300 rounded-full blur-2xl animate-bounce opacity-20" />
+        <div className="absolute bottom-20 left-1/4 w-40 h-40 bg-orange-400 rounded-full blur-xl animate-ping opacity-25" />
+        <div className="absolute bottom-10 right-10 w-24 h-24 bg-red-400 rounded-full blur-lg animate-pulse opacity-30" />
+        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-gradient-to-r from-orange-200 to-red-200 rounded-full blur-3xl animate-spin opacity-10" style={{ animationDuration: '20s' }} />
+      </div>
 
-          <div className="bg-white rounded-lg shadow-xl overflow-hidden">
-            <div className="bg-orange-600 text-white p-6">
-              <h2 className="text-xl font-semibold mb-2">Complete Your Partner Profile</h2>
-              <p className="text-orange-100">Join as a business partner and offer pickleball services</p>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <PartnerRegisterHeader />
+
+        {/* Progress Indicator */}
+        <div className="flex justify-center mb-8">
+          <div className="flex items-center space-x-4 bg-white/80 backdrop-blur-sm rounded-full px-6 py-3 shadow-lg border border-orange-200">
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center">
+                <FiBriefcase className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-sm font-medium text-orange-700">Partner Registration</span>
             </div>
+            <div className="w-2 h-2 bg-orange-300 rounded-full"></div>
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center">
+                <FiCheck className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-sm font-medium text-orange-700">Business Setup</span>
+            </div>
+          </div>
+        </div>
 
-            <form onSubmit={handleSubmit} className="p-8 space-y-8">
-              
-              <AccountInfoSection 
-                formData={formData}
-                onInputChange={handleInputChange}
-              />
+        <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden border border-orange-200">
+          {/* Enhanced Header */}
+          <div className="bg-gradient-to-r from-orange-600 via-orange-700 to-red-600 text-white p-8 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-orange-600/20 to-red-600/20 backdrop-blur-sm"></div>
+            <div className="relative z-10">
+              <div className="flex items-center justify-center mb-4">
+                <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mr-4">
+                  <FiBriefcase className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl md:text-3xl font-bold mb-2">Complete Your Partner Profile</h2>
+                  <p className="text-orange-100 text-lg">Join as a business partner and offer pickleball services</p>
+                </div>
+              </div>
 
-              <BusinessInfoSection 
-                formData={formData}
-                onInputChange={handleInputChange}
-                states={states}
-              />
+              {/* Feature Highlights */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                <div className="flex items-center space-x-3 bg-white/10 backdrop-blur-sm rounded-xl p-3">
+                  <FiDollarSign className="w-5 h-5 text-white" />
+                  <span className="text-sm font-medium text-white">Revenue Generation</span>
+                </div>
+                <div className="flex items-center space-x-3 bg-white/10 backdrop-blur-sm rounded-xl p-3">
+                  <FiStar className="w-5 h-5 text-white" />
+                  <span className="text-sm font-medium text-white">Event Hosting</span>
+                </div>
+                <div className="flex items-center space-x-3 bg-white/10 backdrop-blur-sm rounded-xl p-3">
+                  <FiShield className="w-5 h-5 text-white" />
+                  <span className="text-sm font-medium text-white">Premium Features</span>
+                </div>
+              </div>
+            </div>
+          </div>
 
-              <PartnerTypeSection 
-                formData={formData}
-                onInputChange={handleInputChange}
-                partnerTypes={partnerTypes}
-              />
+          <form onSubmit={handleSubmit} className="p-8 space-y-10">
+            <AccountInfoSection
+              formData={formData}
+              onInputChange={handleInputChange}
+            />
 
-              {/* Partner Logo Upload */}
+            <BusinessInfoSection
+              formData={formData}
+              onInputChange={handleInputChange}
+              states={states}
+            />
+
+            <PartnerTypeSection
+              formData={formData}
+              onInputChange={handleInputChange}
+              partnerTypes={partnerTypes}
+            />
+
+            {/* Enhanced Logo Upload */}
+            <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-2xl p-6 border border-orange-200">
               <CentralizedImageUpload
                 uploadType="partner-logo"
                 value={formData.businessLogoUrl}
@@ -121,22 +176,22 @@ const PartnerRegisterPage: React.FC = () => {
                 title="Business Logo"
                 color="orange"
               />
+            </div>
 
-              <PartnerBenefitsSection />
+            <PartnerBenefitsSection />
 
-              <PrivacyPolicySection 
-                formData={formData}
-                onInputChange={handleInputChange}
-              />
+            <PrivacyPolicySection
+              formData={formData}
+              onInputChange={handleInputChange}
+            />
 
-              <PartnerRegisterActions 
-                isLoading={isLoading}
-                onBackToSelect={handleBackToSelect}
-              />
-            </form>
-          </div>
+            <PartnerRegisterActions
+              isLoading={isLoading}
+              onBackToSelect={handleBackToSelect}
+            />
+          </form>
         </div>
-        
+      </div>
     </div>
   )
 }

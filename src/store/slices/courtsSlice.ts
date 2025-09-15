@@ -193,8 +193,16 @@ const courtsSlice = createSlice({
 
     // Fetch available slots
     builder
+      .addCase(fetchAvailableSlots.pending, (state) => {
+        state.isLoading = true
+      })
       .addCase(fetchAvailableSlots.fulfilled, (state, action) => {
+        state.isLoading = false
         state.availableSlots = action.payload
+      })
+      .addCase(fetchAvailableSlots.rejected, (state) => {
+        state.isLoading = false
+        state.availableSlots = []
       })
 
     // Fetch court reservations

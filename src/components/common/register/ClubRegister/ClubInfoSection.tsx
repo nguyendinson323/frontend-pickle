@@ -1,4 +1,5 @@
 import React from 'react'
+import { FiHome, FiMapPin, FiUser, FiFileText } from 'react-icons/fi'
 import { ClubRegisterRequest } from '../../../../types'
 
 interface State {
@@ -15,68 +16,97 @@ interface ClubInfoSectionProps {
 
 const ClubInfoSection: React.FC<ClubInfoSectionProps> = ({ formData, onInputChange, states }) => {
   return (
-    <div className=" p-6 rounded-lg">
-      <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-        <svg className="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-        </svg>
+    <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-8 rounded-2xl border border-purple-200">
+      <h3 className="text-2xl font-bold text-gray-900 mb-8 flex items-center">
+        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mr-4">
+          <FiHome className="w-5 h-5 text-white" />
+        </div>
         Club Information
       </h3>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Club Name *</label>
-          <input
-            type="text"
-            name="clubName"
-            value={formData.clubName}
-            onChange={onInputChange}
-            required
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200"
-            placeholder="Official name of your club"
-          />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="md:col-span-2 group">
+          <label className="block text-sm font-bold text-gray-700 mb-3 flex items-center">
+            <FiHome className="w-4 h-4 mr-2 text-purple-600" />
+            Club Name *
+          </label>
+          <div className="relative">
+            <input
+              type="text"
+              name="clubName"
+              value={formData.clubName}
+              onChange={onInputChange}
+              required
+              className="w-full px-4 py-4 pl-12 border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500 transition-all duration-300 bg-white/80 backdrop-blur-sm hover:border-purple-400 group-hover:shadow-lg"
+              placeholder="Official name of your club"
+            />
+            <FiHome className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-purple-500 transition-colors duration-300" />
+          </div>
         </div>
-        
-        <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Manager Name *</label>
-          <input
-            type="text"
-            name="managerName"
-            value={formData.managerName}
-            onChange={onInputChange}
-            required
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200"
-            placeholder="Full name of club manager/president"
-          />
+
+        <div className="md:col-span-2 group">
+          <label className="block text-sm font-bold text-gray-700 mb-3 flex items-center">
+            <FiUser className="w-4 h-4 mr-2 text-purple-600" />
+            Manager Name *
+          </label>
+          <div className="relative">
+            <input
+              type="text"
+              name="managerName"
+              value={formData.managerName}
+              onChange={onInputChange}
+              required
+              className="w-full px-4 py-4 pl-12 border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500 transition-all duration-300 bg-white/80 backdrop-blur-sm hover:border-purple-400 group-hover:shadow-lg"
+              placeholder="Full name of club manager/president"
+            />
+            <FiUser className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-purple-500 transition-colors duration-300" />
+          </div>
         </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">State Location *</label>
-          <select
-            name="state"
-            value={formData.state}
-            onChange={onInputChange}
-            required
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200"
-          >
-            <option value="">Select state where club is located</option>
-            {states.map(state => (
-              <option key={state.id} value={state.name}>{state.name}</option>
-            ))}
-          </select>
+
+        <div className="group">
+          <label className="block text-sm font-bold text-gray-700 mb-3 flex items-center">
+            <FiMapPin className="w-4 h-4 mr-2 text-purple-600" />
+            State Location *
+          </label>
+          <div className="relative">
+            <select
+              name="state"
+              value={formData.state}
+              onChange={onInputChange}
+              required
+              className="w-full px-4 py-4 pl-12 border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500 transition-all duration-300 bg-white/80 backdrop-blur-sm hover:border-purple-400 group-hover:shadow-lg appearance-none"
+            >
+              <option value="">Select state where club is located</option>
+              {states.map(state => (
+                <option key={state.id} value={state.name}>{state.name}</option>
+              ))}
+            </select>
+            <FiMapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-purple-500 transition-colors duration-300" />
+            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
+              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
         </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">RFC (Optional)</label>
-          <input
-            type="text"
-            name="rfc"
-            value={formData.rfc}
-            onChange={onInputChange}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200"
-            placeholder="Tax identification number"
-            maxLength={13}
-          />
+
+        <div className="group">
+          <label className="block text-sm font-bold text-gray-700 mb-3 flex items-center">
+            <FiFileText className="w-4 h-4 mr-2 text-purple-600" />
+            RFC (Optional)
+          </label>
+          <div className="relative">
+            <input
+              type="text"
+              name="rfc"
+              value={formData.rfc}
+              onChange={onInputChange}
+              className="w-full px-4 py-4 pl-12 border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500 transition-all duration-300 bg-white/80 backdrop-blur-sm hover:border-purple-400 group-hover:shadow-lg"
+              placeholder="Tax identification number"
+              maxLength={13}
+            />
+            <FiFileText className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-purple-500 transition-colors duration-300" />
+          </div>
         </div>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import React from 'react'
+import { FiArrowLeft, FiUserPlus, FiLoader } from 'react-icons/fi'
 
 interface ClubRegisterActionsProps {
   isLoading: boolean
@@ -7,30 +8,47 @@ interface ClubRegisterActionsProps {
 
 const ClubRegisterActions: React.FC<ClubRegisterActionsProps> = ({ isLoading, onBackToSelect }) => {
   return (
-    <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+    <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-8">
+      {/* Back Button */}
       <button
         type="button"
         onClick={onBackToSelect}
-        className="text-gray-600 hover:text-gray-800 px-8 py-3 text-lg font-medium transition-colors duration-200"
+        className="group flex items-center text-gray-600 hover:text-gray-800 px-8 py-4 text-lg font-medium transition-all duration-300 hover:bg-white/60 hover:backdrop-blur-sm rounded-xl hover:shadow-lg"
       >
-        ← Back to User Selection
+        <FiArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
+        <span>Back to User Selection</span>
       </button>
-      
+
+      {/* Submit Button */}
       <button
         type="submit"
         disabled={isLoading}
-        className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-12 py-3 rounded-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg"
+        className={`group relative overflow-hidden px-12 py-4 rounded-2xl text-lg font-bold transition-all duration-500 transform shadow-2xl ${
+          isLoading
+            ? 'bg-gray-400 cursor-not-allowed text-gray-100'
+            : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white hover:scale-[1.02] hover:shadow-3xl'
+        }`}
       >
-        {isLoading ? (
-          <div className="flex items-center">
-            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            Creating Club Account...
-          </div>
-        ) : (
-          'Complete Club Registration'
+        {!isLoading && (
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-700 to-pink-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        )}
+
+        <div className="relative flex items-center space-x-3">
+          {isLoading ? (
+            <>
+              <FiLoader className="w-6 h-6 animate-spin" />
+              <span>Creating Club Account...</span>
+            </>
+          ) : (
+            <>
+              <FiUserPlus className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" />
+              <span>Complete Club Registration</span>
+            </>
+          )}
+        </div>
+
+        {!isLoading && (
+          <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         )}
       </button>
     </div>
