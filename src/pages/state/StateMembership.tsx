@@ -6,8 +6,10 @@ import {
   fetchAffiliationRequirements,
   renewStateAffiliation,
   submitComplianceReport,
+  updateStateCommitteeInformation,
   clearError
 } from '../../store/slices/stateMembershipSlice'
+import CentralizedImageUpload from '../../components/common/CentralizedImageUpload'
 
 const StateMembership: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -25,6 +27,16 @@ const StateMembership: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<'overview' | 'benefits' | 'governance'>('overview')
   const [showRenewalModal, setShowRenewalModal] = useState(false)
+  const [showEditProfileModal, setShowEditProfileModal] = useState(false)
+  const [profileFormData, setProfileFormData] = useState({
+    president_name: '',
+    president_title: '',
+    logo_url: '',
+    website: '',
+    social_media: '',
+    institutional_email: '',
+    phone: ''
+  })
 
   useEffect(() => {
     dispatch(fetchStateMembershipData())
@@ -39,6 +51,20 @@ const StateMembership: React.FC = () => {
       return () => clearTimeout(timer)
     }
   }, [error, dispatch])
+
+  useEffect(() => {
+    if (stateCommittee) {
+      setProfileFormData({
+        president_name: stateCommittee.president_name || '',
+        president_title: stateCommittee.president_title || '',
+        logo_url: stateCommittee.logo_url || '',
+        website: stateCommittee.website || '',
+        social_media: stateCommittee.social_media || '',
+        institutional_email: stateCommittee.institutional_email || '',
+        phone: stateCommittee.phone || ''
+      })
+    }
+  }, [stateCommittee])
 
   const handleRenewalAffiliation = async () => {
     try {
@@ -59,6 +85,25 @@ const StateMembership: React.FC = () => {
       }))
     } catch (error) {
       console.error('Report submission failed:', error)
+    }
+  }
+
+  const handleProfileFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setProfileFormData(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleLogoUpload = (imageUrl: string) => {
+    setProfileFormData(prev => ({ ...prev, logo_url: imageUrl }))
+  }
+
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault()
+    try {
+      await dispatch(updateStateCommitteeInformation(profileFormData))
+      setShowEditProfileModal(false)
+    } catch (error) {
+      console.error('Profile update failed:', error)
     }
   }
 
@@ -180,6 +225,62 @@ const StateMembership: React.FC = () => {
                 </button>
               </div>
             )}
+          </div>
+
+          {/* Committee Profile Information */}
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Committee Profile</h2>
+              <button
+                onClick={() => setShowEditProfileModal(true)}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Edit Profile
+              </button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Left Column - Logo and Basic Info */}
+              <div className="space-y-4">
+                <div className="flex items-center space-x-4">
+                  <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
+                    {stateCommittee?.logo_url ? (
+                      <img
+                        src={stateCommittee.logo_url}
+                        alt="Committee Logo"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-3xl text-gray-400">🏛️</span>
+                    )}
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold">{stateCommittee?.name}</h3>
+                    <p className="text-gray-600">{stateCommittee?.president_name}</p>
+                    <p className="text-gray-500 text-sm">{stateCommittee?.president_title}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column - Contact Information */}
+              <div className="space-y-3">
+                <div>
+                  <p className="text-sm font-medium text-gray-700">Website</p>
+                  <p className="text-gray-600">{stateCommittee?.website || 'Not provided'}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-700">Email</p>
+                  <p className="text-gray-600">{stateCommittee?.institutional_email || 'Not provided'}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-700">Phone</p>
+                  <p className="text-gray-600">{stateCommittee?.phone || 'Not provided'}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-700">Social Media</p>
+                  <p className="text-gray-600">{stateCommittee?.social_media || 'Not provided'}</p>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* State Statistics */}
@@ -499,6 +600,158 @@ const StateMembership: React.FC = () => {
               >
                 {loading ? 'Processing...' : 'Renew Affiliation'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Profile Modal */}
+      {showEditProfileModal && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-8 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-medium text-gray-900">Edit Committee Profile</h3>
+                <button
+                  onClick={() => setShowEditProfileModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <form onSubmit={handleUpdateProfile} className="space-y-6">
+                {/* Logo Upload */}
+                <div>
+                  <CentralizedImageUpload
+                    uploadType="state-logo"
+                    value={profileFormData.logo_url}
+                    onChange={handleLogoUpload}
+                    title="Committee Logo"
+                    color="blue"
+                    className="bg-gray-50 border border-gray-200"
+                    icon={
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    }
+                  />
+                  <p className="mt-1 text-sm text-gray-500">
+                    Upload your committee's official logo (PNG, JPG up to 5MB)
+                  </p>
+                </div>
+
+                {/* Basic Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="president_name" className="block text-sm font-medium text-gray-700">
+                      President Name *
+                    </label>
+                    <input
+                      type="text"
+                      id="president_name"
+                      name="president_name"
+                      value={profileFormData.president_name}
+                      onChange={handleProfileFormChange}
+                      required
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="president_title" className="block text-sm font-medium text-gray-700">
+                      President Title
+                    </label>
+                    <input
+                      type="text"
+                      id="president_title"
+                      name="president_title"
+                      value={profileFormData.president_title}
+                      onChange={handleProfileFormChange}
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Contact Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="institutional_email" className="block text-sm font-medium text-gray-700">
+                      Institutional Email
+                    </label>
+                    <input
+                      type="email"
+                      id="institutional_email"
+                      name="institutional_email"
+                      value={profileFormData.institutional_email}
+                      onChange={handleProfileFormChange}
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      value={profileFormData.phone}
+                      onChange={handleProfileFormChange}
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="website" className="block text-sm font-medium text-gray-700">
+                      Website URL
+                    </label>
+                    <input
+                      type="url"
+                      id="website"
+                      name="website"
+                      value={profileFormData.website}
+                      onChange={handleProfileFormChange}
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="social_media" className="block text-sm font-medium text-gray-700">
+                      Social Media
+                    </label>
+                    <input
+                      type="text"
+                      id="social_media"
+                      name="social_media"
+                      value={profileFormData.social_media}
+                      onChange={handleProfileFormChange}
+                      placeholder="Facebook, Instagram, etc."
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end space-x-3 pt-6">
+                  <button
+                    type="button"
+                    onClick={() => setShowEditProfileModal(false)}
+                    className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                    disabled={loading}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="px-4 py-2 bg-blue-600 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {loading ? 'Saving...' : 'Save Changes'}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>

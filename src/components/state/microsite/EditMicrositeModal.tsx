@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { StateMicrositeInfo } from '../../../store/slices/stateMicrositeSlice'
+import CentralizedImageUpload from '../../common/CentralizedImageUpload'
 
 interface EditMicrositeModalProps {
   isOpen: boolean
@@ -85,6 +86,14 @@ const EditMicrositeModal: React.FC<EditMicrositeModalProps> = ({
       ...formData,
       [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
     })
+  }
+
+  const handleLogoUpload = (imageUrl: string) => {
+    setFormData(prev => ({ ...prev, logo_url: imageUrl }))
+  }
+
+  const handleBannerUpload = (imageUrl: string) => {
+    setFormData(prev => ({ ...prev, banner_image_url: imageUrl }))
   }
 
   if (!isOpen) return null
@@ -277,33 +286,43 @@ const EditMicrositeModal: React.FC<EditMicrositeModalProps> = ({
             </div>
 
             {/* Images */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="logo_url" className="block text-sm font-medium text-gray-700">
-                  Logo URL
-                </label>
-                <input
-                  type="url"
-                  id="logo_url"
-                  name="logo_url"
+                <CentralizedImageUpload
+                  uploadType="state-logo"
                   value={formData.logo_url}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  onChange={handleLogoUpload}
+                  title="Committee Logo"
+                  color="blue"
+                  className="bg-gray-50 border border-gray-200"
+                  icon={
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                  }
                 />
+                <p className="mt-1 text-sm text-gray-500">
+                  Upload your state committee logo (PNG, JPG up to 5MB)
+                </p>
               </div>
 
               <div>
-                <label htmlFor="banner_image_url" className="block text-sm font-medium text-gray-700">
-                  Banner Image URL
-                </label>
-                <input
-                  type="url"
-                  id="banner_image_url"
-                  name="banner_image_url"
+                <CentralizedImageUpload
+                  uploadType="state-banner"
                   value={formData.banner_image_url}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  onChange={handleBannerUpload}
+                  title="Banner Image"
+                  color="blue"
+                  className="bg-gray-50 border border-gray-200"
+                  icon={
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  }
                 />
+                <p className="mt-1 text-sm text-gray-500">
+                  Upload a banner image for your microsite header (PNG, JPG up to 5MB)
+                </p>
               </div>
             </div>
 

@@ -99,10 +99,10 @@ const StatePerformanceOverview: React.FC<StatePerformanceOverviewProps> = ({ sta
           Manage State Website
         </button>
         <button
-          onClick={() => navigate('/state/federation-report')}
+          onClick={() => navigate('/state/membership')}
           className="border border-red-600 text-red-600 hover:bg-red-50 px-6 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
         >
-          Submit Federation Report
+          Membership & Affiliation
         </button>
       </div>
     </div>

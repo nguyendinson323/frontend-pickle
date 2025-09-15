@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo, useCallback, useState } from 'react'
 import { StateClub } from '../../../store/slices/stateManagementSlice'
 
 interface ClubsTabProps {
@@ -6,35 +6,82 @@ interface ClubsTabProps {
   onViewClub: (club: StateClub) => void
 }
 
-const ClubsTab: React.FC<ClubsTabProps> = ({
+const ClubsTab: React.FC<ClubsTabProps> = React.memo(({
   clubs,
   onViewClub
 }) => {
-  const getAffiliationStatus = (expiryDate: string | null) => {
-    if (!expiryDate) return { status: 'No Expiry', color: 'bg-blue-100 text-blue-800' }
-    
-    const expiry = new Date(expiryDate)
-    const now = new Date()
-    
-    if (expiry < now) {
-      return { status: 'Expired', color: 'bg-red-100 text-red-800' }
-    } else if ((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24) <= 30) {
-      return { status: 'Expiring Soon', color: 'bg-yellow-100 text-yellow-800' }
-    }
-    return { status: 'Active', color: 'bg-green-100 text-green-800' }
-  }
+  const [imageErrors, setImageErrors] = useState<Set<number>>(new Set())
 
-  const getPremiumStatus = (expiryDate: string | null) => {
-    if (!expiryDate) return { status: 'Basic', color: 'bg-gray-100 text-gray-800' }
-    
-    const expiry = new Date(expiryDate)
-    const now = new Date()
-    
-    if (expiry < now) {
-      return { status: 'Expired', color: 'bg-red-100 text-red-800' }
+  // Memoized status calculation functions with timezone fixes
+  const getAffiliationStatus = useCallback((expiryDate: string | null) => {
+    if (!expiryDate) return { status: 'No Expiry', color: 'bg-blue-100 text-blue-800' }
+
+    try {
+      const expiry = new Date(expiryDate + 'T23:59:59.999Z') // Set to end of day UTC
+      const now = new Date()
+      const diffDays = Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+
+      if (diffDays < 0) {
+        return { status: 'Expired', color: 'bg-red-100 text-red-800' }
+      } else if (diffDays <= 30) {
+        return { status: 'Expiring Soon', color: 'bg-yellow-100 text-yellow-800' }
+      }
+      return { status: 'Active', color: 'bg-green-100 text-green-800' }
+    } catch (error) {
+      console.error('Invalid affiliation expiry date:', expiryDate)
+      return { status: 'Invalid Date', color: 'bg-gray-100 text-gray-800' }
     }
-    return { status: 'Premium', color: 'bg-purple-100 text-purple-800' }
-  }
+  }, [])
+
+  const getPremiumStatus = useCallback((expiryDate: string | null) => {
+    if (!expiryDate) return { status: 'Basic', color: 'bg-gray-100 text-gray-800' }
+
+    try {
+      const expiry = new Date(expiryDate + 'T23:59:59.999Z')
+      const now = new Date()
+      const diffDays = Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+
+      if (diffDays < 0) {
+        return { status: 'Expired', color: 'bg-red-100 text-red-800' }
+      } else if (diffDays <= 30) {
+        return { status: 'Expiring Soon', color: 'bg-yellow-100 text-yellow-800' }
+      }
+      return { status: 'Premium', color: 'bg-purple-100 text-purple-800' }
+    } catch (error) {
+      console.error('Invalid premium expiry date:', expiryDate)
+      return { status: 'Invalid Date', color: 'bg-gray-100 text-gray-800' }
+    }
+  }, [])
+
+  // Safe date formatting
+  const formatDate = useCallback((dateString: string) => {
+    try {
+      return new Date(dateString).toLocaleDateString()
+    } catch (error) {
+      console.error('Invalid date string:', dateString)
+      return 'Invalid Date'
+    }
+  }, [])
+
+  // Handle image load errors
+  const handleImageError = useCallback((clubId: number) => {
+    setImageErrors(prev => new Set(prev).add(clubId))
+  }, [])
+
+  // Validate URL format
+  const isValidUrl = useCallback((url: string) => {
+    try {
+      new URL(url)
+      return true
+    } catch {
+      return false
+    }
+  }, [])
+
+  // Memoize valid clubs list
+  const validClubs = useMemo(() => {
+    return Array.isArray(clubs) ? clubs.filter(c => c && c.id) : []
+  }, [clubs])
 
   return (
     <div className="space-y-4">
@@ -47,7 +94,7 @@ const ClubsTab: React.FC<ClubsTabProps> = ({
           <p className="mt-1 text-sm text-gray-500">No clubs have been registered in your state yet.</p>
         </div>
       ) : (
-        clubs.map((club) => {
+        validClubs.map((club) => {
           const affiliationStatus = getAffiliationStatus(club.affiliation_expires_at)
           const premiumStatus = getPremiumStatus(club.premium_expires_at)
           
@@ -57,11 +104,13 @@ const ClubsTab: React.FC<ClubsTabProps> = ({
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-2">
                     <div className="flex items-center">
-                      {club.logo_url ? (
+                      {club.logo_url && !imageErrors.has(club.id) ? (
                         <img
                           src={club.logo_url}
-                          alt={`${club.name} logo`}
+                          alt={`${club.name || 'Club'} logo`}
                           className="h-10 w-10 rounded-lg object-cover mr-3"
+                          onError={() => handleImageError(club.id)}
+                          loading="lazy"
                         />
                       ) : (
                         <div className="h-10 w-10 rounded-lg bg-gray-300 flex items-center justify-center mr-3">
@@ -71,7 +120,9 @@ const ClubsTab: React.FC<ClubsTabProps> = ({
                         </div>
                       )}
                       <div>
-                        <h3 className="text-lg font-semibold text-gray-900">{club.name}</h3>
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {club.name || 'Unnamed Club'}
+                        </h3>
                         {club.club_type && (
                           <p className="text-sm text-gray-600">{club.club_type}</p>
                         )}
@@ -117,17 +168,21 @@ const ClubsTab: React.FC<ClubsTabProps> = ({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                   <div className="text-sm text-gray-500">Contact Information</div>
-                  <div className="font-medium">{club.user.email}</div>
-                  {club.user.phone && (
+                  {club.user?.email ? (
+                    <div className="font-medium">{club.user.email}</div>
+                  ) : (
+                    <div className="text-sm text-gray-400">No contact email</div>
+                  )}
+                  {club.user?.phone && (
                     <div className="text-sm text-gray-600">{club.user.phone}</div>
                   )}
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">Online Presence</div>
                   <div className="flex items-center space-x-2">
-                    {club.website && (
+                    {club.website && isValidUrl(club.website) && (
                       <a
-                        href={club.website}
+                        href={club.website.startsWith('http') ? club.website : `https://${club.website}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center px-2 py-1 rounded text-xs bg-blue-100 text-blue-800 hover:bg-blue-200"
@@ -138,9 +193,9 @@ const ClubsTab: React.FC<ClubsTabProps> = ({
                         Website
                       </a>
                     )}
-                    {club.social_media && (
+                    {club.social_media && isValidUrl(club.social_media) && (
                       <a
-                        href={club.social_media}
+                        href={club.social_media.startsWith('http') ? club.social_media : `https://${club.social_media}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center px-2 py-1 rounded text-xs bg-purple-100 text-purple-800 hover:bg-purple-200"
@@ -151,6 +206,9 @@ const ClubsTab: React.FC<ClubsTabProps> = ({
                         Social
                       </a>
                     )}
+                    {(!club.website || !isValidUrl(club.website)) && (!club.social_media || !isValidUrl(club.social_media)) && (
+                      <div className="text-sm text-gray-400">No online presence</div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -160,13 +218,13 @@ const ClubsTab: React.FC<ClubsTabProps> = ({
                   {club.affiliation_expires_at && (
                     <div>
                       <div className="text-sm text-gray-500">Affiliation Expires</div>
-                      <div className="font-medium">{new Date(club.affiliation_expires_at).toLocaleDateString()}</div>
+                      <div className="font-medium">{formatDate(club.affiliation_expires_at)}</div>
                     </div>
                   )}
                   {club.premium_expires_at && (
                     <div>
                       <div className="text-sm text-gray-500">Premium Expires</div>
-                      <div className="font-medium">{new Date(club.premium_expires_at).toLocaleDateString()}</div>
+                      <div className="font-medium">{formatDate(club.premium_expires_at)}</div>
                     </div>
                   )}
                 </div>
@@ -174,7 +232,11 @@ const ClubsTab: React.FC<ClubsTabProps> = ({
 
               <div className="flex items-center justify-between">
                 <div className="text-xs text-gray-500">
-                  Registered on {new Date(club.created_at).toLocaleDateString()}
+                  {club.created_at ? (
+                    `Registered on ${formatDate(club.created_at)}`
+                  ) : (
+                    'Registration date unknown'
+                  )}
                 </div>
 
                 <div className="flex space-x-2">
@@ -192,6 +254,6 @@ const ClubsTab: React.FC<ClubsTabProps> = ({
       )}
     </div>
   )
-}
+})
 
 export default ClubsTab

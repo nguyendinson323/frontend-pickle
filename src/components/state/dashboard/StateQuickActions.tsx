@@ -6,11 +6,11 @@ const StateQuickActions: React.FC = () => {
 
   const quickActions = [
     { title: 'State Management', description: 'Oversee all state activities', icon: '🏛️', href: '/state/management' },
-    { title: 'Tournament Organization', description: 'Create and manage state tournaments', icon: '🏆', href: '/state/tournaments' },
-    { title: 'Player Oversight', description: 'Monitor player registrations', icon: '👥', href: '/state/players' },
-    { title: 'Club Management', description: 'Approve and manage clubs', icon: '🏢', href: '/state/clubs' },
+    { title: 'Message Center', description: 'Send announcements and messages', icon: '📬', href: '/state/inbox' },
+    { title: 'Member Management', description: 'Manage players, clubs and coaches', icon: '👥', href: '/state/member-management' },
+    { title: 'Document Center', description: 'Upload and manage documents', icon: '📄', href: '/state/documents' },
     { title: 'State Microsite', description: 'Manage your state website', icon: '🌐', href: '/state/microsite' },
-    { title: 'Reports & Analytics', description: 'View state-wide statistics', icon: '📊', href: '/state/analytics' }
+    { title: 'Statistics & Reports', description: 'View comprehensive statistics', icon: '📊', href: '/state/statistics' }
   ]
 
   return (

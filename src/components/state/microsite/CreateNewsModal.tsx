@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { StateMicrositeNews } from '../../../store/slices/stateMicrositeSlice'
+import CentralizedImageUpload from '../../common/CentralizedImageUpload'
 
 interface CreateNewsModalProps {
   isOpen: boolean
@@ -84,6 +85,10 @@ const CreateNewsModal: React.FC<CreateNewsModalProps> = ({
     })
   }
 
+  const handleImageUpload = (imageUrl: string) => {
+    setFormData(prev => ({ ...prev, image_url: imageUrl }))
+  }
+
   if (!isOpen) return null
 
   return (
@@ -122,22 +127,23 @@ const CreateNewsModal: React.FC<CreateNewsModalProps> = ({
               />
             </div>
 
-            {/* Image URL */}
+            {/* News Image */}
             <div>
-              <label htmlFor="image_url" className="block text-sm font-medium text-gray-700">
-                Image URL (Optional)
-              </label>
-              <input
-                type="url"
-                id="image_url"
-                name="image_url"
+              <CentralizedImageUpload
+                uploadType="news-image"
                 value={formData.image_url}
-                onChange={handleInputChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="https://example.com/image.jpg"
+                onChange={handleImageUpload}
+                title="Article Image (Optional)"
+                color="blue"
+                className="bg-gray-50 border border-gray-200"
+                icon={
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                }
               />
               <p className="mt-1 text-sm text-gray-500">
-                Optional: Add an image URL to display with your article
+                Upload an image to display with your article (PNG, JPG up to 5MB)
               </p>
             </div>
 

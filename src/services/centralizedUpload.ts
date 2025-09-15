@@ -16,6 +16,9 @@ export type UploadType =
   | 'club-banner'
   | 'tournament-banner'
   | 'state-logo'
+  | 'state-banner'
+  | 'state-document'
+  | 'news-image'
   | 'partner-logo'
   | 'partner-logo-auth'
   | 'partner-document'
@@ -71,6 +74,31 @@ export const uploadConfigs: Record<UploadType, UploadConfig> = {
     maxSize: '5MB',
     cropShape: 'rect',
     aspectRatio: 1
+  },
+  'state-banner': {
+    endpoint: '/api/upload/state-banner',
+    folder: 'state_banners',
+    description: 'Banner Image',
+    acceptedFormats: 'PNG, JPG up to 5MB',
+    maxSize: '5MB',
+    cropShape: 'rect',
+    aspectRatio: 16/9
+  },
+  'state-document': {
+    endpoint: '/api/state/documents/upload',
+    folder: 'state_documents',
+    description: 'Official Document',
+    acceptedFormats: 'PNG, JPG, PDF, DOC, DOCX up to 10MB',
+    maxSize: '10MB'
+  },
+  'news-image': {
+    endpoint: '/api/upload/news-image',
+    folder: 'news_images',
+    description: 'Article Image',
+    acceptedFormats: 'PNG, JPG up to 5MB',
+    maxSize: '5MB',
+    cropShape: 'rect',
+    aspectRatio: 16/9
   },
   'partner-logo': {
     endpoint: '/api/upload/partner-logo-registration',

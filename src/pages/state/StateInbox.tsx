@@ -52,8 +52,9 @@ const StateInbox: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      await dispatch(fetchStateInboxData())
-      await dispatch(fetchMessageTemplates())
+      const inboxPromise = dispatch(fetchStateInboxData())
+      const templatesPromise = dispatch(fetchMessageTemplates())
+      await Promise.all([inboxPromise, templatesPromise])
     } catch (error) {
       console.error('Error fetching state inbox data:', error)
     }
@@ -69,6 +70,8 @@ const StateInbox: React.FC = () => {
     try {
       await dispatch(sendStateMessage(messageData))
       setShowComposeModal(false)
+      // Refresh inbox data to show new message in sent items
+      await fetchData()
     } catch (error) {
       console.error('Error sending message:', error)
       throw error
@@ -84,6 +87,8 @@ const StateInbox: React.FC = () => {
     try {
       await dispatch(sendBulkAnnouncement(announcementData))
       setShowAnnouncementModal(false)
+      // Refresh inbox data to show new announcement in sent items
+      await fetchData()
     } catch (error) {
       console.error('Error sending announcement:', error)
       throw error
@@ -127,6 +132,7 @@ const StateInbox: React.FC = () => {
   }) => {
     try {
       await dispatch(createMessageTemplate(templateData))
+      setShowTemplateModal(false)
     } catch (error) {
       console.error('Error creating template:', error)
       throw error
@@ -157,10 +163,14 @@ const StateInbox: React.FC = () => {
   }
 
   const handleUseTemplate = (_template: AnnouncementTemplate) => {
+    // Set the selected template and open announcement modal
     setShowAnnouncementModal(true)
   }
 
   const handleReplyToMessage = (_message: StateMessage) => {
+    // In a real implementation, you would pre-populate the compose modal
+    // with the reply subject and recipient information
+    // For now, just open the compose modal
     setShowComposeModal(true)
   }
 

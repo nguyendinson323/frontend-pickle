@@ -215,11 +215,14 @@ const StateDashboardPage: React.FC = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
               <StateUpcomingTournaments upcomingTournaments={upcomingTournaments.map(t => ({
-                id: t.id,
                 name: t.name,
                 location: t.venue_name || 'TBD',
-                date: t.start_date,
-                categories: 'All Categories',
+                date: new Date(t.start_date).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                }),
+                categories: `${t.tournament_type || 'Mixed'} Tournament`,
                 registrations: 0
               }))} />
               <StateRecentActivity recentActivity={recentActivity} />

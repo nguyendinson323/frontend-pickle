@@ -186,24 +186,24 @@ export const fetchStateDocuments = (filters?: Partial<StateDocumentsState['filte
   }
 }
 
-export const uploadStateDocument = (documentData: {
+export const saveStateDocumentMetadata = (documentData: {
   title: string
   description?: string
   is_public: boolean
-  file: string // base64 encoded file
+  document_url: string
 }) => async (dispatch: AppDispatch) => {
-  dispatch(startLoading('Uploading document...'))
-  
+  dispatch(startLoading('Saving document...'))
+
   try {
     dispatch(setError(null))
-    
-    const response = await api.post('/api/state/documents/upload', documentData)
-    
+
+    const response = await api.post('/api/state/documents/save-metadata', documentData)
+
     const responseData = response.data as { document: Document }
     dispatch(addDocument(responseData.document))
     return response.data
   } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || 'Failed to upload document'))
+    dispatch(setError(error.response?.data?.message || 'Failed to save document'))
     throw error
   } finally {
     dispatch(stopLoading())

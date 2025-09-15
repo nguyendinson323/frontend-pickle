@@ -1,44 +1,20 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { StateTournament } from '../../../store/slices/stateManagementSlice'
 import CentralizedImageUpload from '../../common/CentralizedImageUpload'
 
-interface TournamentCategory {
-  name: string
-  min_age?: number
-  max_age?: number
-  gender: 'Male' | 'Female' | 'Mixed'
-  min_skill_level?: number
-  max_skill_level?: number
-  format: string
-  max_participants?: number
-}
-
-interface CreateTournamentModalProps {
+interface EditTournamentModalProps {
   isOpen: boolean
   onClose: () => void
-  onCreate: (tournamentData: {
-    name: string
-    description?: string
-    tournament_type?: string
-    venue_name?: string
-    venue_address?: string
-    start_date: string
-    end_date: string
-    registration_start: string
-    registration_end: string
-    entry_fee?: number
-    max_participants?: number
-    is_ranking?: boolean
-    ranking_multiplier?: number
-    banner_url?: string
-    categories: TournamentCategory[]
-  }) => Promise<void>
+  tournament: StateTournament | null
+  onUpdate: (tournamentId: number, tournamentData: Partial<StateTournament>) => Promise<void>
   loading: boolean
 }
 
-const CreateTournamentModal: React.FC<CreateTournamentModalProps> = ({
+const EditTournamentModal: React.FC<EditTournamentModalProps> = ({
   isOpen,
   onClose,
-  onCreate,
+  tournament,
+  onUpdate,
   loading
 }) => {
   const [formData, setFormData] = useState({
@@ -58,61 +34,67 @@ const CreateTournamentModal: React.FC<CreateTournamentModalProps> = ({
     banner_url: ''
   })
 
-  const [categories, setCategories] = useState<TournamentCategory[]>([
-    {
-      name: "Men's Singles",
-      gender: 'Male',
-      format: 'Round Robin'
+  useEffect(() => {
+    if (tournament) {
+      // Safe date parsing function
+      const safeFormatDate = (dateString: string | null | undefined) => {
+        if (!dateString) return ''
+        try {
+          // Handle both ISO strings and date-only strings
+          const date = new Date(dateString)
+          if (isNaN(date.getTime())) return ''
+          return date.toISOString().split('T')[0]
+        } catch (error) {
+          console.error('Invalid date format:', dateString)
+          return ''
+        }
+      }
+
+      setFormData({
+        name: tournament.name || '',
+        description: tournament.description || '',
+        tournament_type: tournament.tournament_type || 'State',
+        venue_name: tournament.venue_name || '',
+        venue_address: tournament.venue_address || '',
+        start_date: safeFormatDate(tournament.start_date),
+        end_date: safeFormatDate(tournament.end_date),
+        registration_start: safeFormatDate(tournament.registration_start),
+        registration_end: safeFormatDate(tournament.registration_end),
+        entry_fee: tournament.entry_fee ? tournament.entry_fee.toString() : '',
+        max_participants: tournament.max_participants ? tournament.max_participants.toString() : '',
+        is_ranking: tournament.is_ranking || false,
+        ranking_multiplier: tournament.ranking_multiplier ? tournament.ranking_multiplier.toString() : '1.5',
+        banner_url: tournament.banner_url || ''
+      })
     }
-  ])
+  }, [tournament])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
+    if (!tournament) return
+
     try {
-      await onCreate({
+      await onUpdate(tournament.id, {
         name: formData.name,
-        description: formData.description || undefined,
-        tournament_type: formData.tournament_type || undefined,
-        venue_name: formData.venue_name || undefined,
-        venue_address: formData.venue_address || undefined,
+        description: formData.description || null,
+        tournament_type: formData.tournament_type || null,
+        venue_name: formData.venue_name || null,
+        venue_address: formData.venue_address || null,
         start_date: formData.start_date,
         end_date: formData.end_date,
         registration_start: formData.registration_start,
         registration_end: formData.registration_end,
-        entry_fee: formData.entry_fee ? parseFloat(formData.entry_fee) : undefined,
-        max_participants: formData.max_participants ? parseInt(formData.max_participants) : undefined,
+        entry_fee: formData.entry_fee ? parseFloat(formData.entry_fee) : null,
+        max_participants: formData.max_participants ? parseInt(formData.max_participants) : null,
         is_ranking: formData.is_ranking,
         ranking_multiplier: parseFloat(formData.ranking_multiplier),
-        banner_url: formData.banner_url || undefined,
-        categories
+        banner_url: formData.banner_url || null
       })
-      
-      // Reset form
-      setFormData({
-        name: '',
-        description: '',
-        tournament_type: 'State',
-        venue_name: '',
-        venue_address: '',
-        start_date: '',
-        end_date: '',
-        registration_start: '',
-        registration_end: '',
-        entry_fee: '',
-        max_participants: '',
-        is_ranking: true,
-        ranking_multiplier: '1.5',
-        banner_url: ''
-      })
-      setCategories([{
-        name: "Men's Singles",
-        gender: 'Male',
-        format: 'Round Robin'
-      }])
+
       onClose()
     } catch (error) {
-      console.error('Error creating tournament:', error)
+      console.error('Error updating tournament:', error)
     }
   }
 
@@ -124,43 +106,19 @@ const CreateTournamentModal: React.FC<CreateTournamentModalProps> = ({
     })
   }
 
-  const addCategory = () => {
-    setCategories([
-      ...categories,
-      {
-        name: `Category ${categories.length + 1}`, // Provide default name
-        gender: 'Mixed',
-        format: 'Round Robin'
-      }
-    ])
-  }
-
-  const removeCategory = (index: number) => {
-    setCategories(categories.filter((_, i) => i !== index))
-  }
-
-  const updateCategory = (index: number, field: keyof TournamentCategory, value: any) => {
-    const updatedCategories = [...categories]
-    updatedCategories[index] = {
-      ...updatedCategories[index],
-      [field]: value
-    }
-    setCategories(updatedCategories)
-  }
-
   const getMinDate = () => {
     const today = new Date()
     return today.toISOString().split('T')[0]
   }
 
-  if (!isOpen) return null
+  if (!isOpen || !tournament) return null
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
       <div className="relative top-8 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-md bg-white">
         <div className="mt-3">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-medium text-gray-900">Create State Tournament</h3>
+            <h3 className="text-lg font-medium text-gray-900">Edit Tournament</h3>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600"
@@ -401,79 +359,6 @@ const CreateTournamentModal: React.FC<CreateTournamentModalProps> = ({
               </label>
             </div>
 
-            {/* Categories */}
-            <div>
-              <div className="flex justify-between items-center mb-4">
-                <h4 className="text-lg font-medium text-gray-900">Tournament Categories</h4>
-                <button
-                  type="button"
-                  onClick={addCategory}
-                  className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                >
-                  + Add Category
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                {categories.map((category, index) => (
-                  <div key={index} className="border border-gray-200 rounded-md p-4">
-                    <div className="flex justify-between items-start mb-3">
-                      <h5 className="font-medium text-gray-900">Category {index + 1}</h5>
-                      {categories.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => removeCategory(index)}
-                          className="text-red-600 hover:text-red-800"
-                        >
-                          Remove
-                        </button>
-                      )}
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Name *</label>
-                        <input
-                          type="text"
-                          value={category.name}
-                          onChange={(e) => updateCategory(index, 'name', e.target.value)}
-                          required
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                          placeholder="e.g., Men's Singles"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Gender</label>
-                        <select
-                          value={category.gender}
-                          onChange={(e) => updateCategory(index, 'gender', e.target.value)}
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        >
-                          <option value="Male">Male</option>
-                          <option value="Female">Female</option>
-                          <option value="Mixed">Mixed</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Format</label>
-                        <select
-                          value={category.format}
-                          onChange={(e) => updateCategory(index, 'format', e.target.value)}
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        >
-                          <option value="Round Robin">Round Robin</option>
-                          <option value="Single Elimination">Single Elimination</option>
-                          <option value="Double Elimination">Double Elimination</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
             <div className="flex justify-end space-x-3 pt-6">
               <button
                 type="button"
@@ -488,7 +373,7 @@ const CreateTournamentModal: React.FC<CreateTournamentModalProps> = ({
                 disabled={loading || !formData.name || !formData.start_date || !formData.end_date || !formData.registration_start || !formData.registration_end}
                 className="px-4 py-2 bg-blue-600 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Creating...' : 'Create Tournament'}
+                {loading ? 'Updating...' : 'Update Tournament'}
               </button>
             </div>
           </form>
@@ -498,4 +383,4 @@ const CreateTournamentModal: React.FC<CreateTournamentModalProps> = ({
   )
 }
 
-export default CreateTournamentModal
+export default EditTournamentModal

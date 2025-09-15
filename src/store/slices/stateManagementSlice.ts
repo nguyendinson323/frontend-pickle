@@ -265,6 +265,7 @@ export const createStateTournament = (tournamentData: {
   max_participants?: number
   is_ranking?: boolean
   ranking_multiplier?: number
+  banner_url?: string
   categories: Array<{
     name: string
     min_age?: number

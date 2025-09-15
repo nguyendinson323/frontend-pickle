@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo, useCallback, useState } from 'react'
 import { StateTournament } from '../../../store/slices/stateManagementSlice'
 
 interface TournamentsTabProps {
@@ -9,23 +9,31 @@ interface TournamentsTabProps {
   onUpdateStatus: (tournamentId: number, status: string) => void
 }
 
-const TournamentsTab: React.FC<TournamentsTabProps> = ({
+const TournamentsTab: React.FC<TournamentsTabProps> = React.memo(({
   tournaments,
   onViewTournament,
   onEditTournament,
   onDeleteTournament,
   onUpdateStatus
 }) => {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    })
-  }
+  const [changingStatus, setChangingStatus] = useState<number | null>(null)
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
+  // Memoized utility functions to prevent re-creation on each render
+  const formatDate = useCallback((dateString: string) => {
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      })
+    } catch (error) {
+      console.error('Invalid date string:', dateString)
+      return 'Invalid Date'
+    }
+  }, [])
+
+  const getStatusColor = useCallback((status: string) => {
+    switch (status?.toLowerCase()) {
       case 'upcoming':
         return 'bg-blue-100 text-blue-800'
       case 'ongoing':
@@ -37,10 +45,10 @@ const TournamentsTab: React.FC<TournamentsTabProps> = ({
       default:
         return 'bg-gray-100 text-gray-800'
     }
-  }
+  }, [])
 
-  const getOrganizerColor = (organizerType: string) => {
-    switch (organizerType) {
+  const getOrganizerColor = useCallback((organizerType: string) => {
+    switch (organizerType?.toLowerCase()) {
       case 'state':
         return 'bg-purple-100 text-purple-800'
       case 'club':
@@ -50,12 +58,34 @@ const TournamentsTab: React.FC<TournamentsTabProps> = ({
       default:
         return 'bg-gray-100 text-gray-800'
     }
-  }
+  }, [])
 
-  const getStatusOptions = (currentStatus: string) => {
+  const getStatusOptions = useCallback((currentStatus: string) => {
     const statuses = ['upcoming', 'ongoing', 'completed', 'canceled']
-    return statuses.filter(status => status !== currentStatus)
-  }
+    return statuses.filter(status => status !== currentStatus?.toLowerCase())
+  }, [])
+
+  // Handle status change with proper state management
+  const handleStatusChange = useCallback(async (tournamentId: number, newStatus: string) => {
+    setChangingStatus(tournamentId)
+    try {
+      await onUpdateStatus(tournamentId, newStatus)
+    } catch (error) {
+      console.error('Failed to update tournament status:', error)
+    } finally {
+      setChangingStatus(null)
+    }
+  }, [onUpdateStatus])
+
+  // Safe access to tournament properties
+  const formatCurrency = useCallback((amount: number | null | undefined) => {
+    return amount ? `$${amount.toLocaleString()}` : '$0'
+  }, [])
+
+  // Memoize tournaments list to prevent unnecessary re-renders
+  const validTournaments = useMemo(() => {
+    return Array.isArray(tournaments) ? tournaments.filter(t => t && t.id) : []
+  }, [tournaments])
 
   return (
     <div className="space-y-4">
@@ -68,18 +98,24 @@ const TournamentsTab: React.FC<TournamentsTabProps> = ({
           <p className="mt-1 text-sm text-gray-500">Get started by creating your first state tournament.</p>
         </div>
       ) : (
-        tournaments.map((tournament) => (
+        validTournaments.map((tournament) => (
           <div key={tournament.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between mb-4">
               <div className="flex-1">
                 <div className="flex items-center space-x-3 mb-2">
-                  <h3 className="text-lg font-semibold text-gray-900">{tournament.name}</h3>
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(tournament.status)}`}>
-                    {tournament.status.charAt(0).toUpperCase() + tournament.status.slice(1)}
-                  </span>
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getOrganizerColor(tournament.organizer_type)}`}>
-                    {tournament.organizer_type.charAt(0).toUpperCase() + tournament.organizer_type.slice(1)} Tournament
-                  </span>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    {tournament.name || 'Unnamed Tournament'}
+                  </h3>
+                  {tournament.status && (
+                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(tournament.status)}`}>
+                      {tournament.status.charAt(0).toUpperCase() + tournament.status.slice(1)}
+                    </span>
+                  )}
+                  {tournament.organizer_type && (
+                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getOrganizerColor(tournament.organizer_type)}`}>
+                      {tournament.organizer_type.charAt(0).toUpperCase() + tournament.organizer_type.slice(1)} Tournament
+                    </span>
+                  )}
                 </div>
                 {tournament.tournament_type && (
                   <p className="text-sm text-gray-600">{tournament.tournament_type} Tournament</p>
@@ -92,13 +128,19 @@ const TournamentsTab: React.FC<TournamentsTabProps> = ({
                     value=""
                     onChange={(e) => {
                       if (e.target.value) {
-                        onUpdateStatus(tournament.id, e.target.value)
-                        e.target.value = ""
+                        handleStatusChange(tournament.id, e.target.value)
+                        // Reset select value
+                        e.target.selectedIndex = 0
                       }
                     }}
-                    className="text-xs border-gray-300 rounded text-gray-600 bg-white cursor-pointer"
+                    disabled={changingStatus === tournament.id}
+                    className={`text-xs border-gray-300 rounded text-gray-600 bg-white cursor-pointer ${
+                      changingStatus === tournament.id ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
                   >
-                    <option value="">Change Status</option>
+                    <option value="">
+                      {changingStatus === tournament.id ? 'Updating...' : 'Change Status'}
+                    </option>
                     {getStatusOptions(tournament.status).map(status => (
                       <option key={status} value={status}>
                         {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -109,6 +151,20 @@ const TournamentsTab: React.FC<TournamentsTabProps> = ({
               </div>
             </div>
 
+            {tournament.banner_url && (
+              <div className="mb-4">
+                <img
+                  src={tournament.banner_url}
+                  alt={`${tournament.name} banner`}
+                  className="w-full h-32 object-cover rounded-lg"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                  }}
+                />
+              </div>
+            )}
+
             {tournament.description && (
               <p className="text-gray-600 mb-4">{tournament.description}</p>
             )}
@@ -116,11 +172,21 @@ const TournamentsTab: React.FC<TournamentsTabProps> = ({
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
               <div>
                 <div className="text-sm text-gray-500">Tournament Dates</div>
-                <div className="font-medium">{formatDate(tournament.start_date)} - {formatDate(tournament.end_date)}</div>
+                <div className="font-medium">
+                  {tournament.start_date && tournament.end_date
+                    ? `${formatDate(tournament.start_date)} - ${formatDate(tournament.end_date)}`
+                    : 'Dates not set'
+                  }
+                </div>
               </div>
               <div>
                 <div className="text-sm text-gray-500">Registration</div>
-                <div className="font-medium">{formatDate(tournament.registration_start)} - {formatDate(tournament.registration_end)}</div>
+                <div className="font-medium">
+                  {tournament.registration_start && tournament.registration_end
+                    ? `${formatDate(tournament.registration_start)} - ${formatDate(tournament.registration_end)}`
+                    : 'Registration not set'
+                  }
+                </div>
               </div>
               <div>
                 <div className="text-sm text-gray-500">Participants</div>
@@ -128,7 +194,7 @@ const TournamentsTab: React.FC<TournamentsTabProps> = ({
               </div>
               <div>
                 <div className="text-sm text-gray-500">Revenue</div>
-                <div className="font-medium">${tournament.revenue || 0}</div>
+                <div className="font-medium">{formatCurrency(tournament.revenue)}</div>
               </div>
             </div>
 
@@ -147,16 +213,16 @@ const TournamentsTab: React.FC<TournamentsTabProps> = ({
                 {tournament.entry_fee && (
                   <div>
                     <span className="text-sm text-gray-500">Entry Fee: </span>
-                    <span className="font-medium">${tournament.entry_fee}</span>
+                    <span className="font-medium">{formatCurrency(tournament.entry_fee)}</span>
                   </div>
                 )}
-                {tournament.categories && tournament.categories.length > 0 && (
+                {tournament.categories && Array.isArray(tournament.categories) && tournament.categories.length > 0 && (
                   <div>
                     <span className="text-sm text-gray-500">Categories: </span>
                     <span className="font-medium">{tournament.categories.length}</span>
                   </div>
                 )}
-                {tournament.is_ranking && (
+                {tournament.is_ranking && tournament.ranking_multiplier && (
                   <div>
                     <span className="text-sm text-gray-500">Ranking: </span>
                     <span className="font-medium">×{tournament.ranking_multiplier}</span>
@@ -171,21 +237,31 @@ const TournamentsTab: React.FC<TournamentsTabProps> = ({
                 >
                   View Details
                 </button>
+                {/* Only show edit/delete for state-organized tournaments */}
                 {tournament.organizer_type === 'state' && (
                   <>
                     <button
                       onClick={() => onEditTournament(tournament)}
-                      className="text-green-600 hover:text-green-900 text-sm font-medium"
+                      className="text-green-600 hover:text-green-900 text-sm font-medium inline-flex items-center"
                       title="Edit Tournament"
+                      disabled={changingStatus === tournament.id}
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                       </svg>
                     </button>
                     <button
-                      onClick={() => onDeleteTournament(tournament.id)}
-                      className="text-red-600 hover:text-red-900 text-sm font-medium"
+                      onClick={() => {
+                        const confirmDelete = window.confirm(
+                          `Are you sure you want to delete "${tournament.name}"? This action cannot be undone.`
+                        )
+                        if (confirmDelete) {
+                          onDeleteTournament(tournament.id)
+                        }
+                      }}
+                      className="text-red-600 hover:text-red-900 text-sm font-medium inline-flex items-center"
                       title="Delete Tournament"
+                      disabled={changingStatus === tournament.id}
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -200,6 +276,6 @@ const TournamentsTab: React.FC<TournamentsTabProps> = ({
       )}
     </div>
   )
-}
+})
 
 export default TournamentsTab

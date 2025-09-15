@@ -207,7 +207,7 @@ const MessageViewModal: React.FC<MessageViewModalProps> = ({
 
               <button
                 onClick={onClose}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:"
+                className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
               >
                 Close
               </button>

@@ -1,7 +1,11 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { AppDispatch } from '../../../store'
+import { approveUser, rejectUser } from '../../../store/slices/stateDashboardSlice'
 
 interface Approval {
+  userId: number
   type: string
   name: string
   location: string
@@ -14,6 +18,27 @@ interface StatePendingApprovalsProps {
 
 const StatePendingApprovals: React.FC<StatePendingApprovalsProps> = ({ pendingApprovals }) => {
   const navigate = useNavigate()
+  const dispatch = useDispatch<AppDispatch>()
+
+  const handleApprove = async (userId: number, name: string) => {
+    if (window.confirm(`Are you sure you want to approve ${name}?`)) {
+      try {
+        await dispatch(approveUser(userId))
+      } catch (error) {
+        console.error('Approval failed:', error)
+      }
+    }
+  }
+
+  const handleReject = async (userId: number, name: string) => {
+    if (window.confirm(`Are you sure you want to reject ${name}? This will deactivate their account.`)) {
+      try {
+        await dispatch(rejectUser(userId))
+      } catch (error) {
+        console.error('Rejection failed:', error)
+      }
+    }
+  }
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
@@ -35,10 +60,16 @@ const StatePendingApprovals: React.FC<StatePendingApprovalsProps> = ({ pendingAp
                 <p className="text-xs text-gray-500">Submitted {approval.submittedDate}</p>
               </div>
               <div className="flex space-x-2">
-                <button className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs transition-colors duration-200">
+                <button
+                  onClick={() => handleApprove(approval.userId, approval.name)}
+                  className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs transition-colors duration-200"
+                >
                   Approve
                 </button>
-                <button className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-xs transition-colors duration-200">
+                <button
+                  onClick={() => handleReject(approval.userId, approval.name)}
+                  className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-xs transition-colors duration-200"
+                >
                   Reject
                 </button>
               </div>

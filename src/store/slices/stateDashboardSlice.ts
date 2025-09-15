@@ -48,6 +48,7 @@ export interface StateUpcomingTournament {
 }
 
 export interface StatePendingApproval {
+  userId: number
   type: string
   name: string
   location: string
@@ -210,6 +211,50 @@ export const fetchStatePerformanceMetrics = () => async (dispatch: AppDispatch) 
   } catch (error: unknown) {
     dispatch(setError((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch performance metrics'))
     dispatch(stopLoading())
+  }
+}
+
+// Approve user
+export const approveUser = (userId: number) => async (dispatch: AppDispatch) => {
+  try {
+    dispatch(startLoading('Approving user...'))
+    dispatch(setError(null))
+
+    await api.put(`/api/state/dashboard/approve-user/${userId}`)
+
+    // Refresh dashboard data to get updated pending approvals
+    const dashboardResponse = await api.get<StateDashboardResponse>('/api/state/dashboard')
+    dispatch(setStateDashboardData(dashboardResponse.data))
+
+    dispatch(stopLoading())
+    return { success: true, message: 'User approved successfully' }
+  } catch (error: unknown) {
+    const errorMessage = (error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to approve user'
+    dispatch(setError(errorMessage))
+    dispatch(stopLoading())
+    throw new Error(errorMessage)
+  }
+}
+
+// Reject user
+export const rejectUser = (userId: number) => async (dispatch: AppDispatch) => {
+  try {
+    dispatch(startLoading('Rejecting user...'))
+    dispatch(setError(null))
+
+    await api.put(`/api/state/dashboard/reject-user/${userId}`)
+
+    // Refresh dashboard data to get updated pending approvals
+    const dashboardResponse = await api.get<StateDashboardResponse>('/api/state/dashboard')
+    dispatch(setStateDashboardData(dashboardResponse.data))
+
+    dispatch(stopLoading())
+    return { success: true, message: 'User rejected successfully' }
+  } catch (error: unknown) {
+    const errorMessage = (error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to reject user'
+    dispatch(setError(errorMessage))
+    dispatch(stopLoading())
+    throw new Error(errorMessage)
   }
 }
 

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useCallback } from 'react'
 import { StatePartner } from '../../../store/slices/stateManagementSlice'
 
 interface PartnersTabProps {
@@ -10,19 +10,51 @@ const PartnersTab: React.FC<PartnersTabProps> = ({
   partners,
   onViewPartner
 }) => {
-  const getPremiumStatus = (expiryDate: string | null) => {
+  const [imageErrors, setImageErrors] = useState<Set<number>>(new Set())
+
+  // Handle image load errors
+  const handleImageError = useCallback((partnerId: number) => {
+    setImageErrors(prev => new Set(prev).add(partnerId))
+  }, [])
+  const getPremiumStatus = useCallback((expiryDate: string | null) => {
     if (!expiryDate) return { status: 'Basic', color: 'bg-gray-100 text-gray-800' }
-    
-    const expiry = new Date(expiryDate)
-    const now = new Date()
-    
-    if (expiry < now) {
-      return { status: 'Expired', color: 'bg-red-100 text-red-800' }
-    } else if ((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24) <= 30) {
-      return { status: 'Expiring Soon', color: 'bg-yellow-100 text-yellow-800' }
+
+    try {
+      const expiry = new Date(expiryDate + 'T23:59:59.999Z')
+      const now = new Date()
+      const diffDays = Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+
+      if (diffDays < 0) {
+        return { status: 'Expired', color: 'bg-red-100 text-red-800' }
+      } else if (diffDays <= 30) {
+        return { status: 'Expiring Soon', color: 'bg-yellow-100 text-yellow-800' }
+      }
+      return { status: 'Premium', color: 'bg-purple-100 text-purple-800' }
+    } catch (error) {
+      console.error('Invalid premium expiry date:', expiryDate)
+      return { status: 'Invalid Date', color: 'bg-gray-100 text-gray-800' }
     }
-    return { status: 'Premium', color: 'bg-purple-100 text-purple-800' }
-  }
+  }, [])
+
+  // Safe date formatting
+  const formatDate = useCallback((dateString: string) => {
+    try {
+      return new Date(dateString).toLocaleDateString()
+    } catch (error) {
+      console.error('Invalid date string:', dateString)
+      return 'Invalid Date'
+    }
+  }, [])
+
+  // Validate URL format
+  const isValidUrl = useCallback((url: string) => {
+    try {
+      new URL(url)
+      return true
+    } catch {
+      return false
+    }
+  }, [])
 
   return (
     <div className="space-y-4">
@@ -44,11 +76,13 @@ const PartnersTab: React.FC<PartnersTabProps> = ({
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-2">
                     <div className="flex items-center">
-                      {partner.logo_url ? (
+                      {partner.logo_url && !imageErrors.has(partner.id) ? (
                         <img
                           src={partner.logo_url}
-                          alt={`${partner.business_name} logo`}
+                          alt={`${partner.business_name || 'Partner'} logo`}
                           className="h-10 w-10 rounded-lg object-cover mr-3"
+                          onError={() => handleImageError(partner.id)}
+                          loading="lazy"
                         />
                       ) : (
                         <div className="h-10 w-10 rounded-lg bg-gray-300 flex items-center justify-center mr-3">
@@ -58,7 +92,9 @@ const PartnersTab: React.FC<PartnersTabProps> = ({
                         </div>
                       )}
                       <div>
-                        <h3 className="text-lg font-semibold text-gray-900">{partner.business_name}</h3>
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {partner.business_name || 'Unnamed Business'}
+                        </h3>
                         {partner.partner_type && (
                           <p className="text-sm text-gray-600">{partner.partner_type}</p>
                         )}
@@ -101,17 +137,21 @@ const PartnersTab: React.FC<PartnersTabProps> = ({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                   <div className="text-sm text-gray-500">Contact Information</div>
-                  <div className="font-medium">{partner.user.email}</div>
-                  {partner.user.phone && (
+                  {partner.user?.email ? (
+                    <div className="font-medium">{partner.user.email}</div>
+                  ) : (
+                    <div className="text-sm text-gray-400">No contact email</div>
+                  )}
+                  {partner.user?.phone && (
                     <div className="text-sm text-gray-600">{partner.user.phone}</div>
                   )}
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">Online Presence</div>
                   <div className="flex items-center space-x-2">
-                    {partner.website && (
+                    {partner.website && isValidUrl(partner.website) && (
                       <a
-                        href={partner.website}
+                        href={partner.website.startsWith('http') ? partner.website : `https://${partner.website}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center px-2 py-1 rounded text-xs bg-blue-100 text-blue-800 hover:bg-blue-200"
@@ -122,9 +162,9 @@ const PartnersTab: React.FC<PartnersTabProps> = ({
                         Website
                       </a>
                     )}
-                    {partner.social_media && (
+                    {partner.social_media && isValidUrl(partner.social_media) && (
                       <a
-                        href={partner.social_media}
+                        href={partner.social_media.startsWith('http') ? partner.social_media : `https://${partner.social_media}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center px-2 py-1 rounded text-xs bg-purple-100 text-purple-800 hover:bg-purple-200"
@@ -135,6 +175,9 @@ const PartnersTab: React.FC<PartnersTabProps> = ({
                         Social
                       </a>
                     )}
+                    {(!partner.website || !isValidUrl(partner.website)) && (!partner.social_media || !isValidUrl(partner.social_media)) && (
+                      <div className="text-sm text-gray-400">No online presence</div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -143,14 +186,18 @@ const PartnersTab: React.FC<PartnersTabProps> = ({
                 <div className="mb-4 p-3 bg-gray-50 rounded-lg">
                   <div>
                     <div className="text-sm text-gray-500">Premium Expires</div>
-                    <div className="font-medium">{new Date(partner.premium_expires_at).toLocaleDateString()}</div>
+                    <div className="font-medium">{formatDate(partner.premium_expires_at)}</div>
                   </div>
                 </div>
               )}
 
               <div className="flex items-center justify-between">
                 <div className="text-xs text-gray-500">
-                  Registered on {new Date(partner.created_at).toLocaleDateString()}
+                  {partner.created_at ? (
+                    `Registered on ${formatDate(partner.created_at)}`
+                  ) : (
+                    'Registration date unknown'
+                  )}
                 </div>
 
                 <div className="flex space-x-2">

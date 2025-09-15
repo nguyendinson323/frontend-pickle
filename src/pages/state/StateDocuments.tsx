@@ -2,15 +2,16 @@ import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState, AppDispatch } from '../../store'
-import { 
-  fetchStateDocuments, 
-  uploadStateDocument, 
-  updateStateDocument, 
-  deleteStateDocument, 
+import {
+  fetchStateDocuments,
+  updateStateDocument,
+  deleteStateDocument,
   downloadStateDocument,
   setSelectedDocument,
-  setFilters
+  setFilters,
+  saveStateDocumentMetadata
 } from '../../store/slices/stateDocumentsSlice'
+import CentralizedImageUpload from '../../components/common/CentralizedImageUpload'
 
 const StateDocuments: React.FC = () => {
   const navigate = useNavigate()
@@ -32,7 +33,7 @@ const StateDocuments: React.FC = () => {
     title: '',
     description: '',
     is_public: false,
-    file: null as File | null
+    document_url: ''
   })
   const [editForm, setEditForm] = useState({
     title: '',
@@ -70,38 +71,30 @@ const StateDocuments: React.FC = () => {
     dispatch(fetchStateDocuments())
   }
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (file) {
-      setUploadForm({ ...uploadForm, file })
-    }
-  }
-
-  const convertFileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.readAsDataURL(file)
-      reader.onload = () => resolve(reader.result as string)
-      reader.onerror = error => reject(error)
-    })
+  const handleFileUpload = (url: string) => {
+    setUploadForm({ ...uploadForm, document_url: url })
   }
 
   const handleUploadSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
-    if (!uploadForm.file) {
-      alert('Please select a file')
+
+    if (!uploadForm.document_url) {
+      alert('Please upload a file first')
+      return
+    }
+
+    if (!uploadForm.title) {
+      alert('Please enter a title')
       return
     }
 
     try {
-      const base64File = await convertFileToBase64(uploadForm.file)
-      
-      await dispatch(uploadStateDocument({
+      // Save document metadata to backend
+      await dispatch(saveStateDocumentMetadata({
         title: uploadForm.title,
         description: uploadForm.description,
         is_public: uploadForm.is_public,
-        file: base64File
+        document_url: uploadForm.document_url
       }))
 
       setShowUploadModal(false)
@@ -109,13 +102,13 @@ const StateDocuments: React.FC = () => {
         title: '',
         description: '',
         is_public: false,
-        file: null
+        document_url: ''
       })
-      
-      // Refresh documents list
+
+      // Refresh documents list to get updated data from server
       dispatch(fetchStateDocuments())
     } catch (error) {
-      console.error('Upload failed:', error)
+      console.error('Save failed:', error)
     }
   }
 
@@ -510,10 +503,27 @@ const StateDocuments: React.FC = () => {
         {/* Upload Modal */}
         {showUploadModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
               <h3 className="text-lg font-medium text-gray-900 mb-4">Upload Document</h3>
               <form onSubmit={handleUploadSubmit}>
-                <div className="space-y-4">
+                <div className="space-y-6">
+                  {/* File Upload */}
+                  <div>
+                    <CentralizedImageUpload
+                      uploadType="state-document"
+                      value={uploadForm.document_url}
+                      onChange={handleFileUpload}
+                      required
+                      color="red"
+                      title="Document Upload"
+                      icon={
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                      }
+                    />
+                  </div>
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Title *
@@ -524,9 +534,10 @@ const StateDocuments: React.FC = () => {
                       value={uploadForm.title}
                       onChange={(e) => setUploadForm({ ...uploadForm, title: e.target.value })}
                       className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500"
+                      placeholder="Enter document title"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Description
@@ -536,21 +547,10 @@ const StateDocuments: React.FC = () => {
                       onChange={(e) => setUploadForm({ ...uploadForm, description: e.target.value })}
                       rows={3}
                       className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500"
+                      placeholder="Enter document description (optional)"
                     />
                   </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      File *
-                    </label>
-                    <input
-                      type="file"
-                      required
-                      onChange={handleFileSelect}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500"
-                    />
-                  </div>
-                  
+
                   <div className="flex items-center">
                     <input
                       type="checkbox"
@@ -560,25 +560,33 @@ const StateDocuments: React.FC = () => {
                       className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
                     />
                     <label htmlFor="is_public" className="ml-2 text-sm text-gray-700">
-                      Make this document public
+                      Make this document public (visible to other users)
                     </label>
                   </div>
                 </div>
-                
+
                 <div className="flex justify-end space-x-3 mt-6">
                   <button
                     type="button"
-                    onClick={() => setShowUploadModal(false)}
+                    onClick={() => {
+                      setShowUploadModal(false)
+                      setUploadForm({
+                        title: '',
+                        description: '',
+                        is_public: false,
+                        document_url: ''
+                      })
+                    }}
                     className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    disabled={loading}
+                    disabled={loading || !uploadForm.document_url || !uploadForm.title}
                     className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors disabled:opacity-50"
                   >
-                    {loading ? 'Uploading...' : 'Upload'}
+                    {loading ? 'Saving...' : 'Save Document'}
                   </button>
                 </div>
               </form>
