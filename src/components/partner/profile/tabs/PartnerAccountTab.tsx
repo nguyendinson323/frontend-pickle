@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../../../../store'
 import { updatePartnerProfile, PartnerProfile } from '../../../../store/slices/partnerProfileSlice'
 import { fetchCommonData } from '../../../../store/slices/commonSlice'
-import CentralizedImageUpload from '../../../common/CentralizedImageUpload'
+import SimpleImageUpload from '../../../common/SimpleImageUpload'
 
 interface PartnerAccountTabProps {
   profile: PartnerProfile | null
@@ -287,11 +287,10 @@ export const PartnerAccountTab: React.FC<PartnerAccountTabProps> = ({ profile })
                 />
               </div>
               <div className="md:col-span-2">
-                <CentralizedImageUpload
+                <SimpleImageUpload
                   uploadType="partner-logo-auth"
                   value={formData.logo_url}
                   onChange={(imageUrl) => setFormData(prev => ({ ...prev, logo_url: imageUrl }))}
-                  color="purple"
                   className="bg-gray-50 border border-gray-200"
                 />
               </div>

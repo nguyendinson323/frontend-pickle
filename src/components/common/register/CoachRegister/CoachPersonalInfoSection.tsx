@@ -75,9 +75,9 @@ const CoachPersonalInfoSection: React.FC<CoachPersonalInfoSectionProps> = ({ for
               required
               className="w-full px-4 py-4 pl-12 border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm hover:border-blue-400 group-hover:shadow-lg appearance-none"
             >
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
             </select>
             <FiUsers className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-500 transition-colors duration-300" />
             <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">

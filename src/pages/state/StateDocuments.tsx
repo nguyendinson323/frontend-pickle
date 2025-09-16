@@ -11,7 +11,7 @@ import {
   setFilters,
   saveStateDocumentMetadata
 } from '../../store/slices/stateDocumentsSlice'
-import CentralizedImageUpload from '../../components/common/CentralizedImageUpload'
+import SimpleImageUpload from '../../components/common/SimpleImageUpload'
 
 const StateDocuments: React.FC = () => {
   const navigate = useNavigate()
@@ -509,12 +509,11 @@ const StateDocuments: React.FC = () => {
                 <div className="space-y-6">
                   {/* File Upload */}
                   <div>
-                    <CentralizedImageUpload
+                    <SimpleImageUpload
                       uploadType="state-document"
                       value={uploadForm.document_url}
                       onChange={handleFileUpload}
                       required
-                      color="red"
                       title="Document Upload"
                       icon={
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

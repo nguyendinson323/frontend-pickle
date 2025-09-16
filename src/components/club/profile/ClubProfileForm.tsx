@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../../../store'
-import { updateClubProfile } from '../../../store/slices/authSlice'
+import { updateClubProfile, updateProfileImage } from '../../../store/slices/authSlice'
 import { Club, User, State } from '../../../types/auth'
 import api from '../../../services/api'
-import CentralizedImageUpload from '../../common/CentralizedImageUpload'
+import SimpleImageUpload from '../../common/SimpleImageUpload'
 
 interface ClubProfileFormProps {
   club: Club
@@ -91,9 +91,17 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
     }
   }
 
-  // Handle logo URL change from CentralizedImageUpload
+  // Handle logo URL change from SimpleImageUpload
   const handleLogoChange = (url: string) => {
     setClubData(prev => ({ ...prev, logo_url: url }))
+  }
+
+  // Immediate upload handler for Redux state updates
+  const handleLogoUpload = (url: string) => {
+    // Update form data immediately
+    setClubData(prev => ({ ...prev, logo_url: url }))
+    // Update Redux state for immediate visual updates
+    dispatch(updateProfileImage({ imageType: 'logo_url', imageUrl: url }))
   }
 
   // Validation function
@@ -420,12 +428,13 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
               </select>
             </div>
             <div className="md:col-span-2">
-              <CentralizedImageUpload
-                uploadType="club-logo"
+              <SimpleImageUpload
+                uploadType="club-logo-auth"
                 value={clubData.logo_url}
                 onChange={handleLogoChange}
+                onUploadComplete={handleLogoUpload}
                 disabled={isSubmitting}
-                color="purple"
+                title="Club Logo"
                 className="bg-gray-50"
               />
             </div>

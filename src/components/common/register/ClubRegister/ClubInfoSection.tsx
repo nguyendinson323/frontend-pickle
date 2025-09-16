@@ -1,12 +1,6 @@
 import React from 'react'
 import { FiHome, FiMapPin, FiUser, FiFileText } from 'react-icons/fi'
-import { ClubRegisterRequest } from '../../../../types'
-
-interface State {
-  id: number
-  name: string
-  short_code: string
-}
+import { ClubRegisterRequest, State } from '../../../../types'
 
 interface ClubInfoSectionProps {
   formData: ClubRegisterRequest
@@ -78,7 +72,7 @@ const ClubInfoSection: React.FC<ClubInfoSectionProps> = ({ formData, onInputChan
             >
               <option value="">Select state where club is located</option>
               {states.map(state => (
-                <option key={state.id} value={state.name}>{state.name}</option>
+                <option key={state.id} value={state.id}>{state.name}</option>
               ))}
             </select>
             <FiMapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-purple-500 transition-colors duration-300" />

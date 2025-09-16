@@ -6,7 +6,7 @@ import { startLoading, stopLoading } from '../../../../store/slices/loadingSlice
 import { StateProfile } from '../../../../store/slices/stateDashboardSlice'
 import { User } from '../../../../types/auth'
 import api from '../../../../services/api'
-import CentralizedImageUpload from '../../../common/CentralizedImageUpload'
+import SimpleImageUpload from '../../../common/SimpleImageUpload'
 
 interface StateAccountTabProps {
   profile: StateProfile
@@ -247,12 +247,11 @@ const StateProfileForm: React.FC<StateProfileFormProps> = ({ profile, user, onCa
               />
             </div>
             <div className="md:col-span-2">
-              <CentralizedImageUpload
+              <SimpleImageUpload
                 uploadType="state-logo"
                 value={stateData.logo_url}
                 onChange={handleLogoUpload}
                 title="Committee Logo"
-                color="red"
                 className="bg-gray-50 border border-gray-200"
                 icon={
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

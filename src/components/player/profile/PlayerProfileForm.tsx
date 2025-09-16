@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../../../store'
-import { fetchDashboard, updateUser } from '../../../store/slices/authSlice'
+import { fetchDashboard, updateUser, updateProfileImage } from '../../../store/slices/authSlice'
 import { startLoading, stopLoading } from '../../../store/slices/loadingSlice'
 import { Player, User } from '../../../types/auth'
 import api from '../../../services/api'
-import CentralizedImageUpload from '../../common/CentralizedImageUpload'
+import SimpleImageUpload from '../../common/SimpleImageUpload'
 
 interface PlayerProfileFormProps {
   player: Player
@@ -112,6 +112,21 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
   // Document upload handler (keep for now but not used in simplified avatar workflow)
   const handleDocumentChange = (url: string) => {
     setPlayerData(prev => ({ ...prev, id_document_url: url }))
+  }
+
+  // Immediate upload handlers for Redux state updates
+  const handleProfilePhotoUpload = (url: string) => {
+    // Update form data immediately
+    setPlayerData(prev => ({ ...prev, profile_photo_url: url }))
+    // Update Redux state for immediate visual updates
+    dispatch(updateProfileImage({ imageType: 'profile_photo_url', imageUrl: url }))
+  }
+
+  const handleDocumentUpload = (url: string) => {
+    // Update form data immediately
+    setPlayerData(prev => ({ ...prev, id_document_url: url }))
+    // Update Redux state for immediate visual updates
+    dispatch(updateProfileImage({ imageType: 'id_document_url', imageUrl: url }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -342,12 +357,12 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
               />
             </div>
             <div className="md:col-span-2">
-              <CentralizedImageUpload
+              <SimpleImageUpload
                 uploadType="player-photo-auth"
                 value={playerData.profile_photo_url}
                 onChange={handleProfilePhotoChange}
+                onUploadComplete={handleProfilePhotoUpload}
                 title="Profile Photo"
-                color="indigo"
                 className="bg-gray-50 border border-gray-200"
                 icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -355,12 +370,12 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
               />
             </div>
             <div className="md:col-span-2">
-              <CentralizedImageUpload
+              <SimpleImageUpload
                 uploadType="player-document-auth"
                 value={playerData.id_document_url}
                 onChange={handleDocumentChange}
+                onUploadComplete={handleDocumentUpload}
                 title="ID Document"
-                color="indigo"
                 className="bg-gray-50 border border-gray-200"
                 icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />

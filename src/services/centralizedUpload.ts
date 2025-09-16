@@ -12,20 +12,29 @@ export type UploadType =
   | 'player-document'
   | 'player-photo-auth'
   | 'player-document-auth'
+  | 'player-photo-registration'
+  | 'player-document-registration'
   | 'club-logo'
+  | 'club-logo-auth'
+  | 'club-logo-registration'
   | 'club-banner'
   | 'tournament-banner'
   | 'state-logo'
+  | 'state-logo-auth'
+  | 'state-logo-registration'
   | 'state-banner'
   | 'state-document'
   | 'news-image'
   | 'partner-logo'
   | 'partner-logo-auth'
+  | 'partner-logo-registration'
   | 'partner-document'
   | 'coach-photo'
   | 'coach-document'
   | 'coach-photo-auth'
   | 'coach-document-auth'
+  | 'coach-photo-registration'
+  | 'coach-document-registration'
   | 'coach-certification'
   | 'admin-photo'
 
@@ -57,7 +66,41 @@ export const uploadConfigs: Record<UploadType, UploadConfig> = {
     acceptedFormats: 'PNG, JPG, PDF up to 5MB',
     maxSize: '5MB'
   },
+  'player-photo-registration': {
+    endpoint: '/api/upload/player-photo-registration',
+    folder: 'player_photos',
+    description: 'Profile Photo',
+    acceptedFormats: 'PNG, JPG up to 5MB',
+    maxSize: '5MB',
+    cropShape: 'round',
+    aspectRatio: 1
+  },
+  'player-document-registration': {
+    endpoint: '/api/upload/player-document-registration',
+    folder: 'player_documents',
+    description: 'ID Document',
+    acceptedFormats: 'PNG, JPG, PDF up to 5MB',
+    maxSize: '5MB'
+  },
   'club-logo': {
+    endpoint: '/api/upload/club-logo',
+    folder: 'club_logos',
+    description: 'Club Logo',
+    acceptedFormats: 'PNG, JPG up to 5MB',
+    maxSize: '5MB',
+    cropShape: 'round',
+    aspectRatio: 1
+  },
+  'club-logo-registration': {
+    endpoint: '/api/upload/club-logo-registration',
+    folder: 'club_logos',
+    description: 'Club Logo',
+    acceptedFormats: 'PNG, JPG up to 5MB',
+    maxSize: '5MB',
+    cropShape: 'round',
+    aspectRatio: 1
+  },
+  'club-logo-auth': {
     endpoint: '/api/upload/club-logo',
     folder: 'club_logos',
     description: 'Club Logo',
@@ -68,6 +111,24 @@ export const uploadConfigs: Record<UploadType, UploadConfig> = {
   },
   'state-logo': {
     endpoint: '/api/upload/state-logo-registration',
+    folder: 'state_logos',
+    description: 'Committee Logo',
+    acceptedFormats: 'PNG, JPG up to 5MB',
+    maxSize: '5MB',
+    cropShape: 'rect',
+    aspectRatio: 1
+  },
+  'state-logo-registration': {
+    endpoint: '/api/upload/state-logo-registration',
+    folder: 'state_logos',
+    description: 'Committee Logo',
+    acceptedFormats: 'PNG, JPG up to 5MB',
+    maxSize: '5MB',
+    cropShape: 'rect',
+    aspectRatio: 1
+  },
+  'state-logo-auth': {
+    endpoint: '/api/upload/state-logo',
     folder: 'state_logos',
     description: 'Committee Logo',
     acceptedFormats: 'PNG, JPG up to 5MB',
@@ -109,6 +170,15 @@ export const uploadConfigs: Record<UploadType, UploadConfig> = {
     cropShape: 'rect',
     aspectRatio: 1
   },
+  'partner-logo-registration': {
+    endpoint: '/api/upload/partner-logo-registration',
+    folder: 'partner_logos',
+    description: 'Business Logo',
+    acceptedFormats: 'PNG, JPG up to 5MB',
+    maxSize: '5MB',
+    cropShape: 'rect',
+    aspectRatio: 1
+  },
   'partner-logo-auth': {
     endpoint: '/api/upload/partner-logo',
     folder: 'partner_logos',
@@ -135,6 +205,22 @@ export const uploadConfigs: Record<UploadType, UploadConfig> = {
     aspectRatio: 1
   },
   'coach-document': {
+    endpoint: '/api/upload/coach-document-registration',
+    folder: 'coach_documents',
+    description: 'ID Document',
+    acceptedFormats: 'PNG, JPG, PDF up to 5MB',
+    maxSize: '5MB'
+  },
+  'coach-photo-registration': {
+    endpoint: '/api/upload/coach-photo-registration',
+    folder: 'coach_photos',
+    description: 'Profile Photo',
+    acceptedFormats: 'PNG, JPG up to 5MB',
+    maxSize: '5MB',
+    cropShape: 'round',
+    aspectRatio: 1
+  },
+  'coach-document-registration': {
     endpoint: '/api/upload/coach-document-registration',
     folder: 'coach_documents',
     description: 'ID Document',

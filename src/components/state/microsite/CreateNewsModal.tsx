@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { StateMicrositeNews } from '../../../store/slices/stateMicrositeSlice'
-import CentralizedImageUpload from '../../common/CentralizedImageUpload'
+import SimpleImageUpload from '../../common/SimpleImageUpload'
 
 interface CreateNewsModalProps {
   isOpen: boolean
@@ -129,12 +129,11 @@ const CreateNewsModal: React.FC<CreateNewsModalProps> = ({
 
             {/* News Image */}
             <div>
-              <CentralizedImageUpload
+              <SimpleImageUpload
                 uploadType="news-image"
                 value={formData.image_url}
                 onChange={handleImageUpload}
                 title="Article Image (Optional)"
-                color="blue"
                 className="bg-gray-50 border border-gray-200"
                 icon={
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

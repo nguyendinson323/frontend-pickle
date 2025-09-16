@@ -6,7 +6,7 @@ import { registerCoach } from '../../../store/slices/authSlice'
 import { fetchCommonData } from '../../../store/slices/commonSlice'
 import { CoachRegisterRequest } from '../../../types'
 import { RootState, AppDispatch } from '../../../store'
-import CentralizedImageUpload from '../../../components/common/CentralizedImageUpload'
+import SimpleImageUpload from '../../../components/common/SimpleImageUpload'
 import {
   CoachRegisterHeader,
   CoachAccountInfoSection,
@@ -28,7 +28,7 @@ const CoachRegisterPage: React.FC = () => {
     phoneNumber: '',
     fullName: '',
     birthDate: '',
-    gender: 'male',
+    gender: 'Male',
     state: '',
     curp: '',
     nrtpLevel: 1.0,
@@ -48,13 +48,24 @@ const CoachRegisterPage: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target
-    
+
     if (type === 'checkbox') {
       const checked = (e.target as HTMLInputElement).checked
       setFormData(prev => ({ ...prev, [name]: checked }))
     } else {
       setFormData(prev => ({ ...prev, [name]: value }))
     }
+  }
+
+  // Immediate upload handlers for Redux state updates
+  const handleProfilePhotoUpload = (url: string) => {
+    // Update form data for registration
+    setFormData(prev => ({ ...prev, profilePhotoUrl: url }))
+  }
+
+  const handleDocumentUpload = (url: string) => {
+    // Update form data for registration
+    setFormData(prev => ({ ...prev, idDocumentUrl: url }))
   }
 
 
@@ -149,25 +160,25 @@ const CoachRegisterPage: React.FC = () => {
 
             {/* Enhanced Photo Upload */}
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
-              <CentralizedImageUpload
-                uploadType="coach-photo"
+              <SimpleImageUpload
+                uploadType="coach-photo-registration"
                 value={formData.profilePhotoUrl}
                 onChange={(url) => setFormData(prev => ({ ...prev, profilePhotoUrl: url }))}
+                onUploadComplete={handleProfilePhotoUpload}
                 required={true}
                 title="Profile Photo"
-                color="blue"
               />
             </div>
 
             {/* Enhanced Document Upload */}
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
-              <CentralizedImageUpload
-                uploadType="coach-document"
+              <SimpleImageUpload
+                uploadType="coach-document-registration"
                 value={formData.idDocumentUrl}
                 onChange={(url) => setFormData(prev => ({ ...prev, idDocumentUrl: url }))}
+                onUploadComplete={handleDocumentUpload}
                 required={true}
                 title="ID Document"
-                color="blue"
               />
             </div>
 

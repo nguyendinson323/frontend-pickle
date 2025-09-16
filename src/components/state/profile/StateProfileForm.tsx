@@ -2,8 +2,9 @@ import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState, AppDispatch } from '../../../store'
 import { updateStateProfile } from '../../../store/slices/stateDashboardSlice'
+import { updateProfileImage } from '../../../store/slices/authSlice'
 import { StateCommittee, User } from '../../../types/auth'
-import CentralizedImageUpload from '../../common/CentralizedImageUpload'
+import SimpleImageUpload from '../../common/SimpleImageUpload'
 
 interface StateProfileFormProps {
   stateCommittee: StateCommittee
@@ -48,6 +49,14 @@ const StateProfileForm: React.FC<StateProfileFormProps> = ({ stateCommittee, use
 
   const handleLogoUpload = (imageUrl: string) => {
     setStateData(prev => ({ ...prev, logo_url: imageUrl }))
+  }
+
+  // Immediate upload handler for Redux state updates
+  const handleLogoUploadComplete = (url: string) => {
+    // Update form data immediately
+    setStateData(prev => ({ ...prev, logo_url: url }))
+    // Update Redux state for immediate visual updates
+    dispatch(updateProfileImage({ imageType: 'committee_logo_url', imageUrl: url }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -254,10 +263,12 @@ const StateProfileForm: React.FC<StateProfileFormProps> = ({ stateCommittee, use
               </label>
               <div className="flex items-start space-x-4">
                 <div className="flex-1">
-                  <CentralizedImageUpload
-                    uploadType="state-logo"
+                  <SimpleImageUpload
+                    uploadType="state-logo-auth"
                     value={stateData.logo_url}
                     onChange={handleLogoUpload}
+                    onUploadComplete={handleLogoUploadComplete}
+                    title="Committee Logo"
                     className="w-full"
                   />
                 </div>

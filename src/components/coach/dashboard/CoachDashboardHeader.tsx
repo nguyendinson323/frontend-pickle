@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { CoachProfile } from '../../../store/slices/coachDashboardSlice'
-import CentralizedImageUpload from '../../common/CentralizedImageUpload'
+import SimpleImageUpload from '../../common/SimpleImageUpload'
 import api from '../../../services/api'
 
 interface CoachDashboardHeaderProps {
@@ -88,11 +88,10 @@ const CoachDashboardHeader: React.FC<CoachDashboardHeaderProps> = ({ profile }) 
               </button>
             </div>
 
-            <CentralizedImageUpload
+            <SimpleImageUpload
               uploadType="coach-photo"
               value={currentPhotoUrl}
               onChange={handlePhotoUpdate}
-              color="blue"
               className="bg-gray-50"
             />
           </div>

@@ -2,9 +2,9 @@ import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { AppDispatch } from '../../../store'
-import { updateCoachProfile } from '../../../store/slices/authSlice'
+import { updateCoachProfile, updateProfileImage } from '../../../store/slices/authSlice'
 import { Coach, User } from '../../../types/auth'
-import CentralizedImageUpload from '../../common/CentralizedImageUpload'
+import SimpleImageUpload from '../../common/SimpleImageUpload'
 
 interface CoachProfileFormProps {
   coach: Coach
@@ -56,6 +56,14 @@ const CoachProfileForm: React.FC<CoachProfileFormProps> = ({ coach, user, onCanc
 
   const handleProfilePhotoChange = (url: string) => {
     setCoachData(prev => ({ ...prev, profile_photo_url: url }))
+  }
+
+  // Immediate upload handler for Redux state updates
+  const handleProfilePhotoUpload = (url: string) => {
+    // Update form data immediately
+    setCoachData(prev => ({ ...prev, profile_photo_url: url }))
+    // Update Redux state for immediate visual updates
+    dispatch(updateProfileImage({ imageType: 'profile_photo_url', imageUrl: url }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -215,12 +223,12 @@ const CoachProfileForm: React.FC<CoachProfileFormProps> = ({ coach, user, onCanc
               />
             </div>
             <div className="md:col-span-2">
-              <CentralizedImageUpload
+              <SimpleImageUpload
                 uploadType="coach-photo-auth"
                 value={coachData.profile_photo_url}
                 onChange={handleProfilePhotoChange}
+                onUploadComplete={handleProfilePhotoUpload}
                 title="Profile Photo"
-                color="green"
                 className="bg-gray-50 border border-gray-200"
                 icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />

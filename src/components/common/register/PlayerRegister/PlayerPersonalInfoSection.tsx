@@ -98,9 +98,9 @@ const PlayerPersonalInfoSection: React.FC<PlayerPersonalInfoSectionProps> = ({
               onChange={onInputChange}
               className="w-full px-5 py-4 pl-12 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm group-hover:shadow-md appearance-none"
             >
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
             </select>
             <FiGlobe className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors duration-200" />
             <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">

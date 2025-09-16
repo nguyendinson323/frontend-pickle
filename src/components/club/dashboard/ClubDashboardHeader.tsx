@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { AppDispatch } from '../../../store'
 import { updateClubLogoAPI } from '../../../store/slices/clubDashboardSlice'
-import CentralizedImageUpload from '../../common/CentralizedImageUpload'
+import SimpleImageUpload from '../../common/SimpleImageUpload'
 
 interface ClubProfile {
   id: number
@@ -110,11 +110,10 @@ const ClubDashboardHeader: React.FC<ClubDashboardHeaderProps> = ({ profile }) =>
             </div>
             {isEditingLogo && (
               <div className="absolute top-0 left-0 z-50">
-                <CentralizedImageUpload
+                <SimpleImageUpload
                   uploadType="club-logo"
                   value={profile.logo_url || ''}
                   onChange={handleLogoUpdate}
-                  color="purple"
                   title="Upload Club Logo"
                 />
               </div>

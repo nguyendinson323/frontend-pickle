@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { RootState, AppDispatch } from '../../store'
 import { fetchCoachProfile, uploadProfilePhoto } from '../../store/slices/coachProfileSlice'
 import { fetchCoachCertificationsData } from '../../store/slices/coachCertificationsSlice'
-import CentralizedImageUpload from '../../components/common/CentralizedImageUpload'
+import SimpleImageUpload from '../../components/common/SimpleImageUpload'
 
 // Import tab components
 import CoachCredentialTab from '../../components/coach/profile/CoachCredentialTab'
@@ -210,11 +210,10 @@ const CoachProfilePage: React.FC = () => {
               </div>
               {isEditingPhoto && (
                 <div ref={photoUploadRef} className="absolute top-0 left-0 z-50">
-                  <CentralizedImageUpload
+                  <SimpleImageUpload
                     uploadType="coach-photo-auth"
                     value={profileData.profile_photo_url || ''}
                     onChange={handlePhotoUpdate}
-                    color="green"
                     title="Upload Profile Photo"
                   />
                 </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { ClubMember } from '../../../store/slices/clubMembersSlice'
-import CentralizedImageUpload from '../../common/CentralizedImageUpload'
+import SimpleImageUpload from '../../common/SimpleImageUpload'
 
 interface EditMemberModalProps {
   isOpen: boolean
@@ -120,11 +120,10 @@ const EditMemberModal: React.FC<EditMemberModalProps> = ({
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Profile Photo
               </label>
-              <CentralizedImageUpload
+              <SimpleImageUpload
                 uploadType="player-photo"
                 value={formData.profile_photo_url}
                 onChange={handleProfilePhotoChange}
-                color="blue"
               />
             </div>
 

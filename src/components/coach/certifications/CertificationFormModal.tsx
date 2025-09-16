@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { CoachCertification } from '../../../types/coach'
-import CentralizedImageUpload from '../../common/CentralizedImageUpload'
+import SimpleImageUpload from '../../common/SimpleImageUpload'
 
 interface CertificationFormModalProps {
   isOpen: boolean
@@ -199,11 +199,10 @@ const CertificationFormModal: React.FC<CertificationFormModalProps> = ({
                 Certificate File <span className="text-red-500">*</span>
               </label>
               <div className="space-y-2">
-                <CentralizedImageUpload
+                <SimpleImageUpload
                   uploadType="coach-certification"
                   value={formData.certificate_url}
                   onChange={handleCertificateUpload}
-                  color="indigo"
                   title="Upload Certificate"
                   className="w-full"
                 />

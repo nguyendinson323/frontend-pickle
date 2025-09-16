@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../../../store'
 import { updateClubProfile } from '../../../store/slices/authSlice'
 import { Club, User } from '../../../types/auth'
-import CentralizedImageUpload from '../../common/CentralizedImageUpload'
+import SimpleImageUpload from '../../common/SimpleImageUpload'
 
 interface ClubProfileViewProps {
   club: Club
@@ -274,11 +274,10 @@ const ClubProfileView: React.FC<ClubProfileViewProps> = ({ club, user, onEdit })
               </div>
               {isEditingLogo && (
                 <div ref={logoUploadRef} className="absolute top-0 left-0 z-50">
-                  <CentralizedImageUpload
+                  <SimpleImageUpload
                     uploadType="club-logo"
                     value={club.logo_url || ''}
                     onChange={handleLogoUpdate}
-                    color="purple"
                     title="Upload Club Logo"
                   />
                 </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { ClubMicrositeData } from '../../../store/slices/clubMicrositeSlice'
-import CentralizedImageUpload from '../../common/CentralizedImageUpload'
+import SimpleImageUpload from '../../common/SimpleImageUpload'
 
 interface MicrositeEditorProps {
   micrositeData: ClubMicrositeData | null
@@ -212,11 +212,10 @@ const MicrositeEditor: React.FC<MicrositeEditorProps> = ({
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Club Logo
           </label>
-          <CentralizedImageUpload
+          <SimpleImageUpload
             uploadType="club-logo"
             value={formData.logo_url}
             onChange={handleLogoChange}
-            color="blue"
             title="Upload Club Logo"
           />
         </div>

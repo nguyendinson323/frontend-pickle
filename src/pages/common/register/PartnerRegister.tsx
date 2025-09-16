@@ -6,7 +6,7 @@ import { AppDispatch, RootState } from '../../../store'
 import { registerPartner } from '../../../store/slices/authSlice'
 import { fetchCommonData } from '../../../store/slices/commonSlice'
 import { PartnerRegisterRequest } from '../../../types'
-import CentralizedImageUpload from '../../../components/common/CentralizedImageUpload'
+import SimpleImageUpload from '../../../components/common/SimpleImageUpload'
 import {
   PartnerRegisterHeader,
   AccountInfoSection,
@@ -56,13 +56,19 @@ const PartnerRegisterPage: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target
-    
+
     if (type === 'checkbox') {
       const checked = (e.target as HTMLInputElement).checked
       setFormData(prev => ({ ...prev, [name]: checked }))
     } else {
       setFormData(prev => ({ ...prev, [name]: value }))
     }
+  }
+
+  // Immediate upload handler for Redux state updates
+  const handleBusinessLogoUpload = (url: string) => {
+    // Update form data for registration
+    setFormData(prev => ({ ...prev, businessLogoUrl: url }))
   }
 
 
@@ -168,13 +174,13 @@ const PartnerRegisterPage: React.FC = () => {
 
             {/* Enhanced Logo Upload */}
             <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-2xl p-6 border border-orange-200">
-              <CentralizedImageUpload
-                uploadType="partner-logo"
+              <SimpleImageUpload
+                uploadType="partner-logo-registration"
                 value={formData.businessLogoUrl}
                 onChange={(url) => setFormData(prev => ({ ...prev, businessLogoUrl: url }))}
+                onUploadComplete={handleBusinessLogoUpload}
                 required={false}
                 title="Business Logo"
-                color="orange"
               />
             </div>
 

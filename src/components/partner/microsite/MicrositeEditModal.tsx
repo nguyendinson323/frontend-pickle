@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { PartnerMicrositeInfo } from '../../../store/slices/partnerMicrositeSlice'
-import CentralizedImageUpload from '../../common/CentralizedImageUpload'
+import SimpleImageUpload from '../../common/SimpleImageUpload'
 
 interface MicrositeEditModalProps {
   micrositeInfo: PartnerMicrositeInfo | null
@@ -190,7 +190,7 @@ const MicrositeEditModal: React.FC<MicrositeEditModalProps> = ({
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Logo Image
               </label>
-              <CentralizedImageUpload
+              <SimpleImageUpload
                 uploadType="partner-logo-auth"
                 value={formData.logo_url}
                 onChange={(url) => handleInputChange('logo_url', url)}
@@ -205,7 +205,7 @@ const MicrositeEditModal: React.FC<MicrositeEditModalProps> = ({
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Banner Image
               </label>
-              <CentralizedImageUpload
+              <SimpleImageUpload
                 uploadType="club-banner"
                 value={formData.banner_url}
                 onChange={(url) => handleInputChange('banner_url', url)}

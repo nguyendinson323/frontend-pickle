@@ -2,9 +2,9 @@ import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState, AppDispatch } from '../../../store'
-import { updatePartnerProfile } from '../../../store/slices/authSlice'
+import { updatePartnerProfile, updateProfileImage } from '../../../store/slices/authSlice'
 import { Partner, User, PartnerDashboard } from '../../../types/auth'
-import CentralizedImageUpload from '../../common/CentralizedImageUpload'
+import SimpleImageUpload from '../../common/SimpleImageUpload'
 
 interface PartnerProfileFormProps {
   partner: Partner
@@ -58,6 +58,14 @@ const PartnerProfileForm: React.FC<PartnerProfileFormProps> = ({ partner, user, 
 
   const handleLogoChange = (url: string) => {
     setPartnerData(prev => ({ ...prev, logo_url: url }))
+  }
+
+  // Immediate upload handler for Redux state updates
+  const handleLogoUpload = (url: string) => {
+    // Update form data immediately
+    setPartnerData(prev => ({ ...prev, logo_url: url }))
+    // Update Redux state for immediate visual updates
+    dispatch(updateProfileImage({ imageType: 'business_logo_url', imageUrl: url }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -228,12 +236,12 @@ const PartnerProfileForm: React.FC<PartnerProfileFormProps> = ({ partner, user, 
               />
             </div>
             <div className="md:col-span-2">
-              <CentralizedImageUpload
+              <SimpleImageUpload
                 uploadType="partner-logo-auth"
                 value={partnerData.logo_url}
                 onChange={handleLogoChange}
+                onUploadComplete={handleLogoUpload}
                 title="Business Logo"
-                color="blue"
                 className="bg-gray-50 border border-gray-200"
                 icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />

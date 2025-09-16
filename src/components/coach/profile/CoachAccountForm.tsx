@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../../../store'
 import { CoachProfileData, updateCoachProfile, uploadProfilePhoto } from '../../../store/slices/coachProfileSlice'
-import CentralizedImageUpload from '../../common/CentralizedImageUpload'
+import SimpleImageUpload from '../../common/SimpleImageUpload'
 
 interface CoachAccountFormProps {
   profile: CoachProfileData
@@ -219,7 +219,7 @@ const CoachAccountForm: React.FC<CoachAccountFormProps> = ({ profile, onCancel }
       </div>
 
       {/* Profile Photo Section */}
-      <CentralizedImageUpload
+      <SimpleImageUpload
         uploadType="coach-photo-auth"
         value={profile.profile_photo_url || ''}
         onChange={async (photoUrl) => {
@@ -229,7 +229,6 @@ const CoachAccountForm: React.FC<CoachAccountFormProps> = ({ profile, onCancel }
             console.error('Failed to update profile photo:', error)
           }
         }}
-        color="green"
         className="bg-white rounded-lg border border-gray-200"
       />
     </form>

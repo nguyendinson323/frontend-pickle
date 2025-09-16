@@ -2,11 +2,12 @@ import React from 'react'
 import { FiArrowLeft, FiUserPlus, FiLoader } from 'react-icons/fi'
 
 interface ClubRegisterActionsProps {
+  isFormValid: () => boolean
   isLoading: boolean
   onBackToSelect: () => void
 }
 
-const ClubRegisterActions: React.FC<ClubRegisterActionsProps> = ({ isLoading, onBackToSelect }) => {
+const ClubRegisterActions: React.FC<ClubRegisterActionsProps> = ({ isFormValid, isLoading, onBackToSelect }) => {
   return (
     <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-8">
       {/* Back Button */}
@@ -22,14 +23,14 @@ const ClubRegisterActions: React.FC<ClubRegisterActionsProps> = ({ isLoading, on
       {/* Submit Button */}
       <button
         type="submit"
-        disabled={isLoading}
+        disabled={!isFormValid() || isLoading}
         className={`group relative overflow-hidden px-12 py-4 rounded-2xl text-lg font-bold transition-all duration-500 transform shadow-2xl ${
-          isLoading
+          !isFormValid() || isLoading
             ? 'bg-gray-400 cursor-not-allowed text-gray-100'
             : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white hover:scale-[1.02] hover:shadow-3xl'
         }`}
       >
-        {!isLoading && (
+        {!isLoading && isFormValid() && (
           <div className="absolute inset-0 bg-gradient-to-r from-purple-700 to-pink-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         )}
 
@@ -47,7 +48,7 @@ const ClubRegisterActions: React.FC<ClubRegisterActionsProps> = ({ isLoading, on
           )}
         </div>
 
-        {!isLoading && (
+        {!isLoading && isFormValid() && (
           <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         )}
       </button>

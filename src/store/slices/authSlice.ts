@@ -68,6 +68,16 @@ const authSlice = createSlice({
     },
     refreshDashboard: (state, action: PayloadAction<PlayerDashboard | CoachDashboard | ClubDashboard | PartnerDashboard | StateDashboard | AdminDashboard>) => {
       state.dashboard = action.payload
+    },
+    updateProfileImage: (state, action: PayloadAction<{ imageType: 'profile_photo_url' | 'logo_url' | 'id_document_url' | 'business_logo_url' | 'committee_logo_url', imageUrl: string }>) => {
+      if (state.user) {
+        // Update the user object with the new image URL
+        (state.user as any)[action.payload.imageType] = action.payload.imageUrl
+      }
+      // Also update dashboard if it contains user profile info
+      if (state.dashboard && (state.dashboard as any).profile) {
+        (state.dashboard as any).profile[action.payload.imageType] = action.payload.imageUrl
+      }
     }
   },
 })
@@ -78,7 +88,8 @@ export const {
   updateUser,
   updateDashboard,
   logout,
-  refreshDashboard
+  refreshDashboard,
+  updateProfileImage
 } = authSlice.actions
 
 // Login function that handles the backend request with complete error handling
@@ -145,7 +156,7 @@ export const registerPlayer = (formData: PlayerRegisterRequest) => async (dispat
       profileData: {
         full_name: formData.fullName,
         birth_date: formData.birthDate,
-        gender: formData.gender === 'male' ? 'Male' : formData.gender === 'female' ? 'Female' : 'Other',
+        gender: formData.gender,
         state_id: parseInt(formData.state),
         curp: formData.curp,
         nrtp_level: parseFloat(formData.nrtpLevel),
@@ -180,7 +191,7 @@ export const registerCoach = (formData: CoachRegisterRequest) => async (dispatch
       profileData: {
         full_name: formData.fullName,
         birth_date: formData.birthDate,
-        gender: formData.gender === 'male' ? 'Male' : formData.gender === 'female' ? 'Female' : 'Other',
+        gender: formData.gender,
         state_id: parseInt(formData.state),
         curp: formData.curp,
         nrtp_level: formData.nrtpLevel,
@@ -215,6 +226,7 @@ export const registerClub = (formData: ClubRegisterRequest) => async (dispatch: 
         name: formData.clubName,
         manager_name: formData.managerName,
         manager_title: 'Manager',
+        state_id: formData.state ? parseInt(formData.state) : null,
         club_type: formData.clubType,
         rfc: formData.rfc,
         logo_url: formData.logoUrl,

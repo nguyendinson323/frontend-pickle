@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { ClubTournament } from '../../../store/slices/clubTournamentsSlice'
-import CentralizedImageUpload from '../../common/CentralizedImageUpload'
+import SimpleImageUpload from '../../common/SimpleImageUpload'
 
 interface TournamentCategory {
   name: string
@@ -152,11 +152,10 @@ const EditTournamentModal: React.FC<EditTournamentModalProps> = ({
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Tournament Banner
               </label>
-              <CentralizedImageUpload
+              <SimpleImageUpload
                 uploadType="tournament-banner"
                 value={formData.banner_url}
                 onChange={handleBannerChange}
-                color="indigo"
                 title="Upload Tournament Banner"
               />
             </div>

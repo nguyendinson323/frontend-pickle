@@ -454,7 +454,7 @@ export interface PlayerRegisterRequest {
   phoneNumber: string
   fullName: string
   birthDate: string
-  gender: 'male' | 'female' | 'other'
+  gender: 'Male' | 'Female' | 'Other'
   state: string
   curp: string
   nrtpLevel: string
@@ -472,7 +472,7 @@ export interface CoachRegisterRequest {
   phoneNumber: string
   fullName: string
   birthDate: string
-  gender: 'male' | 'female' | 'other'
+  gender: 'Male' | 'Female' | 'Other'
   state: string
   curp: string
   nrtpLevel: number

@@ -6,7 +6,7 @@ import { registerState } from '../../../store/slices/authSlice'
 import { fetchCommonData } from '../../../store/slices/commonSlice'
 import { StateRegisterRequest } from '../../../types'
 import { RootState, AppDispatch } from '../../../store'
-import CentralizedImageUpload from '../../../components/common/CentralizedImageUpload'
+import SimpleImageUpload from '../../../components/common/SimpleImageUpload'
 import {
   StateRegisterHeader,
   StateAccountInfoSection,
@@ -49,13 +49,19 @@ const StateRegisterPage: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target
-    
+
     if (type === 'checkbox') {
       const checked = (e.target as HTMLInputElement).checked
       setFormData(prev => ({ ...prev, [name]: checked }))
     } else {
       setFormData(prev => ({ ...prev, [name]: value }))
     }
+  }
+
+  // Immediate upload handler for Redux state updates
+  const handleCommitteeLogoUpload = (url: string) => {
+    // Update form data for registration
+    setFormData(prev => ({ ...prev, committeeLogoUrl: url }))
   }
 
 
@@ -167,13 +173,13 @@ const StateRegisterPage: React.FC = () => {
 
             {/* Enhanced Logo Upload */}
             <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200">
-              <CentralizedImageUpload
-                uploadType="state-logo"
+              <SimpleImageUpload
+                uploadType="state-logo-registration"
                 value={formData.committeeLogoUrl}
                 onChange={(url) => setFormData(prev => ({ ...prev, committeeLogoUrl: url }))}
+                onUploadComplete={handleCommitteeLogoUpload}
                 required={false}
                 title="State Committee Logo"
-                color="green"
               />
             </div>
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { StateMicrositeInfo } from '../../../store/slices/stateMicrositeSlice'
-import CentralizedImageUpload from '../../common/CentralizedImageUpload'
+import SimpleImageUpload from '../../common/SimpleImageUpload'
 
 interface EditMicrositeModalProps {
   isOpen: boolean
@@ -288,12 +288,11 @@ const EditMicrositeModal: React.FC<EditMicrositeModalProps> = ({
             {/* Images */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <CentralizedImageUpload
+                <SimpleImageUpload
                   uploadType="state-logo"
                   value={formData.logo_url}
                   onChange={handleLogoUpload}
                   title="Committee Logo"
-                  color="blue"
                   className="bg-gray-50 border border-gray-200"
                   icon={
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -307,12 +306,11 @@ const EditMicrositeModal: React.FC<EditMicrositeModalProps> = ({
               </div>
 
               <div>
-                <CentralizedImageUpload
+                <SimpleImageUpload
                   uploadType="state-banner"
                   value={formData.banner_image_url}
                   onChange={handleBannerUpload}
                   title="Banner Image"
-                  color="blue"
                   className="bg-gray-50 border border-gray-200"
                   icon={
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

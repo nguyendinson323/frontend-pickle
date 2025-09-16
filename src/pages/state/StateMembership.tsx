@@ -9,7 +9,7 @@ import {
   updateStateCommitteeInformation,
   clearError
 } from '../../store/slices/stateMembershipSlice'
-import CentralizedImageUpload from '../../components/common/CentralizedImageUpload'
+import SimpleImageUpload from '../../components/common/SimpleImageUpload'
 
 const StateMembership: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -625,12 +625,11 @@ const StateMembership: React.FC = () => {
               <form onSubmit={handleUpdateProfile} className="space-y-6">
                 {/* Logo Upload */}
                 <div>
-                  <CentralizedImageUpload
+                  <SimpleImageUpload
                     uploadType="state-logo"
                     value={profileFormData.logo_url}
                     onChange={handleLogoUpload}
                     title="Committee Logo"
-                    color="blue"
                     className="bg-gray-50 border border-gray-200"
                     icon={
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { MicrositeCustomization as CustomizationData } from '../../../store/slices/clubMicrositeSlice'
-import CentralizedImageUpload from '../../common/CentralizedImageUpload'
+import SimpleImageUpload from '../../common/SimpleImageUpload'
 
 interface MicrositeCustomizationProps {
   customization: CustomizationData | null
@@ -191,11 +191,10 @@ const MicrositeCustomization: React.FC<MicrositeCustomizationProps> = ({
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Banner Image
           </label>
-          <CentralizedImageUpload
+          <SimpleImageUpload
             uploadType="club-banner"
             value={formData.banner_url}
             onChange={handleBannerChange}
-            color="purple"
             title="Upload Banner Image"
           />
           <p className="text-xs text-gray-500 mt-2">Recommended size: 1200x400px for best display quality.</p>
