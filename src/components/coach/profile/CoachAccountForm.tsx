@@ -219,18 +219,51 @@ const CoachAccountForm: React.FC<CoachAccountFormProps> = ({ profile, onCancel }
       </div>
 
       {/* Profile Photo Section */}
-      <SimpleImageUpload
-        uploadType="coach-photo-auth"
-        value={profile.profile_photo_url || ''}
-        onChange={async (photoUrl) => {
-          try {
-            await dispatch(uploadProfilePhoto(photoUrl))
-          } catch (error) {
-            console.error('Failed to update profile photo:', error)
-          }
-        }}
-        className="bg-white rounded-lg border border-gray-200"
-      />
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <h4 className="text-md font-semibold text-gray-900 mb-4">Profile Photo</h4>
+        <SimpleImageUpload
+          fieldName="profile_photo_url"
+          fileType="image"
+          value={profile.profile_photo_url || ''}
+          onChange={(photoUrl) => {
+            // Only update form state - save will happen on form submit
+            dispatch(uploadProfilePhoto(photoUrl))
+          }}
+          title="Profile Photo"
+          enableCropping={true}
+          aspectRatio={1}
+        />
+      </div>
+
+      {/* ID Document Section */}
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <h4 className="text-md font-semibold text-gray-900 mb-4">ID Document</h4>
+        <SimpleImageUpload
+          fieldName="id_document_url"
+          fileType="document"
+          value={profile.id_document_url || ''}
+          onChange={async (documentUrl) => {
+            try {
+              // Call API to update ID document
+              const response = await fetch('/api/coach/profile/document', {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({ id_document_url: documentUrl })
+              })
+              if (response.ok) {
+                console.log('ID document updated successfully')
+              }
+            } catch (error) {
+              console.error('Failed to update ID document:', error)
+            }
+          }}
+          title="ID Document"
+          enableCropping={false}
+        />
+      </div>
     </form>
   )
 }

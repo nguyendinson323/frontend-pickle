@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState, AppDispatch } from '../../store'
@@ -23,21 +23,6 @@ const CoachProfilePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'credential' | 'account' | 'inbox' | 'connection' | 'certifications'>('credential')
   const [isEditing, setIsEditing] = useState(false)
   const [isEditingPhoto, setIsEditingPhoto] = useState(false)
-  const photoUploadRef = useRef<HTMLDivElement>(null)
-
-  // Handle click outside to close photo upload
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (photoUploadRef.current && !photoUploadRef.current.contains(event.target as Node)) {
-        setIsEditingPhoto(false)
-      }
-    }
-
-    if (isEditingPhoto) {
-      document.addEventListener('mousedown', handleClickOutside)
-      return () => document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [isEditingPhoto])
 
   useEffect(() => {
     if (!user || user.role !== 'coach') {
@@ -105,13 +90,10 @@ const CoachProfilePage: React.FC = () => {
     setIsEditing(false)
   }
 
-  const handlePhotoUpdate = async (photoUrl: string) => {
-    try {
-      await dispatch(uploadProfilePhoto(photoUrl))
-      setIsEditingPhoto(false)
-    } catch (error) {
-      console.error('Failed to update profile photo:', error)
-    }
+  const handlePhotoUpload = (photoUrl: string) => {
+    // Update Redux state immediately - no separate API call needed
+    dispatch(uploadProfilePhoto(photoUrl))
+    setIsEditingPhoto(false)
   }
 
   const renderTabContent = () => {
@@ -182,40 +164,50 @@ const CoachProfilePage: React.FC = () => {
         {/* Profile Header */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
           <div className="flex items-center">
-            <div className="relative">
-              <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mr-6 group cursor-pointer">
-                {profileData.profile_photo_url ? (
-                  <img
-                    src={profileData.profile_photo_url}
-                    alt="Profile"
-                    className="w-16 h-16 rounded-full object-cover"
-                    onClick={() => setIsEditingPhoto(true)}
-                  />
-                ) : (
-                  <span
-                    className="text-2xl text-white"
+            <div className="mr-6">
+              {!isEditingPhoto ? (
+                <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center group cursor-pointer relative">
+                  {profileData.profile_photo_url ? (
+                    <img
+                      src={profileData.profile_photo_url}
+                      alt="Profile"
+                      className="w-16 h-16 rounded-full object-cover"
+                      onClick={() => setIsEditingPhoto(true)}
+                    />
+                  ) : (
+                    <span
+                      className="text-2xl text-white"
+                      onClick={() => setIsEditingPhoto(true)}
+                    >
+                      👨‍🏫
+                    </span>
+                  )}
+                  <div
+                    className="absolute inset-0 bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer"
                     onClick={() => setIsEditingPhoto(true)}
                   >
-                    👨‍🏫
-                  </span>
-                )}
-                <div
-                  className="absolute inset-0 bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer"
-                  onClick={() => setIsEditingPhoto(true)}
-                >
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                  </svg>
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                  </div>
                 </div>
-              </div>
-              {isEditingPhoto && (
-                <div ref={photoUploadRef} className="absolute top-0 left-0 z-50">
+              ) : (
+                <div className="w-64">
                   <SimpleImageUpload
-                    uploadType="coach-photo-auth"
+                    fieldName="profile_photo_url"
+                    fileType="image"
                     value={profileData.profile_photo_url || ''}
-                    onChange={handlePhotoUpdate}
-                    title="Upload Profile Photo"
+                    onChange={handlePhotoUpload}
+                    title="Profile Photo"
+                    enableCropping={true}
+                    aspectRatio={1}
                   />
+                  <button
+                    onClick={() => setIsEditingPhoto(false)}
+                    className="mt-2 text-sm text-gray-500 hover:text-gray-700"
+                  >
+                    Cancel
+                  </button>
                 </div>
               )}
             </div>
