@@ -52,7 +52,7 @@ const PlayerPrivacyPolicySection: React.FC<PlayerPrivacyPolicySectionProps> = ({
                   type="checkbox"
                   checked={privacyAccepted}
                   onChange={(e) => onPrivacyAcceptedChange(e.target.checked)}
-                  className="sr-only"
+                  // className="sr-only"
                 />
                 {privacyAccepted && (
                   <FiCheck className="w-4 h-4 text-white" />

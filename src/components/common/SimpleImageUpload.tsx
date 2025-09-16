@@ -102,7 +102,7 @@ const SimpleImageUpload: React.FC<SimpleImageUploadProps> = ({
 
         {value ? (
           <div className="space-y-2">
-            {value.includes('image') || value.includes('.png') || value.includes('.jpg') ? (
+            {fileType === 'image' ? (
               <img src={value} alt="Preview" className="w-16 h-16 object-cover rounded" />
             ) : (
               <div className="text-sm text-gray-600">Document uploaded successfully</div>

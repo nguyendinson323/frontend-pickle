@@ -143,18 +143,18 @@ const PlayerRegisterPage: React.FC = () => {
     const latestProfilePhotoUrl = (reduxUser as any)?.profile_photo_url || formData.profilePhotoUrl
     const latestDocumentUrl = (reduxUser as any)?.id_document_url || formData.idDocumentUrl
 
-    if (!formData.username.trim()) errors.push('Username is required')
-    if (!formData.email.trim()) errors.push('Email is required')
-    if (!formData.password.trim()) errors.push('Password is required')
-    if (!formData.confirmPassword.trim()) errors.push('Password confirmation is required')
-    if (formData.password !== formData.confirmPassword) errors.push('Passwords do not match')
-    if (!formData.phoneNumber.trim()) errors.push('Phone number is required')
-    if (!formData.fullName.trim()) errors.push('Full name is required')
-    if (!formData.birthDate) errors.push('Birth date is required')
-    if (!formData.state) errors.push('State selection is required')
-    if (!latestProfilePhotoUrl) errors.push('Profile photo is required')
-    if (!latestDocumentUrl) errors.push('ID document is required')
-    if (!formData.privacyPolicyAccepted) errors.push('Privacy policy acceptance is required')
+    // if (!formData.username.trim()) errors.push('Username is required')
+    // if (!formData.email.trim()) errors.push('Email is required')
+    // if (!formData.password.trim()) errors.push('Password is required')
+    // if (!formData.confirmPassword.trim()) errors.push('Password confirmation is required')
+    // if (formData.password !== formData.confirmPassword) errors.push('Passwords do not match')
+    // if (!formData.phoneNumber.trim()) errors.push('Phone number is required')
+    // if (!formData.fullName.trim()) errors.push('Full name is required')
+    // if (!formData.birthDate) errors.push('Birth date is required')
+    // if (!formData.state) errors.push('State selection is required')
+    // if (!latestProfilePhotoUrl) errors.push('Profile photo is required')
+    // if (!latestDocumentUrl) errors.push('ID document is required')
+    // if (!formData.privacyPolicyAccepted) errors.push('Privacy policy acceptance is required')
 
     return errors
   }
