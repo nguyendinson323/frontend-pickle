@@ -13,9 +13,9 @@ export type {
   TournamentFilters,
   TournamentsState
 } from './tournaments'
-export * from './courts'
-export * from './communication'
-export * from './common'
+export type { Court, CourtReservation, CourtSchedule, CourtsState } from './courts'
+export type { Message, MessagesState, Notification, NotificationsState } from './communication'
+// Don't export all from common to avoid conflicts
 
 // Common API response types
 export interface ApiResponse<T> {

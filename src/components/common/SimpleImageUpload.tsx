@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react'
-import { uploadFile, getUploadConfig, supportsCropping, getAcceptedFiles, UploadType } from '../../services/centralizedUpload'
+import { uploadFile, getUploadConfig, getAcceptedFiles, UploadType } from '../../services/centralizedUpload'
 
 interface SimpleImageUploadProps {
   uploadType: UploadType
@@ -10,6 +10,7 @@ interface SimpleImageUploadProps {
   className?: string
   title?: string
   onUploadComplete?: (url: string) => void
+  icon?: React.ReactNode // Add icon prop to match existing usage
 }
 
 const SimpleImageUpload: React.FC<SimpleImageUploadProps> = ({
@@ -21,9 +22,9 @@ const SimpleImageUpload: React.FC<SimpleImageUploadProps> = ({
   className = '',
   title,
   onUploadComplete,
+  icon
 }) => {
   const config = getUploadConfig(uploadType)
-  const needsCropping = supportsCropping(uploadType)
   const acceptedFiles = getAcceptedFiles(uploadType)
 
   const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,7 +57,8 @@ const SimpleImageUpload: React.FC<SimpleImageUploadProps> = ({
 
   return (
     <div className={`p-4 border rounded ${className}`}>
-      <label className="block text-sm font-medium mb-2">
+      <label className="block text-sm font-medium mb-2 flex items-center">
+        {icon && <span className="mr-2">{icon}</span>}
         {title || config.description} {required && '*'}
       </label>
 
