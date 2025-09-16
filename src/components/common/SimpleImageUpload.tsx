@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../../store'
-import { uploadFile as uploadFileToAPI } from '../../store/slices/authSlice'
+import { uploadFile as uploadFileToAPI, uploadFileOnly } from '../../store/slices/authSlice'
 import ImageCropModal from './ImageCropModal'
 
 interface SimpleImageUploadProps {
@@ -16,6 +16,7 @@ interface SimpleImageUploadProps {
   enableCropping?: boolean
   aspectRatio?: number
   icon?: React.ReactNode
+  updateReduxState?: boolean // New prop to control Redux state updates
 }
 
 const SimpleImageUpload: React.FC<SimpleImageUploadProps> = ({
@@ -29,7 +30,8 @@ const SimpleImageUpload: React.FC<SimpleImageUploadProps> = ({
   title,
   enableCropping = true,
   aspectRatio = 1,
-  icon
+  icon,
+  updateReduxState = true // Default to true for backward compatibility
 }) => {
   const dispatch = useDispatch<AppDispatch>()
   const [showCropModal, setShowCropModal] = useState(false)
@@ -64,7 +66,15 @@ const SimpleImageUpload: React.FC<SimpleImageUploadProps> = ({
 
   const handleUpload = async (file: File | Blob) => {
     try {
-      const result = await dispatch(uploadFileToAPI(file, fileType, fieldName))
+      let result: any
+      if (updateReduxState) {
+        // Use Redux action that updates state (for profile editing)
+        result = await dispatch(uploadFileToAPI(file, fileType, fieldName))
+      } else {
+        // Use simple upload without Redux updates (for registration)
+        result = await uploadFileOnly(file, fileType, fieldName)
+      }
+
       const { secure_url } = result as { secure_url: string }
 
       // Update the form field immediately

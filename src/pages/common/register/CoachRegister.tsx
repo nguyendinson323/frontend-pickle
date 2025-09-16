@@ -161,6 +161,7 @@ const CoachRegisterPage: React.FC = () => {
                 title="Profile Photo"
                 enableCropping={true}
                 aspectRatio={1}
+                updateReduxState={false}
               />
             </div>
 
@@ -174,6 +175,7 @@ const CoachRegisterPage: React.FC = () => {
                 required={true}
                 title="ID Document"
                 enableCropping={false}
+                updateReduxState={false}
               />
             </div>
 

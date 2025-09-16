@@ -182,6 +182,7 @@ const StateRegisterPage: React.FC = () => {
                 title="State Committee Logo"
                 enableCropping={true}
                 aspectRatio={1}
+                updateReduxState={false}
               />
             </div>
 

@@ -210,6 +210,7 @@ const ClubRegisterPage: React.FC = () => {
                 title="Club Logo"
                 enableCropping={true}
                 aspectRatio={1}
+                updateReduxState={false}
               />
             </div>
 

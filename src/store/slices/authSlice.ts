@@ -499,7 +499,32 @@ const fetchDashboard = (userRole: string) => async (dispatch: AppDispatch) => {
   }
 }
 
-// Unified file upload function that handles all file types
+// Simple file upload function without Redux state updates (for registration)
+export const uploadFileOnly = async (
+  file: File | Blob,
+  fileType: 'image' | 'document',
+  fieldName: string
+) => {
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('fileType', fileType)
+    formData.append('fieldName', fieldName)
+
+    const response = await api.post('/api/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.error('Upload failed:', error)
+    throw error
+  }
+}
+
+// Unified file upload function that handles all file types and updates Redux state
 export const uploadFile = (
   file: File | Blob,
   fileType: 'image' | 'document',

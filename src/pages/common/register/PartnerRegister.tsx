@@ -183,6 +183,7 @@ const PartnerRegisterPage: React.FC = () => {
                 title="Business Logo"
                 enableCropping={true}
                 aspectRatio={1}
+                updateReduxState={false}
               />
             </div>
 

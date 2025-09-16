@@ -35,7 +35,6 @@ const PrivacyPolicySection: React.FC<PrivacyPolicySectionProps> = ({ formData, o
                   checked={formData.privacyPolicyAccepted}
                   onChange={onInputChange}
                   required
-                  className="sr-only"
                 />
                 {formData.privacyPolicyAccepted && (
                   <FiCheck className="w-4 h-4 text-white" />
