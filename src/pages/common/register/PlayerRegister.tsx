@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { FiUser, FiCamera, FiFileText, FiCheck } from 'react-icons/fi'
-import { registerPlayer } from '../../../store/slices/authSlice'
+import { loginSuccess } from '../../../store/slices/authSlice'
+import { startLoading, stopLoading } from '../../../store/slices/loadingSlice'
+import api from '../../../services/api'
 import { fetchCommonData } from '../../../store/slices/commonSlice'
 import { PlayerRegisterRequest } from '../../../types'
 import { RootState, AppDispatch } from '../../../store'
@@ -20,6 +22,7 @@ const PlayerRegisterPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
   const { isLoading } = useSelector((state: RootState) => state.loading)
   const { data: commonData } = useSelector((state: RootState) => state.common)
+  const { user: reduxUser } = useSelector((state: RootState) => state.auth)
 
   const [formData, setFormData] = useState<PlayerRegisterRequest>({
     username: '',
@@ -59,58 +62,105 @@ const PlayerRegisterPage: React.FC = () => {
     }
   }
 
-  // Immediate upload handlers for Redux state updates
-  const handleProfilePhotoUpload = (url: string) => {
-    // Update form data for registration
-    setFormData(prev => ({ ...prev, profilePhotoUrl: url }))
-    // Immediately update Redux for visual updates (during registration, user won't be authenticated yet)
-    // This is primarily for consistency - we'll add proper Redux updates for profile editing
-  }
-
-  const handleDocumentUpload = (url: string) => {
-    // Update form data for registration
-    setFormData(prev => ({ ...prev, idDocumentUrl: url }))
-    // Immediately update Redux for visual updates (during registration, user won't be authenticated yet)
-    // This is primarily for consistency - we'll add proper Redux updates for profile editing
-  }
+  // Upload handlers are no longer needed - uploads handle Redux updates automatically
 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     try {
-      console.log('Starting player registration with data:', formData)
-      const result = await dispatch(registerPlayer(formData))
-      console.log('Registration result:', result)
+      dispatch(startLoading('Creating your player account...'))
 
-      // Since registerPlayer is a thunk that returns response.data directly
-      if (result && (result as any).user) {
-        console.log('Registration successful, navigating to dashboard')
+      // Get the latest uploaded file URLs from Redux (temporarily stored in user during registration)
+      const latestProfilePhotoUrl = (reduxUser as any)?.profile_photo_url || formData.profilePhotoUrl
+      const latestDocumentUrl = (reduxUser as any)?.id_document_url || formData.idDocumentUrl
+
+      // Based on database schema, prepare data for backend
+      // Backend expects: { userData: {...}, profileData: {...} }
+      const registrationData = {
+        userData: {
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+          role: 'player' as const,
+          phone: formData.phoneNumber
+        },
+        profileData: {
+          full_name: formData.fullName,
+          birth_date: formData.birthDate,
+          gender: formData.gender,
+          state_id: parseInt(formData.state),
+          curp: formData.curp,
+          nrtp_level: parseFloat(formData.nrtpLevel.toString()),
+          profile_photo_url: latestProfilePhotoUrl,
+          id_document_url: latestDocumentUrl,
+          nationality: formData.nationality || 'Mexico'
+        }
+      }
+
+      console.log('🚀 Starting player registration with correct schema:', {
+        userData: registrationData.userData,
+        profileData: registrationData.profileData,
+        uploadedUrls: {
+          profile_photo_url: latestProfilePhotoUrl,
+          id_document_url: latestDocumentUrl
+        }
+      })
+
+      // Call the backend registration API directly with correct schema
+      const response = await api.post('/api/auth/register', registrationData)
+
+      // Handle successful registration same as registerPlayer
+      dispatch(loginSuccess(response.data as any))
+      console.log('✅ Registration successful:', response.data)
+
+      // Check if registration was successful
+      if (response.data && (response.data as any).user) {
+        console.log('🎉 Registration successful, navigating to dashboard')
         navigate('/player/dashboard')
       } else {
-        console.error('Registration failed: No user data returned')
+        console.error('❌ Registration failed: No user data returned')
         alert('Registration failed. Please try again.')
       }
     } catch (error: any) {
-      console.error('Registration failed:', error)
-      alert(`Registration failed: ${error?.response?.data?.message || error?.message || 'Please try again.'}`)
+      console.error('❌ Registration failed:', error)
+
+      let errorMessage = 'Registration failed. Please try again.'
+      if (error?.response?.data?.message) {
+        errorMessage = error.response.data.message
+      } else if (error?.message) {
+        errorMessage = error.message
+      }
+
+      alert(errorMessage)
+    } finally {
+      dispatch(stopLoading())
     }
   }
 
+  const getValidationErrors = () => {
+    const errors = []
+    const latestProfilePhotoUrl = (reduxUser as any)?.profile_photo_url || formData.profilePhotoUrl
+    const latestDocumentUrl = (reduxUser as any)?.id_document_url || formData.idDocumentUrl
+
+    if (!formData.username.trim()) errors.push('Username is required')
+    if (!formData.email.trim()) errors.push('Email is required')
+    if (!formData.password.trim()) errors.push('Password is required')
+    if (!formData.confirmPassword.trim()) errors.push('Password confirmation is required')
+    if (formData.password !== formData.confirmPassword) errors.push('Passwords do not match')
+    if (!formData.phoneNumber.trim()) errors.push('Phone number is required')
+    if (!formData.fullName.trim()) errors.push('Full name is required')
+    if (!formData.birthDate) errors.push('Birth date is required')
+    if (!formData.state) errors.push('State selection is required')
+    if (!latestProfilePhotoUrl) errors.push('Profile photo is required')
+    if (!latestDocumentUrl) errors.push('ID document is required')
+    if (!formData.privacyPolicyAccepted) errors.push('Privacy policy acceptance is required')
+
+    return errors
+  }
+
   const isFormValid = () => {
-    return true
-    // return !!(
-    //   formData.username.trim() &&
-    //   formData.email.trim() &&
-    //   formData.password.trim() &&
-    //   formData.password === formData.confirmPassword &&
-    //   formData.fullName.trim() &&
-    //   formData.birthDate &&
-    //   formData.state &&
-    //   formData.profilePhotoUrl &&
-    //   formData.idDocumentUrl &&
-    //   formData.privacyPolicyAccepted
-    // )
+    return getValidationErrors().length === 0
   }
 
   return (
@@ -194,24 +244,27 @@ const PlayerRegisterPage: React.FC = () => {
             {/* Enhanced Photo Upload */}
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
               <SimpleImageUpload
-                uploadType="player-photo-registration"
+                fieldName="profile_photo_url"
+                fileType="image"
                 value={formData.profilePhotoUrl}
                 onChange={(url) => setFormData(prev => ({ ...prev, profilePhotoUrl: url }))}
-                onUploadComplete={handleProfilePhotoUpload}
                 required={true}
                 title="Profile Photo"
+                enableCropping={true}
+                aspectRatio={1}
               />
             </div>
 
             {/* Enhanced Document Upload */}
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
               <SimpleImageUpload
-                uploadType="player-document-registration"
+                fieldName="id_document_url"
+                fileType="document"
                 value={formData.idDocumentUrl}
                 onChange={(url) => setFormData(prev => ({ ...prev, idDocumentUrl: url }))}
-                onUploadComplete={handleDocumentUpload}
                 required={true}
                 title="ID Document"
+                enableCropping={false}
               />
             </div>
 

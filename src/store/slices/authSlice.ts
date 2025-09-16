@@ -69,14 +69,38 @@ const authSlice = createSlice({
     refreshDashboard: (state, action: PayloadAction<PlayerDashboard | CoachDashboard | ClubDashboard | PartnerDashboard | StateDashboard | AdminDashboard>) => {
       state.dashboard = action.payload
     },
-    updateProfileImage: (state, action: PayloadAction<{ imageType: 'profile_photo_url' | 'logo_url' | 'id_document_url' | 'business_logo_url' | 'committee_logo_url', imageUrl: string }>) => {
-      if (state.user) {
-        // Update the user object with the new image URL
-        (state.user as any)[action.payload.imageType] = action.payload.imageUrl
+    updateProfileImage: (state, action: PayloadAction<{ imageType: string, imageUrl: string }>) => {
+      console.log('🔄 Redux updateProfileImage called:', {
+        imageType: action.payload.imageType,
+        imageUrl: action.payload.imageUrl,
+        dashboardStructure: state.dashboard ? Object.keys(state.dashboard) : 'No dashboard'
+      })
+
+      // Based on database schema: User table has NO image fields
+      // Image fields are in profile tables (Player, Coach, Club, etc.)
+      // Dashboard structure: { profile: PlayerRecord, stats: {...}, ... }
+
+      if (state.dashboard) {
+        const dashboard = state.dashboard as any
+
+        // The correct location is dashboard.profile which contains the Player/Coach/Club record
+        if (dashboard.profile) {
+          dashboard.profile[action.payload.imageType] = action.payload.imageUrl
+          console.log('✅ Updated dashboard.profile (correct location):', {
+            [action.payload.imageType]: action.payload.imageUrl,
+            profileKeys: Object.keys(dashboard.profile)
+          })
+        } else {
+          console.log('❌ No dashboard.profile found. Dashboard keys:', Object.keys(dashboard))
+        }
+      } else {
+        console.log('❌ No dashboard found in Redux state')
       }
-      // Also update dashboard if it contains user profile info
-      if (state.dashboard && (state.dashboard as any).profile) {
-        (state.dashboard as any).profile[action.payload.imageType] = action.payload.imageUrl
+
+      // For registration, temporarily store in user object until registration completes
+      if (state.user && !state.dashboard) {
+        (state.user as any)[action.payload.imageType] = action.payload.imageUrl
+        console.log('✅ Temporarily stored in user object for registration:', { [action.payload.imageType]: action.payload.imageUrl })
       }
     }
   },
@@ -347,13 +371,16 @@ export const updateClubProfile = (profileData: Partial<Club> & { user_data?: Par
 
   try {
     const response = await api.put('/api/auth/profile/club', profileData)
+    const dashboardData = response.data as ClubDashboard
 
     // Update both dashboard and user data if user_data was provided
-    if (profileData.user_data && response.data.user) {
-      dispatch(updateUser(response.data.user))
+    // Note: Backend updates user data but doesn't return it in the response.
+    // The dashboard refresh includes the latest user info in the auth flow.
+    if (profileData.user_data) {
+      console.log('✅ User data updated on backend, will be reflected in next dashboard refresh')
     }
 
-    dispatch(updateDashboard(response.data as ClubDashboard))
+    dispatch(updateDashboard(dashboardData))
     return response.data
   } catch (error) {
     throw error
@@ -469,6 +496,39 @@ const fetchDashboard = (userRole: string) => async (dispatch: AppDispatch) => {
     throw error
   } finally {
     dispatch(stopLoading())
+  }
+}
+
+// Unified file upload function that handles all file types
+export const uploadFile = (
+  file: File | Blob,
+  fileType: 'image' | 'document',
+  fieldName: string
+) => async (dispatch: AppDispatch) => {
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('fileType', fileType)
+    formData.append('fieldName', fieldName)
+
+    const response = await api.post('/api/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+
+    const { secure_url } = response.data as { secure_url: string }
+
+    // Immediately update user profile and dashboard with the new file URL
+    dispatch(updateProfileImage({
+      imageType: fieldName as any,
+      imageUrl: secure_url
+    }))
+
+    return response.data
+  } catch (error) {
+    console.error('Upload failed:', error)
+    throw error
   }
 }
 

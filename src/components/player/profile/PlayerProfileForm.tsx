@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { useDispatch } from 'react-redux'
-import { AppDispatch } from '../../../store'
-import { fetchDashboard, updateUser, updateProfileImage } from '../../../store/slices/authSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { AppDispatch, RootState } from '../../../store'
+import { fetchDashboard, updateUser } from '../../../store/slices/authSlice'
 import { startLoading, stopLoading } from '../../../store/slices/loadingSlice'
 import { Player, User } from '../../../types/auth'
 import api from '../../../services/api'
@@ -15,8 +15,9 @@ interface PlayerProfileFormProps {
 
 const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onCancel }) => {
   const dispatch = useDispatch<AppDispatch>()
+  const { dashboard } = useSelector((state: RootState) => state.auth)
   const [states, setStates] = useState<{ id: number, name: string }[]>([])
-  
+
   const [userData, setUserData] = useState({
     username: user.username || '',
     email: user.email || '',
@@ -36,16 +37,6 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
     nationality: player.nationality || ''
   })
 
-  // Debug logging to check if user data is being passed correctly
-  useEffect(() => {
-    console.log('🔍 PlayerProfileForm - User data received:', {
-      username: user.username,
-      email: user.email,
-      phone: user.phone,
-      is_searchable: user.is_searchable
-    })
-  }, [user])
-
   // Update form state when user/player props change (in case data loads asynchronously)
   useEffect(() => {
     setUserData({
@@ -56,25 +47,11 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
     })
   }, [user])
 
-  useEffect(() => {
-    setPlayerData({
-      full_name: player.full_name || '',
-      birth_date: player.birth_date || '',
-      gender: player.gender || '',
-      state_id: player.state?.id || 0,
-      curp: player.curp || '',
-      nrtp_level: player.nrtp_level || 0,
-      profile_photo_url: player.profile_photo_url || '',
-      id_document_url: player.id_document_url || '',
-      nationality: player.nationality || ''
-    })
-  }, [player])
-
   // Fetch states on component mount
   useEffect(() => {
     const fetchStates = async () => {
       try {
-        const response = await api.get<{ id: number, name: string }[]>('/api/player/states')
+        const response = await api.get<{ id: number, name: string }[]>('/api/common/states')
         setStates(response.data || [])
       } catch (error) {
         console.error('Failed to fetch states:', error)
@@ -105,71 +82,73 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
     }
   }
 
-  const handleProfilePhotoChange = (url: string) => {
-    setPlayerData(prev => ({ ...prev, profile_photo_url: url }))
-  }
 
-  // Document upload handler (keep for now but not used in simplified avatar workflow)
-  const handleDocumentChange = (url: string) => {
-    setPlayerData(prev => ({ ...prev, id_document_url: url }))
-  }
-
-  // Immediate upload handlers for Redux state updates
+  // File upload handlers - only update form data, not Redux
   const handleProfilePhotoUpload = (url: string) => {
-    // Update form data immediately
+    // Only update form data - Redux will be updated when Save Changes is clicked
     setPlayerData(prev => ({ ...prev, profile_photo_url: url }))
-    // Update Redux state for immediate visual updates
-    dispatch(updateProfileImage({ imageType: 'profile_photo_url', imageUrl: url }))
   }
 
   const handleDocumentUpload = (url: string) => {
-    // Update form data immediately
+    // Only update form data - Redux will be updated when Save Changes is clicked
     setPlayerData(prev => ({ ...prev, id_document_url: url }))
-    // Update Redux state for immediate visual updates
-    dispatch(updateProfileImage({ imageType: 'id_document_url', imageUrl: url }))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSaveChanges = async () => {
     
-    // Basic validation
+    // Validation with better error messages
+    const errors: string[] = []
+
     if (!userData.username.trim()) {
-      alert('Username is required')
-      return
+      errors.push('Username is required')
     }
-    
+
     if (!userData.email.trim()) {
-      alert('Email is required')
-      return
+      errors.push('Email is required')
+    } else if (!/\S+@\S+\.\S+/.test(userData.email)) {
+      errors.push('Please enter a valid email address')
     }
-    
+
     if (!playerData.full_name.trim()) {
-      alert('Full name is required')
-      return
+      errors.push('Full name is required')
     }
-    
+
     if (!playerData.birth_date) {
-      alert('Birth date is required')
-      return
+      errors.push('Birth date is required')
+    } else {
+      const age = new Date().getFullYear() - new Date(playerData.birth_date).getFullYear()
+      if (age < 16) {
+        errors.push('Players must be at least 16 years old')
+      }
+      if (age > 100) {
+        errors.push('Please enter a valid birth date')
+      }
     }
-    
+
     if (playerData.nrtp_level < 1.0 || playerData.nrtp_level > 5.0) {
-      alert('NRTP level must be between 1.0 and 5.0')
+      errors.push('NRTP level must be between 1.0 and 5.0')
+    }
+
+    if (errors.length > 0) {
+      alert(`Please fix the following errors:\n\n• ${errors.join('\n• ')}`)
       return
     }
     
     try {
       dispatch(startLoading('Updating profile...'))
       
-      // Prepare clean data for submission
+      // Use form data directly - the upload handlers have already updated playerData with latest URLs
+
+      // Prepare clean data for submission using form data (already updated by upload handlers)
       const cleanPlayerData = {
         ...playerData,
         state_id: playerData.state_id === 0 ? null : playerData.state_id,
-        profile_photo_url: playerData.profile_photo_url.trim() || null,
-        id_document_url: playerData.id_document_url.trim() || null
+        profile_photo_url: playerData.profile_photo_url?.trim() || null,
+        id_document_url: playerData.id_document_url?.trim() || null
       }
+
       
-      // Update user account information first
+      // Update user account information only if user data changed
       if (userData.username !== user.username ||
           userData.email !== user.email ||
           userData.phone !== user.phone ||
@@ -178,8 +157,8 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
         // Update user data in Redux immediately after successful account update
         dispatch(updateUser(accountResponse.data))
       }
-      
-      // Update player profile information
+
+      // Update player profile information (including uploaded file URLs)
       await api.put('/api/player/profile', cleanPlayerData)
       
       // Refresh dashboard data to get updated profile
@@ -204,7 +183,7 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
         <p className="text-indigo-100">Update your player information</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="p-8 space-y-8">
+      <div className="p-8 space-y-8">
         {/* User Account Info Section */}
         <div>
           <h3 className="text-lg font-medium text-gray-900 mb-4">Account Information</h3>
@@ -358,11 +337,13 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
             </div>
             <div className="md:col-span-2">
               <SimpleImageUpload
-                uploadType="player-photo-auth"
+                fieldName="profile_photo_url"
+                fileType="image"
                 value={playerData.profile_photo_url}
-                onChange={handleProfilePhotoChange}
-                onUploadComplete={handleProfilePhotoUpload}
+                onChange={handleProfilePhotoUpload}
                 title="Profile Photo"
+                enableCropping={true}
+                aspectRatio={1}
                 className="bg-gray-50 border border-gray-200"
                 icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -371,11 +352,12 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
             </div>
             <div className="md:col-span-2">
               <SimpleImageUpload
-                uploadType="player-document-auth"
+                fieldName="id_document_url"
+                fileType="document"
                 value={playerData.id_document_url}
-                onChange={handleDocumentChange}
-                onUploadComplete={handleDocumentUpload}
+                onChange={handleDocumentUpload}
                 title="ID Document"
+                enableCropping={false}
                 className="bg-gray-50 border border-gray-200"
                 icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -387,30 +369,88 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
 
         {/* Privacy Settings Section */}
         <div>
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Privacy Settings</h3>
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-            <div className="flex items-start">
-              <div className="flex items-center h-5">
-                <input
-                  type="checkbox"
-                  id="is_searchable"
-                  name="is_searchable"
-                  checked={userData.is_searchable}
-                  onChange={handleUserInputChange}
-                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                />
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Privacy & Searchability</h3>
+          <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-lg p-6">
+            <div className="flex items-start space-x-4">
+              <div className="flex-shrink-0">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl ${
+                  userData.is_searchable ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'
+                }`}>
+                  {userData.is_searchable ? '👁️' : '🔒'}
+                </div>
               </div>
-              <div className="ml-3 text-sm">
-                <label htmlFor="is_searchable" className="font-medium text-gray-900">
-                  Can Be Found in Player Searches
-                </label>
-                <p className="text-gray-600">
-                  When enabled, other players will be able to find you in search results and send you match requests. 
-                  When disabled, you will be hidden from all player searches and cannot receive match requests.
-                </p>
-                <p className="text-gray-500 text-xs mt-2">
-                  Note: This setting does not affect your visibility in tournament results or rankings.
-                </p>
+              <div className="flex-1">
+                <div className="flex items-center justify-between mb-3">
+                  <label htmlFor="is_searchable" className="text-lg font-semibold text-gray-900">
+                    Player Search Visibility
+                  </label>
+                  <div className="flex items-center">
+                    <span className={`text-sm font-medium mr-3 ${
+                      userData.is_searchable ? 'text-green-700' : 'text-gray-700'
+                    }`}>
+                      {userData.is_searchable ? 'Visible' : 'Hidden'}
+                    </span>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        id="is_searchable"
+                        name="is_searchable"
+                        checked={userData.is_searchable}
+                        onChange={handleUserInputChange}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    </label>
+                  </div>
+                </div>
+
+                <div className={`p-4 rounded-lg border-2 transition-all ${
+                  userData.is_searchable
+                    ? 'bg-green-50 border-green-200 text-green-800'
+                    : 'bg-gray-50 border-gray-200 text-gray-800'
+                }`}>
+                  <div className="flex items-start space-x-2">
+                    <div className="flex-shrink-0 mt-0.5">
+                      {userData.is_searchable ? (
+                        <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      ) : (
+                        <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                      )}
+                    </div>
+                    <div>
+                      {userData.is_searchable ? (
+                        <div>
+                          <p className="font-medium text-sm mb-1">You are visible to other players</p>
+                          <p className="text-sm">
+                            Other players can find you in search results and send match requests. This helps you connect with players in your area.
+                          </p>
+                        </div>
+                      ) : (
+                        <div>
+                          <p className="font-medium text-sm mb-1">You are hidden from searches</p>
+                          <p className="text-sm">
+                            You will not appear in player searches and cannot receive match requests from other players.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-start space-x-2">
+                    <svg className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p className="text-xs text-blue-800">
+                      <strong>Note:</strong> This setting only affects player finder searches. Your visibility in tournament results, rankings, and official federation records is not affected.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -426,13 +466,14 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
             Cancel
           </button>
           <button
-            type="submit"
+            type="button"
+            onClick={handleSaveChanges}
             className="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             Save Changes
           </button>
         </div>
-      </form>
+      </div>
     </div>
   )
 }

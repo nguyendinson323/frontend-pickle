@@ -429,12 +429,14 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
             </div>
             <div className="md:col-span-2">
               <SimpleImageUpload
-                uploadType="club-logo-auth"
+                fieldName="logo_url"
+                fileType="image"
                 value={clubData.logo_url}
                 onChange={handleLogoChange}
-                onUploadComplete={handleLogoUpload}
                 disabled={isSubmitting}
                 title="Club Logo"
+                enableCropping={true}
+                aspectRatio={1}
                 className="bg-gray-50"
               />
             </div>

@@ -202,12 +202,14 @@ const ClubRegisterPage: React.FC = () => {
             {/* Enhanced Club Logo Upload */}
             <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-200">
               <SimpleImageUpload
-                uploadType="club-logo-registration"
+                fieldName="logo_url"
+                fileType="image"
                 value={formData.logoUrl}
                 onChange={(url) => setFormData(prev => ({ ...prev, logoUrl: url }))}
-                onUploadComplete={handleLogoUpload}
                 required={false}
                 title="Club Logo"
+                enableCropping={true}
+                aspectRatio={1}
               />
             </div>
 

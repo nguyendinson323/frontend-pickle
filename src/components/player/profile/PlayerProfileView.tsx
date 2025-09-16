@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import { Player, User } from '../../../types/auth'
 import QRCode from 'qrcode'
+import PlayerInbox from './PlayerInbox'
+
+// Cache-busting utility to force image reload when URL changes
+const addCacheBuster = (url: string | null, lastUpdated?: string) => {
+  if (!url) return url
+  const separator = url.includes('?') ? '&' : '?'
+  // Use last updated time or current time for cache busting
+  const cacheBuster = lastUpdated ? new Date(lastUpdated).getTime() : Date.now()
+  return `${url}${separator}v=${cacheBuster}`
+}
 
 interface PlayerProfileViewProps {
   player: Player
@@ -47,10 +57,11 @@ const PlayerProfileView: React.FC<PlayerProfileViewProps> = ({ player, user, onE
           <div className="flex items-center">
             <div className="w-20 h-20 bg-indigo-700 rounded-full flex items-center justify-center mr-6">
               {player.profile_photo_url ? (
-                <img 
-                  src={player.profile_photo_url} 
-                  alt="Profile" 
-                  className="w-20 h-20 rounded-full object-cover" 
+                <img
+                  key={`profile-header-${player.updated_at}`}
+                  src={addCacheBuster(player.profile_photo_url, player.updated_at)}
+                  alt="Profile"
+                  className="w-20 h-20 rounded-full object-cover"
                 />
               ) : (
                 <span className="text-3xl text-white">🏓</span>
@@ -114,10 +125,10 @@ const PlayerProfileView: React.FC<PlayerProfileViewProps> = ({ player, user, onE
               <div className="flex items-center space-x-4 mb-4">
                 <div className="w-20 h-20 rounded-lg overflow-hidden bg-white bg-opacity-20">
                   {player.profile_photo_url ? (
-                    <img 
-                      src={player.profile_photo_url} 
-                      alt="Profile" 
-                      className="w-full h-full object-cover" 
+                    <img
+                      src={addCacheBuster(player.profile_photo_url, player.updated_at)}
+                      alt="Profile"
+                      className="w-full h-full object-cover"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
@@ -290,10 +301,10 @@ const PlayerProfileView: React.FC<PlayerProfileViewProps> = ({ player, user, onE
                   <label className="block text-sm font-medium text-gray-500 mb-2">Profile Photo</label>
                   <div className="w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center">
                     {player.profile_photo_url ? (
-                      <img 
-                        src={player.profile_photo_url} 
-                        alt="Profile" 
-                        className="w-32 h-32 rounded-lg object-cover" 
+                      <img
+                        src={addCacheBuster(player.profile_photo_url, player.updated_at)}
+                        alt="Profile"
+                        className="w-32 h-32 rounded-lg object-cover"
                       />
                     ) : (
                       <span className="text-4xl text-gray-400">📷</span>
@@ -358,27 +369,7 @@ const PlayerProfileView: React.FC<PlayerProfileViewProps> = ({ player, user, onE
         )}
 
         {/* Inbox Tab - Notification center */}
-        {activeTab === 'inbox' && (
-          <div>
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-medium text-gray-900">Notifications & Messages</h3>
-              <button
-                onClick={() => alert('All messages marked as read!')}
-                className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700 transition-colors"
-              >
-                Mark All Read
-              </button>
-            </div>
-
-            <div className="text-center py-16">
-              <span className="text-6xl text-gray-400 mb-4 block">📬</span>
-              <h4 className="text-lg font-medium text-gray-900 mb-2">No Messages</h4>
-              <p className="text-gray-500">
-                Notifications about tournament entries, payments, and federation announcements will appear here.
-              </p>
-            </div>
-          </div>
-        )}
+        {activeTab === 'inbox' && <PlayerInbox />}
 
         {/* Connection Tab - Player search (Premium feature) */}
         {activeTab === 'connection' && (
@@ -407,7 +398,7 @@ const PlayerProfileView: React.FC<PlayerProfileViewProps> = ({ player, user, onE
                   Search for players in your area and send them match requests.
                 </p>
                 <button
-                  onClick={() => window.location.href = '/player/finder'}
+                  onClick={() => alert('Player finder feature would be implemented here')}
                   className="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 transition-colors"
                 >
                   Search Players

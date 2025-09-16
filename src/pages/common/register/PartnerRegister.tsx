@@ -175,12 +175,14 @@ const PartnerRegisterPage: React.FC = () => {
             {/* Enhanced Logo Upload */}
             <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-2xl p-6 border border-orange-200">
               <SimpleImageUpload
-                uploadType="partner-logo-registration"
+                fieldName="business_logo_url"
+                fileType="image"
                 value={formData.businessLogoUrl}
                 onChange={(url) => setFormData(prev => ({ ...prev, businessLogoUrl: url }))}
-                onUploadComplete={handleBusinessLogoUpload}
                 required={false}
                 title="Business Logo"
+                enableCropping={true}
+                aspectRatio={1}
               />
             </div>
 

@@ -4,6 +4,8 @@ import {
   Notification,
   PaginatedResponse
 } from '../../types'
+import api from '../../services/api'
+import { AppDispatch } from '..'
 
 const initialState: NotificationsState = {
   notifications: [],
@@ -85,5 +87,39 @@ export const {
   removeNotification,
   clearNotifications
 } = notificationsSlice.actions
+
+// Async actions
+export const fetchNotifications = (params: { limit?: number; offset?: number }) => async (dispatch: AppDispatch) => {
+  try {
+    dispatch(setLoading(true))
+    const response = await api.get<PaginatedResponse<Notification>>('/api/notifications', { params })
+    dispatch(setNotifications(response.data))
+    // Update unread count
+    const unreadCount = response.data.rows.filter(n => !n.is_read).length
+    dispatch(setUnreadCount(unreadCount))
+  } catch (error) {
+    console.error('Failed to fetch notifications:', error)
+  } finally {
+    dispatch(setLoading(false))
+  }
+}
+
+export const markAsRead = (notificationId: number) => async (dispatch: AppDispatch) => {
+  try {
+    await api.patch(`/api/notifications/${notificationId}/read`)
+    dispatch(markNotificationAsRead(notificationId))
+  } catch (error) {
+    console.error('Failed to mark notification as read:', error)
+  }
+}
+
+export const markAllAsRead = () => async (dispatch: AppDispatch) => {
+  try {
+    await api.patch('/api/notifications/mark-all-read')
+    dispatch(markAllNotificationsAsRead())
+  } catch (error) {
+    console.error('Failed to mark all notifications as read:', error)
+  }
+}
 
 export default notificationsSlice.reducer

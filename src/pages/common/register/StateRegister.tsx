@@ -174,12 +174,14 @@ const StateRegisterPage: React.FC = () => {
             {/* Enhanced Logo Upload */}
             <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200">
               <SimpleImageUpload
-                uploadType="state-logo-registration"
+                fieldName="committee_logo_url"
+                fileType="image"
                 value={formData.committeeLogoUrl}
                 onChange={(url) => setFormData(prev => ({ ...prev, committeeLogoUrl: url }))}
-                onUploadComplete={handleCommitteeLogoUpload}
                 required={false}
                 title="State Committee Logo"
+                enableCropping={true}
+                aspectRatio={1}
               />
             </div>
 

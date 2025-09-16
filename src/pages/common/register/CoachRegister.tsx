@@ -19,6 +19,7 @@ const CoachRegisterPage: React.FC = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch<AppDispatch>()
   const { data: commonData } = useSelector((state: RootState) => state.common)
+  const { user: reduxUser } = useSelector((state: RootState) => state.auth)
 
   const [formData, setFormData] = useState<CoachRegisterRequest>({
     username: '',
@@ -57,16 +58,7 @@ const CoachRegisterPage: React.FC = () => {
     }
   }
 
-  // Immediate upload handlers for Redux state updates
-  const handleProfilePhotoUpload = (url: string) => {
-    // Update form data for registration
-    setFormData(prev => ({ ...prev, profilePhotoUrl: url }))
-  }
-
-  const handleDocumentUpload = (url: string) => {
-    // Update form data for registration
-    setFormData(prev => ({ ...prev, idDocumentUrl: url }))
-  }
+  // Upload handlers are no longer needed - uploads handle Redux updates automatically
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -161,24 +153,27 @@ const CoachRegisterPage: React.FC = () => {
             {/* Enhanced Photo Upload */}
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
               <SimpleImageUpload
-                uploadType="coach-photo-registration"
+                fieldName="profile_photo_url"
+                fileType="image"
                 value={formData.profilePhotoUrl}
                 onChange={(url) => setFormData(prev => ({ ...prev, profilePhotoUrl: url }))}
-                onUploadComplete={handleProfilePhotoUpload}
                 required={true}
                 title="Profile Photo"
+                enableCropping={true}
+                aspectRatio={1}
               />
             </div>
 
             {/* Enhanced Document Upload */}
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
               <SimpleImageUpload
-                uploadType="coach-document-registration"
+                fieldName="id_document_url"
+                fileType="document"
                 value={formData.idDocumentUrl}
                 onChange={(url) => setFormData(prev => ({ ...prev, idDocumentUrl: url }))}
-                onUploadComplete={handleDocumentUpload}
                 required={true}
                 title="ID Document"
+                enableCropping={false}
               />
             </div>
 
