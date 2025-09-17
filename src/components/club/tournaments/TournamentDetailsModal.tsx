@@ -1,5 +1,14 @@
 import React, { useState } from 'react'
 import { ClubTournament, TournamentRegistration, TournamentMatch } from '../../../store/slices/clubTournamentsSlice'
+import {
+  FiX,
+  FiAward,
+  FiUsers,
+  FiEye,
+  FiPlay,
+  FiInfo,
+  FiTrendingUp
+} from 'react-icons/fi'
 
 interface TournamentDetailsModalProps {
   isOpen: boolean
@@ -36,28 +45,28 @@ const TournamentDetailsModal: React.FC<TournamentDetailsModalProps> = ({
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'scheduled':
-        return 'bg-blue-100 text-blue-800'
+        return 'bg-blue-100 text-blue-800 border-blue-200'
       case 'in_progress':
-        return 'bg-yellow-100 text-yellow-800'
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200'
       case 'completed':
-        return 'bg-green-100 text-green-800'
+        return 'bg-green-100 text-green-800 border-green-200'
       case 'canceled':
-        return 'bg-red-100 text-red-800'
+        return 'bg-red-100 text-red-800 border-red-200'
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800 border-gray-200'
     }
   }
 
   const getPaymentStatusColor = (status: string) => {
     switch (status) {
       case 'paid':
-        return 'bg-green-100 text-green-800'
+        return 'bg-green-100 text-green-800 border-green-200'
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800'
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200'
       case 'refunded':
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800 border-gray-200'
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800 border-gray-200'
     }
   }
 
@@ -135,64 +144,75 @@ const TournamentDetailsModal: React.FC<TournamentDetailsModalProps> = ({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      <div className="relative top-8 mx-auto p-5 border w-full max-w-7xl shadow-lg rounded-md bg-white">
-        <div className="mt-3">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-medium text-gray-900">
-              {tournament.name}
-            </h3>
+    <div className="fixed inset-0 bg-black bg-opacity-60 overflow-y-auto h-full w-full z-50 flex items-start justify-center p-4">
+      <div className="relative w-full max-w-7xl bg-gradient-to-br from-white to-blue-50 border border-blue-200 rounded-3xl shadow-2xl my-8">
+        <div className="bg-gradient-to-r from-purple-600 to-indigo-700 text-white px-8 py-6 rounded-t-3xl">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-3xl font-bold flex items-center">
+                <FiAward className="h-8 w-8 mr-4 text-yellow-300" />
+                {tournament.name}
+              </h3>
+              <p className="text-purple-100 font-medium mt-2 flex items-center">
+                <FiInfo className="h-4 w-4 mr-2" />
+                Tournament Details & Management
+              </p>
+            </div>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
+              className="p-3 text-white hover:text-gray-200 rounded-2xl hover:bg-white hover:bg-opacity-20 transition-all duration-200"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <FiX className="w-6 h-6" />
             </button>
           </div>
+        </div>
+        <div className="p-8">
 
           {/* Tab Navigation */}
-          <div className="border-b border-gray-200 mb-6">
-            <nav className="-mb-px flex space-x-8">
+          <div className="bg-gradient-to-r from-gray-50 to-blue-50 border border-gray-200 rounded-2xl p-2 mb-8">
+            <nav className="flex space-x-2">
               <button
                 onClick={() => setActiveTab('overview')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                className={`flex items-center px-6 py-3 rounded-2xl font-bold text-sm transition-all duration-200 ${
                   activeTab === 'overview'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-white hover:bg-opacity-70'
                 }`}
               >
+                <FiEye className="h-4 w-4 mr-2" />
                 Overview
               </button>
               <button
                 onClick={() => setActiveTab('registrations')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                className={`flex items-center px-6 py-3 rounded-2xl font-bold text-sm transition-all duration-200 ${
                   activeTab === 'registrations'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'bg-gradient-to-r from-green-600 to-emerald-700 text-white shadow-lg'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-white hover:bg-opacity-70'
                 }`}
               >
+                <FiUsers className="h-4 w-4 mr-2" />
                 Registrations ({registrations.length})
               </button>
               <button
                 onClick={() => setActiveTab('matches')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                className={`flex items-center px-6 py-3 rounded-2xl font-bold text-sm transition-all duration-200 ${
                   activeTab === 'matches'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'bg-gradient-to-r from-purple-600 to-pink-700 text-white shadow-lg'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-white hover:bg-opacity-70'
                 }`}
               >
+                <FiPlay className="h-4 w-4 mr-2" />
                 Matches ({matches.length})
               </button>
               <button
                 onClick={() => setActiveTab('results')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                className={`flex items-center px-6 py-3 rounded-2xl font-bold text-sm transition-all duration-200 ${
                   activeTab === 'results'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'bg-gradient-to-r from-yellow-600 to-orange-700 text-white shadow-lg'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-white hover:bg-opacity-70'
                 }`}
               >
+                <FiTrendingUp className="h-4 w-4 mr-2" />
                 Results
               </button>
             </nav>

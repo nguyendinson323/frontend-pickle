@@ -1,4 +1,14 @@
 import React from 'react'
+import {
+  FiTrendingUp,
+  FiRefreshCw,
+  FiClock,
+  FiCheck,
+  FiDollarSign,
+  FiStar,
+  FiShield,
+  FiActivity
+} from 'react-icons/fi'
 
 interface MembershipStats {
   total_spent: number
@@ -49,33 +59,32 @@ const MembershipHeader: React.FC<MembershipHeaderProps> = ({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-      <div className="flex justify-between items-start mb-6">
+    <div className="bg-gradient-to-r from-white to-blue-50 border border-blue-200 rounded-3xl shadow-2xl p-8 mb-8">
+      <div className="flex justify-between items-start mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Club Membership</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-4xl font-bold text-gray-900 flex items-center">
+            <FiShield className="h-10 w-10 mr-4 text-blue-600" />
+            Club Membership
+          </h1>
+          <p className="text-gray-600 mt-3 font-medium text-lg">
             {clubInfo?.name ? `Manage ${clubInfo.name}'s membership and unlock premium features` : 'Manage your club membership and unlock premium features'}
           </p>
         </div>
-        <div className="flex space-x-3">
+        <div className="flex space-x-4">
           {stats?.status === 'active' ? (
             <button
               onClick={onUpgradeClick}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center"
+              className="bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white px-6 py-3 rounded-2xl flex items-center font-bold shadow-lg hover:shadow-xl transition-all duration-200 hover:transform hover:scale-105"
             >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-              </svg>
+              <FiTrendingUp className="w-5 h-5 mr-2" />
               Upgrade Plan
             </button>
           ) : (
             <button
               onClick={onRenewClick}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center"
+              className="bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 text-white px-6 py-3 rounded-2xl flex items-center font-bold shadow-lg hover:shadow-xl transition-all duration-200 hover:transform hover:scale-105"
             >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
+              <FiRefreshCw className="w-5 h-5 mr-2" />
               Renew Membership
             </button>
           )}
@@ -83,26 +92,44 @@ const MembershipHeader: React.FC<MembershipHeaderProps> = ({
       </div>
 
       {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <div className="text-2xl font-bold text-blue-600">{stats.days_remaining}</div>
-            <div className="text-sm text-gray-600">Days Remaining</div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-100 border-2 border-blue-200 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:transform hover:scale-105">
+            <div className="flex items-center mb-3">
+              <FiClock className="h-6 w-6 text-blue-600 mr-2" />
+              <div className="text-sm font-bold text-blue-800">Days Remaining</div>
+            </div>
+            <div className="text-3xl font-bold text-blue-600">{stats.days_remaining}</div>
           </div>
-          <div className="bg-purple-50 p-4 rounded-lg">
-            <div className={`text-2xl font-bold capitalize px-2 py-1 rounded-lg ${getStatusColor(stats.status)}`}>
+          <div className="bg-gradient-to-br from-purple-50 to-indigo-100 border-2 border-purple-200 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:transform hover:scale-105">
+            <div className="flex items-center mb-3">
+              <FiActivity className="h-6 w-6 text-purple-600 mr-2" />
+              <div className="text-sm font-bold text-purple-800">Membership Status</div>
+            </div>
+            <div className={`text-xl font-bold capitalize px-3 py-2 rounded-xl border-2 ${getStatusColor(stats.status)} ${
+              stats.status === 'active' ? 'border-green-300' :
+              stats.status === 'expired' ? 'border-red-300' :
+              stats.status === 'canceled' ? 'border-yellow-300' : 'border-gray-300'
+            }`}>
+              {stats.status === 'active' && <FiCheck className="inline h-4 w-4 mr-1" />}
               {stats.status}
             </div>
-            <div className="text-sm text-gray-600 mt-1">Membership Status</div>
           </div>
-          <div className="bg-green-50 p-4 rounded-lg">
-            <div className="text-2xl font-bold text-green-600">{formatPrice(stats.total_spent)}</div>
-            <div className="text-sm text-gray-600">Total Spent</div>
+          <div className="bg-gradient-to-br from-green-50 to-emerald-100 border-2 border-green-200 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:transform hover:scale-105">
+            <div className="flex items-center mb-3">
+              <FiDollarSign className="h-6 w-6 text-green-600 mr-2" />
+              <div className="text-sm font-bold text-green-800">Total Spent</div>
+            </div>
+            <div className="text-3xl font-bold text-green-600">{formatPrice(stats.total_spent)}</div>
           </div>
-          <div className="bg-yellow-50 p-4 rounded-lg">
-            <div className={`text-2xl font-bold ${stats.has_premium ? 'text-yellow-600' : 'text-gray-600'}`}>
+          <div className="bg-gradient-to-br from-yellow-50 to-orange-100 border-2 border-yellow-200 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:transform hover:scale-105">
+            <div className="flex items-center mb-3">
+              <FiStar className="h-6 w-6 text-yellow-600 mr-2" />
+              <div className="text-sm font-bold text-yellow-800">Plan Type</div>
+            </div>
+            <div className={`text-2xl font-bold flex items-center ${stats.has_premium ? 'text-yellow-600' : 'text-gray-600'}`}>
+              {stats.has_premium && <FiStar className="h-6 w-6 mr-2" />}
               {stats.has_premium ? 'Premium' : 'Basic'}
             </div>
-            <div className="text-sm text-gray-600">Plan Type</div>
           </div>
         </div>
       )}

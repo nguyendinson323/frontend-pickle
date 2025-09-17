@@ -4,6 +4,18 @@ import { useNavigate } from 'react-router-dom'
 import { AppDispatch } from '../../../store'
 import { updateClubLogoAPI } from '../../../store/slices/clubDashboardSlice'
 import SimpleImageUpload from '../../common/SimpleImageUpload'
+import {
+  FiEdit2,
+  FiDollarSign,
+  FiMapPin,
+  FiUser,
+  FiGlobe,
+  FiStar,
+  FiCheckCircle,
+  FiHome,
+  FiSettings,
+  FiCamera
+} from 'react-icons/fi'
 
 interface ClubProfile {
   id: number
@@ -53,25 +65,28 @@ const ClubDashboardHeader: React.FC<ClubDashboardHeaderProps> = ({ profile }) =>
 
     if (profile.premium_expires_at && new Date(profile.premium_expires_at) > new Date()) {
       badges.push(
-        <span key="premium" className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full mr-2">
+        <div key="premium" className="inline-flex items-center px-3 py-1 text-sm font-bold rounded-2xl border-2 bg-gradient-to-r from-yellow-100 to-orange-100 text-yellow-800 border-yellow-200 shadow-sm mr-3">
+          <FiStar className="h-4 w-4 mr-2" />
           Premium
-        </span>
+        </div>
       )
     }
 
     if (profile.affiliation_expires_at && new Date(profile.affiliation_expires_at) > new Date()) {
       badges.push(
-        <span key="affiliated" className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full mr-2">
+        <div key="affiliated" className="inline-flex items-center px-3 py-1 text-sm font-bold rounded-2xl border-2 bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border-green-200 shadow-sm mr-3">
+          <FiCheckCircle className="h-4 w-4 mr-2" />
           Affiliated
-        </span>
+        </div>
       )
     }
 
     if (profile.has_courts) {
       badges.push(
-        <span key="courts" className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full mr-2">
+        <div key="courts" className="inline-flex items-center px-3 py-1 text-sm font-bold rounded-2xl border-2 bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 border-blue-200 shadow-sm mr-3">
+          <FiHome className="h-4 w-4 mr-2" />
           Courts Available
-        </span>
+        </div>
       )
     }
 
@@ -79,85 +94,109 @@ const ClubDashboardHeader: React.FC<ClubDashboardHeaderProps> = ({ profile }) =>
   }
 
   return (
-    <div className="mb-8">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center">
-          <div className="relative">
-            <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mr-4 group cursor-pointer">
-              {profile.logo_url ? (
-                <img
-                  src={profile.logo_url}
-                  alt="Club Logo"
-                  className="w-16 h-16 rounded-full object-cover"
-                  onClick={() => setIsEditingLogo(true)}
-                />
-              ) : (
-                <span
-                  className="text-2xl text-white"
-                  onClick={() => setIsEditingLogo(true)}
-                >
-                  🏢
-                </span>
-              )}
-              <div
-                className="absolute inset-0 bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer"
-                onClick={() => setIsEditingLogo(true)}
+    <div className="mb-10">
+      <div className="bg-white shadow-2xl rounded-3xl border border-gray-100 overflow-hidden">
+        <div className="bg-gradient-to-r from-purple-600 to-indigo-700 text-white p-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="relative">
+                <div className="w-20 h-20 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center mr-6 group cursor-pointer shadow-lg">
+                  {profile.logo_url ? (
+                    <img
+                      src={profile.logo_url}
+                      alt="Club Logo"
+                      className="w-20 h-20 rounded-2xl object-cover"
+                      onClick={() => setIsEditingLogo(true)}
+                    />
+                  ) : (
+                    <div
+                      className="w-20 h-20 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white cursor-pointer"
+                      onClick={() => setIsEditingLogo(true)}
+                    >
+                      <FiHome className="h-10 w-10" />
+                    </div>
+                  )}
+                  <div
+                    className="absolute inset-0 bg-black bg-opacity-50 rounded-2xl opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all duration-200 cursor-pointer"
+                    onClick={() => setIsEditingLogo(true)}
+                  >
+                    <FiCamera className="w-8 h-8 text-white" />
+                  </div>
+                </div>
+                {isEditingLogo && (
+                  <div className="absolute top-0 left-0 z-50">
+                    <SimpleImageUpload
+                      fieldName="logo_url"
+                      fileType="image"
+                      value={profile.logo_url || ''}
+                      onChange={handleLogoUpdate}
+                      title="Upload Club Logo"
+                      enableCropping={true}
+                      aspectRatio={1}
+                    />
+                  </div>
+                )}
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-white mb-3">{profile.name}</h1>
+                <div className="flex items-center space-x-4 mb-4">
+                  <div className="flex items-center text-purple-100">
+                    <FiSettings className="h-5 w-5 mr-2" />
+                    <span className="font-medium">{profile.club_type} Club</span>
+                  </div>
+                  {profile.state?.name && (
+                    <div className="flex items-center text-purple-100">
+                      <FiMapPin className="h-5 w-5 mr-2" />
+                      <span className="font-medium">{profile.state.name}</span>
+                    </div>
+                  )}
+                </div>
+                <div className="flex items-center space-x-4 mb-4">
+                  <div className="flex items-center text-purple-100">
+                    <FiUser className="h-5 w-5 mr-2" />
+                    <span className="font-medium">Manager: {profile.manager_name || 'Not specified'}</span>
+                  </div>
+                  {profile.website && (
+                    <div className="flex items-center text-purple-100">
+                      <FiGlobe className="h-5 w-5 mr-2" />
+                      <a href={profile.website} target="_blank" rel="noopener noreferrer" className="font-medium hover:text-white transition-colors duration-200">
+                        Website
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex space-x-4">
+              <button
+                onClick={() => navigate('/club/profile')}
+                className="inline-flex items-center px-6 py-3 bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-bold rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white"
               >
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                </svg>
-              </div>
+                <FiEdit2 className="h-5 w-5 mr-2" />
+                Edit Profile
+              </button>
+              <button
+                onClick={() => navigate('/club/membership')}
+                className="inline-flex items-center px-6 py-3 border-2 border-white border-opacity-50 text-white hover:border-opacity-100 hover:bg-white hover:bg-opacity-10 font-bold rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white"
+              >
+                <FiDollarSign className="h-5 w-5 mr-2" />
+                Manage Subscription
+              </button>
             </div>
-            {isEditingLogo && (
-              <div className="absolute top-0 left-0 z-50">
-                <SimpleImageUpload
-                  fieldName="logo_url"
-                  fileType="image"
-                  value={profile.logo_url || ''}
-                  onChange={handleLogoUpdate}
-                  title="Upload Club Logo"
-                  enableCropping={true}
-                  aspectRatio={1}
-                />
-              </div>
-            )}
-          </div>
-          <div>
-            <div className="flex items-center mb-1">
-              <h1 className="text-3xl font-bold text-gray-900 mr-3">{profile.name}</h1>
-              {getStatusBadges()}
-            </div>
-            <p className="text-gray-600">{profile.club_type} Club{profile.state?.name && ` • ${profile.state.name}`}</p>
-            <p className="text-sm text-gray-500">Manager: {profile.manager_name || 'Not specified'}</p>
-            {profile.website && (
-              <p className="text-sm text-blue-600">
-                <a href={profile.website} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                  {profile.website}
-                </a>
-              </p>
-            )}
           </div>
         </div>
 
-        <div className="flex space-x-3">
-          <button
-            onClick={() => navigate('/club/profile')}
-            className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center"
-          >
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-            </svg>
-            Edit Profile
-          </button>
-          <button
-            onClick={() => navigate('/club/membership')}
-            className="border border-purple-600 text-purple-600 hover:bg-purple-50 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center"
-          >
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-            </svg>
-            Manage Subscription
-          </button>
+        {/* Status Badges Section */}
+        <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 border-t border-gray-200">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <h3 className="text-lg font-bold text-gray-900 mr-4">Club Status</h3>
+              <div className="flex items-center">
+                {getStatusBadges()}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

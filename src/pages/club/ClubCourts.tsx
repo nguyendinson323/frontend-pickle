@@ -2,6 +2,15 @@ import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState, AppDispatch } from '../../store'
 import {
+  FiMapPin,
+  FiSettings,
+  FiCalendar,
+  FiTool,
+  FiLoader,
+  FiCheckCircle,
+  FiAlertCircle
+} from 'react-icons/fi'
+import {
   fetchClubCourtsData,
   createCourt,
   updateCourtInfo,
@@ -140,28 +149,30 @@ const ClubCourtsPage: React.FC = () => {
 
   if (loading && courts.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your courts...</p>
+          <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-3xl shadow-2xl flex items-center justify-center mx-auto mb-6">
+            <FiLoader className="animate-spin h-10 w-10 text-white" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-900 mb-3">Loading Your Courts</h3>
+          <p className="text-gray-600 font-medium">Please wait while we fetch your court information</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Success Message */}
         {successMessage && (
-          <div className="mb-6 bg-green-50 border border-green-200 rounded-md p-4">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
+          <div className="mb-6 bg-gradient-to-r from-green-50 to-emerald-100 border-2 border-green-200 rounded-2xl p-6 shadow-lg">
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mr-4">
+                <FiCheckCircle className="h-5 w-5 text-white" />
               </div>
-              <div className="ml-3">
+              <div>
+                <h4 className="text-lg font-bold text-green-900 mb-1">Success!</h4>
                 <p className="text-sm font-medium text-green-800">{successMessage}</p>
               </div>
             </div>
@@ -170,14 +181,13 @@ const ClubCourtsPage: React.FC = () => {
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
+          <div className="mb-6 bg-gradient-to-r from-red-50 to-red-100 border-2 border-red-200 rounded-2xl p-6 shadow-lg">
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center mr-4">
+                <FiAlertCircle className="h-5 w-5 text-white" />
               </div>
-              <div className="ml-3">
+              <div>
+                <h4 className="text-lg font-bold text-red-900 mb-1">Error</h4>
                 <p className="text-sm font-medium text-red-800">{error}</p>
               </div>
             </div>
@@ -196,47 +206,51 @@ const ClubCourtsPage: React.FC = () => {
         )}
 
         {/* Tab Navigation */}
-        <div className="bg-white shadow-sm rounded-lg mb-6">
+        <div className="bg-white shadow-2xl rounded-3xl mb-8 border border-gray-100">
           <div className="border-b border-gray-200">
-            <nav className="-mb-px flex">
+            <nav className="-mb-px flex p-4">
               <button
                 onClick={() => setActiveTab('courts')}
-                className={`py-4 px-6 border-b-2 font-medium text-sm ${
+                className={`flex items-center py-4 px-8 border-b-2 font-bold text-sm rounded-t-2xl transition-all duration-200 ${
                   activeTab === 'courts'
-                    ? 'border-indigo-500 text-indigo-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'border-blue-500 text-blue-600 bg-blue-50'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 hover:bg-gray-50'
                 }`}
               >
+                <FiMapPin className="h-5 w-5 mr-2" />
                 My Courts ({courts.length})
               </button>
               <button
                 onClick={() => setActiveTab('reservations')}
-                className={`py-4 px-6 border-b-2 font-medium text-sm ${
+                className={`flex items-center py-4 px-8 border-b-2 font-bold text-sm rounded-t-2xl transition-all duration-200 ml-2 ${
                   activeTab === 'reservations'
-                    ? 'border-indigo-500 text-indigo-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'border-purple-500 text-purple-600 bg-purple-50'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 hover:bg-gray-50'
                 }`}
               >
+                <FiCalendar className="h-5 w-5 mr-2" />
                 Reservations ({reservations.length})
               </button>
               <button
                 onClick={() => setActiveTab('maintenance')}
-                className={`py-4 px-6 border-b-2 font-medium text-sm ${
+                className={`flex items-center py-4 px-8 border-b-2 font-bold text-sm rounded-t-2xl transition-all duration-200 ml-2 ${
                   activeTab === 'maintenance'
-                    ? 'border-indigo-500 text-indigo-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'border-orange-500 text-orange-600 bg-orange-50'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 hover:bg-gray-50'
                 }`}
               >
+                <FiTool className="h-5 w-5 mr-2" />
                 Maintenance ({maintenance.length})
               </button>
               <button
                 onClick={() => setActiveTab('schedules')}
-                className={`py-4 px-6 border-b-2 font-medium text-sm ${
+                className={`flex items-center py-4 px-8 border-b-2 font-bold text-sm rounded-t-2xl transition-all duration-200 ml-2 ${
                   activeTab === 'schedules'
-                    ? 'border-indigo-500 text-indigo-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'border-green-500 text-green-600 bg-green-50'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 hover:bg-gray-50'
                 }`}
               >
+                <FiSettings className="h-5 w-5 mr-2" />
                 Schedules ({courtSchedules.length})
               </button>
             </nav>

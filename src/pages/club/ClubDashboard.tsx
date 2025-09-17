@@ -4,6 +4,11 @@ import { useNavigate } from 'react-router-dom'
 import { RootState, AppDispatch } from '../../store'
 import { fetchClubDashboard } from '../../store/slices/clubDashboardSlice'
 import {
+  FiLoader,
+  FiAlertTriangle,
+  FiRefreshCw
+} from 'react-icons/fi'
+import {
   ClubDashboardHeader,
   ClubStatsGrid,
   ClubQuickActions,
@@ -32,30 +37,47 @@ const ClubDashboardPage: React.FC = () => {
 
   if (!user || user.role !== 'club') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-3xl shadow-2xl flex items-center justify-center mx-auto mb-6">
+            <FiLoader className="animate-spin h-10 w-10 text-white" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-900 mb-3">Authenticating</h3>
+          <p className="text-gray-600 font-medium">Please wait while we verify your access</p>
+        </div>
       </div>
     )
   }
 
   if (isLoading || !dashboardData) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-3xl shadow-2xl flex items-center justify-center mx-auto mb-6">
+            <FiLoader className="animate-spin h-10 w-10 text-white" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-900 mb-3">Loading Dashboard</h3>
+          <p className="text-gray-600 font-medium">Please wait while we fetch your club data</p>
+        </div>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-red-600 text-lg font-medium">{error}</div>
-          <button 
-            onClick={() => dispatch(fetchClubDashboard())} 
-            className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+      <div className="min-h-screen bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-8">
+          <div className="w-20 h-20 bg-gradient-to-br from-red-500 to-red-600 rounded-3xl shadow-2xl flex items-center justify-center mx-auto mb-6">
+            <FiAlertTriangle className="h-10 w-10 text-white" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-900 mb-4">Dashboard Error</h3>
+          <p className="text-red-800 font-medium mb-6 bg-red-100 rounded-2xl p-4">{error}</p>
+          <button
+            onClick={() => dispatch(fetchClubDashboard())}
+            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold rounded-2xl hover:from-blue-700 hover:to-indigo-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
-            Retry
+            <FiRefreshCw className="h-5 w-5 mr-2" />
+            Retry Loading
           </button>
         </div>
       </div>
@@ -63,7 +85,7 @@ const ClubDashboardPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <ClubDashboardHeader profile={dashboardData.profile} />
@@ -77,9 +99,9 @@ const ClubDashboardPage: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           <ClubUpcomingTournaments tournaments={dashboardData.upcomingTournaments} />
-          <ClubCourtActivity 
-            todaysBookings={dashboardData.stats.todaysBookings} 
-            weeklyUsage={dashboardData.stats.weeklyUsage} 
+          <ClubCourtActivity
+            todaysBookings={dashboardData.stats.todaysBookings}
+            weeklyUsage={dashboardData.stats.weeklyUsage}
           />
         </div>
 

@@ -1,4 +1,16 @@
 import React, { useState } from 'react'
+import {
+  FiCreditCard,
+  FiX,
+  FiCheck,
+  FiAlertTriangle,
+  FiLock,
+  FiStar,
+  FiShield,
+  FiUser,
+  FiCalendar,
+  FiDollarSign
+} from 'react-icons/fi'
 
 interface SubscriptionPlan {
   id: number
@@ -92,66 +104,80 @@ const EnhancedPaymentModal: React.FC<EnhancedPaymentModalProps> = ({
   const savings = billingCycle === 'yearly' ? (plan.monthly_price * 12 - plan.yearly_price) : 0
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      <div className="relative top-10 mx-auto p-0 border w-full max-w-2xl shadow-lg rounded-lg bg-white">
+    <div className="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
+      <div className="relative w-full max-w-4xl bg-white shadow-2xl rounded-3xl border border-gray-100 overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-6 rounded-t-lg">
+        <div className="bg-gradient-to-r from-indigo-600 to-purple-700 text-white p-8 border-b-4 border-indigo-800">
           <div className="flex justify-between items-center">
             <div>
-              <h3 className="text-xl font-semibold">Complete Your Subscription</h3>
-              <p className="text-indigo-100 text-sm">Secure payment powered by Stripe</p>
+              <h3 className="text-2xl font-bold flex items-center">
+                <FiShield className="h-8 w-8 mr-3" />
+                Complete Your Subscription
+              </h3>
+              <p className="text-indigo-100 text-base font-medium mt-2 flex items-center">
+                <FiLock className="h-4 w-4 mr-2" />
+                Secure payment powered by Stripe
+              </p>
             </div>
             <button
               onClick={onClose}
-              className="text-white hover:text-gray-200"
+              className="text-white hover:text-gray-200 p-2 rounded-xl hover:bg-white hover:bg-opacity-20 transition-all duration-200"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <FiX className="w-6 h-6" />
             </button>
           </div>
         </div>
 
         <div className="flex">
           {/* Order Summary */}
-          <div className="w-1/3 bg-gray-50 p-6 border-r">
-            <h4 className="font-medium text-gray-900 mb-4">Order Summary</h4>
+          <div className="w-1/3 bg-gradient-to-br from-gray-50 to-blue-50 p-8 border-r border-gray-200">
+            <h4 className="font-bold text-gray-900 mb-6 text-lg flex items-center">
+              <FiDollarSign className="h-5 w-5 mr-2" />
+              Order Summary
+            </h4>
 
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Plan</span>
-                <span className="text-sm font-medium">{plan.name}</span>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center bg-white border border-gray-200 rounded-xl p-3">
+                <span className="text-sm text-gray-600 font-medium flex items-center">
+                  <FiStar className="h-4 w-4 mr-2" />
+                  Plan
+                </span>
+                <span className="text-sm font-bold text-gray-900">{plan.name}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Billing Cycle</span>
-                <span className="text-sm font-medium capitalize">{billingCycle}</span>
+              <div className="flex justify-between items-center bg-white border border-gray-200 rounded-xl p-3">
+                <span className="text-sm text-gray-600 font-medium flex items-center">
+                  <FiCalendar className="h-4 w-4 mr-2" />
+                  Billing Cycle
+                </span>
+                <span className="text-sm font-bold text-gray-900 capitalize">{billingCycle}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Subtotal</span>
-                <span className="text-sm font-medium">{formatPrice(price)}</span>
+              <div className="flex justify-between items-center bg-white border border-gray-200 rounded-xl p-3">
+                <span className="text-sm text-gray-600 font-medium">Subtotal</span>
+                <span className="text-sm font-bold text-gray-900">{formatPrice(price)}</span>
               </div>
               {savings > 0 && (
-                <div className="flex justify-between text-green-600">
-                  <span className="text-sm">Yearly Savings</span>
-                  <span className="text-sm font-medium">-{formatPrice(savings)}</span>
+                <div className="flex justify-between items-center bg-green-50 border border-green-200 rounded-xl p-3">
+                  <span className="text-sm text-green-700 font-medium">Yearly Savings</span>
+                  <span className="text-sm font-bold text-green-700">-{formatPrice(savings)}</span>
                 </div>
               )}
-              <div className="border-t pt-3 flex justify-between">
-                <span className="font-medium">Total</span>
-                <span className="font-bold text-lg">{formatPrice(price)}</span>
+              <div className="border-t-2 border-gray-300 pt-4 flex justify-between items-center bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-200 rounded-xl p-4">
+                <span className="font-bold text-gray-900">Total</span>
+                <span className="font-bold text-xl text-indigo-600">{formatPrice(price)}</span>
               </div>
             </div>
 
             {/* Features */}
-            <div className="mt-6">
-              <h5 className="text-sm font-medium text-gray-900 mb-2">What's Included</h5>
-              <ul className="space-y-1">
+            <div className="mt-8">
+              <h5 className="text-sm font-bold text-gray-900 mb-4 flex items-center">
+                <FiCheck className="h-4 w-4 mr-2" />
+                What's Included
+              </h5>
+              <ul className="space-y-3">
                 {plan.features.split(',').slice(0, 4).map((feature, idx) => (
-                  <li key={idx} className="flex items-center text-xs text-gray-600">
-                    <svg className="w-3 h-3 text-green-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    {feature.trim()}
+                  <li key={idx} className="flex items-center text-sm text-gray-700 bg-white border border-gray-200 rounded-xl p-3">
+                    <FiCheck className="w-4 h-4 text-green-500 mr-3 flex-shrink-0" />
+                    <span className="font-medium">{feature.trim()}</span>
                   </li>
                 ))}
               </ul>
@@ -159,59 +185,64 @@ const EnhancedPaymentModal: React.FC<EnhancedPaymentModalProps> = ({
           </div>
 
           {/* Payment Form */}
-          <div className="flex-1 p-6">
-            <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="flex-1 p-8">
+            <form onSubmit={handleSubmit} className="space-y-6">
               {/* Payment Method Selection */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
+                <label className="block text-base font-bold text-gray-900 mb-4 flex items-center">
+                  <FiCreditCard className="h-5 w-5 mr-2" />
                   Payment Method
                 </label>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-3 gap-4">
                   <button
                     type="button"
                     onClick={() => setPaymentMethod('credit_card')}
-                    className={`p-3 border rounded-lg flex flex-col items-center ${
-                      paymentMethod === 'credit_card' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-300'
+                    className={`p-4 border-2 rounded-2xl flex flex-col items-center transition-all duration-200 hover:shadow-md ${
+                      paymentMethod === 'credit_card'
+                        ? 'border-indigo-500 bg-gradient-to-br from-indigo-50 to-purple-50 shadow-lg'
+                        : 'border-gray-300 bg-white hover:border-gray-400'
                     }`}
                   >
-                    <svg className="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M2 6C2 4.89543 2.89543 4 4 4H20C21.1046 4 22 4.89543 22 6V8H2V6Z"/>
-                      <path d="M2 10H22V18C22 19.1046 21.1046 20 20 20H4C2.89543 20 2 19.1046 2 18V10Z"/>
-                    </svg>
-                    <span className="text-xs">Credit Card</span>
+                    <FiCreditCard className="w-8 h-8 mb-2 text-indigo-600" />
+                    <span className="text-sm font-bold text-gray-900">Credit Card</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setPaymentMethod('paypal')}
-                    className={`p-3 border rounded-lg flex flex-col items-center ${
-                      paymentMethod === 'paypal' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-300'
+                    className={`p-4 border-2 rounded-2xl flex flex-col items-center transition-all duration-200 hover:shadow-md ${
+                      paymentMethod === 'paypal'
+                        ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-indigo-50 shadow-lg'
+                        : 'border-gray-300 bg-white hover:border-gray-400'
                     }`}
                   >
-                    <svg className="w-6 h-6 mb-1 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm1.586-13.413c-.07-.043-.141-.074-.215-.092a.506.506 0 0 0-.134-.018h-2.95L4.234 12.11c-.059.367.213.688.588.688h2.19c1.464 0 2.764-.027 3.95-.341 1.186-.314 2.257-.9 2.994-1.913.737-1.013 1.126-2.382.776-4.233-.35-1.851-1.568-2.782-3.37-2.782H8.662z"/>
-                    </svg>
-                    <span className="text-xs">PayPal</span>
+                    <div className="w-8 h-8 mb-2 bg-blue-600 rounded-lg flex items-center justify-center">
+                      <span className="text-white font-bold text-sm">P</span>
+                    </div>
+                    <span className="text-sm font-bold text-gray-900">PayPal</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setPaymentMethod('apple_pay')}
-                    className={`p-3 border rounded-lg flex flex-col items-center ${
-                      paymentMethod === 'apple_pay' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-300'
+                    className={`p-4 border-2 rounded-2xl flex flex-col items-center transition-all duration-200 hover:shadow-md ${
+                      paymentMethod === 'apple_pay'
+                        ? 'border-gray-500 bg-gradient-to-br from-gray-50 to-gray-100 shadow-lg'
+                        : 'border-gray-300 bg-white hover:border-gray-400'
                     }`}
                   >
-                    <svg className="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-                    </svg>
-                    <span className="text-xs">Apple Pay</span>
+                    <div className="w-8 h-8 mb-2 bg-black rounded-lg flex items-center justify-center">
+                      <span className="text-white font-bold text-sm">A</span>
+                    </div>
+                    <span className="text-sm font-bold text-gray-900">Apple Pay</span>
                   </button>
                 </div>
               </div>
 
               {/* Card Details */}
               {paymentMethod === 'credit_card' && (
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-bold text-gray-900 mb-3 flex items-center">
+                      <FiUser className="h-4 w-4 mr-2" />
                       Cardholder Name
                     </label>
                     <input
@@ -219,13 +250,14 @@ const EnhancedPaymentModal: React.FC<EnhancedPaymentModalProps> = ({
                       value={cardholderName}
                       onChange={(e) => setCardholderName(e.target.value)}
                       placeholder="John Doe"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl font-medium bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 hover:border-gray-400"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-bold text-gray-900 mb-3 flex items-center">
+                      <FiCreditCard className="h-4 w-4 mr-2" />
                       Card Number
                     </label>
                     <div className="relative">
@@ -234,10 +266,10 @@ const EnhancedPaymentModal: React.FC<EnhancedPaymentModalProps> = ({
                         value={cardNumber}
                         onChange={(e) => handleCardNumberChange(e.target.value)}
                         placeholder="1234 5678 9012 3456"
-                        className="w-full px-3 py-2 pr-12 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full px-4 py-3 pr-20 border-2 border-gray-300 rounded-2xl font-medium bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 hover:border-gray-400"
                         required
                       />
-                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-500">
+                      <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-sm font-bold text-gray-600">
                         {getCardType(cardNumber)}
                       </div>
                     </div>
@@ -245,7 +277,8 @@ const EnhancedPaymentModal: React.FC<EnhancedPaymentModalProps> = ({
 
                   <div className="grid grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-bold text-gray-900 mb-3 flex items-center">
+                        <FiCalendar className="h-4 w-4 mr-2" />
                         Expiry
                       </label>
                       <input
@@ -253,12 +286,13 @@ const EnhancedPaymentModal: React.FC<EnhancedPaymentModalProps> = ({
                         value={expiryDate}
                         onChange={(e) => handleExpiryChange(e.target.value)}
                         placeholder="MM/YY"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl font-medium bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 hover:border-gray-400"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-bold text-gray-900 mb-3 flex items-center">
+                        <FiLock className="h-4 w-4 mr-2" />
                         CVV
                       </label>
                       <input
@@ -266,12 +300,12 @@ const EnhancedPaymentModal: React.FC<EnhancedPaymentModalProps> = ({
                         value={cvv}
                         onChange={(e) => setCvv(e.target.value.replace(/\D/g, '').slice(0, 4))}
                         placeholder="123"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl font-medium bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 hover:border-gray-400"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-bold text-gray-900 mb-3">
                         ZIP
                       </label>
                       <input
@@ -279,7 +313,7 @@ const EnhancedPaymentModal: React.FC<EnhancedPaymentModalProps> = ({
                         value={billingZip}
                         onChange={(e) => setBillingZip(e.target.value.replace(/\D/g, '').slice(0, 10))}
                         placeholder="12345"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl font-medium bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 hover:border-gray-400"
                         required
                       />
                     </div>
@@ -288,65 +322,63 @@ const EnhancedPaymentModal: React.FC<EnhancedPaymentModalProps> = ({
               )}
 
               {/* Terms and Conditions */}
-              <div className="flex items-start space-x-2 pt-4">
+              <div className="flex items-start space-x-3 pt-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-4">
                 <input
                   type="checkbox"
                   id="terms"
                   checked={agreeTerms}
                   onChange={(e) => setAgreeTerms(e.target.checked)}
-                  className="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  className="mt-1 h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                 />
-                <label htmlFor="terms" className="text-sm text-gray-600">
+                <label htmlFor="terms" className="text-sm text-gray-700 font-medium">
                   I agree to the{' '}
-                  <a href="#" className="text-indigo-600 hover:text-indigo-700">
+                  <a href="#" className="text-indigo-600 hover:text-indigo-700 font-bold underline">
                     Terms of Service
                   </a>{' '}
                   and{' '}
-                  <a href="#" className="text-indigo-600 hover:text-indigo-700">
+                  <a href="#" className="text-indigo-600 hover:text-indigo-700 font-bold underline">
                     Privacy Policy
                   </a>
                 </label>
               </div>
 
               {/* Test Mode Notice */}
-              <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
-                <div className="flex">
-                  <svg className="w-4 h-4 text-yellow-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                  </svg>
-                  <p className="text-xs text-yellow-700">
-                    <strong>Test Mode:</strong> Use 4242424242424242 for testing. No real charges will be made.
-                  </p>
+              <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-2xl p-4 shadow-sm">
+                <div className="flex items-center">
+                  <FiAlertTriangle className="w-5 h-5 text-yellow-600 mr-3 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm text-yellow-800 font-bold">
+                      Test Mode Active
+                    </p>
+                    <p className="text-xs text-yellow-700 font-medium">
+                      Use card number 4242424242424242 for testing. No real charges will be made.
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex justify-end space-x-3 pt-4">
+              <div className="flex justify-end space-x-4 pt-6">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="px-8 py-3 border-2 border-gray-300 rounded-2xl text-gray-700 font-bold hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200 hover:shadow-md"
                   disabled={loading}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 flex items-center"
+                  className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-700 text-white rounded-2xl hover:from-indigo-700 hover:to-purple-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 flex items-center font-bold shadow-lg hover:shadow-xl transition-all duration-200 hover:transform hover:scale-105"
                   disabled={loading || !agreeTerms}
                 >
                   {loading ? (
                     <>
-                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
-                      </svg>
+                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-2"></div>
                       Processing...
                     </>
                   ) : (
                     <>
-                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                      </svg>
+                      <FiLock className="w-5 h-5 mr-2" />
                       Complete Payment - {formatPrice(price)}
                     </>
                   )}

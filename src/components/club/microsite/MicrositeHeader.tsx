@@ -1,5 +1,16 @@
 import React from 'react'
 import { MicrositeStats } from '../../../store/slices/clubMicrositeSlice'
+import {
+  FiEye,
+  FiUpload,
+  FiCheckCircle,
+  FiGlobe,
+  FiUsers,
+  FiTrendingUp,
+  FiRefreshCw,
+  FiAlertTriangle,
+  FiStar
+} from 'react-icons/fi'
 
 interface MicrositeHeaderProps {
   stats: MicrositeStats | null
@@ -15,99 +26,109 @@ const MicrositeHeader: React.FC<MicrositeHeaderProps> = ({
   clubName 
 }) => {
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-      <div className="flex justify-between items-center mb-6">
+    <div className="bg-gradient-to-br from-white to-blue-50 border border-blue-200 rounded-3xl shadow-2xl p-8 mb-8 overflow-hidden">
+      <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Club Microsite</h1>
-          <p className="text-gray-600 mt-1">Manage your public club presence</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center">
+            <FiGlobe className="h-8 w-8 mr-4 text-blue-600" />
+            Club Microsite
+          </h1>
+          <p className="text-gray-600 text-lg font-medium">Manage your public club presence and engagement</p>
         </div>
-        <div className="flex space-x-3">
+        <div className="flex space-x-4">
           <button
             onClick={onPreviewSite}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center"
+            className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white px-6 py-3 rounded-2xl flex items-center font-bold shadow-lg hover:shadow-xl transition-all duration-200 hover:transform hover:scale-105"
           >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
+            <FiEye className="w-5 h-5 mr-2" />
             Preview Site
           </button>
           <button
             onClick={onPublishSite}
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center"
+            className="bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 text-white px-6 py-3 rounded-2xl flex items-center font-bold shadow-lg hover:shadow-xl transition-all duration-200 hover:transform hover:scale-105"
           >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-            </svg>
+            <FiUpload className="w-5 h-5 mr-2" />
             Publish Site
           </button>
         </div>
       </div>
 
       {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <div className="text-2xl font-bold text-blue-600">{stats.profile_completion}%</div>
-            <div className="text-sm text-gray-600">Profile Complete</div>
-            <div className="mt-2">
-              <div className="bg-gray-200 rounded-full h-2">
-                <div
-                  className="bg-blue-600 h-2 rounded-full"
-                  style={{ width: `${stats.profile_completion}%` }}
-                ></div>
-              </div>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-100 border border-blue-200 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:transform hover:scale-105">
+            <div className="flex items-center justify-between mb-3">
+              <FiCheckCircle className="h-6 w-6 text-blue-600" />
+              <div className="text-2xl font-bold text-blue-600">{stats.profile_completion}%</div>
+            </div>
+            <div className="text-sm font-bold text-gray-800 mb-2">Profile Complete</div>
+            <div className="bg-white rounded-full h-3 shadow-inner">
+              <div
+                className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-300"
+                style={{ width: `${stats.profile_completion}%` }}
+              ></div>
             </div>
           </div>
-          
-          <div className="bg-green-50 p-4 rounded-lg">
-            <div className="text-2xl font-bold text-green-600">
-              {stats.public_visibility ? 'Live' : 'Draft'}
+
+          <div className="bg-gradient-to-br from-green-50 to-emerald-100 border border-green-200 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:transform hover:scale-105">
+            <div className="flex items-center justify-between mb-3">
+              <FiGlobe className="h-6 w-6 text-green-600" />
+              <div className="text-2xl font-bold text-green-600">
+                {stats.public_visibility ? 'Live' : 'Draft'}
+              </div>
             </div>
-            <div className="text-sm text-gray-600">Site Status</div>
+            <div className="text-sm font-bold text-gray-800 mb-2">Site Status</div>
             <div className="mt-2">
-              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                stats.public_visibility 
-                  ? 'bg-green-100 text-green-800' 
-                  : 'bg-gray-100 text-gray-800'
+              <span className={`inline-flex px-3 py-2 text-xs font-bold rounded-2xl shadow-sm ${
+                stats.public_visibility
+                  ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200'
+                  : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800 border border-gray-300'
               }`}>
                 {stats.public_visibility ? 'Published' : 'Unpublished'}
               </span>
             </div>
           </div>
-          
-          <div className="bg-purple-50 p-4 rounded-lg">
-            <div className="text-2xl font-bold text-purple-600">{stats.recent_visitors}</div>
-            <div className="text-sm text-gray-600">Recent Visitors</div>
-            <div className="text-xs text-gray-500 mt-1">Last 30 days</div>
+
+          <div className="bg-gradient-to-br from-purple-50 to-violet-100 border border-purple-200 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:transform hover:scale-105">
+            <div className="flex items-center justify-between mb-3">
+              <FiUsers className="h-6 w-6 text-purple-600" />
+              <div className="text-2xl font-bold text-purple-600">{stats.recent_visitors}</div>
+            </div>
+            <div className="text-sm font-bold text-gray-800">Recent Visitors</div>
+            <div className="text-xs text-gray-500 font-medium mt-1">Last 30 days</div>
           </div>
-          
-          <div className="bg-orange-50 p-4 rounded-lg">
-            <div className="text-2xl font-bold text-orange-600">{stats.social_engagement}%</div>
-            <div className="text-sm text-gray-600">Social Engagement</div>
-            <div className="text-xs text-gray-500 mt-1">Interaction rate</div>
+
+          <div className="bg-gradient-to-br from-orange-50 to-red-100 border border-orange-200 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:transform hover:scale-105">
+            <div className="flex items-center justify-between mb-3">
+              <FiTrendingUp className="h-6 w-6 text-orange-600" />
+              <div className="text-2xl font-bold text-orange-600">{stats.social_engagement}%</div>
+            </div>
+            <div className="text-sm font-bold text-gray-800">Social Engagement</div>
+            <div className="text-xs text-gray-500 font-medium mt-1">Interaction rate</div>
           </div>
-          
-          <div className="bg-indigo-50 p-4 rounded-lg">
-            <div className="text-2xl font-bold text-indigo-600">{stats.content_freshness}%</div>
-            <div className="text-sm text-gray-600">Content Freshness</div>
-            <div className="text-xs text-gray-500 mt-1">Update score</div>
+
+          <div className="bg-gradient-to-br from-indigo-50 to-blue-100 border border-indigo-200 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:transform hover:scale-105">
+            <div className="flex items-center justify-between mb-3">
+              <FiRefreshCw className="h-6 w-6 text-indigo-600" />
+              <div className="text-2xl font-bold text-indigo-600">{stats.content_freshness}%</div>
+            </div>
+            <div className="text-sm font-bold text-gray-800">Content Freshness</div>
+            <div className="text-xs text-gray-500 font-medium mt-1">Update score</div>
           </div>
         </div>
       )}
 
       {stats && stats.profile_completion < 80 && (
-        <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <div className="flex">
-            <svg className="flex-shrink-0 h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-            </svg>
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-yellow-800">
+        <div className="mt-8 p-6 bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-2xl shadow-lg">
+          <div className="flex items-start">
+            <FiAlertTriangle className="flex-shrink-0 h-6 w-6 text-yellow-600 mr-4 mt-1" />
+            <div>
+              <h3 className="text-lg font-bold text-yellow-800 mb-2 flex items-center">
+                <FiStar className="h-5 w-5 mr-2" />
                 Complete Your Profile
               </h3>
-              <div className="mt-2 text-sm text-yellow-700">
+              <div className="text-sm text-yellow-700 font-medium">
                 <p>
-                  Complete your profile to improve visibility and attract more members. 
+                  Complete your profile to improve visibility and attract more members.
                   Add missing information like club description, contact details, and photos.
                 </p>
               </div>

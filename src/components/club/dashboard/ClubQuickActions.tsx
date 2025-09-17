@@ -3,12 +3,25 @@ import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../../../store'
 import { fetchClubDashboard } from '../../../store/slices/clubDashboardSlice'
+import {
+  FiUsers,
+  FiMapPin,
+  FiAward,
+  FiGlobe,
+  FiSettings,
+  FiRefreshCw,
+  FiZap,
+  FiArrowRight
+} from 'react-icons/fi'
 
 interface QuickAction {
   title: string
   description: string
-  icon: string
+  icon: React.ElementType
   href: string
+  gradient: string
+  bgGradient: string
+  borderColor: string
 }
 
 const ClubQuickActions: React.FC = () => {
@@ -16,11 +29,51 @@ const ClubQuickActions: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
 
   const quickActions: QuickAction[] = [
-    { title: 'Manage Members', description: 'View and manage club members', icon: '👥', href: '/club/members' },
-    { title: 'Court Management', description: 'Manage court schedules and bookings', icon: '🎾', href: '/club/courts' },
-    { title: 'Organize Tournament', description: 'Create and manage tournaments', icon: '🏆', href: '/club/tournaments' },
-    { title: 'Club Microsite', description: 'Manage your club\'s website', icon: '🌐', href: '/club/microsite' },
-    { title: 'Club Profile', description: 'Update club information', icon: '🏢', href: '/club/profile' }
+    {
+      title: 'Manage Members',
+      description: 'View and manage club members',
+      icon: FiUsers,
+      href: '/club/members',
+      gradient: 'from-purple-500 to-purple-600',
+      bgGradient: 'from-purple-50 to-purple-100',
+      borderColor: 'border-purple-200'
+    },
+    {
+      title: 'Court Management',
+      description: 'Manage court schedules and bookings',
+      icon: FiMapPin,
+      href: '/club/courts',
+      gradient: 'from-green-500 to-emerald-600',
+      bgGradient: 'from-green-50 to-emerald-100',
+      borderColor: 'border-green-200'
+    },
+    {
+      title: 'Organize Tournament',
+      description: 'Create and manage tournaments',
+      icon: FiAward,
+      href: '/club/tournaments',
+      gradient: 'from-yellow-500 to-orange-600',
+      bgGradient: 'from-yellow-50 to-orange-100',
+      borderColor: 'border-yellow-200'
+    },
+    {
+      title: 'Club Microsite',
+      description: 'Manage your club\'s website',
+      icon: FiGlobe,
+      href: '/club/microsite',
+      gradient: 'from-blue-500 to-indigo-600',
+      bgGradient: 'from-blue-50 to-indigo-100',
+      borderColor: 'border-blue-200'
+    },
+    {
+      title: 'Club Profile',
+      description: 'Update club information',
+      icon: FiSettings,
+      href: '/club/profile',
+      gradient: 'from-indigo-500 to-purple-600',
+      bgGradient: 'from-indigo-50 to-purple-100',
+      borderColor: 'border-indigo-200'
+    }
   ]
 
   const handleRefresh = () => {
@@ -28,33 +81,51 @@ const ClubQuickActions: React.FC = () => {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-semibold text-gray-900">Quick Actions</h3>
-        <button
-          onClick={handleRefresh}
-          className="text-purple-600 hover:text-purple-700 p-2 rounded-lg hover:bg-purple-50 transition-colors"
-          title="Refresh dashboard data"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-        </button>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {quickActions.map((action) => (
-          <button
-            key={action.title}
-            onClick={() => navigate(action.href)}
-            className="text-left p-4 border border-gray-200 rounded-lg hover:border-purple-300 hover:shadow-md transition-all duration-200"
-          >
-            <div className="flex items-center mb-2">
-              <span className="text-2xl mr-3">{action.icon}</span>
-              <h4 className="font-semibold text-gray-900">{action.title}</h4>
+    <div className="bg-white shadow-2xl rounded-3xl border border-gray-100 overflow-hidden">
+      <div className="bg-gradient-to-r from-purple-50 to-indigo-100 p-8 border-b-2 border-purple-200">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center text-white mr-4">
+              <FiZap className="h-6 w-6" />
             </div>
-            <p className="text-sm text-gray-600">{action.description}</p>
+            <div>
+              <h3 className="text-2xl font-bold text-gray-900">Quick Actions</h3>
+              <p className="text-purple-700 font-medium">Manage your club efficiently</p>
+            </div>
+          </div>
+          <button
+            onClick={handleRefresh}
+            className="inline-flex items-center p-3 bg-white bg-opacity-50 hover:bg-opacity-75 text-purple-700 rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+            title="Refresh dashboard data"
+          >
+            <FiRefreshCw className="h-5 w-5" />
           </button>
-        ))}
+        </div>
+      </div>
+
+      <div className="p-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {quickActions.map((action, index) => {
+            const IconComponent = action.icon
+            return (
+              <button
+                key={action.title}
+                onClick={() => navigate(action.href)}
+                className={`group text-left p-6 border-2 ${action.borderColor} bg-gradient-to-r ${action.bgGradient} rounded-2xl hover:shadow-lg transform hover:scale-105 transition-all duration-200 animate-table-row`}
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <div className={`w-12 h-12 bg-gradient-to-br ${action.gradient} rounded-xl flex items-center justify-center text-white shadow-lg`}>
+                    <IconComponent className="h-6 w-6" />
+                  </div>
+                  <FiArrowRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600 transform group-hover:translate-x-1 transition-all duration-200" />
+                </div>
+                <h4 className="text-lg font-bold text-gray-900 mb-2">{action.title}</h4>
+                <p className="text-sm font-medium text-gray-600">{action.description}</p>
+              </button>
+            )
+          })}
+        </div>
       </div>
     </div>
   )

@@ -12,6 +12,22 @@ import {
   publishMicrosite,
   setPreviewMode
 } from '../../store/slices/clubMicrositeSlice'
+import {
+  FiEdit,
+  FiSliders,
+  FiBarChart2,
+  FiAlertTriangle,
+  FiCheckCircle,
+  FiInfo,
+  FiHeart,
+  FiExternalLink,
+  FiZap,
+  FiShare2,
+  FiUsers,
+  FiAward,
+  FiMap,
+  FiTarget
+} from 'react-icons/fi'
 
 import MicrositeHeader from '../../components/club/microsite/MicrositeHeader'
 import MicrositeEditor from '../../components/club/microsite/MicrositeEditor'
@@ -132,14 +148,17 @@ const ClubMicrosite: React.FC = () => {
 
   if (loading && !micrositeData) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-20 w-20 border-4 border-gray-300 border-t-blue-600 mx-auto mb-6"></div>
+          <p className="text-gray-600 font-medium text-lg">Loading your microsite...</p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <MicrositeHeader
           stats={stats}
@@ -149,38 +168,45 @@ const ClubMicrosite: React.FC = () => {
         />
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
-            {error}
+          <div className="bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-200 rounded-2xl p-6 mb-8 shadow-lg">
+            <div className="flex items-center">
+              <FiAlertTriangle className="h-6 w-6 text-red-500 mr-3 flex-shrink-0" />
+              <div>
+                <h3 className="text-sm font-bold text-red-800 mb-1">Error</h3>
+                <p className="text-sm text-red-700 font-medium">{error}</p>
+              </div>
+            </div>
           </div>
         )}
 
         {publishResult && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-            <div className="flex">
-              <svg className="flex-shrink-0 h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-green-800">
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-6 mb-8 shadow-lg">
+            <div className="flex items-start">
+              <FiCheckCircle className="flex-shrink-0 h-6 w-6 text-green-500 mr-4 mt-1" />
+              <div className="flex-grow">
+                <h3 className="text-lg font-bold text-green-800 mb-2">
                   Microsite Published Successfully!
                 </h3>
-                <div className="mt-2 text-sm text-green-700">
-                  <p>{publishResult.message}</p>
+                <div className="space-y-2 text-sm text-green-700">
+                  <p className="font-medium">{publishResult.message}</p>
                   {publishResult.microsite_url && (
-                    <p className="mt-1">
-                      <strong>Your microsite URL:</strong>{' '}
+                    <div className="bg-white border border-green-200 rounded-xl p-3 flex items-center justify-between">
+                      <div>
+                        <span className="font-bold text-green-800">Your microsite URL:</span>
+                        <p className="text-green-600 font-medium break-all">{publishResult.microsite_url}</p>
+                      </div>
                       <a
                         href={publishResult.microsite_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="underline hover:text-green-600"
+                        className="ml-3 flex items-center text-green-600 hover:text-green-700 transition-colors"
                       >
-                        {publishResult.microsite_url}
+                        <FiExternalLink className="h-4 w-4" />
                       </a>
-                    </p>
+                    </div>
                   )}
                   {publishResult.published_at && (
-                    <p className="text-xs text-green-600 mt-1">
+                    <p className="text-xs text-green-600 font-medium">
                       Published on {new Date(publishResult.published_at).toLocaleString()}
                     </p>
                   )}
@@ -191,26 +217,24 @@ const ClubMicrosite: React.FC = () => {
         )}
 
         {/* Navigation Tabs */}
-        <div className="bg-white rounded-lg shadow-md mb-6">
-          <div className="border-b border-gray-200">
-            <nav className="flex space-x-8 px-6">
+        <div className="bg-white shadow-2xl rounded-3xl border border-gray-100 overflow-hidden mb-8">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-100 p-6 border-b-2 border-blue-200">
+            <nav className="flex space-x-8">
               {[
-                { id: 'editor', name: 'Basic Info', icon: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' },
-                { id: 'customization', name: 'Customization', icon: 'M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17v4a2 2 0 002 2h4m-6-6a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2zm6-10V3a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h4a2 2 0 002-2z' },
-                { id: 'analytics', name: 'Analytics', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' }
+                { id: 'editor', name: 'Basic Info', icon: FiEdit, color: 'text-blue-600' },
+                { id: 'customization', name: 'Customization', icon: FiSliders, color: 'text-purple-600' },
+                { id: 'analytics', name: 'Analytics', icon: FiBarChart2, color: 'text-green-600' }
               ].map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`${
+                  className={`py-4 px-6 border-b-4 font-bold text-sm capitalize rounded-t-2xl transition-all duration-200 flex items-center ${
                     activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200'
-                  } whitespace-nowrap flex items-center py-4 px-1 border-b-2 font-medium text-sm`}
+                      ? 'border-indigo-500 text-indigo-600 bg-white shadow-lg transform -translate-y-1'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 hover:bg-white hover:bg-opacity-50'
+                  }`}
                 >
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={tab.icon} />
-                  </svg>
+                  <tab.icon className={`w-5 h-5 mr-2 ${activeTab === tab.id ? tab.color : ''}`} />
                   {tab.name}
                 </button>
               ))}
@@ -247,112 +271,127 @@ const ClubMicrosite: React.FC = () => {
           </div>
 
           {/* Dynamic Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-8">
             {/* Contextual Tips */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                {activeTab === 'editor' && 'Profile Tips'}
-                {activeTab === 'customization' && 'Design Tips'}
-                {activeTab === 'analytics' && 'Performance Tips'}
+            <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-3xl shadow-xl p-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                {activeTab === 'editor' && (
+                  <>
+                    <FiInfo className="h-6 w-6 mr-3 text-blue-600" />
+                    Profile Tips
+                  </>
+                )}
+                {activeTab === 'customization' && (
+                  <>
+                    <FiSliders className="h-6 w-6 mr-3 text-purple-600" />
+                    Design Tips
+                  </>
+                )}
+                {activeTab === 'analytics' && (
+                  <>
+                    <FiBarChart2 className="h-6 w-6 mr-3 text-green-600" />
+                    Performance Tips
+                  </>
+                )}
               </h3>
-              
+
               {activeTab === 'editor' && (
-                <div className="space-y-4">
-                  <div className="flex items-start">
-                    <svg className="flex-shrink-0 h-5 w-5 text-blue-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <div className="ml-3">
-                      <p className="text-sm font-medium text-gray-900">Complete All Fields</p>
-                      <p className="text-sm text-gray-600">Fill out all fields to improve visibility and attract more members.</p>
+                <div className="space-y-6">
+                  <div className="bg-white border border-blue-200 rounded-2xl p-4 hover:shadow-md transition-all duration-200">
+                    <div className="flex items-start">
+                      <FiInfo className="flex-shrink-0 h-5 w-5 text-blue-500 mt-1 mr-3" />
+                      <div>
+                        <p className="text-sm font-bold text-gray-900 mb-1">Complete All Fields</p>
+                        <p className="text-sm text-gray-600">Fill out all fields to improve visibility and attract more members.</p>
+                      </div>
                     </div>
                   </div>
-                  
-                  <div className="flex items-start">
-                    <svg className="flex-shrink-0 h-5 w-5 text-green-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                    <div className="ml-3">
-                      <p className="text-sm font-medium text-gray-900">Upload a Logo</p>
-                      <p className="text-sm text-gray-600">A professional logo helps build trust and brand recognition.</p>
+
+                  <div className="bg-white border border-green-200 rounded-2xl p-4 hover:shadow-md transition-all duration-200">
+                    <div className="flex items-start">
+                      <FiHeart className="flex-shrink-0 h-5 w-5 text-green-500 mt-1 mr-3" />
+                      <div>
+                        <p className="text-sm font-bold text-gray-900 mb-1">Upload a Logo</p>
+                        <p className="text-sm text-gray-600">A professional logo helps build trust and brand recognition.</p>
+                      </div>
                     </div>
                   </div>
-                  
-                  <div className="flex items-start">
-                    <svg className="flex-shrink-0 h-5 w-5 text-purple-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                    <div className="ml-3">
-                      <p className="text-sm font-medium text-gray-900">Add Online Links</p>
-                      <p className="text-sm text-gray-600">Include your website and social media for better online presence.</p>
+
+                  <div className="bg-white border border-purple-200 rounded-2xl p-4 hover:shadow-md transition-all duration-200">
+                    <div className="flex items-start">
+                      <FiExternalLink className="flex-shrink-0 h-5 w-5 text-purple-500 mt-1 mr-3" />
+                      <div>
+                        <p className="text-sm font-bold text-gray-900 mb-1">Add Online Links</p>
+                        <p className="text-sm text-gray-600">Include your website and social media for better online presence.</p>
+                      </div>
                     </div>
                   </div>
                 </div>
               )}
 
               {activeTab === 'customization' && (
-                <div className="space-y-4">
-                  <div className="flex items-start">
-                    <svg className="flex-shrink-0 h-5 w-5 text-blue-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17v4a2 2 0 002 2h4m-6-6a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2zm6-10V3a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h4a2 2 0 002-2z" />
-                    </svg>
-                    <div className="ml-3">
-                      <p className="text-sm font-medium text-gray-900">Choose Brand Colors</p>
-                      <p className="text-sm text-gray-600">Select colors that reflect your club's personality and branding.</p>
+                <div className="space-y-6">
+                  <div className="bg-white border border-blue-200 rounded-2xl p-4 hover:shadow-md transition-all duration-200">
+                    <div className="flex items-start">
+                      <FiSliders className="flex-shrink-0 h-5 w-5 text-blue-500 mt-1 mr-3" />
+                      <div>
+                        <p className="text-sm font-bold text-gray-900 mb-1">Choose Brand Colors</p>
+                        <p className="text-sm text-gray-600">Select colors that reflect your club's personality and branding.</p>
+                      </div>
                     </div>
                   </div>
-                  
-                  <div className="flex items-start">
-                    <svg className="flex-shrink-0 h-5 w-5 text-green-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <div className="ml-3">
-                      <p className="text-sm font-medium text-gray-900">Add Banner Image</p>
-                      <p className="text-sm text-gray-600">A high-quality banner creates a professional first impression.</p>
+
+                  <div className="bg-white border border-green-200 rounded-2xl p-4 hover:shadow-md transition-all duration-200">
+                    <div className="flex items-start">
+                      <FiMap className="flex-shrink-0 h-5 w-5 text-green-500 mt-1 mr-3" />
+                      <div>
+                        <p className="text-sm font-bold text-gray-900 mb-1">Add Banner Image</p>
+                        <p className="text-sm text-gray-600">A high-quality banner creates a professional first impression.</p>
+                      </div>
                     </div>
                   </div>
-                  
-                  <div className="flex items-start">
-                    <svg className="flex-shrink-0 h-5 w-5 text-purple-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    <div className="ml-3">
-                      <p className="text-sm font-medium text-gray-900">Write Description</p>
-                      <p className="text-sm text-gray-600">Tell visitors what makes your club special and unique.</p>
+
+                  <div className="bg-white border border-purple-200 rounded-2xl p-4 hover:shadow-md transition-all duration-200">
+                    <div className="flex items-start">
+                      <FiEdit className="flex-shrink-0 h-5 w-5 text-purple-500 mt-1 mr-3" />
+                      <div>
+                        <p className="text-sm font-bold text-gray-900 mb-1">Write Description</p>
+                        <p className="text-sm text-gray-600">Tell visitors what makes your club special and unique.</p>
+                      </div>
                     </div>
                   </div>
                 </div>
               )}
 
               {activeTab === 'analytics' && (
-                <div className="space-y-4">
-                  <div className="flex items-start">
-                    <svg className="flex-shrink-0 h-5 w-5 text-blue-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                    <div className="ml-3">
-                      <p className="text-sm font-medium text-gray-900">Track Engagement</p>
-                      <p className="text-sm text-gray-600">Monitor visitor behavior to optimize your content strategy.</p>
+                <div className="space-y-6">
+                  <div className="bg-white border border-blue-200 rounded-2xl p-4 hover:shadow-md transition-all duration-200">
+                    <div className="flex items-start">
+                      <FiBarChart2 className="flex-shrink-0 h-5 w-5 text-blue-500 mt-1 mr-3" />
+                      <div>
+                        <p className="text-sm font-bold text-gray-900 mb-1">Track Engagement</p>
+                        <p className="text-sm text-gray-600">Monitor visitor behavior to optimize your content strategy.</p>
+                      </div>
                     </div>
                   </div>
-                  
-                  <div className="flex items-start">
-                    <svg className="flex-shrink-0 h-5 w-5 text-green-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                    <div className="ml-3">
-                      <p className="text-sm font-medium text-gray-900">Improve Scores</p>
-                      <p className="text-sm text-gray-600">Higher content and SEO scores lead to better visibility.</p>
+
+                  <div className="bg-white border border-green-200 rounded-2xl p-4 hover:shadow-md transition-all duration-200">
+                    <div className="flex items-start">
+                      <FiZap className="flex-shrink-0 h-5 w-5 text-green-500 mt-1 mr-3" />
+                      <div>
+                        <p className="text-sm font-bold text-gray-900 mb-1">Improve Scores</p>
+                        <p className="text-sm text-gray-600">Higher content and SEO scores lead to better visibility.</p>
+                      </div>
                     </div>
                   </div>
-                  
-                  <div className="flex items-start">
-                    <svg className="flex-shrink-0 h-5 w-5 text-purple-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                    </svg>
-                    <div className="ml-3">
-                      <p className="text-sm font-medium text-gray-900">Share Your URL</p>
-                      <p className="text-sm text-gray-600">Promote your microsite to drive more traffic and engagement.</p>
+
+                  <div className="bg-white border border-purple-200 rounded-2xl p-4 hover:shadow-md transition-all duration-200">
+                    <div className="flex items-start">
+                      <FiShare2 className="flex-shrink-0 h-5 w-5 text-purple-500 mt-1 mr-3" />
+                      <div>
+                        <p className="text-sm font-bold text-gray-900 mb-1">Share Your URL</p>
+                        <p className="text-sm text-gray-600">Promote your microsite to drive more traffic and engagement.</p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -360,24 +399,39 @@ const ClubMicrosite: React.FC = () => {
             </div>
 
             {micrositeData && (
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Stats</h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Profile Completion</span>
-                    <span className="text-sm font-medium">{stats?.profile_completion || 0}%</span>
+              <div className="bg-gradient-to-br from-white to-indigo-50 border border-indigo-200 rounded-3xl shadow-xl p-8">
+                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                  <FiTarget className="h-6 w-6 mr-3 text-indigo-600" />
+                  Quick Stats
+                </h3>
+                <div className="space-y-4">
+                  <div className="bg-white border border-blue-200 rounded-2xl p-4 flex justify-between items-center hover:shadow-md transition-all duration-200">
+                    <div className="flex items-center">
+                      <FiCheckCircle className="h-4 w-4 text-blue-500 mr-2" />
+                      <span className="text-sm font-medium text-gray-700">Profile Completion</span>
+                    </div>
+                    <span className="text-sm font-bold text-blue-600">{stats?.profile_completion || 0}%</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Courts</span>
-                    <span className="text-sm font-medium">{micrositeData.courts_count}</span>
+                  <div className="bg-white border border-green-200 rounded-2xl p-4 flex justify-between items-center hover:shadow-md transition-all duration-200">
+                    <div className="flex items-center">
+                      <FiMap className="h-4 w-4 text-green-500 mr-2" />
+                      <span className="text-sm font-medium text-gray-700">Courts</span>
+                    </div>
+                    <span className="text-sm font-bold text-green-600">{micrositeData.courts_count}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Members</span>
-                    <span className="text-sm font-medium">{micrositeData.members_count}</span>
+                  <div className="bg-white border border-purple-200 rounded-2xl p-4 flex justify-between items-center hover:shadow-md transition-all duration-200">
+                    <div className="flex items-center">
+                      <FiUsers className="h-4 w-4 text-purple-500 mr-2" />
+                      <span className="text-sm font-medium text-gray-700">Members</span>
+                    </div>
+                    <span className="text-sm font-bold text-purple-600">{micrositeData.members_count}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Tournaments</span>
-                    <span className="text-sm font-medium">{micrositeData.tournaments_count}</span>
+                  <div className="bg-white border border-yellow-200 rounded-2xl p-4 flex justify-between items-center hover:shadow-md transition-all duration-200">
+                    <div className="flex items-center">
+                      <FiAward className="h-4 w-4 text-yellow-500 mr-2" />
+                      <span className="text-sm font-medium text-gray-700">Tournaments</span>
+                    </div>
+                    <span className="text-sm font-bold text-yellow-600">{micrositeData.tournaments_count}</span>
                   </div>
                 </div>
               </div>

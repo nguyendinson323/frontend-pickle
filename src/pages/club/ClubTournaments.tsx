@@ -15,6 +15,10 @@ import {
   updateMatchResult,
   type ClubTournament
 } from '../../store/slices/clubTournamentsSlice'
+import {
+  FiAlertCircle,
+  FiLoader
+} from 'react-icons/fi'
 
 import TournamentsHeader from '../../components/club/tournaments/TournamentsHeader'
 import TournamentsList from '../../components/club/tournaments/TournamentsList'
@@ -159,14 +163,19 @@ const ClubTournaments: React.FC = () => {
 
   if (loading && tournaments.length === 0) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-20 w-20 border-4 border-gray-300 border-t-purple-600 mx-auto mb-6">
+            <FiLoader className="h-8 w-8 text-transparent" />
+          </div>
+          <p className="text-gray-600 font-medium text-lg">Loading tournaments...</p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <TournamentsHeader
           stats={stats}
@@ -174,8 +183,9 @@ const ClubTournaments: React.FC = () => {
         />
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
-            {error}
+          <div className="bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-200 text-red-800 px-6 py-4 rounded-2xl mb-8 shadow-lg flex items-center">
+            <FiAlertCircle className="h-6 w-6 mr-3 text-red-500" />
+            <p className="font-medium">{error}</p>
           </div>
         )}
 

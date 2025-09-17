@@ -1,10 +1,27 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../../../store'
-import { updateClubProfile, updateProfileImage } from '../../../store/slices/authSlice'
+import { updateClubProfile } from '../../../store/slices/authSlice'
 import { Club, User, State } from '../../../types/auth'
 import api from '../../../services/api'
 import SimpleImageUpload from '../../common/SimpleImageUpload'
+import {
+  FiUser,
+  FiMail,
+  FiPhone,
+  FiHome,
+  FiBriefcase,
+  FiFileText,
+  FiMapPin,
+  FiGlobe,
+  FiShare2,
+  FiSave,
+  FiX,
+  FiCheck,
+  FiAlertCircle,
+  FiEdit3,
+  FiImage
+} from 'react-icons/fi'
 
 interface ClubProfileFormProps {
   club: Club
@@ -65,10 +82,14 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
   }, [])
 
   const clubTypes = [
-    { value: 'recreational', label: 'Recreational Club' },
-    { value: 'competitive', label: 'Competitive Club' },
-    { value: 'training', label: 'Training Club' },
-    { value: 'social', label: 'Social Club' }
+    { value: 'Recreation Center', label: 'Recreation Center' },
+    { value: 'Country Club', label: 'Country Club' },
+    { value: 'Sports Club', label: 'Sports Club' },
+    { value: 'Community Club', label: 'Community Club' },
+    { value: 'Tennis Club', label: 'Tennis Club' },
+    { value: 'Private Club', label: 'Private Club' },
+    { value: 'Public Facility', label: 'Public Facility' },
+    { value: 'Other', label: 'Other' }
   ]
 
   const handleUserInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -96,13 +117,6 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
     setClubData(prev => ({ ...prev, logo_url: url }))
   }
 
-  // Immediate upload handler for Redux state updates
-  const handleLogoUpload = (url: string) => {
-    // Update form data immediately
-    setClubData(prev => ({ ...prev, logo_url: url }))
-    // Update Redux state for immediate visual updates
-    dispatch(updateProfileImage({ imageType: 'logo_url', imageUrl: url }))
-  }
 
   // Validation function
   const validateForm = () => {
@@ -180,51 +194,54 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-xl overflow-hidden">
-      <div className="bg-purple-600 text-white p-6">
-        <h2 className="text-xl font-semibold mb-2">Edit Profile</h2>
-        <p className="text-purple-100">Update your club information</p>
+    <div className="bg-gradient-to-br from-white to-blue-50 border border-blue-200 rounded-3xl shadow-2xl overflow-hidden">
+      <div className="bg-gradient-to-r from-purple-600 to-indigo-700 text-white p-8">
+        <h2 className="text-2xl font-bold mb-3 flex items-center">
+          <FiEdit3 className="h-7 w-7 mr-3" />
+          Edit Profile
+        </h2>
+        <p className="text-purple-100 font-medium">Update your club information and settings</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="p-8 space-y-8">
+      <form onSubmit={handleSubmit} className="p-10 space-y-10 bg-gradient-to-br from-gray-50 to-white">
         
         {/* Success/Error Messages */}
         {(error || success) && (
-          <div className={`p-4 rounded-md ${
-            error ? 'bg-red-50 border border-red-200' : 'bg-green-50 border border-green-200'
+          <div className={`p-6 rounded-2xl shadow-lg border-2 ${
+            error ? 'bg-gradient-to-r from-red-50 to-pink-50 border-red-200' : 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200'
           }`}>
             {error && (
-              <div className="flex">
+              <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                  </svg>
+                  <FiAlertCircle className="h-6 w-6 text-red-500" />
                 </div>
-                <div className="ml-3">
-                  <p className="text-sm text-red-800">{error}</p>
+                <div className="ml-4">
+                  <p className="text-red-800 font-bold">{error}</p>
                 </div>
               </div>
             )}
             {success && (
-              <div className="flex">
+              <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
+                  <FiCheck className="h-6 w-6 text-green-500" />
                 </div>
-                <div className="ml-3">
-                  <p className="text-sm text-green-800">Profile updated successfully!</p>
+                <div className="ml-4">
+                  <p className="text-green-800 font-bold">Profile updated successfully!</p>
                 </div>
               </div>
             )}
           </div>
         )}
         {/* User Account Info Section */}
-        <div>
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Account Information</h3>
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-6">
+          <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+            <FiUser className="h-6 w-6 mr-3 text-blue-600" />
+            Account Information
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="username" className="block text-sm font-bold text-gray-700 mb-3 flex items-center">
+                <FiUser className="h-4 w-4 mr-2 text-blue-500" />
                 Username
               </label>
               <input
@@ -233,18 +250,23 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
                 name="username"
                 value={userData.username}
                 onChange={handleUserInputChange}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
-                  validationErrors.username 
-                    ? 'border-red-300 focus:ring-red-500' 
-                    : 'border-gray-300 focus:ring-purple-500'
+                className={`w-full px-4 py-3 border-2 rounded-2xl font-medium bg-white focus:outline-none focus:ring-2 transition-all duration-200 hover:border-gray-400 ${
+                  validationErrors.username
+                    ? 'border-red-300 focus:ring-red-500'
+                    : 'border-gray-300 focus:ring-blue-500'
                 }`}
+                placeholder="Enter username"
               />
               {validationErrors.username && (
-                <p className="mt-1 text-sm text-red-600">{validationErrors.username}</p>
+                <p className="mt-2 text-sm text-red-600 font-medium flex items-center">
+                  <FiAlertCircle className="h-4 w-4 mr-1" />
+                  {validationErrors.username}
+                </p>
               )}
             </div>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="email" className="block text-sm font-bold text-gray-700 mb-3 flex items-center">
+                <FiMail className="h-4 w-4 mr-2 text-green-500" />
                 Email
               </label>
               <input
@@ -253,18 +275,23 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
                 name="email"
                 value={userData.email}
                 onChange={handleUserInputChange}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
-                  validationErrors.email 
-                    ? 'border-red-300 focus:ring-red-500' 
-                    : 'border-gray-300 focus:ring-purple-500'
+                className={`w-full px-4 py-3 border-2 rounded-2xl font-medium bg-white focus:outline-none focus:ring-2 transition-all duration-200 hover:border-gray-400 ${
+                  validationErrors.email
+                    ? 'border-red-300 focus:ring-red-500'
+                    : 'border-gray-300 focus:ring-green-500'
                 }`}
+                placeholder="Enter email address"
               />
               {validationErrors.email && (
-                <p className="mt-1 text-sm text-red-600">{validationErrors.email}</p>
+                <p className="mt-2 text-sm text-red-600 font-medium flex items-center">
+                  <FiAlertCircle className="h-4 w-4 mr-1" />
+                  {validationErrors.email}
+                </p>
               )}
             </div>
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="phone" className="block text-sm font-bold text-gray-700 mb-3 flex items-center">
+                <FiPhone className="h-4 w-4 mr-2 text-purple-500" />
                 Phone
               </label>
               <input
@@ -273,26 +300,34 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
                 name="phone"
                 value={userData.phone}
                 onChange={handleUserInputChange}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                className={`w-full px-4 py-3 border-2 rounded-2xl font-medium bg-white focus:outline-none focus:ring-2 transition-all duration-200 hover:border-gray-400 ${
                   validationErrors.phone
                     ? 'border-red-300 focus:ring-red-500'
                     : 'border-gray-300 focus:ring-purple-500'
                 }`}
+                placeholder="Enter phone number (optional)"
               />
               {validationErrors.phone && (
-                <p className="mt-1 text-sm text-red-600">{validationErrors.phone}</p>
+                <p className="mt-2 text-sm text-red-600 font-medium flex items-center">
+                  <FiAlertCircle className="h-4 w-4 mr-1" />
+                  {validationErrors.phone}
+                </p>
               )}
             </div>
           </div>
         </div>
 
         {/* Club Profile Info Section */}
-        <div>
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Club Information</h3>
+        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-6">
+          <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+            <FiHome className="h-6 w-6 mr-3 text-green-600" />
+            Club Information
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                Club Name
+              <label htmlFor="name" className="block text-sm font-bold text-gray-700 mb-3 flex items-center">
+                <FiHome className="h-4 w-4 mr-2 text-blue-500" />
+                Club Name *
               </label>
               <input
                 type="text"
@@ -300,18 +335,23 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
                 name="name"
                 value={clubData.name}
                 onChange={handleClubInputChange}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
-                  validationErrors.name 
-                    ? 'border-red-300 focus:ring-red-500' 
-                    : 'border-gray-300 focus:ring-purple-500'
+                className={`w-full px-4 py-3 border-2 rounded-2xl font-medium bg-white focus:outline-none focus:ring-2 transition-all duration-200 hover:border-gray-400 ${
+                  validationErrors.name
+                    ? 'border-red-300 focus:ring-red-500'
+                    : 'border-gray-300 focus:ring-blue-500'
                 }`}
+                placeholder="Enter club name"
               />
               {validationErrors.name && (
-                <p className="mt-1 text-sm text-red-600">{validationErrors.name}</p>
+                <p className="mt-2 text-sm text-red-600 font-medium flex items-center">
+                  <FiAlertCircle className="h-4 w-4 mr-1" />
+                  {validationErrors.name}
+                </p>
               )}
             </div>
             <div>
-              <label htmlFor="club_type" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="club_type" className="block text-sm font-bold text-gray-700 mb-3 flex items-center">
+                <FiBriefcase className="h-4 w-4 mr-2 text-green-500" />
                 Club Type
               </label>
               <select
@@ -319,7 +359,7 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
                 name="club_type"
                 value={clubData.club_type}
                 onChange={handleClubInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl font-medium bg-white focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-200 hover:border-gray-400"
               >
                 <option value="">Select club type</option>
                 {clubTypes.map((type) => (
@@ -330,7 +370,8 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
               </select>
             </div>
             <div>
-              <label htmlFor="rfc" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="rfc" className="block text-sm font-bold text-gray-700 mb-3 flex items-center">
+                <FiFileText className="h-4 w-4 mr-2 text-purple-500" />
                 RFC
               </label>
               <input
@@ -339,18 +380,23 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
                 name="rfc"
                 value={clubData.rfc}
                 onChange={handleClubInputChange}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                className={`w-full px-4 py-3 border-2 rounded-2xl font-medium bg-white focus:outline-none focus:ring-2 transition-all duration-200 hover:border-gray-400 ${
                   validationErrors.rfc
                     ? 'border-red-300 focus:ring-red-500'
                     : 'border-gray-300 focus:ring-purple-500'
                 }`}
+                placeholder="Enter RFC (optional)"
               />
               {validationErrors.rfc && (
-                <p className="mt-1 text-sm text-red-600">{validationErrors.rfc}</p>
+                <p className="mt-2 text-sm text-red-600 font-medium flex items-center">
+                  <FiAlertCircle className="h-4 w-4 mr-1" />
+                  {validationErrors.rfc}
+                </p>
               )}
             </div>
             <div>
-              <label htmlFor="manager_name" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="manager_name" className="block text-sm font-bold text-gray-700 mb-3 flex items-center">
+                <FiUser className="h-4 w-4 mr-2 text-indigo-500" />
                 Manager Name
               </label>
               <input
@@ -359,11 +405,13 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
                 name="manager_name"
                 value={clubData.manager_name}
                 onChange={handleClubInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl font-medium bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200 hover:border-gray-400"
+                placeholder="Enter manager name"
               />
             </div>
             <div>
-              <label htmlFor="manager_title" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="manager_title" className="block text-sm font-bold text-gray-700 mb-3 flex items-center">
+                <FiBriefcase className="h-4 w-4 mr-2 text-orange-500" />
                 Manager Title
               </label>
               <input
@@ -372,11 +420,13 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
                 name="manager_title"
                 value={clubData.manager_title}
                 onChange={handleClubInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl font-medium bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all duration-200 hover:border-gray-400"
+                placeholder="e.g., Club Manager, Director, Owner"
               />
             </div>
             <div>
-              <label htmlFor="website" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="website" className="block text-sm font-bold text-gray-700 mb-3 flex items-center">
+                <FiGlobe className="h-4 w-4 mr-2 text-blue-500" />
                 Website
               </label>
               <input
@@ -385,18 +435,23 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
                 name="website"
                 value={clubData.website}
                 onChange={handleClubInputChange}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                className={`w-full px-4 py-3 border-2 rounded-2xl font-medium bg-white focus:outline-none focus:ring-2 transition-all duration-200 hover:border-gray-400 ${
                   validationErrors.website
                     ? 'border-red-300 focus:ring-red-500'
-                    : 'border-gray-300 focus:ring-purple-500'
+                    : 'border-gray-300 focus:ring-blue-500'
                 }`}
+                placeholder="https://yourclub.com"
               />
               {validationErrors.website && (
-                <p className="mt-1 text-sm text-red-600">{validationErrors.website}</p>
+                <p className="mt-2 text-sm text-red-600 font-medium flex items-center">
+                  <FiAlertCircle className="h-4 w-4 mr-1" />
+                  {validationErrors.website}
+                </p>
               )}
             </div>
             <div>
-              <label htmlFor="social_media" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="social_media" className="block text-sm font-bold text-gray-700 mb-3 flex items-center">
+                <FiShare2 className="h-4 w-4 mr-2 text-pink-500" />
                 Social Media
               </label>
               <input
@@ -405,11 +460,13 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
                 name="social_media"
                 value={clubData.social_media}
                 onChange={handleClubInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl font-medium bg-white focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all duration-200 hover:border-gray-400"
+                placeholder="Social media link (optional)"
               />
             </div>
             <div>
-              <label htmlFor="state_id" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="state_id" className="block text-sm font-bold text-gray-700 mb-3 flex items-center">
+                <FiMapPin className="h-4 w-4 mr-2 text-red-500" />
                 State
               </label>
               <select
@@ -417,7 +474,7 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
                 name="state_id"
                 value={clubData.state_id || ''}
                 onChange={handleClubInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl font-medium bg-white focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200 hover:border-gray-400"
               >
                 <option value="">Select a state</option>
                 {states.map((state) => (
@@ -428,58 +485,71 @@ const ClubProfileForm: React.FC<ClubProfileFormProps> = ({ club, user, onCancel 
               </select>
             </div>
             <div className="md:col-span-2">
-              <SimpleImageUpload
-                fieldName="logo_url"
-                fileType="image"
-                value={clubData.logo_url}
-                onChange={handleLogoChange}
-                disabled={isSubmitting}
-                title="Club Logo"
-                enableCropping={true}
-                aspectRatio={1}
-                className="bg-gray-50"
-              />
+              <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-2xl p-6">
+                <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                  <FiImage className="h-5 w-5 mr-2 text-indigo-600" />
+                  Club Logo
+                </h4>
+                <SimpleImageUpload
+                  fieldName="logo_url"
+                  fileType="image"
+                  value={clubData.logo_url}
+                  onChange={handleLogoChange}
+                  disabled={isSubmitting}
+                  title="Upload Club Logo"
+                  enableCropping={true}
+                  aspectRatio={1}
+                  className="bg-white"
+                />
+              </div>
             </div>
             <div className="md:col-span-2">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="has_courts"
-                  name="has_courts"
-                  checked={clubData.has_courts}
-                  onChange={handleClubInputChange}
-                  className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
-                />
-                <label htmlFor="has_courts" className="ml-2 block text-sm text-gray-900">
-                  Club has courts available
-                </label>
+              <div className="bg-gradient-to-r from-teal-50 to-cyan-50 border border-teal-200 rounded-2xl p-6">
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="has_courts"
+                    name="has_courts"
+                    checked={clubData.has_courts}
+                    onChange={handleClubInputChange}
+                    className="h-5 w-5 text-teal-600 focus:ring-teal-500 border-2 border-gray-300 rounded-lg"
+                  />
+                  <label htmlFor="has_courts" className="ml-4 flex items-center text-gray-900 font-bold">
+                    <FiHome className="h-5 w-5 mr-2 text-teal-600" />
+                    Club has courts available
+                  </label>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-end space-x-4">
+        <div className="flex justify-end space-x-6 pt-8 border-t-2 border-gray-200">
           <button
             type="button"
             onClick={onCancel}
             disabled={isSubmitting}
-            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-8 py-3 border-2 border-gray-300 text-gray-700 rounded-2xl hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed font-bold shadow-md hover:shadow-lg transition-all duration-200 flex items-center"
           >
+            <FiX className="w-5 h-5 mr-2" />
             Cancel
           </button>
           <button
             type="submit"
             disabled={isSubmitting || success}
-            className="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+            className="px-8 py-3 bg-gradient-to-r from-purple-600 to-indigo-700 text-white rounded-2xl hover:from-purple-700 hover:to-indigo-800 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed font-bold shadow-lg hover:shadow-xl transition-all duration-200 hover:transform hover:scale-105 flex items-center"
           >
             {isSubmitting && (
-              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
+              <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-3"></div>
             )}
-            {success ? 'Saved!' : (isSubmitting ? 'Saving...' : 'Save Changes')}
+            {success ? (
+              <><FiCheck className="w-5 h-5 mr-2" />Saved!</>
+            ) : isSubmitting ? (
+              'Saving...'
+            ) : (
+              <><FiSave className="w-5 h-5 mr-2" />Save Changes</>
+            )}
           </button>
         </div>
       </form>

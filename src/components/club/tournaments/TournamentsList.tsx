@@ -1,5 +1,18 @@
 import React from 'react'
 import { ClubTournament } from '../../../store/slices/clubTournamentsSlice'
+import {
+  FiCalendar,
+  FiUsers,
+  FiDollarSign,
+  FiMapPin,
+  FiEye,
+  FiEdit3,
+  FiTrash2,
+  FiAward,
+  FiClock,
+  FiRefreshCw,
+  FiInfo
+} from 'react-icons/fi'
 
 interface TournamentsListProps {
   tournaments: ClubTournament[]
@@ -27,15 +40,15 @@ const TournamentsList: React.FC<TournamentsListProps> = ({
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'upcoming':
-        return 'bg-blue-100 text-blue-800'
+        return 'bg-blue-100 text-blue-800 border-blue-200'
       case 'ongoing':
-        return 'bg-green-100 text-green-800'
+        return 'bg-green-100 text-green-800 border-green-200'
       case 'completed':
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800 border-gray-200'
       case 'canceled':
-        return 'bg-red-100 text-red-800'
+        return 'bg-red-100 text-red-800 border-red-200'
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800 border-gray-200'
     }
   }
 
@@ -45,26 +58,33 @@ const TournamentsList: React.FC<TournamentsListProps> = ({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden">
-      <div className="grid gap-4 p-6">
+    <div className="bg-gradient-to-br from-white to-blue-50 border border-blue-200 rounded-3xl shadow-2xl overflow-hidden">
+      <div className="grid gap-6 p-8">
         {tournaments.length === 0 ? (
-          <div className="text-center py-12">
-            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-            </svg>
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No tournaments</h3>
-            <p className="mt-1 text-sm text-gray-500">Get started by creating your first tournament.</p>
+          <div className="text-center py-16">
+            <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <FiAward className="h-12 w-12 text-gray-500" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">No tournaments</h3>
+            <p className="text-gray-600 font-medium">Get started by creating your first tournament.</p>
           </div>
         ) : (
           tournaments.map((tournament) => (
-            <div key={tournament.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between mb-4">
+            <div key={tournament.id} className="bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-2xl p-8 hover:shadow-xl transition-all duration-200 hover:transform hover:scale-[1.02]">
+              <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">{tournament.name}</h3>
-                  <p className="text-sm text-gray-600 mt-1">{tournament.tournament_type}</p>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2 flex items-center">
+                    <FiAward className="h-6 w-6 mr-3 text-purple-600" />
+                    {tournament.name}
+                  </h3>
+                  <p className="text-gray-600 font-medium flex items-center">
+                    <FiInfo className="h-4 w-4 mr-2 text-blue-500" />
+                    {tournament.tournament_type}
+                  </p>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(tournament.status)}`}>
+                <div className="flex items-center space-x-4">
+                  <span className={`inline-flex items-center px-4 py-2 text-sm font-bold rounded-2xl shadow-sm border-2 ${getStatusColor(tournament.status)}`}>
+                    <FiClock className="h-4 w-4 mr-2" />
                     {tournament.status.charAt(0).toUpperCase() + tournament.status.slice(1)}
                   </span>
                   <div className="relative">
@@ -76,9 +96,12 @@ const TournamentsList: React.FC<TournamentsListProps> = ({
                           e.target.value = ""
                         }
                       }}
-                      className="text-xs border-gray-300 rounded text-gray-600 bg-white cursor-pointer"
+                      className="text-sm border-2 border-gray-300 rounded-2xl text-gray-700 bg-white cursor-pointer px-4 py-2 font-medium hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-200"
                     >
-                      <option value="">Change Status</option>
+                      <option value="">
+                        <FiRefreshCw className="inline h-4 w-4 mr-2" />
+                        Change Status
+                      </option>
                       {getStatusOptions(tournament.status).map(status => (
                         <option key={status} value={status}>
                           {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -90,78 +113,94 @@ const TournamentsList: React.FC<TournamentsListProps> = ({
               </div>
 
               {tournament.description && (
-                <p className="text-gray-600 mb-4">{tournament.description}</p>
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-4 mb-6">
+                  <p className="text-gray-700 font-medium">{tournament.description}</p>
+                </div>
               )}
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                <div>
-                  <div className="text-sm text-gray-500">Tournament Dates</div>
-                  <div className="font-medium">{formatDate(tournament.start_date)} - {formatDate(tournament.end_date)}</div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
+                <div className="bg-white border border-blue-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all duration-200">
+                  <div className="text-sm font-bold text-gray-500 mb-2 flex items-center">
+                    <FiCalendar className="h-4 w-4 mr-2 text-blue-500" />
+                    Tournament Dates
+                  </div>
+                  <div className="font-bold text-gray-900">{formatDate(tournament.start_date)} - {formatDate(tournament.end_date)}</div>
                 </div>
-                <div>
-                  <div className="text-sm text-gray-500">Registration</div>
-                  <div className="font-medium">{formatDate(tournament.registration_start)} - {formatDate(tournament.registration_end)}</div>
+                <div className="bg-white border border-green-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all duration-200">
+                  <div className="text-sm font-bold text-gray-500 mb-2 flex items-center">
+                    <FiClock className="h-4 w-4 mr-2 text-green-500" />
+                    Registration
+                  </div>
+                  <div className="font-bold text-gray-900">{formatDate(tournament.registration_start)} - {formatDate(tournament.registration_end)}</div>
                 </div>
-                <div>
-                  <div className="text-sm text-gray-500">Participants</div>
-                  <div className="font-medium">{tournament.registration_count || 0}</div>
+                <div className="bg-white border border-purple-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all duration-200">
+                  <div className="text-sm font-bold text-gray-500 mb-2 flex items-center">
+                    <FiUsers className="h-4 w-4 mr-2 text-purple-500" />
+                    Participants
+                  </div>
+                  <div className="font-bold text-gray-900">{tournament.registration_count || 0}</div>
                 </div>
-                <div>
-                  <div className="text-sm text-gray-500">Revenue</div>
-                  <div className="font-medium">${tournament.revenue || 0}</div>
+                <div className="bg-white border border-yellow-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all duration-200">
+                  <div className="text-sm font-bold text-gray-500 mb-2 flex items-center">
+                    <FiDollarSign className="h-4 w-4 mr-2 text-yellow-600" />
+                    Revenue
+                  </div>
+                  <div className="font-bold text-gray-900">${tournament.revenue || 0}</div>
                 </div>
               </div>
 
               {tournament.venue_name && (
-                <div className="mb-4">
-                  <div className="text-sm text-gray-500">Venue</div>
-                  <div className="font-medium">{tournament.venue_name}</div>
+                <div className="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-2xl p-4 mb-6">
+                  <div className="text-sm font-bold text-gray-500 mb-2 flex items-center">
+                    <FiMapPin className="h-4 w-4 mr-2 text-orange-500" />
+                    Venue
+                  </div>
+                  <div className="font-bold text-gray-900">{tournament.venue_name}</div>
                   {tournament.venue_address && (
-                    <div className="text-sm text-gray-600">{tournament.venue_address}</div>
+                    <div className="text-sm text-gray-600 font-medium mt-1">{tournament.venue_address}</div>
                   )}
                 </div>
               )}
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
+              <div className="flex items-center justify-between pt-6 border-t-2 border-gray-100">
+                <div className="flex items-center space-x-6">
                   {tournament.entry_fee && (
-                    <div>
-                      <span className="text-sm text-gray-500">Entry Fee: </span>
-                      <span className="font-medium">${tournament.entry_fee}</span>
+                    <div className="flex items-center bg-green-50 border border-green-200 rounded-2xl px-4 py-2">
+                      <FiDollarSign className="h-4 w-4 mr-2 text-green-500" />
+                      <span className="text-sm font-bold text-gray-700">Entry Fee: </span>
+                      <span className="font-bold text-green-600">${tournament.entry_fee}</span>
                     </div>
                   )}
                   {tournament.categories && tournament.categories.length > 0 && (
-                    <div>
-                      <span className="text-sm text-gray-500">Categories: </span>
-                      <span className="font-medium">{tournament.categories.length}</span>
+                    <div className="flex items-center bg-purple-50 border border-purple-200 rounded-2xl px-4 py-2">
+                      <FiAward className="h-4 w-4 mr-2 text-purple-500" />
+                      <span className="text-sm font-bold text-gray-700">Categories: </span>
+                      <span className="font-bold text-purple-600">{tournament.categories.length}</span>
                     </div>
                   )}
                 </div>
 
-                <div className="flex space-x-2">
+                <div className="flex space-x-3">
                   <button
                     onClick={() => onViewDetails(tournament)}
-                    className="text-blue-600 hover:text-blue-900 text-sm font-medium"
+                    className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white px-4 py-2 rounded-2xl text-sm font-bold flex items-center shadow-md hover:shadow-lg transition-all duration-200 hover:transform hover:scale-105"
                   >
+                    <FiEye className="w-4 h-4 mr-2" />
                     View Details
                   </button>
                   <button
                     onClick={() => onEditTournament(tournament)}
-                    className="text-green-600 hover:text-green-900 text-sm font-medium"
+                    className="bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 text-white p-2 rounded-2xl shadow-md hover:shadow-lg transition-all duration-200 hover:transform hover:scale-105"
                     title="Edit Tournament"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
+                    <FiEdit3 className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => onDeleteTournament(tournament.id)}
-                    className="text-red-600 hover:text-red-900 text-sm font-medium"
+                    className="bg-gradient-to-r from-red-600 to-pink-700 hover:from-red-700 hover:to-pink-800 text-white p-2 rounded-2xl shadow-md hover:shadow-lg transition-all duration-200 hover:transform hover:scale-105"
                     title="Delete Tournament"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
+                    <FiTrash2 className="w-4 h-4" />
                   </button>
                 </div>
               </div>
