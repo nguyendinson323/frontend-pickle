@@ -9,7 +9,8 @@ import {
   UserFilters,
   UserStats,
   BulkActions,
-  UserDetail
+  UserDetail,
+  Pagination
 } from '../../components/admin/user-management'
 
 const AdminUserManagement: React.FC = () => {
@@ -26,9 +27,20 @@ const AdminUserManagement: React.FC = () => {
       return
     }
 
-    // Fetch users when component mounts or when filters change
+    // Fetch users when component mounts
     dispatch(fetchUsers(userFilter))
-  }, [dispatch, user, navigate, userFilter])
+  }, [dispatch, user, navigate])
+
+  // Fetch users when filters change (debounced)
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (user && user.role === 'admin') {
+        dispatch(fetchUsers(userFilter))
+      }
+    }, 500) // 500ms debounce
+
+    return () => clearTimeout(timeoutId)
+  }, [dispatch, user, userFilter])
 
   const handleUserSelect = (user: UserListItem) => {
     setSelectedUserForDetail(user)
@@ -106,6 +118,7 @@ const AdminUserManagement: React.FC = () => {
             </h3>
           </div>
           <UsersList onUserSelect={handleUserSelect} />
+          <Pagination />
         </div>
 
         {/* User Detail Modal */}

@@ -14,9 +14,16 @@ interface UserFilter {
   dateTo: string
 }
 
+interface State {
+  id: number
+  name: string
+  short_code: string
+}
+
 interface AdminUserManagementState {
   users: UserListItem[]
   selectedUser: PlayerDetail | CoachDetail | ClubDetail | PartnerDetail | StateDetail | null
+  states: State[]
   userStats: {
     totalUsers: number
     activeUsers: number
@@ -31,6 +38,12 @@ interface AdminUserManagementState {
     stateCount: number
   }
   userFilter: UserFilter
+  pagination: {
+    page: number
+    limit: number
+    total: number
+    pages: number
+  }
   loading: boolean
   error: string | null
   selectedUsers: number[]
@@ -40,6 +53,7 @@ interface AdminUserManagementState {
 const initialState: AdminUserManagementState = {
   users: [],
   selectedUser: null,
+  states: [],
   userStats: {
     totalUsers: 0,
     activeUsers: 0,
@@ -61,6 +75,12 @@ const initialState: AdminUserManagementState = {
     searchTerm: '',
     dateFrom: '',
     dateTo: ''
+  },
+  pagination: {
+    page: 1,
+    limit: 50,
+    total: 0,
+    pages: 0
   },
   loading: false,
   error: null,
@@ -84,11 +104,22 @@ const adminUserManagementSlice = createSlice({
     setSelectedUser: (state, action: PayloadAction<PlayerDetail | CoachDetail | ClubDetail | PartnerDetail | StateDetail | null>) => {
       state.selectedUser = action.payload
     },
+    setStates: (state, action: PayloadAction<State[]>) => {
+      state.states = action.payload
+    },
     setUserStats: (state, action: PayloadAction<typeof initialState.userStats>) => {
       state.userStats = action.payload
     },
     setUserFilter: (state, action: PayloadAction<Partial<UserFilter>>) => {
       state.userFilter = { ...state.userFilter, ...action.payload }
+      // Reset to first page when filters change
+      state.pagination.page = 1
+    },
+    setPagination: (state, action: PayloadAction<typeof initialState.pagination>) => {
+      state.pagination = action.payload
+    },
+    setCurrentPage: (state, action: PayloadAction<number>) => {
+      state.pagination.page = action.payload
     },
     setSelectedUsers: (state, action: PayloadAction<number[]>) => {
       state.selectedUsers = action.payload
@@ -134,8 +165,11 @@ export const {
   setError,
   setUsers,
   setSelectedUser,
+  setStates,
   setUserStats,
   setUserFilter,
+  setPagination,
+  setCurrentPage,
   setSelectedUsers,
   addSelectedUser,
   removeSelectedUser,
@@ -147,11 +181,14 @@ export const {
 } = adminUserManagementSlice.actions
 
 // API Functions
-export const fetchUsers = (filters?: Partial<UserFilter>) => async (dispatch: AppDispatch) => {
+export const fetchUsers = (filters?: Partial<UserFilter>, page?: number, limit?: number) => async (dispatch: AppDispatch, getState: any) => {
   dispatch(startLoading('Loading users...'))
-  
+
   try {
     dispatch(setError(null))
+
+    const state = getState()
+    const currentPagination = state.adminUserManagement.pagination
 
     const queryParams = new URLSearchParams()
     if (filters) {
@@ -160,11 +197,20 @@ export const fetchUsers = (filters?: Partial<UserFilter>) => async (dispatch: Ap
       })
     }
 
+    // Add pagination parameters
+    queryParams.append('page', (page || currentPagination.page).toString())
+    queryParams.append('limit', (limit || currentPagination.limit).toString())
+
     const response = await api.get(`/api/admin/users?${queryParams.toString()}`)
 
-    const responseData = response.data as { users: UserListItem[], stats: typeof initialState.userStats }
+    const responseData = response.data as {
+      users: UserListItem[],
+      stats: typeof initialState.userStats,
+      pagination: typeof initialState.pagination
+    }
     dispatch(setUsers(responseData.users))
     dispatch(setUserStats(responseData.stats))
+    dispatch(setPagination(responseData.pagination))
     dispatch(stopLoading())
   } catch (error) {
     dispatch(setError('Failed to fetch users'))
@@ -322,7 +368,7 @@ export const exportUsers = (filters: Partial<UserFilter>, format: 'csv' | 'excel
 
 export const sendUserNotification = (userIds: number[], subject: string, message: string) => async (dispatch: AppDispatch) => {
   dispatch(startLoading('Sending notification...'))
-  
+
   try {
     dispatch(setError(null))
 
@@ -338,6 +384,18 @@ export const sendUserNotification = (userIds: number[], subject: string, message
     dispatch(setError('Failed to send notification'))
     dispatch(stopLoading())
     throw error
+  }
+}
+
+export const fetchStates = () => async (dispatch: AppDispatch) => {
+  try {
+    dispatch(setError(null))
+
+    const response = await api.get('/api/admin/users/states')
+    dispatch(setStates(response.data))
+  } catch (error) {
+    dispatch(setError('Failed to fetch states'))
+    console.error('Failed to fetch states:', error)
   }
 }
 

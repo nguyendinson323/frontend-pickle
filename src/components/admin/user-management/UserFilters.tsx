@@ -1,11 +1,15 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState, AppDispatch } from '../../../store'
-import { setUserFilter, exportUsers } from '../../../store/slices/adminUserManagementSlice'
+import { setUserFilter, exportUsers, fetchStates } from '../../../store/slices/adminUserManagementSlice'
 
 const UserFilters: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
-  const { userFilter, exportLoading } = useSelector((state: RootState) => state.adminUserManagement)
+  const { userFilter, exportLoading, states } = useSelector((state: RootState) => state.adminUserManagement)
+
+  useEffect(() => {
+    dispatch(fetchStates())
+  }, [dispatch])
 
   const handleFilterChange = (field: string, value: string) => {
     dispatch(setUserFilter({ [field]: value }))
@@ -99,14 +103,19 @@ const UserFilters: React.FC = () => {
           <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1">
             State
           </label>
-          <input
-            type="text"
+          <select
             id="state"
             value={userFilter.state}
             onChange={(e) => handleFilterChange('state', e.target.value)}
-            placeholder="State name"
             className="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          />
+          >
+            <option value="">All States</option>
+            {states.map((state) => (
+              <option key={state.id} value={state.id.toString()}>
+                {state.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Affiliation Filter */}

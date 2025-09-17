@@ -3,10 +3,11 @@ import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState, AppDispatch } from '../../../store'
 import { UserListItem } from '../../../types/admin'
-import { 
-  addSelectedUser, 
-  removeSelectedUser, 
-  updateUserStatusAction, 
+import {
+  addSelectedUser,
+  removeSelectedUser,
+  setSelectedUsers,
+  updateUserStatusAction,
   updateUserVerificationAction,
   updateUserPremiumAction
 } from '../../../store/slices/adminUserManagementSlice'
@@ -27,6 +28,18 @@ const UsersList: React.FC<UsersListProps> = ({ onUserSelect }) => {
       dispatch(removeSelectedUser(userId))
     }
   }
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      const allUserIds = users.map(user => user.id)
+      dispatch(setSelectedUsers(allUserIds))
+    } else {
+      dispatch(setSelectedUsers([]))
+    }
+  }
+
+  const isAllSelected = users.length > 0 && users.every(user => selectedUsers.includes(user.id))
+  const isIndeterminate = selectedUsers.length > 0 && !isAllSelected
 
   const handleStatusChange = async (userId: number, status: 'active' | 'inactive' | 'suspended') => {
     try {
@@ -90,10 +103,12 @@ const UsersList: React.FC<UsersListProps> = ({ onUserSelect }) => {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 <input
                   type="checkbox"
-                  className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                  onChange={() => {
-                    // Toggle all users selection logic could be added here
+                  checked={isAllSelected}
+                  ref={(input) => {
+                    if (input) input.indeterminate = isIndeterminate
                   }}
+                  onChange={(e) => handleSelectAll(e.target.checked)}
+                  className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 />
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
