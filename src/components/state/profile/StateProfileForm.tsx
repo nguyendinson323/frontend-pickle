@@ -264,12 +264,14 @@ const StateProfileForm: React.FC<StateProfileFormProps> = ({ stateCommittee, use
               <div className="flex items-start space-x-4">
                 <div className="flex-1">
                   <SimpleImageUpload
-                    uploadType="state-logo-auth"
+                    fieldName="committee_logo_url"
+                    fileType="image"
                     value={stateData.logo_url}
                     onChange={handleLogoUpload}
-                    onUploadComplete={handleLogoUploadComplete}
                     title="Committee Logo"
                     className="w-full"
+                    enableCropping={true}
+                    aspectRatio={1}
                   />
                 </div>
                 {stateData.logo_url && (

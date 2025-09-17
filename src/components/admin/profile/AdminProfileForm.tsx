@@ -191,11 +191,15 @@ const AdminProfileForm: React.FC<AdminProfileFormProps> = ({ user, onCancel }) =
             <div>
               <h3 className="text-lg font-medium text-gray-900 mb-4">Administrator Profile Photo</h3>
               <SimpleImageUpload
-                uploadType="admin-photo"
+                fieldName="profile_photo_url"
+                fileType="image"
                 value={userData.profile_photo_url}
                 onChange={handlePhotoUpload}
                 disabled={isSubmitting}
                 className="bg-gray-50 border border-gray-200"
+                title="Administrator Profile Photo"
+                enableCropping={true}
+                aspectRatio={1}
                 icon={
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />

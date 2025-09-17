@@ -288,10 +288,14 @@ export const PartnerAccountTab: React.FC<PartnerAccountTabProps> = ({ profile })
               </div>
               <div className="md:col-span-2">
                 <SimpleImageUpload
-                  uploadType="partner-logo-auth"
+                  fieldName="business_logo_url"
+                  fileType="image"
                   value={formData.logo_url}
                   onChange={(imageUrl) => setFormData(prev => ({ ...prev, logo_url: imageUrl }))}
                   className="bg-gray-50 border border-gray-200"
+                  title="Business Logo"
+                  enableCropping={true}
+                  aspectRatio={1}
                 />
               </div>
               <div className="md:col-span-2">

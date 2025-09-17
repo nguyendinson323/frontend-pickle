@@ -65,11 +65,6 @@ const PartnerRegisterPage: React.FC = () => {
     }
   }
 
-  // Immediate upload handler for Redux state updates
-  const handleBusinessLogoUpload = (url: string) => {
-    // Update form data for registration
-    setFormData(prev => ({ ...prev, businessLogoUrl: url }))
-  }
 
 
   const handleSubmit = async (e: React.FormEvent) => {

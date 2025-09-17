@@ -111,10 +111,13 @@ const ClubDashboardHeader: React.FC<ClubDashboardHeaderProps> = ({ profile }) =>
             {isEditingLogo && (
               <div className="absolute top-0 left-0 z-50">
                 <SimpleImageUpload
-                  uploadType="club-logo"
+                  fieldName="logo_url"
+                  fileType="image"
                   value={profile.logo_url || ''}
                   onChange={handleLogoUpdate}
                   title="Upload Club Logo"
+                  enableCropping={true}
+                  aspectRatio={1}
                 />
               </div>
             )}

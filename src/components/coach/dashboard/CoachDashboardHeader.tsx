@@ -89,10 +89,14 @@ const CoachDashboardHeader: React.FC<CoachDashboardHeaderProps> = ({ profile }) 
             </div>
 
             <SimpleImageUpload
-              uploadType="coach-photo"
+              fieldName="profile_photo_url"
+              fileType="image"
               value={currentPhotoUrl}
               onChange={handlePhotoUpdate}
               className="bg-gray-50"
+              title="Profile Photo"
+              enableCropping={true}
+              aspectRatio={1}
             />
           </div>
         </div>

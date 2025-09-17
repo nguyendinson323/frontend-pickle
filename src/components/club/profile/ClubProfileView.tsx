@@ -275,10 +275,13 @@ const ClubProfileView: React.FC<ClubProfileViewProps> = ({ club, user, onEdit })
               {isEditingLogo && (
                 <div ref={logoUploadRef} className="absolute top-0 left-0 z-50">
                   <SimpleImageUpload
-                    uploadType="club-logo"
+                    fieldName="logo_url"
+                    fileType="image"
                     value={club.logo_url || ''}
                     onChange={handleLogoUpdate}
                     title="Upload Club Logo"
+                    enableCropping={true}
+                    aspectRatio={1}
                   />
                 </div>
               )}
