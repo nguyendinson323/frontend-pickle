@@ -1,12 +1,24 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState, AppDispatch } from '../../../store'
-import { 
+import {
   addSelectedParticipant,
   removeSelectedParticipant,
   setSelectedParticipants
 } from '../../../store/slices/adminTournamentsSlice'
 import ParticipantStatusModal from './ParticipantStatusModal'
+import {
+  FiUsers,
+  FiUser,
+  FiCalendar,
+  FiCheckCircle,
+  FiCreditCard,
+  FiTarget,
+  FiSettings,
+  FiLoader,
+  FiUserCheck,
+  FiAlertCircle
+} from 'react-icons/fi'
 
 const ParticipantsTable: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -32,15 +44,16 @@ const ParticipantsTable: React.FC = () => {
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      registered: { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Registered' },
-      confirmed: { bg: 'bg-green-100', text: 'text-green-800', label: 'Confirmed' },
-      checked_in: { bg: 'bg-purple-100', text: 'text-purple-800', label: 'Checked In' },
-      disqualified: { bg: 'bg-red-100', text: 'text-red-800', label: 'Disqualified' },
-      withdrew: { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Withdrew' }
+      registered: { gradient: 'from-blue-500 to-blue-600', bg: 'from-blue-50 to-blue-100', border: 'border-blue-200', label: 'Registered' },
+      confirmed: { gradient: 'from-green-500 to-green-600', bg: 'from-green-50 to-green-100', border: 'border-green-200', label: 'Confirmed' },
+      checked_in: { gradient: 'from-purple-500 to-purple-600', bg: 'from-purple-50 to-purple-100', border: 'border-purple-200', label: 'Checked In' },
+      disqualified: { gradient: 'from-red-500 to-red-600', bg: 'from-red-50 to-red-100', border: 'border-red-200', label: 'Disqualified' },
+      withdrew: { gradient: 'from-gray-500 to-gray-600', bg: 'from-gray-50 to-gray-100', border: 'border-gray-200', label: 'Withdrew' }
     }
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.registered
     return (
-      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${config.bg} ${config.text}`}>
+      <span className={`inline-flex items-center px-3 py-1 text-xs font-bold rounded-xl bg-gradient-to-r ${config.bg} border ${config.border} text-gray-900 shadow-md`}>
+        <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${config.gradient} mr-2`}></div>
         {config.label}
       </span>
     )
@@ -48,13 +61,14 @@ const ParticipantsTable: React.FC = () => {
 
   const getPaymentBadge = (status: string) => {
     const statusConfig = {
-      paid: { bg: 'bg-green-100', text: 'text-green-800', label: 'Paid' },
-      pending: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'Pending' },
-      refunded: { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Refunded' }
+      paid: { gradient: 'from-green-500 to-green-600', bg: 'from-green-50 to-green-100', border: 'border-green-200', label: 'Paid' },
+      pending: { gradient: 'from-yellow-500 to-yellow-600', bg: 'from-yellow-50 to-yellow-100', border: 'border-yellow-200', label: 'Pending' },
+      refunded: { gradient: 'from-gray-500 to-gray-600', bg: 'from-gray-50 to-gray-100', border: 'border-gray-200', label: 'Refunded' }
     }
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending
     return (
-      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${config.bg} ${config.text}`}>
+      <span className={`inline-flex items-center px-3 py-1 text-xs font-bold rounded-xl bg-gradient-to-r ${config.bg} border ${config.border} text-gray-900 shadow-md`}>
+        <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${config.gradient} mr-2`}></div>
         {config.label}
       </span>
     )
@@ -62,12 +76,13 @@ const ParticipantsTable: React.FC = () => {
 
   const getUserTypeBadge = (type: string) => {
     const typeConfig = {
-      player: { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Player' },
-      coach: { bg: 'bg-green-100', text: 'text-green-800', label: 'Coach' }
+      player: { gradient: 'from-blue-500 to-blue-600', bg: 'from-blue-50 to-blue-100', border: 'border-blue-200', label: 'Player' },
+      coach: { gradient: 'from-green-500 to-green-600', bg: 'from-green-50 to-green-100', border: 'border-green-200', label: 'Coach' }
     }
     const config = typeConfig[type as keyof typeof typeConfig] || typeConfig.player
     return (
-      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${config.bg} ${config.text}`}>
+      <span className={`inline-flex items-center px-3 py-1 text-xs font-bold rounded-xl bg-gradient-to-r ${config.bg} border ${config.border} text-gray-900 shadow-md`}>
+        <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${config.gradient} mr-2`}></div>
         {config.label}
       </span>
     )
@@ -80,20 +95,30 @@ const ParticipantsTable: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="bg-white shadow-sm rounded-lg p-6">
-        <div className="animate-pulse">
-          <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
-          <div className="space-y-3">
+      <div className="bg-white shadow-lg rounded-2xl border border-gray-200 overflow-hidden">
+        <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-b border-gray-200">
+          <div className="flex items-center">
+            <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white mr-4">
+              <FiLoader className="h-6 w-6 animate-spin" />
+            </div>
+            <div>
+              <div className="h-6 bg-gray-300 rounded-xl w-48 mb-2 animate-pulse"></div>
+              <div className="h-4 bg-gray-300 rounded-xl w-32 animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+        <div className="p-8">
+          <div className="space-y-4">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="grid grid-cols-8 gap-4">
-                <div className="h-4 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded"></div>
+              <div key={i} className="grid grid-cols-8 gap-6 p-4 bg-gray-50 rounded-2xl animate-pulse">
+                <div className="h-4 bg-gray-300 rounded-xl"></div>
+                <div className="h-4 bg-gray-300 rounded-xl"></div>
+                <div className="h-4 bg-gray-300 rounded-xl"></div>
+                <div className="h-4 bg-gray-300 rounded-xl"></div>
+                <div className="h-4 bg-gray-300 rounded-xl"></div>
+                <div className="h-4 bg-gray-300 rounded-xl"></div>
+                <div className="h-4 bg-gray-300 rounded-xl"></div>
+                <div className="h-4 bg-gray-300 rounded-xl"></div>
               </div>
             ))}
           </div>
@@ -106,87 +131,146 @@ const ParticipantsTable: React.FC = () => {
   const isIndeterminate = selectedParticipants.length > 0 && selectedParticipants.length < participants.length
 
   return (
-    <div className="bg-white shadow-sm rounded-lg overflow-hidden">
-      <div className="px-6 py-4 border-b border-gray-200">
-        <h3 className="text-lg font-medium text-gray-900">
-          Tournament Participants ({participants.length})
-        </h3>
+    <div className="bg-white shadow-lg rounded-2xl border border-gray-200 overflow-hidden">
+      <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-b border-gray-200">
+        <div className="flex items-center">
+          <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white mr-4">
+            <FiUsers className="h-6 w-6" />
+          </div>
+          <div>
+            <h3 className="text-2xl font-bold text-gray-900">
+              Tournament Participants ({participants.length})
+            </h3>
+            <p className="text-gray-600 font-medium">Manage participant registration and status</p>
+          </div>
+        </div>
       </div>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="">
+        <table className="min-w-full">
+          <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
             <tr>
-              <th className="px-6 py-3 text-left">
-                <input
-                  type="checkbox"
-                  checked={isAllSelected}
-                  ref={(input) => {
-                    if (input) input.indeterminate = isIndeterminate
-                  }}
-                  onChange={(e) => handleSelectAll(e.target.checked)}
-                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                />
+              <th className="px-6 py-4 text-left border-b-2 border-gray-200">
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={isAllSelected}
+                    ref={(input) => {
+                      if (input) input.indeterminate = isIndeterminate
+                    }}
+                    onChange={(e) => handleSelectAll(e.target.checked)}
+                    className="w-5 h-5 text-indigo-600 focus:ring-indigo-500 border-2 border-gray-300 rounded-lg"
+                  />
+                  <span className="ml-2 text-sm font-bold text-gray-700">Select All</span>
+                </div>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Participant
+              <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 uppercase tracking-wider border-b-2 border-gray-200">
+                <div className="flex items-center">
+                  <FiUser className="h-4 w-4 mr-2" />
+                  Participant
+                </div>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Type
+              <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 uppercase tracking-wider border-b-2 border-gray-200">
+                <div className="flex items-center">
+                  <FiUserCheck className="h-4 w-4 mr-2" />
+                  Type
+                </div>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Registration Date
+              <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 uppercase tracking-wider border-b-2 border-gray-200">
+                <div className="flex items-center">
+                  <FiCalendar className="h-4 w-4 mr-2" />
+                  Registration Date
+                </div>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
+              <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 uppercase tracking-wider border-b-2 border-gray-200">
+                <div className="flex items-center">
+                  <FiCheckCircle className="h-4 w-4 mr-2" />
+                  Status
+                </div>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Payment
+              <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 uppercase tracking-wider border-b-2 border-gray-200">
+                <div className="flex items-center">
+                  <FiCreditCard className="h-4 w-4 mr-2" />
+                  Payment
+                </div>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Seed
+              <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 uppercase tracking-wider border-b-2 border-gray-200">
+                <div className="flex items-center">
+                  <FiTarget className="h-4 w-4 mr-2" />
+                  Seed
+                </div>
               </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-4 text-right text-sm font-bold text-gray-900 uppercase tracking-wider border-b-2 border-gray-200">
                 Actions
               </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {participants.map((participant) => (
-              <tr key={participant.id} className="hover:">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <input
-                    type="checkbox"
-                    checked={selectedParticipants.includes(participant.id)}
-                    onChange={(e) => handleSelectParticipant(participant.id, e.target.checked)}
-                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                  />
+            {participants.map((participant, index) => (
+              <tr
+                key={participant.id}
+                className="hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200"
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                <td className="px-6 py-6">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={selectedParticipants.includes(participant.id)}
+                      onChange={(e) => handleSelectParticipant(participant.id, e.target.checked)}
+                      className="w-5 h-5 text-indigo-600 focus:ring-indigo-500 border-2 border-gray-300 rounded-lg"
+                    />
+                    <span className="ml-3 text-sm font-medium text-gray-600">
+                      #{index + 1}
+                    </span>
+                  </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{participant.user_name}</div>
-                  <div className="text-sm text-gray-500">ID: {participant.user_id}</div>
+                <td className="px-6 py-6">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center text-white mr-4 flex-shrink-0">
+                      <FiUser className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <div className="text-lg font-bold text-gray-900">{participant.user_name}</div>
+                      <div className="text-gray-600 font-medium">ID: {participant.user_id}</div>
+                    </div>
+                  </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-6 py-6">
                   {getUserTypeBadge(participant.user_type)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {new Date(participant.registration_date).toLocaleDateString()}
+                <td className="px-6 py-6">
+                  <div className="flex items-center text-gray-700">
+                    <FiCalendar className="h-4 w-4 mr-2 text-gray-500" />
+                    <span className="font-medium">{new Date(participant.registration_date).toLocaleDateString()}</span>
+                  </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-6 py-6">
                   {getStatusBadge(participant.status)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div>{getPaymentBadge(participant.payment_status)}</div>
-                  <div className="text-sm text-gray-500">${participant.amount_paid}</div>
+                <td className="px-6 py-6">
+                  <div className="space-y-2">
+                    {getPaymentBadge(participant.payment_status)}
+                    <div className="flex items-center text-green-700">
+                      <FiCreditCard className="h-4 w-4 mr-1" />
+                      <span className="font-bold">${participant.amount_paid}</span>
+                    </div>
+                  </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {participant.seed || '-'}
+                <td className="px-6 py-6">
+                  <div className="flex items-center">
+                    <FiTarget className="h-4 w-4 mr-2 text-gray-500" />
+                    <span className="text-lg font-bold text-gray-900">
+                      {participant.seed || '-'}
+                    </span>
+                  </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <td className="px-6 py-6">
                   <button
                     onClick={() => handleStatusChange(participant)}
-                    className="text-indigo-600 hover:text-indigo-900"
+                    className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white rounded-xl hover:from-indigo-600 hover:to-indigo-700 transition-all duration-200 font-bold shadow-lg hover:shadow-xl transform hover:scale-105"
                   >
+                    <FiSettings className="mr-2 h-4 w-4" />
                     Update Status
                   </button>
                 </td>
@@ -196,22 +280,14 @@ const ParticipantsTable: React.FC = () => {
         </table>
 
         {participants.length === 0 && (
-          <div className="text-center py-12">
-            <svg
-              className="mx-auto h-12 w-12 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
-              />
-            </svg>
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No participants found</h3>
-            <p className="mt-1 text-sm text-gray-500">No participants registered for this tournament yet.</p>
+          <div className="text-center py-16 bg-gradient-to-r from-gray-50 to-gray-100 m-8 rounded-2xl border-2 border-gray-200">
+            <div className="w-20 h-20 mx-auto bg-gradient-to-br from-gray-300 to-gray-400 rounded-2xl flex items-center justify-center text-white mb-6">
+              <FiAlertCircle className="h-10 w-10" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">No Participants Found</h3>
+            <p className="text-lg text-gray-600 font-medium">
+              No participants have registered for tournaments yet.
+            </p>
           </div>
         )}
       </div>

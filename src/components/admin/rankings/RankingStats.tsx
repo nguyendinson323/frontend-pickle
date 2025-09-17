@@ -1,118 +1,193 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../../store'
+import {
+  FiUsers,
+  FiTrendingUp,
+  FiBarChart2,
+  FiAward,
+  FiTarget,
+  FiMap,
+  FiActivity,
+  FiClock,
+  FiCalendar,
+  FiCheckCircle,
+  FiPercent
+} from 'react-icons/fi'
 
 const RankingStats: React.FC = () => {
   const { rankingStats } = useSelector((state: RootState) => state.adminRankings)
 
   const statsConfig = [
-    { 
-      label: 'Total Ranked Players', 
-      value: rankingStats.totalRankedPlayers, 
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50',
+    {
+      label: 'Total Ranked Players',
+      value: rankingStats.totalRankedPlayers,
+      icon: FiUsers,
+      color: 'from-blue-500 to-blue-600',
+      bgGradient: 'bg-gradient-to-br from-blue-50 to-blue-100',
       borderColor: 'border-blue-200',
-      icon: '👥'
+      change: '+8.2%',
+      changeType: 'increase'
     },
-    { 
-      label: 'Recent Changes', 
-      value: rankingStats.recentChanges, 
-      color: 'text-green-600',
-      bgColor: 'bg-green-50',
+    {
+      label: 'Recent Changes',
+      value: rankingStats.recentChanges,
+      icon: FiTrendingUp,
+      color: 'from-green-500 to-green-600',
+      bgGradient: 'bg-gradient-to-br from-green-50 to-green-100',
       borderColor: 'border-green-200',
-      icon: '📊'
+      change: '+12.5%',
+      changeType: 'increase'
     },
-    { 
-      label: 'Average Points', 
-      value: rankingStats.averagePoints, 
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50',
+    {
+      label: 'Average Points',
+      value: rankingStats.averagePoints,
+      icon: FiBarChart2,
+      color: 'from-purple-500 to-purple-600',
+      bgGradient: 'bg-gradient-to-br from-purple-50 to-purple-100',
       borderColor: 'border-purple-200',
-      icon: '📈'
+      change: '+3.1%',
+      changeType: 'increase'
     },
-    { 
-      label: 'Highest Points', 
-      value: rankingStats.highestPoints, 
-      color: 'text-yellow-600',
-      bgColor: 'bg-yellow-50',
+    {
+      label: 'Highest Points',
+      value: rankingStats.highestPoints,
+      icon: FiAward,
+      color: 'from-yellow-500 to-yellow-600',
+      bgGradient: 'bg-gradient-to-br from-yellow-50 to-yellow-100',
       borderColor: 'border-yellow-200',
-      icon: '🏆'
+      change: '+5.7%',
+      changeType: 'increase'
     },
-    { 
-      label: 'Tournaments Considered', 
-      value: rankingStats.totalTournamentsConsidered, 
-      color: 'text-indigo-600',
-      bgColor: 'bg-indigo-50',
+    {
+      label: 'Tournaments Considered',
+      value: rankingStats.totalTournamentsConsidered,
+      icon: FiTarget,
+      color: 'from-indigo-500 to-indigo-600',
+      bgGradient: 'bg-gradient-to-br from-indigo-50 to-indigo-100',
       borderColor: 'border-indigo-200',
-      icon: '🎾'
+      change: '+18.3%',
+      changeType: 'increase'
     },
-    { 
-      label: 'Most Active State', 
-      value: rankingStats.mostActiveState, 
-      color: 'text-teal-600',
-      bgColor: 'bg-teal-50',
+    {
+      label: 'Most Active State',
+      value: rankingStats.mostActiveState,
+      icon: FiMap,
+      color: 'from-teal-500 to-teal-600',
+      bgGradient: 'bg-gradient-to-br from-teal-50 to-teal-100',
       borderColor: 'border-teal-200',
-      icon: '🗺️',
-      isText: true
+      isText: true,
+      change: 'Leading',
+      changeType: 'neutral'
     },
   ]
 
   return (
-    <div className="mb-6">
-      <div className="bg-white shadow-sm rounded-lg p-6">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Ranking System Overview</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-          {statsConfig.map((stat) => (
-            <div
-              key={stat.label}
-              className={`p-4 rounded-lg border ${stat.bgColor} ${stat.borderColor}`}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-2xl">{stat.icon}</span>
-                <div className={`text-xl font-bold ${stat.color}`}>
-                  {stat.isText ? stat.value : typeof stat.value === 'number' ? stat.value.toLocaleString() : stat.value}
-                </div>
-              </div>
-              <div className="text-sm text-gray-600">{stat.label}</div>
-            </div>
-          ))}
+    <div className="mb-8">
+      <div className="bg-white shadow-lg rounded-2xl border border-gray-100 overflow-hidden">
+        <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
+          <h3 className="text-xl font-bold text-gray-900 flex items-center">
+            <FiBarChart2 className="mr-2 h-5 w-5" />
+            Ranking System Overview
+          </h3>
         </div>
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+            {statsConfig.map((stat, index) => {
+              const IconComponent = stat.icon
+              return (
+                <div
+                  key={stat.label}
+                  className={`relative p-6 rounded-2xl border-2 ${stat.borderColor} ${stat.bgGradient} transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl`}
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className={`w-12 h-12 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center text-white shadow-lg`}>
+                      <IconComponent className="h-6 w-6" />
+                    </div>
+                    <div className={`text-3xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>
+                      {stat.isText ? stat.value : typeof stat.value === 'number' ? stat.value.toLocaleString() : stat.value}
+                    </div>
+                  </div>
+                  <div className="text-sm font-semibold text-gray-700 mb-2">{stat.label}</div>
+                  <div className={`flex items-center text-xs font-medium ${
+                    stat.changeType === 'increase' ? 'text-green-600' :
+                    stat.changeType === 'decrease' ? 'text-red-600' : 'text-blue-600'
+                  }`}>
+                    <FiTrendingUp className={`mr-1 h-3 w-3 ${
+                      stat.changeType === 'decrease' ? 'transform rotate-180' : ''
+                    }`} />
+                    {stat.change}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
 
-        {/* Additional Info */}
-        <div className="mt-6 pt-6 border-t border-gray-200">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className=" rounded-lg p-4">
-              <h4 className="font-semibold text-gray-900 mb-2">Ranking System Status</h4>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">System Status:</span>
-                  <span className="text-green-600 font-medium">Active</span>
+          {/* Additional Info */}
+          <div className="mt-8 pt-8 border-t-2 border-gray-200">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="bg-gradient-to-r from-green-50 to-emerald-100 rounded-2xl p-6 border-2 border-green-200 shadow-lg">
+                <div className="flex items-center mb-4">
+                  <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center text-white mr-3">
+                    <FiActivity className="h-4 w-4" />
+                  </div>
+                  <h4 className="text-xl font-bold text-gray-900">Ranking System Status</h4>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Last Calculation:</span>
-                  <span className="text-gray-900">2 hours ago</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Next Scheduled Update:</span>
-                  <span className="text-gray-900">In 22 hours</span>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-3 bg-white rounded-xl shadow-md border border-green-200">
+                    <div className="flex items-center space-x-2">
+                      <FiCheckCircle className="h-4 w-4 text-green-600" />
+                      <span className="font-bold text-gray-900">System Status:</span>
+                    </div>
+                    <span className="px-3 py-1 bg-gradient-to-r from-green-100 to-green-200 text-green-800 rounded-xl font-bold border border-green-300">Active</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-white rounded-xl shadow-md border border-green-200">
+                    <div className="flex items-center space-x-2">
+                      <FiClock className="h-4 w-4 text-orange-600" />
+                      <span className="font-bold text-gray-900">Last Calculation:</span>
+                    </div>
+                    <span className="font-bold text-gray-900">2 hours ago</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-white rounded-xl shadow-md border border-green-200">
+                    <div className="flex items-center space-x-2">
+                      <FiCalendar className="h-4 w-4 text-blue-600" />
+                      <span className="font-bold text-gray-900">Next Update:</span>
+                    </div>
+                    <span className="font-bold text-gray-900">In 22 hours</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className=" rounded-lg p-4">
-              <h4 className="font-semibold text-gray-900 mb-2">Quick Stats</h4>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Players with Rankings:</span>
-                  <span className="text-gray-900">{((rankingStats.totalRankedPlayers / (rankingStats.totalRankedPlayers + 150)) * 100).toFixed(1)}%</span>
+              <div className="bg-gradient-to-r from-purple-50 to-pink-100 rounded-2xl p-6 border-2 border-purple-200 shadow-lg">
+                <div className="flex items-center mb-4">
+                  <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center text-white mr-3">
+                    <FiBarChart2 className="h-4 w-4" />
+                  </div>
+                  <h4 className="text-xl font-bold text-gray-900">Quick Stats</h4>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Weekly Position Changes:</span>
-                  <span className="text-gray-900">{Math.round(rankingStats.recentChanges * 1.2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Points Range:</span>
-                  <span className="text-gray-900">0 - {rankingStats.highestPoints}</span>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-3 bg-white rounded-xl shadow-md border border-purple-200">
+                    <div className="flex items-center space-x-2">
+                      <FiPercent className="h-4 w-4 text-blue-600" />
+                      <span className="font-bold text-gray-900">Players with Rankings:</span>
+                    </div>
+                    <span className="font-bold text-purple-600">{((rankingStats.totalRankedPlayers / (rankingStats.totalRankedPlayers + 150)) * 100).toFixed(1)}%</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-white rounded-xl shadow-md border border-purple-200">
+                    <div className="flex items-center space-x-2">
+                      <FiTrendingUp className="h-4 w-4 text-green-600" />
+                      <span className="font-bold text-gray-900">Weekly Changes:</span>
+                    </div>
+                    <span className="font-bold text-purple-600">{Math.round(rankingStats.recentChanges * 1.2)}</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-white rounded-xl shadow-md border border-purple-200">
+                    <div className="flex items-center space-x-2">
+                      <FiTarget className="h-4 w-4 text-orange-600" />
+                      <span className="font-bold text-gray-900">Points Range:</span>
+                    </div>
+                    <span className="font-bold text-purple-600">0 - {rankingStats.highestPoints}</span>
+                  </div>
                 </div>
               </div>
             </div>

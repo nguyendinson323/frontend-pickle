@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState, AppDispatch } from '../../store'
 import { TournamentAdmin } from '../../types/admin'
-import { 
+import {
   fetchTournaments,
   fetchTournamentParticipants
 } from '../../store/slices/adminTournamentsSlice'
@@ -15,6 +15,13 @@ import {
   TournamentDetail,
   BulkParticipantActions
 } from '../../components/admin/tournaments'
+import {
+  FiUsers,
+  FiArrowLeft,
+  FiAlertCircle,
+  FiLoader,
+  FiCalendar
+} from 'react-icons/fi'
 
 const AdminTournaments: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -53,53 +60,61 @@ const AdminTournaments: React.FC = () => {
 
   if (!user || user.role !== 'admin') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-100">
+        <div className="flex flex-col items-center">
+          <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center text-white mb-4 shadow-lg">
+            <FiLoader className="h-8 w-8 animate-spin" />
+          </div>
+          <p className="text-lg font-bold text-gray-700">Loading Tournament Management...</p>
+        </div>
       </div>
     )
   }
 
   const tabs = [
-    { id: 'tournaments', label: 'Tournaments Overview', icon: '🏆' },
-    { id: 'participants', label: 'Tournament Participants', icon: '👥' }
+    { id: 'tournaments', label: 'Tournaments Overview', icon: FiCalendar },
+    { id: 'participants', label: 'Tournament Participants', icon: FiUsers }
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
         <div className="mb-8">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Tournaments Management</h1>
-              <p className="mt-2 text-gray-600">
-                Monitor and manage all tournaments across the federation
-              </p>
+          <div className="bg-white shadow-lg rounded-2xl border border-gray-200 p-8">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center text-white mr-6 shadow-lg">
+                  <FiCalendar className="h-8 w-8" />
+                </div>
+                <div>
+                  <h1 className="text-4xl font-bold text-gray-900">Tournaments Management</h1>
+                  <p className="mt-3 text-lg text-gray-600 font-medium">
+                    Monitor and manage all tournaments across the federation
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => navigate('/admin/dashboard')}
+                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-xl hover:from-gray-700 hover:to-gray-800 transition-all duration-200 font-bold shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                <FiArrowLeft className="mr-2 h-5 w-5" />
+                Back to Dashboard
+              </button>
             </div>
-            <button
-              onClick={() => navigate('/admin/dashboard')}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-            >
-              <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              Back to Dashboard
-            </button>
           </div>
         </div>
 
         {/* Error Display */}
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+          <div className="mb-8 bg-gradient-to-r from-red-50 to-red-100 border-2 border-red-200 rounded-2xl p-6 shadow-lg">
+            <div className="flex items-start">
+              <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center text-white mr-4 flex-shrink-0">
+                <FiAlertCircle className="h-6 w-6" />
               </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800">Error</h3>
-                <div className="mt-2 text-sm text-red-700">
+              <div>
+                <h3 className="text-xl font-bold text-red-900 mb-2">Error Occurred</h3>
+                <div className="text-lg text-red-700 font-medium">
                   {error}
                 </div>
               </div>
@@ -111,23 +126,32 @@ const AdminTournaments: React.FC = () => {
         <TournamentStats />
 
         {/* Navigation Tabs */}
-        <div className="bg-white shadow-sm rounded-lg mb-6">
-          <div className="border-b border-gray-200">
-            <nav className="-mb-px flex space-x-8" aria-label="Tabs">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as 'tournaments' | 'participants')}
-                  className={`whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm transition-colors ${
-                    activeTab === tab.id
-                      ? 'border-indigo-500 text-indigo-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <span className="mr-2">{tab.icon}</span>
-                  {tab.label}
-                </button>
-              ))}
+        <div className="bg-white shadow-lg rounded-2xl border border-gray-200 mb-8 overflow-hidden">
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
+            <nav className="flex space-x-2" aria-label="Tabs">
+              {tabs.map((tab) => {
+                const IconComponent = tab.icon
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as 'tournaments' | 'participants')}
+                    className={`relative inline-flex items-center px-6 py-3 rounded-xl font-bold text-lg transition-all duration-200 transform hover:scale-105 ${
+                      activeTab === tab.id
+                        ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-white hover:shadow-md'
+                    }`}
+                  >
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
+                      activeTab === tab.id
+                        ? 'bg-white bg-opacity-20'
+                        : 'bg-gray-200'
+                    }`}>
+                      <IconComponent className="h-4 w-4" />
+                    </div>
+                    {tab.label}
+                  </button>
+                )
+              })}
             </nav>
           </div>
         </div>

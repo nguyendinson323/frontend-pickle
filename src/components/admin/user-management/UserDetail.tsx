@@ -3,6 +3,31 @@ import { useSelector, useDispatch } from 'react-redux'
 import { RootState, AppDispatch } from '../../../store'
 import { PlayerDetail, CoachDetail, ClubDetail, PartnerDetail, StateDetail, UserListItem } from '../../../types/admin'
 import { fetchUserDetails, resetUserPassword } from '../../../store/slices/adminUserManagementSlice'
+import {
+  FiUser,
+  FiMail,
+  FiPhone,
+  FiCalendar,
+  FiShield,
+  FiCheckCircle,
+  FiXCircle,
+  FiStar,
+  FiUsers,
+  FiTarget,
+  FiAward,
+  FiHome,
+  FiLink,
+  FiMap,
+  FiDollarSign,
+  FiTrendingUp,
+  FiClock,
+  FiLoader,
+  FiX,
+  FiKey,
+  FiInfo,
+  FiEdit,
+  FiEye
+} from 'react-icons/fi'
 
 interface UserDetailProps {
   user: UserListItem
@@ -21,7 +46,6 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, onClose }) => {
     const confirmed = window.confirm(
       `Are you sure you want to reset the password for ${user.username}? A new password will be sent to their email.`
     )
-
     if (confirmed) {
       try {
         await dispatch(resetUserPassword(user.id))
@@ -59,7 +83,6 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, onClose }) => {
             </div>
           </div>
         )
-
       case 'coach':
         const coachData = selectedUser as CoachDetail
         return (
@@ -81,7 +104,6 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, onClose }) => {
             </div>
           </div>
         )
-
       case 'club':
         const clubData = selectedUser as ClubDetail
         return (
@@ -103,7 +125,6 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, onClose }) => {
             </div>
           </div>
         )
-
       case 'partner':
         const partnerData = selectedUser as PartnerDetail
         return (
@@ -124,7 +145,6 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, onClose }) => {
             </div>
           </div>
         )
-
       case 'state':
         const stateData = selectedUser as StateDetail
         return (
@@ -145,127 +165,243 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, onClose }) => {
             </div>
           </div>
         )
-
       default:
         return null
     }
   }
 
-  const getStatusColor = (status: string) => {
+  const getStatusInfo = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800'
-      case 'inactive': return 'bg-gray-100 text-gray-800'
-      case 'suspended': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'active': return {
+        className: 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border-green-200',
+        icon: FiCheckCircle
+      }
+      case 'inactive': return {
+        className: 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800 border-gray-200',
+        icon: FiXCircle
+      }
+      case 'suspended': return {
+        className: 'bg-gradient-to-r from-red-100 to-red-200 text-red-800 border-red-200',
+        icon: FiShield
+      }
+      default: return {
+        className: 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800 border-gray-200',
+        icon: FiXCircle
+      }
     }
   }
 
-  const getRoleColor = (role: string) => {
+  const getRoleInfo = (role: string) => {
     switch (role) {
-      case 'player': return 'bg-blue-100 text-blue-800'
-      case 'coach': return 'bg-purple-100 text-purple-800'
-      case 'club': return 'bg-indigo-100 text-indigo-800'
-      case 'partner': return 'bg-yellow-100 text-yellow-800'
-      case 'state': return 'bg-green-100 text-green-800'
-      case 'admin': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'player': return {
+        className: 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 border-blue-200',
+        icon: FiTarget
+      }
+      case 'coach': return {
+        className: 'bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 border-purple-200',
+        icon: FiAward
+      }
+      case 'club': return {
+        className: 'bg-gradient-to-r from-indigo-100 to-indigo-200 text-indigo-800 border-indigo-200',
+        icon: FiHome
+      }
+      case 'partner': return {
+        className: 'bg-gradient-to-r from-yellow-100 to-orange-100 text-yellow-800 border-yellow-200',
+        icon: FiLink
+      }
+      case 'state': return {
+        className: 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border-green-200',
+        icon: FiMap
+      }
+      case 'admin': return {
+        className: 'bg-gradient-to-r from-red-100 to-red-200 text-red-800 border-red-200',
+        icon: FiShield
+      }
+      default: return {
+        className: 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800 border-gray-200',
+        icon: FiUser
+      }
     }
   }
+
+  const statusInfo = getStatusInfo(user.status)
+  const roleInfo = getRoleInfo(user.role)
+  const StatusIcon = statusInfo.icon
+  const RoleIcon = roleInfo.icon
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      <div className="relative top-10 mx-auto p-5 border max-w-4xl shadow-lg rounded-md bg-white">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-bold text-gray-900">User Details</h3>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-
-        {loading ? (
-          <div className="flex items-center justify-center p-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {/* Basic Information */}
-            <div className="bg-gray-50 rounded-lg p-6">
-              <h4 className="text-lg font-medium text-gray-900 mb-4">Basic Information</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p><span className="font-medium">Username:</span> {user.username}</p>
-                  <p><span className="font-medium">Email:</span> {user.email}</p>
-                  <p><span className="font-medium">Phone:</span> {user.phone}</p>
-                  <p><span className="font-medium">Created:</span> {new Date(user.created_at).toLocaleDateString()}</p>
-                  <p><span className="font-medium">Last Login:</span> {user.last_login ? new Date(user.last_login).toLocaleDateString() : 'Never'}</p>
+    <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm overflow-y-auto h-full w-full z-50">
+      <div className="relative top-8 mx-auto p-0 w-full max-w-6xl min-h-[calc(100vh-4rem)] flex items-center justify-center">
+        <div className="bg-white shadow-2xl rounded-3xl border border-gray-200 overflow-hidden w-full m-4 animate-modal-scale max-h-[calc(100vh-4rem)] overflow-y-auto">
+          <div className="bg-gradient-to-r from-indigo-600 to-purple-700 px-8 py-6">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center">
+                <div className="w-16 h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center text-white mr-6">
+                  <FiUser className="h-8 w-8" />
                 </div>
                 <div>
-                  <div className="mb-2">
-                    <span className="font-medium">Role: </span>
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRoleColor(user.role)}`}>
-                      {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
-                    </span>
-                  </div>
-                  <div className="mb-2">
-                    <span className="font-medium">Status: </span>
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(user.status)}`}>
-                      {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
-                    </span>
-                  </div>
-                  <div className="mb-2">
-                    <span className="font-medium">Verified: </span>
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.is_verified ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                      {user.is_verified ? 'Verified' : 'Unverified'}
-                    </span>
-                  </div>
-                  <div className="mb-2">
-                    <span className="font-medium">Premium: </span>
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.is_premium ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'}`}>
-                      {user.is_premium ? 'Premium' : 'Regular'}
-                    </span>
-                  </div>
-                  <div className="mb-2">
-                    <span className="font-medium">Affiliation: </span>
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.affiliation_status === 'active' ? 'bg-green-100 text-green-800' : user.affiliation_status === 'expired' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                      {user.affiliation_status.charAt(0).toUpperCase() + user.affiliation_status.slice(1)}
-                    </span>
-                  </div>
-                  {user.affiliation_expires_at && (
-                    <p><span className="font-medium">Affiliation Expires:</span> {new Date(user.affiliation_expires_at).toLocaleDateString()}</p>
-                  )}
+                  <h3 className="text-3xl font-bold text-white">User Profile</h3>
+                  <p className="text-indigo-100 font-medium">Detailed information for {user.username}</p>
                 </div>
               </div>
-            </div>
-
-            {/* Role-specific Details */}
-            {selectedUser && (
-              <div className="bg-gray-50 rounded-lg p-6">
-                {renderUserSpecificDetails()}
-              </div>
-            )}
-
-            {/* Actions */}
-            <div className="flex justify-end space-x-4 pt-4 border-t">
-              <button
-                onClick={handleResetPassword}
-                className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors"
-              >
-                Reset Password
-              </button>
               <button
                 onClick={onClose}
-                className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition-colors"
+                className="w-12 h-12 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-xl flex items-center justify-center text-white transition-all duration-200 hover:scale-105"
               >
-                Close
+                <FiX className="h-6 w-6" />
               </button>
             </div>
           </div>
-        )}
+          <div className="p-8">
+            {loading ? (
+              <div className="flex items-center justify-center p-12">
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-lg flex items-center justify-center mx-auto mb-4">
+                    <FiLoader className="animate-spin h-8 w-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Loading User Details</h3>
+                  <p className="text-gray-600 font-medium">Please wait while we fetch detailed information</p>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-8">
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-100 rounded-2xl p-8 border-2 border-blue-200 shadow-lg">
+                  <div className="flex items-center mb-6">
+                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white mr-4">
+                      <FiInfo className="h-6 w-6" />
+                    </div>
+                    <h4 className="text-2xl font-bold text-gray-900">Basic Information</h4>
+                  </div>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div className="space-y-4">
+                      <div className="flex items-center p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
+                        <FiUser className="h-5 w-5 text-indigo-500 mr-3 flex-shrink-0" />
+                        <div>
+                          <span className="text-sm font-bold text-gray-700">Username:</span>
+                          <span className="ml-2 text-lg font-bold text-gray-900">{user.username}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
+                        <FiMail className="h-5 w-5 text-indigo-500 mr-3 flex-shrink-0" />
+                        <div>
+                          <span className="text-sm font-bold text-gray-700">Email:</span>
+                          <span className="ml-2 text-lg font-bold text-gray-900">{user.email}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
+                        <FiPhone className="h-5 w-5 text-indigo-500 mr-3 flex-shrink-0" />
+                        <div>
+                          <span className="text-sm font-bold text-gray-700">Phone:</span>
+                          <span className="ml-2 text-lg font-bold text-gray-900">{user.phone}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
+                        <FiCalendar className="h-5 w-5 text-indigo-500 mr-3 flex-shrink-0" />
+                        <div>
+                          <span className="text-sm font-bold text-gray-700">Created:</span>
+                          <span className="ml-2 text-lg font-bold text-gray-900">{new Date(user.created_at).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
+                        <FiClock className="h-5 w-5 text-indigo-500 mr-3 flex-shrink-0" />
+                        <div>
+                          <span className="text-sm font-bold text-gray-700">Last Login:</span>
+                          <span className="ml-2 text-lg font-bold text-gray-900">{user.last_login ? new Date(user.last_login).toLocaleDateString() : 'Never'}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
+                        <span className="text-sm font-bold text-gray-700 block mb-2">Role:</span>
+                        <div className={`inline-flex items-center px-4 py-2 text-sm font-bold rounded-2xl border-2 ${roleInfo.className} shadow-sm`}>
+                          <RoleIcon className="h-4 w-4 mr-2" />
+                          {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                        </div>
+                      </div>
+                      <div className="p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
+                        <span className="text-sm font-bold text-gray-700 block mb-2">Status:</span>
+                        <div className={`inline-flex items-center px-4 py-2 text-sm font-bold rounded-2xl border-2 ${statusInfo.className} shadow-sm`}>
+                          <StatusIcon className="h-4 w-4 mr-2" />
+                          {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
+                        </div>
+                      </div>
+                      <div className="p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
+                        <span className="text-sm font-bold text-gray-700 block mb-2">Verification:</span>
+                        <div className={`inline-flex items-center px-4 py-2 text-sm font-bold rounded-2xl border-2 shadow-sm ${
+                          user.is_verified
+                            ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border-green-200'
+                            : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800 border-gray-200'
+                        }`}>
+                          {user.is_verified ? <FiCheckCircle className="h-4 w-4 mr-2" /> : <FiXCircle className="h-4 w-4 mr-2" />}
+                          {user.is_verified ? 'Verified' : 'Unverified'}
+                        </div>
+                      </div>
+                      <div className="p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
+                        <span className="text-sm font-bold text-gray-700 block mb-2">Premium Status:</span>
+                        <div className={`inline-flex items-center px-4 py-2 text-sm font-bold rounded-2xl border-2 shadow-sm ${
+                          user.is_premium
+                            ? 'bg-gradient-to-r from-yellow-100 to-orange-100 text-yellow-800 border-yellow-200'
+                            : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800 border-gray-200'
+                        }`}>
+                          <FiStar className="h-4 w-4 mr-2" />
+                          {user.is_premium ? 'Premium' : 'Regular'}
+                        </div>
+                      </div>
+                      <div className="p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
+                        <span className="text-sm font-bold text-gray-700 block mb-2">Affiliation:</span>
+                        <div className={`inline-flex items-center px-4 py-2 text-sm font-bold rounded-2xl border-2 shadow-sm ${
+                          user.affiliation_status === 'active'
+                            ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border-green-200'
+                            : user.affiliation_status === 'expired'
+                            ? 'bg-gradient-to-r from-red-100 to-red-200 text-red-800 border-red-200'
+                            : 'bg-gradient-to-r from-yellow-100 to-orange-100 text-yellow-800 border-yellow-200'
+                        }`}>
+                          <FiLink className="h-4 w-4 mr-2" />
+                          {user.affiliation_status.charAt(0).toUpperCase() + user.affiliation_status.slice(1)}
+                        </div>
+                        {user.affiliation_expires_at && (
+                          <div className="mt-3 flex items-center text-gray-600">
+                            <FiCalendar className="h-4 w-4 mr-2" />
+                            <span className="text-sm font-medium">Expires: {new Date(user.affiliation_expires_at).toLocaleDateString()}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {/* Role-specific Details */}
+                {selectedUser && (
+                  <div className="bg-gradient-to-r from-purple-50 to-indigo-100 rounded-2xl p-8 border-2 border-purple-200 shadow-lg">
+                    <div className="flex items-center mb-6">
+                      <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center text-white mr-4">
+                        <RoleIcon className="h-6 w-6" />
+                      </div>
+                      <h4 className="text-2xl font-bold text-gray-900">Role-Specific Details</h4>
+                    </div>
+                    {renderUserSpecificDetails()}
+                  </div>
+                )}
+                
+                <div className="flex justify-end space-x-4 mt-8 bg-gradient-to-r from-gray-50 to-gray-100 p-6 border-t border-gray-200">
+                  <button
+                    onClick={handleResetPassword}
+                    className="inline-flex items-center px-8 py-4 text-lg font-bold text-white bg-gradient-to-r from-yellow-600 to-orange-700 hover:from-yellow-700 hover:to-orange-800 border-2 border-transparent rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
+                  >
+                    <FiKey className="mr-2 h-5 w-5" />
+                    Reset Password
+                  </button>
+                  <button
+                    onClick={onClose}
+                    className="inline-flex items-center px-8 py-4 text-lg font-bold text-gray-700 bg-white border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:transform-none focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                  >
+                    <FiX className="mr-2 h-5 w-5" />
+                    Close
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   )

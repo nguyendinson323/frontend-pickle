@@ -9,6 +9,20 @@ import {
   ReportGenerator,
   ScheduledReportsTable
 } from '../../components/admin/reports'
+import {
+  FiBarChart2,
+  FiFileText,
+  FiClock,
+  FiArrowLeft,
+  FiAlertCircle,
+  FiLoader,
+  FiUsers,
+  FiAward,
+  FiActivity,
+  FiDollarSign,
+  FiTrendingUp,
+  FiGlobe
+} from 'react-icons/fi'
 
 const AdminReports: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -30,16 +44,20 @@ const AdminReports: React.FC = () => {
 
   if (!user || user.role !== 'admin') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <FiLoader className="animate-spin h-16 w-16 text-indigo-600 mx-auto mb-4" />
+          <p className="text-xl font-semibold text-gray-700">Loading reports...</p>
+          <p className="text-sm text-gray-500 mt-2">Please wait while we verify your access</p>
+        </div>
       </div>
     )
   }
 
   const tabs = [
-    { id: 'generate', label: 'Generate Reports', icon: '📊' },
-    { id: 'reports', label: 'Report History', icon: '📋' },
-    { id: 'scheduled', label: 'Scheduled Reports', icon: '⏰' }
+    { id: 'generate', label: 'Generate Reports', icon: FiBarChart2 },
+    { id: 'reports', label: 'Report History', icon: FiFileText },
+    { id: 'scheduled', label: 'Scheduled Reports', icon: FiClock }
   ]
 
   return (
@@ -47,37 +65,40 @@ const AdminReports: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
         <div className="mb-8">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Reports & Analytics</h1>
-              <p className="mt-2 text-gray-600">
-                Generate comprehensive reports and manage automated data exports
-              </p>
+          <div className="bg-white shadow-lg rounded-2xl border border-gray-100 p-8">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
+                  <FiBarChart2 className="h-8 w-8" />
+                </div>
+                <div>
+                  <h1 className="text-4xl font-bold text-gray-900">Reports & Analytics</h1>
+                  <p className="mt-2 text-lg text-gray-600 font-medium">
+                    Generate comprehensive reports and manage automated data exports
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => navigate('/admin/dashboard')}
+                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-xl hover:from-gray-700 hover:to-gray-800 transition-all duration-200 font-bold shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                <FiArrowLeft className="mr-2 h-5 w-5" />
+                Back to Dashboard
+              </button>
             </div>
-            <button
-              onClick={() => navigate('/admin/dashboard')}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-            >
-              <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              Back to Dashboard
-            </button>
           </div>
         </div>
 
         {/* Error Display */}
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+          <div className="mb-8 bg-gradient-to-r from-red-50 to-red-100 border-2 border-red-200 rounded-2xl p-6 shadow-lg">
+            <div className="flex items-start space-x-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center text-white flex-shrink-0">
+                <FiAlertCircle className="h-6 w-6" />
               </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800">Error</h3>
-                <div className="mt-2 text-sm text-red-700">
+              <div className="flex-1">
+                <h3 className="text-xl font-bold text-red-800 mb-2">Error</h3>
+                <div className="text-lg text-red-700 font-medium">
                   {error}
                 </div>
               </div>
@@ -89,23 +110,34 @@ const AdminReports: React.FC = () => {
         <ReportStats />
 
         {/* Navigation Tabs */}
-        <div className="bg-white shadow-sm rounded-lg mb-6">
-          <div className="border-b border-gray-200">
-            <nav className="-mb-px flex space-x-8" aria-label="Tabs">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as 'generate' | 'reports' | 'scheduled')}
-                  className={`whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm transition-colors ${
-                    activeTab === tab.id
-                      ? 'border-indigo-500 text-indigo-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <span className="mr-2">{tab.icon}</span>
-                  {tab.label}
-                </button>
-              ))}
+        <div className="bg-white shadow-lg rounded-2xl border border-gray-100 mb-8 overflow-hidden">
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
+            <div className="flex items-center">
+              <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white mr-3">
+                <FiFileText className="h-4 w-4" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900">Report Management</h3>
+            </div>
+          </div>
+          <div className="p-2">
+            <nav className="flex space-x-2" aria-label="Tabs">
+              {tabs.map((tab) => {
+                const TabIcon = tab.icon
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as 'generate' | 'reports' | 'scheduled')}
+                    className={`flex-1 flex items-center justify-center px-6 py-4 rounded-xl font-bold text-lg transition-all duration-200 transform hover:scale-105 ${
+                      activeTab === tab.id
+                        ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    <TabIcon className="mr-3 h-5 w-5" />
+                    {tab.label}
+                  </button>
+                )
+              })}
             </nav>
           </div>
         </div>
@@ -115,55 +147,72 @@ const AdminReports: React.FC = () => {
           {activeTab === 'generate' && (
             <>
               <ReportGenerator />
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-blue-900 mb-2">Available Report Types</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <div className="bg-white rounded-lg p-4 border border-blue-200">
-                    <div className="flex items-center mb-2">
-                      <span className="text-2xl mr-2">👥</span>
-                      <h4 className="font-medium text-gray-900">User Activity</h4>
-                    </div>
-                    <p className="text-sm text-gray-600">Comprehensive user data with activity metrics and engagement statistics</p>
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-100 border-2 border-blue-200 rounded-2xl p-8 shadow-lg">
+                <div className="flex items-center mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center text-white mr-4">
+                    <FiBarChart2 className="h-6 w-6" />
                   </div>
-                  
-                  <div className="bg-white rounded-lg p-4 border border-blue-200">
-                    <div className="flex items-center mb-2">
-                      <span className="text-2xl mr-2">🏆</span>
-                      <h4 className="font-medium text-gray-900">Tournament Analytics</h4>
+                  <h3 className="text-2xl font-bold text-blue-900">Available Report Types</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="bg-white rounded-2xl p-6 border-2 border-blue-200 shadow-lg transform hover:scale-105 transition-all duration-200">
+                    <div className="flex items-center mb-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center text-white mr-3">
+                        <FiUsers className="h-6 w-6" />
+                      </div>
+                      <h4 className="text-xl font-bold text-gray-900">User Activity</h4>
                     </div>
-                    <p className="text-sm text-gray-600">Tournament performance data including participation and revenue metrics</p>
+                    <p className="text-gray-600 font-medium leading-relaxed">Comprehensive user data with activity metrics and engagement statistics</p>
                   </div>
-                  
-                  <div className="bg-white rounded-lg p-4 border border-blue-200">
-                    <div className="flex items-center mb-2">
-                      <span className="text-2xl mr-2">🎾</span>
-                      <h4 className="font-medium text-gray-900">Courts Utilization</h4>
+
+                  <div className="bg-white rounded-2xl p-6 border-2 border-blue-200 shadow-lg transform hover:scale-105 transition-all duration-200">
+                    <div className="flex items-center mb-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center text-white mr-3">
+                        <FiAward className="h-6 w-6" />
+                      </div>
+                      <h4 className="text-xl font-bold text-gray-900">Tournament Analytics</h4>
                     </div>
-                    <p className="text-sm text-gray-600">Court usage statistics and revenue analysis across all facilities</p>
+                    <p className="text-gray-600 font-medium leading-relaxed">Tournament performance data including participation and revenue metrics</p>
                   </div>
-                  
-                  <div className="bg-white rounded-lg p-4 border border-blue-200">
-                    <div className="flex items-center mb-2">
-                      <span className="text-2xl mr-2">💰</span>
-                      <h4 className="font-medium text-gray-900">Financial Summary</h4>
+
+                  <div className="bg-white rounded-2xl p-6 border-2 border-blue-200 shadow-lg transform hover:scale-105 transition-all duration-200">
+                    <div className="flex items-center mb-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center text-white mr-3">
+                        <FiActivity className="h-6 w-6" />
+                      </div>
+                      <h4 className="text-xl font-bold text-gray-900">Courts Utilization</h4>
                     </div>
-                    <p className="text-sm text-gray-600">Complete financial overview including payments, subscriptions, and revenue trends</p>
+                    <p className="text-gray-600 font-medium leading-relaxed">Court usage statistics and revenue analysis across all facilities</p>
                   </div>
-                  
-                  <div className="bg-white rounded-lg p-4 border border-blue-200">
-                    <div className="flex items-center mb-2">
-                      <span className="text-2xl mr-2">🏅</span>
-                      <h4 className="font-medium text-gray-900">Player Rankings</h4>
+
+                  <div className="bg-white rounded-2xl p-6 border-2 border-blue-200 shadow-lg transform hover:scale-105 transition-all duration-200">
+                    <div className="flex items-center mb-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center text-white mr-3">
+                        <FiDollarSign className="h-6 w-6" />
+                      </div>
+                      <h4 className="text-xl font-bold text-gray-900">Financial Summary</h4>
                     </div>
-                    <p className="text-sm text-gray-600">Player ranking data with progression tracking and tournament performance</p>
+                    <p className="text-gray-600 font-medium leading-relaxed">Complete financial overview including payments, subscriptions, and revenue trends</p>
                   </div>
-                  
-                  <div className="bg-white rounded-lg p-4 border border-blue-200">
-                    <div className="flex items-center mb-2">
-                      <span className="text-2xl mr-2">🌐</span>
-                      <h4 className="font-medium text-gray-900">Microsites Performance</h4>
+
+                  <div className="bg-white rounded-2xl p-6 border-2 border-blue-200 shadow-lg transform hover:scale-105 transition-all duration-200">
+                    <div className="flex items-center mb-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center text-white mr-3">
+                        <FiTrendingUp className="h-6 w-6" />
+                      </div>
+                      <h4 className="text-xl font-bold text-gray-900">Player Rankings</h4>
                     </div>
-                    <p className="text-sm text-gray-600">Microsite analytics including traffic data and content performance metrics</p>
+                    <p className="text-gray-600 font-medium leading-relaxed">Player ranking data with progression tracking and tournament performance</p>
+                  </div>
+
+                  <div className="bg-white rounded-2xl p-6 border-2 border-blue-200 shadow-lg transform hover:scale-105 transition-all duration-200">
+                    <div className="flex items-center mb-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl flex items-center justify-center text-white mr-3">
+                        <FiGlobe className="h-6 w-6" />
+                      </div>
+                      <h4 className="text-xl font-bold text-gray-900">Microsites Performance</h4>
+                    </div>
+                    <p className="text-gray-600 font-medium leading-relaxed">Microsite analytics including traffic data and content performance metrics</p>
                   </div>
                 </div>
               </div>

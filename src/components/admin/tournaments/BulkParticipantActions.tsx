@@ -2,6 +2,20 @@ import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState, AppDispatch } from '../../../store'
 import { bulkUpdateParticipants } from '../../../store/slices/adminTournamentsSlice'
+import {
+  FiUsers,
+  FiSettings,
+  FiCheckCircle,
+  FiXCircle,
+  FiUserX,
+  FiLogOut,
+  FiTarget,
+  FiBell,
+  FiAlertTriangle,
+  FiPlay,
+  FiX,
+  FiLoader
+} from 'react-icons/fi'
 
 const BulkParticipantActions: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -11,21 +25,21 @@ const BulkParticipantActions: React.FC = () => {
   const [showConfirm, setShowConfirm] = useState(false)
 
   const actions = [
-    { value: 'status', label: 'Update Status' },
-    { value: 'check_in', label: 'Check In' },
-    { value: 'check_out', label: 'Check Out' },
-    { value: 'disqualify', label: 'Disqualify' },
-    { value: 'withdraw', label: 'Withdraw' },
-    { value: 'assign_seeds', label: 'Assign Seeds' },
-    { value: 'send_notification', label: 'Send Notification' }
+    { value: 'status', label: 'Update Status', icon: FiSettings },
+    { value: 'check_in', label: 'Check In', icon: FiCheckCircle },
+    { value: 'check_out', label: 'Check Out', icon: FiXCircle },
+    { value: 'disqualify', label: 'Disqualify', icon: FiUserX },
+    { value: 'withdraw', label: 'Withdraw', icon: FiLogOut },
+    { value: 'assign_seeds', label: 'Assign Seeds', icon: FiTarget },
+    { value: 'send_notification', label: 'Send Notification', icon: FiBell }
   ]
 
   const statusOptions = [
-    { value: 'registered', label: 'Registered' },
-    { value: 'confirmed', label: 'Confirmed' },
-    { value: 'checked_in', label: 'Checked In' },
-    { value: 'disqualified', label: 'Disqualified' },
-    { value: 'withdrew', label: 'Withdrew' }
+    { value: 'registered', label: 'Registered', color: 'text-blue-600' },
+    { value: 'confirmed', label: 'Confirmed', color: 'text-green-600' },
+    { value: 'checked_in', label: 'Checked In', color: 'text-indigo-600' },
+    { value: 'disqualified', label: 'Disqualified', color: 'text-red-600' },
+    { value: 'withdrew', label: 'Withdrew', color: 'text-gray-600' }
   ]
 
   const handleExecute = async () => {
@@ -52,47 +66,65 @@ const BulkParticipantActions: React.FC = () => {
   }
 
   return (
-    <div className="bg-white shadow-sm rounded-lg p-6 mb-6">
-      <h3 className="text-lg font-medium text-gray-900 mb-4">
-        Bulk Actions ({selectedParticipants.length} selected)
-      </h3>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="bg-white shadow-lg rounded-2xl border border-gray-200 p-8 mb-8">
+      <div className="flex items-center mb-6">
+        <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center text-white mr-4">
+          <FiUsers className="h-6 w-6" />
+        </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Action
+          <h3 className="text-2xl font-bold text-gray-900">
+            Bulk Actions ({selectedParticipants.length} selected)
+          </h3>
+          <p className="text-gray-600 font-medium">Perform actions on multiple participants simultaneously</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div>
+          <label className="block text-lg font-bold text-gray-900 mb-3">
+            Select Action
           </label>
-          <select
-            value={action}
-            onChange={(e) => setAction(e.target.value)}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-          >
-            <option value="">Select action</option>
-            {actions.map((actionOption) => (
-              <option key={actionOption.value} value={actionOption.value}>
-                {actionOption.label}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <FiSettings className="h-5 w-5 text-gray-400" />
+            </div>
+            <select
+              value={action}
+              onChange={(e) => setAction(e.target.value)}
+              className="w-full pl-10 rounded-2xl border-2 border-gray-300 px-4 py-3 text-lg font-medium focus:border-orange-500 focus:ring-2 focus:ring-orange-200 focus:ring-opacity-50 transition-all duration-200 bg-white hover:border-gray-400"
+            >
+              <option value="">Choose an action</option>
+              {actions.map((actionOption) => (
+                <option key={actionOption.value} value={actionOption.value}>
+                  {actionOption.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {action === 'status' && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-lg font-bold text-gray-900 mb-3">
               New Status
             </label>
-            <select
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-            >
-              <option value="">Select status</option>
-              {statusOptions.map((statusOption) => (
-                <option key={statusOption.value} value={statusOption.value}>
-                  {statusOption.label}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <FiCheckCircle className="h-5 w-5 text-gray-400" />
+              </div>
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                className="w-full pl-10 rounded-2xl border-2 border-gray-300 px-4 py-3 text-lg font-medium focus:border-orange-500 focus:ring-2 focus:ring-orange-200 focus:ring-opacity-50 transition-all duration-200 bg-white hover:border-gray-400"
+              >
+                <option value="">Select new status</option>
+                {statusOptions.map((statusOption) => (
+                  <option key={statusOption.value} value={statusOption.value}>
+                    {statusOption.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         )}
 
@@ -100,46 +132,92 @@ const BulkParticipantActions: React.FC = () => {
           <button
             onClick={() => setShowConfirm(true)}
             disabled={!action || loading || (action === 'status' && !status)}
-            className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-orange-600 to-red-600 text-white rounded-xl hover:from-orange-700 hover:to-red-700 transition-all duration-200 font-bold shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
-            {loading ? 'Processing...' : 'Execute'}
+            {loading ? (
+              <>
+                <FiLoader className="animate-spin mr-2 h-5 w-5" />
+                Processing...
+              </>
+            ) : (
+              <>
+                <FiPlay className="mr-2 h-5 w-5" />
+                Execute Action
+              </>
+            )}
           </button>
         </div>
       </div>
 
       {showConfirm && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div className="mt-3 text-center">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100 mb-4">
-                <svg className="h-6 w-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z" />
-                </svg>
-              </div>
-              <h3 className="text-lg leading-6 font-medium text-gray-900">Confirm Bulk Action</h3>
-              <div className="mt-2 px-7 py-3">
-                <p className="text-sm text-gray-500">
-                  Are you sure you want to <strong>{getActionLabel().toLowerCase()}</strong> for{' '}
-                  <strong>{selectedParticipants.length}</strong> selected participants?
-                  {action === 'status' && status && (
-                    <span> Status will be changed to <strong>{statusOptions.find(s => s.value === status)?.label}</strong>.</span>
-                  )}
-                </p>
-                <p className="text-sm text-gray-500 mt-2">This action cannot be undone.</p>
-              </div>
-              <div className="flex justify-center space-x-3 mt-4">
+        <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
+          <div className="relative w-full max-w-md bg-white shadow-2xl rounded-3xl border-2 border-gray-200 overflow-hidden">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-orange-500 to-red-600 px-6 py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 bg-white bg-opacity-20 rounded-xl flex items-center justify-center text-white mr-3">
+                    <FiAlertTriangle className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white">Confirm Bulk Action</h3>
+                </div>
                 <button
                   onClick={() => setShowConfirm(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover: focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="w-8 h-8 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg flex items-center justify-center text-white transition-all duration-200"
                 >
+                  <FiX className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-6">
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 mx-auto bg-gradient-to-br from-yellow-100 to-orange-200 rounded-2xl flex items-center justify-center mb-4">
+                  <FiAlertTriangle className="h-8 w-8 text-yellow-600" />
+                </div>
+                <div className="bg-gradient-to-r from-yellow-50 to-orange-100 rounded-2xl p-4 border-2 border-yellow-200">
+                  <p className="text-lg text-gray-900 font-medium">
+                    Are you sure you want to <strong className="text-orange-700">{getActionLabel().toLowerCase()}</strong> for{' '}
+                    <strong className="text-orange-700">{selectedParticipants.length}</strong> selected participants?
+                  </p>
+                  {action === 'status' && status && (
+                    <p className="text-gray-700 font-medium mt-2">
+                      Status will be changed to <strong className="text-orange-700">{statusOptions.find(s => s.value === status)?.label}</strong>
+                    </p>
+                  )}
+                  <p className="text-red-600 font-bold text-sm mt-3 flex items-center justify-center">
+                    <FiAlertTriangle className="h-4 w-4 mr-1" />
+                    This action cannot be undone
+                  </p>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => setShowConfirm(false)}
+                  className="flex-1 inline-flex items-center justify-center px-4 py-3 bg-white text-gray-700 border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-bold shadow-lg hover:shadow-xl transform hover:scale-105"
+                >
+                  <FiX className="mr-2 h-4 w-4" />
                   Cancel
                 </button>
                 <button
                   onClick={handleExecute}
                   disabled={loading}
-                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+                  className="flex-1 inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-200 font-bold shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:transform-none"
                 >
-                  {loading ? 'Processing...' : 'Confirm'}
+                  {loading ? (
+                    <>
+                      <FiLoader className="animate-spin mr-2 h-4 w-4" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <FiCheckCircle className="mr-2 h-4 w-4" />
+                      Confirm
+                    </>
+                  )}
                 </button>
               </div>
             </div>
