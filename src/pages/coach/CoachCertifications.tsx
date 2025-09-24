@@ -1,22 +1,30 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState, AppDispatch } from '../../store'
-import { 
-  fetchCoachCertificationsData, 
-  setFilters, 
+import {
+  fetchCoachCertificationsData,
+  setFilters,
   setError,
   addCoachCertification,
   updateCoachCertification,
   deleteCoachCertification,
   downloadCertificate
 } from '../../store/slices/coachCertificationsSlice'
-import { 
+import {
   CertificationsHeader,
   CertificationsList,
   CertificationsFilters,
   CertificationFormModal,
   DeleteConfirmationModal
 } from '../../components/coach/certifications'
+import {
+  FiLoader,
+  FiAlertCircle,
+  FiX,
+  FiAlertTriangle,
+  FiTrendingUp,
+  FiBarChart2
+} from 'react-icons/fi'
 
 import { CoachCertification } from '../../types/coach'
 
@@ -92,38 +100,42 @@ const CoachCertificationsPage: React.FC = () => {
 
   if (isLoading && certifications.length === 0) {
     return (
-      <div className="min-h-screen  flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your certifications...</p>
+          <div className="bg-white rounded-3xl shadow-2xl p-12">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-300 border-t-indigo-600 mx-auto mb-6">
+              <FiLoader className="h-8 w-8 text-transparent" />
+            </div>
+            <p className="text-gray-600 font-medium text-lg">Loading your certifications...</p>
+            <p className="text-gray-500 text-sm mt-2">Please wait while we fetch your professional credentials</p>
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Error Display */}
         {error && (
-          <div className="mb-6 bg-red-50 border-l-4 border-red-400 p-4 rounded-r-lg">
-            <div className="flex">
+          <div className="mb-8 bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-200 rounded-3xl shadow-lg overflow-hidden">
+            <div className="flex items-center p-6">
               <div className="flex-shrink-0">
-                <svg className="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                <div className="w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center">
+                  <FiAlertCircle className="w-6 h-6 text-red-500" />
+                </div>
               </div>
-              <div className="ml-3">
-                <p className="text-sm text-red-700">{error}</p>
+              <div className="ml-4 flex-1">
+                <h3 className="text-lg font-bold text-red-900 mb-1">Something went wrong</h3>
+                <p className="text-sm font-medium text-red-700">{error}</p>
               </div>
-              <div className="ml-auto pl-3">
+              <div className="ml-4">
                 <button
                   onClick={() => dispatch(setError(null))}
-                  className="text-red-400 hover:text-red-600"
+                  className="p-2 text-red-400 hover:text-red-600 hover:bg-red-100 rounded-xl transition-all duration-200"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <FiX className="w-5 h-5" />
                 </button>
               </div>
             </div>
@@ -175,16 +187,17 @@ const CoachCertificationsPage: React.FC = () => {
 
         {/* Expiring Soon Alert */}
         {stats && stats.expiring_soon > 0 && (
-          <div className="mt-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
-            <div className="flex items-center">
+          <div className="mt-8 bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-200 rounded-3xl shadow-lg overflow-hidden">
+            <div className="flex items-center p-6">
               <div className="flex-shrink-0">
-                <svg className="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z" />
-                </svg>
+                <div className="w-12 h-12 bg-yellow-100 rounded-2xl flex items-center justify-center">
+                  <FiAlertTriangle className="w-6 h-6 text-yellow-600" />
+                </div>
               </div>
-              <div className="ml-3">
-                <p className="text-sm text-yellow-700">
-                  <strong>Attention:</strong> You have {stats.expiring_soon} certification{stats.expiring_soon > 1 ? 's' : ''} expiring within the next 30 days. 
+              <div className="ml-4 flex-1">
+                <h3 className="text-lg font-bold text-yellow-900 mb-1">Attention Required</h3>
+                <p className="text-sm font-medium text-yellow-800">
+                  You have <span className="font-bold">{stats.expiring_soon}</span> certification{stats.expiring_soon > 1 ? 's' : ''} expiring within the next 30 days.
                   Consider renewing them to maintain your credentials.
                 </p>
               </div>
@@ -194,44 +207,56 @@ const CoachCertificationsPage: React.FC = () => {
 
         {/* Quick Stats */}
         {stats && certifications.length > 0 && (
-          <div className="mt-6 bg-white shadow-sm rounded-lg p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Certification Overview</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-2">Status Distribution</h4>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Active</span>
-                    <span className="text-sm font-medium text-green-600">
+          <div className="mt-8 bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-3xl shadow-xl p-8">
+            <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+              <FiBarChart2 className="h-6 w-6 mr-3 text-indigo-600" />
+              Certification Overview
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-6">
+                <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                  <FiTrendingUp className="h-5 w-5 mr-2 text-blue-600" />
+                  Status Distribution
+                </h4>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center bg-white rounded-xl p-3 border border-green-200">
+                    <span className="text-sm font-medium text-gray-700">Active</span>
+                    <span className="text-sm font-bold text-green-600 bg-green-50 px-3 py-1 rounded-xl">
                       {stats.active_certifications} ({Math.round((stats.active_certifications / stats.total_certifications) * 100)}%)
                     </span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Expiring Soon</span>
-                    <span className="text-sm font-medium text-yellow-600">
+                  <div className="flex justify-between items-center bg-white rounded-xl p-3 border border-yellow-200">
+                    <span className="text-sm font-medium text-gray-700">Expiring Soon</span>
+                    <span className="text-sm font-bold text-yellow-600 bg-yellow-50 px-3 py-1 rounded-xl">
                       {stats.expiring_soon} ({Math.round((stats.expiring_soon / stats.total_certifications) * 100)}%)
                     </span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Expired</span>
-                    <span className="text-sm font-medium text-red-600">
+                  <div className="flex justify-between items-center bg-white rounded-xl p-3 border border-red-200">
+                    <span className="text-sm font-medium text-gray-700">Expired</span>
+                    <span className="text-sm font-bold text-red-600 bg-red-50 px-3 py-1 rounded-xl">
                       {stats.expired_certifications} ({Math.round((stats.expired_certifications / stats.total_certifications) * 100)}%)
                     </span>
                   </div>
                 </div>
               </div>
-              
-              <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-2">Recent Activity</h4>
-                <div className="text-sm text-gray-600">
+
+              <div className="bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-200 rounded-2xl p-6">
+                <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                  <FiBarChart2 className="h-5 w-5 mr-2 text-purple-600" />
+                  Recent Activity
+                </h4>
+                <div className="bg-white rounded-xl p-4 border border-purple-200">
                   {certifications.length > 0 ? (
                     <div>
-                      Most recent certification: {certifications
-                        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0]
-                        .name}
+                      <div className="text-sm font-medium text-gray-700 mb-2">Most recent certification:</div>
+                      <div className="text-base font-bold text-purple-900">
+                        {certifications
+                          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0]
+                          .name}
+                      </div>
                     </div>
                   ) : (
-                    <div>No certifications added yet</div>
+                    <div className="text-sm text-gray-600 font-medium">No certifications added yet</div>
                   )}
                 </div>
               </div>

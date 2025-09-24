@@ -1,21 +1,34 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import { RootState, AppDispatch } from '../../store'
-import { 
-  fetchCoachSessionsData, 
-  setFilters, 
-  setSelectedSession, 
+import {
+  fetchCoachSessionsData,
+  setFilters,
+  setSelectedSession,
   updateCoachSessionStatus,
   addCoachAvailability,
   removeCoachAvailability
 } from '../../store/slices/coachSessionsSlice'
-import { 
+import {
   CoachSessionsHeader,
   CoachSessionsList,
   CoachSessionsFilters,
   SessionDetailsModal,
   AvailabilityManager
 } from '../../components/coach/sessions'
+import {
+  FiLoader,
+  FiAlertCircle,
+  FiUsers,
+  FiCalendar,
+  FiChevronRight,
+  FiRefreshCw,
+  FiTrendingUp,
+  FiDollarSign,
+  FiStar,
+  FiCheckCircle
+} from 'react-icons/fi'
 
 interface CoachingSession {
   id: number
@@ -47,8 +60,9 @@ interface CoachingSession {
 
 const CoachSessionsPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
+  const navigate = useNavigate()
   const { sessions, availability, stats, selectedSession, filters, isLoading, error } = useSelector((state: RootState) => state.coachSessions)
-  
+
   const [activeTab, setActiveTab] = useState<'sessions' | 'availability'>('sessions')
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
 
@@ -93,29 +107,79 @@ const CoachSessionsPage: React.FC = () => {
 
   if (isLoading && sessions.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your coaching sessions...</p>
+          <div className="bg-white rounded-3xl shadow-2xl p-12">
+            <div className="animate-spin rounded-full h-20 w-20 border-4 border-gray-300 border-t-green-600 mx-auto mb-6">
+              <FiLoader className="h-8 w-8 text-transparent" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">Loading Sessions</h3>
+            <p className="text-gray-600 font-medium text-lg">Please wait while we load your coaching sessions...</p>
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Navigation Breadcrumb */}
+        <div className="mb-8">
+          <nav className="flex" aria-label="Breadcrumb">
+            <ol className="flex items-center space-x-4">
+              <li>
+                <button
+                  onClick={() => navigate('/coach/dashboard')}
+                  className="text-gray-500 hover:text-gray-700 font-medium transition-colors duration-200 flex items-center"
+                >
+                  Dashboard
+                </button>
+              </li>
+              <li>
+                <div className="flex items-center">
+                  <FiChevronRight className="flex-shrink-0 h-5 w-5 text-gray-400 mx-2" />
+                  <span className="text-sm font-bold text-indigo-600" aria-current="page">
+                    Sessions
+                  </span>
+                </div>
+              </li>
+            </ol>
+          </nav>
+        </div>
+
+        {/* Page Title */}
+        <div className="mb-8">
+          <div className="flex items-center mb-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center mr-4">
+              <FiUsers className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Coaching Sessions</h1>
+              <p className="text-gray-600 font-medium">
+                Manage your sessions and availability schedule
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Error Message */}
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
+          <div className="mb-8 bg-gradient-to-br from-red-50 to-pink-50 border border-red-200 shadow-2xl rounded-3xl p-8">
+            <div className="flex items-center">
+              <div className="w-12 h-12 bg-gradient-to-br from-red-600 to-pink-700 rounded-2xl flex items-center justify-center mr-4">
+                <FiAlertCircle className="w-6 h-6 text-white" />
               </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-red-800">{error}</p>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Session Error</h3>
+                <p className="text-red-800 font-medium">{error}</p>
+                <button
+                  onClick={() => dispatch(fetchCoachSessionsData())}
+                  className="mt-3 bg-gradient-to-r from-red-600 to-pink-700 hover:from-red-700 hover:to-pink-800 text-white font-bold py-2 px-4 rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl hover:transform hover:scale-105 flex items-center"
+                >
+                  <FiRefreshCw className="w-4 h-4 mr-2" />
+                  Retry
+                </button>
               </div>
             </div>
           </div>
@@ -132,28 +196,30 @@ const CoachSessionsPage: React.FC = () => {
         )}
 
         {/* Tab Navigation */}
-        <div className="bg-white shadow-sm rounded-lg mb-6">
-          <div className="border-b border-gray-200">
-            <nav className="-mb-px flex">
+        <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-200 shadow-2xl rounded-3xl overflow-hidden mb-8">
+          <div className="border-b-2 border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
+            <nav className="flex space-x-2 px-8 py-2" aria-label="Tabs">
               <button
                 onClick={() => setActiveTab('sessions')}
-                className={`py-4 px-6 border-b-2 font-medium text-sm ${
+                className={`${
                   activeTab === 'sessions'
-                    ? 'border-indigo-500 text-indigo-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
+                    ? 'bg-gradient-to-r from-green-600 to-emerald-700 text-white shadow-lg'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-white'
+                } whitespace-nowrap py-3 px-6 rounded-2xl font-bold text-sm flex items-center transition-all duration-200 hover:transform hover:scale-105`}
               >
+                <FiUsers className="w-5 h-5 mr-2" />
                 My Sessions ({sessions.length})
               </button>
               <button
                 onClick={() => setActiveTab('availability')}
-                className={`py-4 px-6 border-b-2 font-medium text-sm ${
+                className={`${
                   activeTab === 'availability'
-                    ? 'border-indigo-500 text-indigo-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
+                    ? 'bg-gradient-to-r from-green-600 to-emerald-700 text-white shadow-lg'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-white'
+                } whitespace-nowrap py-3 px-6 rounded-2xl font-bold text-sm flex items-center transition-all duration-200 hover:transform hover:scale-105`}
               >
-                Availability Schedule ({availability.length})
+                <FiCalendar className="w-5 h-5 mr-2" />
+                Availability ({availability.length})
               </button>
             </nav>
           </div>
@@ -196,28 +262,42 @@ const CoachSessionsPage: React.FC = () => {
           onStatusChange={handleStatusChange}
         />
 
-        {/* Stats Summary */}
+        {/* Performance Summary */}
         {stats && activeTab === 'sessions' && (
-          <div className="mt-6 bg-white shadow-sm rounded-lg p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Performance Summary</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">
+          <div className="mt-8 bg-gradient-to-br from-white to-gray-50 border border-gray-200 shadow-2xl rounded-3xl p-8">
+            <div className="flex items-center mb-6">
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl flex items-center justify-center mr-4">
+                <FiTrendingUp className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900">Performance Summary</h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-6 text-center hover:shadow-lg transition-all duration-300">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <FiCheckCircle className="w-8 h-8 text-white" />
+                </div>
+                <div className="text-3xl font-bold text-gray-900 mb-2">
                   {stats.completion_rate}%
                 </div>
-                <div className="text-sm text-gray-600">Completion Rate</div>
+                <div className="text-sm font-bold text-green-700">Completion Rate</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-indigo-600">
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-6 text-center hover:shadow-lg transition-all duration-300">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <FiDollarSign className="w-8 h-8 text-white" />
+                </div>
+                <div className="text-3xl font-bold text-gray-900 mb-2">
                   ${stats.total_earnings}
                 </div>
-                <div className="text-sm text-gray-600">Total Earnings</div>
+                <div className="text-sm font-bold text-blue-700">Total Earnings</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-yellow-600">
-                  {stats.average_rating.toFixed(1)} ★
+              <div className="bg-gradient-to-br from-yellow-50 to-amber-50 border border-yellow-200 rounded-2xl p-6 text-center hover:shadow-lg transition-all duration-300">
+                <div className="w-16 h-16 bg-gradient-to-br from-yellow-600 to-amber-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <FiStar className="w-8 h-8 text-white" />
                 </div>
-                <div className="text-sm text-gray-600">Student Rating</div>
+                <div className="text-3xl font-bold text-gray-900 mb-2">
+                  {stats.average_rating.toFixed(1)}
+                </div>
+                <div className="text-sm font-bold text-yellow-700">Student Rating</div>
               </div>
             </div>
           </div>

@@ -1,4 +1,14 @@
 import React, { useState } from 'react'
+import {
+  FiBarChart2,
+  FiCalendar,
+  FiDownload,
+  FiFileText,
+  FiFilter,
+  FiClock,
+  FiTrendingUp,
+  FiSettings
+} from 'react-icons/fi'
 
 interface StatisticsHeaderProps {
   dateRange: {
@@ -63,78 +73,119 @@ const StatisticsHeader: React.FC<StatisticsHeaderProps> = ({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow border border-gray-200 p-6 mb-6">
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Analytics Dashboard</h1>
-          <p className="text-gray-600">
-            Track your performance and gain insights into your business
-          </p>
+    <div className="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl border border-gray-200 p-8 mb-8 overflow-hidden">
+      {/* Header Gradient Background */}
+      <div className="bg-gradient-to-r from-indigo-600 to-purple-700 rounded-2xl p-6 mb-8 -m-2">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between text-white">
+          <div className="flex items-center">
+            <div className="w-12 h-12 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center mr-4">
+              <FiBarChart2 className="w-6 h-6" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold mb-2">Analytics Dashboard</h1>
+              <p className="text-indigo-100 text-lg">
+                Track your performance and gain insights into your business
+              </p>
+            </div>
+          </div>
+          <div className="mt-4 lg:mt-0">
+            <div className="flex items-center bg-white bg-opacity-20 rounded-2xl px-4 py-2">
+              <FiTrendingUp className="w-5 h-5 mr-2" />
+              <span className="font-semibold">Real-time Analytics</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-6">
+        {/* Quick Filter Buttons */}
+        <div className="bg-gray-50 rounded-2xl p-6">
+          <div className="flex items-center mb-4">
+            <FiFilter className="w-5 h-5 text-gray-600 mr-2" />
+            <h3 className="text-lg font-bold text-gray-800">Quick Time Filters</h3>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            {[
+              { key: 'today', label: 'Today', icon: FiClock },
+              { key: 'week', label: 'Last 7 Days', icon: FiCalendar },
+              { key: 'month', label: 'Last Month', icon: FiCalendar },
+              { key: 'quarter', label: 'Last Quarter', icon: FiCalendar },
+              { key: 'year', label: 'Last Year', icon: FiCalendar }
+            ].map((filter) => {
+              const IconComponent = filter.icon
+              return (
+                <button
+                  key={filter.key}
+                  onClick={() => handleQuickFilter(filter.key)}
+                  className={`inline-flex items-center px-4 py-3 text-sm font-semibold rounded-2xl border-2 transition-all duration-300 hover:transform hover:scale-105 ${
+                    activeQuickFilter === filter.key
+                      ? 'bg-gradient-to-r from-purple-100 to-pink-100 border-purple-300 text-purple-700 shadow-lg'
+                      : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 shadow-sm'
+                  }`}
+                >
+                  <IconComponent className="w-4 h-4 mr-2" />
+                  {filter.label}
+                </button>
+              )
+            })}
+          </div>
         </div>
 
-        <div className="mt-4 lg:mt-0 flex flex-col gap-4">
-          {/* Quick Filter Buttons */}
-          <div className="flex flex-wrap gap-2">
-            {[
-              { key: 'today', label: 'Today' },
-              { key: 'week', label: 'Last 7 Days' },
-              { key: 'month', label: 'Last Month' },
-              { key: 'quarter', label: 'Last Quarter' },
-              { key: 'year', label: 'Last Year' }
-            ].map((filter) => (
-              <button
-                key={filter.key}
-                onClick={() => handleQuickFilter(filter.key)}
-                className={`px-3 py-1 text-xs rounded-lg border transition-colors ${
-                  activeQuickFilter === filter.key
-                    ? 'bg-purple-100 border-purple-300 text-purple-700'
-                    : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                {filter.label}
-              </button>
-            ))}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-blue-50 rounded-2xl p-6 border border-blue-200">
+            <div className="flex items-center mb-4">
+              <FiCalendar className="w-5 h-5 text-blue-600 mr-2" />
+              <h3 className="text-lg font-bold text-blue-800">Custom Date Range</h3>
+            </div>
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <div className="w-full sm:w-auto">
+                <label className="block text-sm font-medium text-blue-700 mb-2">
+                  From Date
+                </label>
+                <input
+                  type="date"
+                  value={dateRange.startDate}
+                  onChange={(e) => handleDateChange('startDate', e.target.value)}
+                  className="w-full px-4 py-3 border-2 border-blue-300 rounded-2xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium text-gray-900 bg-white"
+                />
+              </div>
+              <div className="flex items-center justify-center py-2">
+                <span className="text-blue-600 font-bold text-lg">to</span>
+              </div>
+              <div className="w-full sm:w-auto">
+                <label className="block text-sm font-medium text-blue-700 mb-2">
+                  To Date
+                </label>
+                <input
+                  type="date"
+                  value={dateRange.endDate}
+                  onChange={(e) => handleDateChange('endDate', e.target.value)}
+                  className="w-full px-4 py-3 border-2 border-blue-300 rounded-2xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium text-gray-900 bg-white"
+                />
+              </div>
+            </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-700 whitespace-nowrap">
-                Custom Range:
-              </label>
-              <input
-                type="date"
-                value={dateRange.startDate}
-                onChange={(e) => handleDateChange('startDate', e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-              />
-              <span className="text-gray-500">to</span>
-              <input
-                type="date"
-                value={dateRange.endDate}
-                onChange={(e) => handleDateChange('endDate', e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-              />
+          <div className="bg-green-50 rounded-2xl p-6 border border-green-200">
+            <div className="flex items-center mb-4">
+              <FiDownload className="w-5 h-5 text-green-600 mr-2" />
+              <h3 className="text-lg font-bold text-green-800">Export Reports</h3>
             </div>
-
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-4">
               <button
                 onClick={() => onExportReport('csv')}
                 disabled={loading}
-                className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                className="flex-1 inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-700 text-white font-bold rounded-2xl hover:from-green-700 hover:to-emerald-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl hover:transform hover:scale-105"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-                </svg>
+                <FiFileText className="w-5 h-5 mr-2" />
                 Export CSV
               </button>
               <button
                 onClick={() => onExportReport('pdf')}
                 disabled={loading}
-                className="px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                className="flex-1 inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-red-600 to-pink-700 text-white font-bold rounded-2xl hover:from-red-700 hover:to-pink-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl hover:transform hover:scale-105"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                </svg>
+                <FiDownload className="w-5 h-5 mr-2" />
                 Export PDF
               </button>
             </div>

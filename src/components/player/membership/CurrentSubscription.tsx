@@ -1,4 +1,13 @@
 import React, { useState } from 'react'
+import {
+  FiCheckCircle,
+  FiX,
+  FiCalendar,
+  FiDollarSign,
+  FiRefreshCw,
+  FiCreditCard,
+  FiClipboard
+} from 'react-icons/fi'
 
 interface SubscriptionPlan {
   id: number
@@ -72,14 +81,19 @@ const CurrentSubscription: React.FC<CurrentSubscriptionProps> = ({
 
   if (!subscription) {
     return (
-      <div className="bg-white shadow-sm rounded-lg p-6 mb-6">
-        <h2 className="text-lg font-medium text-gray-900 mb-4">Current Subscription</h2>
-        <div className="text-center py-8">
-          <div className="text-gray-500 mb-4">
-            <div className="text-4xl mb-2">📋</div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No Active Subscription</h3>
-            <p className="text-gray-600">You don't have an active membership subscription.</p>
+      <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-200 shadow-2xl rounded-3xl p-8 mb-6">
+        <div className="flex items-center mb-6">
+          <div className="w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-700 rounded-2xl flex items-center justify-center mr-4">
+            <FiClipboard className="w-6 h-6 text-white" />
           </div>
+          <h2 className="text-2xl font-bold text-gray-900">Current Subscription</h2>
+        </div>
+        <div className="text-center py-12">
+          <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-3xl flex items-center justify-center mx-auto mb-6">
+            <FiClipboard className="w-10 h-10 text-gray-400" />
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-3">No Active Subscription</h3>
+          <p className="text-gray-600 font-medium">You don't have an active membership subscription.</p>
         </div>
       </div>
     )
@@ -88,100 +102,120 @@ const CurrentSubscription: React.FC<CurrentSubscriptionProps> = ({
   const features = parseFeatures(subscription.plan.features)
 
   return (
-    <div className="bg-white shadow-sm rounded-lg p-6 mb-6">
-      <h2 className="text-lg font-medium text-gray-900 mb-4">Current Subscription</h2>
-      
-      <div className="border border-gray-200 rounded-lg p-6">
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <h3 className="text-xl font-semibold text-gray-900">{subscription.plan.name}</h3>
-            <p className="text-gray-600 mt-1">{subscription.plan.description}</p>
+    <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-200 shadow-2xl rounded-3xl p-8 mb-6">
+      <div className="flex items-center mb-6">
+        <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl flex items-center justify-center mr-4">
+          <FiCheckCircle className="w-6 h-6 text-white" />
+        </div>
+        <h2 className="text-2xl font-bold text-gray-900">Current Subscription</h2>
+      </div>
+
+      <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200 rounded-2xl p-8 shadow-lg">
+        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start mb-6">
+          <div className="mb-4 lg:mb-0">
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">{subscription.plan.name}</h3>
+            <p className="text-gray-600 font-medium">{subscription.plan.description}</p>
           </div>
-          <div className="text-right">
-            <div className="text-2xl font-bold text-indigo-600">
+          <div className="text-right bg-white rounded-2xl p-4 shadow-lg border border-gray-200">
+            <div className="text-3xl font-bold text-indigo-600 mb-1">
               ${subscription.plan.monthly_price}/month
             </div>
-            <div className="text-sm text-gray-500">
+            <div className="text-sm font-medium text-gray-500">
               or ${subscription.plan.yearly_price}/year
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Start Date</label>
-            <div className="text-gray-900">{formatDate(subscription.start_date)}</div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div className="bg-white rounded-2xl p-4 shadow-md border border-gray-200">
+            <div className="flex items-center mb-2">
+              <FiCalendar className="w-5 h-5 text-blue-500 mr-2" />
+              <label className="text-sm font-bold text-gray-700">Start Date</label>
+            </div>
+            <div className="text-lg font-bold text-gray-900">{formatDate(subscription.start_date)}</div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">End Date</label>
-            <div className="text-gray-900">{formatDate(subscription.end_date)}</div>
+          <div className="bg-white rounded-2xl p-4 shadow-md border border-gray-200">
+            <div className="flex items-center mb-2">
+              <FiCalendar className="w-5 h-5 text-red-500 mr-2" />
+              <label className="text-sm font-bold text-gray-700">End Date</label>
+            </div>
+            <div className="text-lg font-bold text-gray-900">{formatDate(subscription.end_date)}</div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Status</label>
-            <div className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-              subscription.status === 'active' 
-                ? 'bg-green-100 text-green-800'
+          <div className="bg-white rounded-2xl p-4 shadow-md border border-gray-200">
+            <div className="flex items-center mb-2">
+              <FiCheckCircle className="w-5 h-5 text-green-500 mr-2" />
+              <label className="text-sm font-bold text-gray-700">Status</label>
+            </div>
+            <div className={`inline-flex px-3 py-1 text-sm font-bold rounded-full border ${
+              subscription.status === 'active'
+                ? 'bg-gradient-to-r from-green-100 to-emerald-100 border-green-200 text-green-800'
                 : subscription.status === 'canceled'
-                ? 'bg-yellow-100 text-yellow-800'
-                : 'bg-red-100 text-red-800'
+                ? 'bg-gradient-to-r from-yellow-100 to-amber-100 border-yellow-200 text-yellow-800'
+                : 'bg-gradient-to-r from-red-100 to-pink-100 border-red-200 text-red-800'
             }`}>
               {subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1)}
             </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Auto Renewal</label>
-            <div className="text-gray-900">{subscription.auto_renew ? 'Enabled' : 'Disabled'}</div>
+          <div className="bg-white rounded-2xl p-4 shadow-md border border-gray-200">
+            <div className="flex items-center mb-2">
+              <FiRefreshCw className="w-5 h-5 text-purple-500 mr-2" />
+              <label className="text-sm font-bold text-gray-700">Auto Renewal</label>
+            </div>
+            <div className="text-lg font-bold text-gray-900">{subscription.auto_renew ? 'Enabled' : 'Disabled'}</div>
           </div>
         </div>
 
-        <div className="mb-6">
-          <h4 className="text-sm font-medium text-gray-700 mb-2">Features Included:</h4>
-          <ul className="space-y-1">
-            {features.map((feature, index) => (
-              <li key={index} className="flex items-center text-sm text-gray-600">
-                <svg className="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-                {feature}
-              </li>
-            ))}
-          </ul>
+        <div className="mb-8">
+          <h4 className="text-lg font-bold text-gray-900 mb-4">Features Included:</h4>
+          <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-200">
+            <ul className="space-y-3">
+              {features.map((feature, index) => (
+                <li key={index} className="flex items-center text-sm font-medium text-gray-700">
+                  <FiCheckCircle className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
+                  {feature}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col sm:flex-row gap-4">
           {subscription.status === 'active' && (
             <>
               <button
                 onClick={onUpdatePaymentMethod}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
+                className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold py-3 px-6 rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl hover:transform hover:scale-105 flex items-center justify-center"
               >
+                <FiCreditCard className="w-5 h-5 mr-2" />
                 Update Payment Method
               </button>
-              
+
               <button
                 onClick={() => setShowCancelConfirm(true)}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200"
+                className="flex-1 bg-gradient-to-r from-red-600 to-pink-700 hover:from-red-700 hover:to-pink-800 text-white font-bold py-3 px-6 rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl hover:transform hover:scale-105 flex items-center justify-center"
               >
+                <FiX className="w-5 h-5 mr-2" />
                 Cancel Subscription
               </button>
             </>
           )}
 
           {(subscription.status === 'canceled' || subscription.status === 'expired') && (
-            <div className="flex items-center space-x-4">
+            <div className="flex flex-col sm:flex-row items-center gap-4">
               <select
                 value={renewalCycle}
                 onChange={(e) => setRenewalCycle(e.target.value as 'monthly' | 'yearly')}
-                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="px-4 py-3 border-2 border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-bold text-gray-900"
               >
                 <option value="monthly">Monthly Billing</option>
                 <option value="yearly">Yearly Billing</option>
               </select>
-              
+
               <button
                 onClick={handleRenew}
-                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-200"
+                className="bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 text-white font-bold py-3 px-6 rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl hover:transform hover:scale-105 flex items-center justify-center"
               >
+                <FiRefreshCw className="w-5 h-5 mr-2" />
                 Renew Subscription
               </button>
             </div>

@@ -4,6 +4,26 @@ import { AppDispatch, RootState } from '../../../../store'
 import { updatePartnerProfile, PartnerProfile } from '../../../../store/slices/partnerProfileSlice'
 import { fetchCommonData } from '../../../../store/slices/commonSlice'
 import SimpleImageUpload from '../../../common/SimpleImageUpload'
+import {
+  FiUser,
+  FiMail,
+  FiPhone,
+  FiHome,
+  FiEdit3,
+  FiSave,
+  FiX,
+  FiGlobe,
+  FiCheckCircle,
+  FiXCircle,
+  FiCalendar,
+  FiMapPin,
+  FiTag,
+  FiExternalLink,
+  FiUsers,
+  FiClock,
+  FiShield,
+  FiCreditCard
+} from 'react-icons/fi'
 
 interface PartnerAccountTabProps {
   profile: PartnerProfile | null
@@ -101,11 +121,23 @@ export const PartnerAccountTab: React.FC<PartnerAccountTabProps> = ({ profile })
 
   if (!profile) {
     return (
-      <div className="animate-pulse">
-        <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
-        <div className="space-y-3">
-          <div className="h-4 bg-gray-200 rounded"></div>
-          <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+      <div className="bg-gradient-to-br from-white to-gray-50 rounded-3xl p-8 shadow-lg border border-gray-200">
+        <div className="animate-pulse space-y-6">
+          <div className="flex items-center space-x-4">
+            <div className="w-16 h-16 bg-gradient-to-br from-gray-200 to-gray-300 rounded-2xl"></div>
+            <div className="flex-1">
+              <div className="h-8 bg-gradient-to-r from-gray-200 to-gray-300 rounded-xl w-1/3 mb-2"></div>
+              <div className="h-4 bg-gradient-to-r from-gray-200 to-gray-300 rounded-lg w-2/3"></div>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="space-y-3">
+                <div className="h-4 bg-gradient-to-r from-gray-200 to-gray-300 rounded w-1/2"></div>
+                <div className="h-6 bg-gradient-to-r from-gray-200 to-gray-300 rounded-lg"></div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     )
@@ -113,61 +145,88 @@ export const PartnerAccountTab: React.FC<PartnerAccountTabProps> = ({ profile })
 
   if (isEditing) {
     return (
-      <div>
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-lg font-medium text-gray-900">Edit Account Information</h3>
+      <div className="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl border border-gray-200 overflow-hidden">
+        <div className="bg-gradient-to-r from-purple-600 to-pink-700 px-8 py-6">
+          <div className="flex justify-between items-center text-white">
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center mr-4">
+                <FiEdit3 className="w-5 h-5" />
+              </div>
+              <h3 className="text-2xl font-bold">Edit Account Information</h3>
+            </div>
+          </div>
         </div>
+        <div className="p-8">
 
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* User Account Information */}
-          <div>
-            <h4 className="text-md font-medium text-gray-900 mb-4">Account Details</h4>
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
+            <div className="flex items-center mb-6">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center mr-3">
+                <FiUser className="w-4 h-4 text-white" />
+              </div>
+              <h4 className="text-xl font-bold text-gray-900">Account Details</h4>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label htmlFor="user_username" className="block text-sm font-medium text-gray-700 mb-2">
                   Username
                 </label>
-                <input
-                  type="text"
-                  id="user_username"
-                  name="user_username"
-                  value={formData.user_data.username}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
+                <div className="relative">
+                  <FiUser className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    id="user_username"
+                    name="user_username"
+                    value={formData.user_data.username}
+                    onChange={handleInputChange}
+                    className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-medium text-gray-900 bg-white hover:bg-gray-50 transition-all duration-200"
+                  />
+                </div>
               </div>
               <div>
                 <label htmlFor="user_email" className="block text-sm font-medium text-gray-700 mb-2">
                   Email
                 </label>
-                <input
-                  type="email"
-                  id="user_email"
-                  name="user_email"
-                  value={formData.user_data.email}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
+                <div className="relative">
+                  <FiMail className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                  <input
+                    type="email"
+                    id="user_email"
+                    name="user_email"
+                    value={formData.user_data.email}
+                    onChange={handleInputChange}
+                    className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-medium text-gray-900 bg-white hover:bg-gray-50 transition-all duration-200"
+                  />
+                </div>
               </div>
               <div>
                 <label htmlFor="user_phone" className="block text-sm font-medium text-gray-700 mb-2">
                   Phone
                 </label>
-                <input
-                  type="text"
-                  id="user_phone"
-                  name="user_phone"
-                  value={formData.user_data.phone}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
+                <div className="relative">
+                  <FiPhone className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    id="user_phone"
+                    name="user_phone"
+                    value={formData.user_data.phone}
+                    onChange={handleInputChange}
+                    className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-medium text-gray-900 bg-white hover:bg-gray-50 transition-all duration-200"
+                  />
+                </div>
               </div>
             </div>
           </div>
 
           {/* Business Information */}
-          <div>
-            <h4 className="text-md font-medium text-gray-900 mb-4">Business Information</h4>
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200">
+            <div className="flex items-center mb-6">
+              <div className="w-8 h-8 bg-gradient-to-br from-green-600 to-emerald-700 rounded-xl flex items-center justify-center mr-3">
+                <FiHome className="w-4 h-4 text-white" />
+              </div>
+              <h4 className="text-xl font-bold text-gray-900">Business Information</h4>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label htmlFor="business_name" className="block text-sm font-medium text-gray-700 mb-2">
@@ -179,7 +238,7 @@ export const PartnerAccountTab: React.FC<PartnerAccountTabProps> = ({ profile })
                   name="business_name"
                   value={formData.business_name}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-medium text-gray-900 bg-white hover:bg-gray-50 transition-all duration-200"
                   required
                 />
               </div>
@@ -192,7 +251,7 @@ export const PartnerAccountTab: React.FC<PartnerAccountTabProps> = ({ profile })
                   name="partner_type"
                   value={formData.partner_type}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-medium text-gray-900 bg-white hover:bg-gray-50 transition-all duration-200"
                 >
                   <option value="">Select partner type</option>
                   {partnerTypes.map((type) => (
@@ -212,7 +271,7 @@ export const PartnerAccountTab: React.FC<PartnerAccountTabProps> = ({ profile })
                   name="rfc"
                   value={formData.rfc}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-medium text-gray-900 bg-white hover:bg-gray-50 transition-all duration-200"
                 />
               </div>
               <div>
@@ -225,7 +284,7 @@ export const PartnerAccountTab: React.FC<PartnerAccountTabProps> = ({ profile })
                   name="contact_name"
                   value={formData.contact_name}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-medium text-gray-900 bg-white hover:bg-gray-50 transition-all duration-200"
                 />
               </div>
               <div>
@@ -238,7 +297,7 @@ export const PartnerAccountTab: React.FC<PartnerAccountTabProps> = ({ profile })
                   name="contact_title"
                   value={formData.contact_title}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-medium text-gray-900 bg-white hover:bg-gray-50 transition-all duration-200"
                 />
               </div>
               <div>
@@ -250,7 +309,7 @@ export const PartnerAccountTab: React.FC<PartnerAccountTabProps> = ({ profile })
                   name="state_id"
                   value={formData.state_id?.toString() || ''}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-medium text-gray-900 bg-white hover:bg-gray-50 transition-all duration-200"
                 >
                   <option value="">Select state</option>
                   {commonData?.states?.map((state) => (
@@ -270,7 +329,7 @@ export const PartnerAccountTab: React.FC<PartnerAccountTabProps> = ({ profile })
                   name="website"
                   value={formData.website}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-medium text-gray-900 bg-white hover:bg-gray-50 transition-all duration-200"
                 />
               </div>
               <div>
@@ -283,7 +342,7 @@ export const PartnerAccountTab: React.FC<PartnerAccountTabProps> = ({ profile })
                   name="social_media"
                   value={formData.social_media}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-medium text-gray-900 bg-white hover:bg-gray-50 transition-all duration-200"
                 />
               </div>
               <div className="md:col-span-2">
@@ -317,76 +376,119 @@ export const PartnerAccountTab: React.FC<PartnerAccountTabProps> = ({ profile })
           </div>
 
           {/* Action Buttons */}
-          <div className="flex justify-end space-x-4 pt-6 border-t">
+          <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 pt-8 border-t border-gray-200">
             <button
               type="button"
               onClick={handleCancel}
-              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="inline-flex items-center px-6 py-3 border-2 border-gray-300 rounded-2xl text-gray-700 font-bold hover:bg-gray-50 transition-all duration-200 hover:transform hover:scale-105"
             >
+              <FiX className="w-5 h-5 mr-2" />
               Cancel
             </button>
             <button
               type="submit"
-              className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-700 text-white rounded-2xl hover:from-purple-700 hover:to-pink-800 transition-all duration-300 shadow-lg hover:shadow-xl hover:transform hover:scale-105 font-bold"
             >
+              <FiSave className="w-5 h-5 mr-2" />
               Save Changes
             </button>
           </div>
         </form>
+        </div>
       </div>
     )
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-lg font-medium text-gray-900">Account Information</h3>
-        <button
-          onClick={() => setIsEditing(true)}
-          className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-        >
-          Edit Profile
-        </button>
+    <div className="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl border border-gray-200 overflow-hidden">
+      <div className="bg-gradient-to-r from-indigo-600 to-purple-700 px-8 py-6">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0 text-white">
+          <div className="flex items-center">
+            <div className="w-10 h-10 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center mr-4">
+              <FiUser className="w-5 h-5" />
+            </div>
+            <h3 className="text-2xl font-bold">Account Information</h3>
+          </div>
+          <button
+            onClick={() => setIsEditing(true)}
+            className="inline-flex items-center px-6 py-3 bg-white bg-opacity-20 text-white rounded-2xl hover:bg-opacity-30 transition-all duration-300 font-bold hover:transform hover:scale-105"
+          >
+            <FiEdit3 className="w-5 h-5 mr-2" />
+            Edit Profile
+          </button>
+        </div>
       </div>
+      <div className="p-8">
 
       <div className="space-y-8">
         {/* Account Information */}
-        <div>
-          <h4 className="text-md font-medium text-gray-900 mb-4">Account Details</h4>
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
+          <div className="flex items-center mb-6">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center mr-3">
+              <FiUser className="w-4 h-4 text-white" />
+            </div>
+            <h4 className="text-xl font-bold text-gray-900">Account Details</h4>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Username</label>
-              <p className="text-gray-900">{profile.user.username}</p>
+            <div className="bg-white rounded-2xl p-4 border border-blue-200 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-center mb-2">
+                <FiUser className="w-4 h-4 text-blue-600 mr-2" />
+                <label className="block text-sm font-bold text-gray-600">Username</label>
+              </div>
+              <p className="text-lg font-semibold text-gray-900">{profile.user.username}</p>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Email</label>
-              <p className="text-gray-900">{profile.user.email}</p>
+            <div className="bg-white rounded-2xl p-4 border border-blue-200 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-center mb-2">
+                <FiMail className="w-4 h-4 text-blue-600 mr-2" />
+                <label className="block text-sm font-bold text-gray-600">Email</label>
+              </div>
+              <p className="text-lg font-semibold text-gray-900">{profile.user.email}</p>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Phone</label>
-              <p className="text-gray-900">{profile.user.phone || 'Not provided'}</p>
+            <div className="bg-white rounded-2xl p-4 border border-blue-200 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-center mb-2">
+                <FiPhone className="w-4 h-4 text-blue-600 mr-2" />
+                <label className="block text-sm font-bold text-gray-600">Phone</label>
+              </div>
+              <p className="text-lg font-semibold text-gray-900">{profile.user.phone || 'Not provided'}</p>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Account Status</label>
-              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                profile.user.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+            <div className="bg-white rounded-2xl p-4 border border-blue-200 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-center mb-2">
+                <FiShield className="w-4 h-4 text-blue-600 mr-2" />
+                <label className="block text-sm font-bold text-gray-600">Account Status</label>
+              </div>
+              <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold ${
+                profile.user.is_active ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-300' : 'bg-gradient-to-r from-red-100 to-pink-100 text-red-800 border border-red-300'
               }`}>
-                {profile.user.is_active ? 'Active' : 'Inactive'}
+                {profile.user.is_active ? (
+                  <><FiCheckCircle className="w-4 h-4 mr-2" />Active</>
+                ) : (
+                  <><FiXCircle className="w-4 h-4 mr-2" />Inactive</>
+                )}
               </span>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Verification Status</label>
-              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                profile.user.is_verified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+            <div className="bg-white rounded-2xl p-4 border border-blue-200 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-center mb-2">
+                <FiCheckCircle className="w-4 h-4 text-blue-600 mr-2" />
+                <label className="block text-sm font-bold text-gray-600">Verification Status</label>
+              </div>
+              <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold ${
+                profile.user.is_verified ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-300' : 'bg-gradient-to-r from-yellow-100 to-orange-100 text-yellow-800 border border-yellow-300'
               }`}>
-                {profile.user.is_verified ? 'Verified' : 'Pending'}
+                {profile.user.is_verified ? (
+                  <><FiCheckCircle className="w-4 h-4 mr-2" />Verified</>
+                ) : (
+                  <><FiClock className="w-4 h-4 mr-2" />Pending</>
+                )}
               </span>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Last Login</label>
-              <p className="text-gray-900">
-                {profile.user.last_login ? 
-                  new Date(profile.user.last_login).toLocaleDateString() : 
+            <div className="bg-white rounded-2xl p-4 border border-blue-200 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-center mb-2">
+                <FiClock className="w-4 h-4 text-blue-600 mr-2" />
+                <label className="block text-sm font-bold text-gray-600">Last Login</label>
+              </div>
+              <p className="text-lg font-semibold text-gray-900">
+                {profile.user.last_login ?
+                  new Date(profile.user.last_login).toLocaleDateString() :
                   'Never logged in'
                 }
               </p>
@@ -395,79 +497,128 @@ export const PartnerAccountTab: React.FC<PartnerAccountTabProps> = ({ profile })
         </div>
 
         {/* Business Information */}
-        <div>
-          <h4 className="text-md font-medium text-gray-900 mb-4">Business Information</h4>
+        <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200">
+          <div className="flex items-center mb-6">
+            <div className="w-8 h-8 bg-gradient-to-br from-green-600 to-emerald-700 rounded-xl flex items-center justify-center mr-3">
+              <FiHome className="w-4 h-4 text-white" />
+            </div>
+            <h4 className="text-xl font-bold text-gray-900">Business Information</h4>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Business Name</label>
-              <p className="text-gray-900">{profile.business_name}</p>
+            <div className="bg-white rounded-2xl p-4 border border-green-200 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-center mb-2">
+                <FiHome className="w-4 h-4 text-green-600 mr-2" />
+                <label className="block text-sm font-bold text-gray-600">Business Name</label>
+              </div>
+              <p className="text-lg font-semibold text-gray-900">{profile.business_name}</p>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Partner Type</label>
-              <p className="text-gray-900 capitalize">{profile.partner_type?.replace('_', ' ') || 'Not specified'}</p>
+            <div className="bg-white rounded-2xl p-4 border border-green-200 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-center mb-2">
+                <FiTag className="w-4 h-4 text-green-600 mr-2" />
+                <label className="block text-sm font-bold text-gray-600">Partner Type</label>
+              </div>
+              <p className="text-lg font-semibold text-gray-900 capitalize">{profile.partner_type?.replace('_', ' ') || 'Not specified'}</p>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">RFC (Tax ID)</label>
-              <p className="text-gray-900">{profile.rfc || 'Not provided'}</p>
+            <div className="bg-white rounded-2xl p-4 border border-green-200 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-center mb-2">
+                <FiCreditCard className="w-4 h-4 text-green-600 mr-2" />
+                <label className="block text-sm font-bold text-gray-600">RFC (Tax ID)</label>
+              </div>
+              <p className="text-lg font-semibold text-gray-900">{profile.rfc || 'Not provided'}</p>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Contact Name</label>
-              <p className="text-gray-900">{profile.contact_name || 'Not specified'}</p>
+            <div className="bg-white rounded-2xl p-4 border border-green-200 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-center mb-2">
+                <FiUsers className="w-4 h-4 text-green-600 mr-2" />
+                <label className="block text-sm font-bold text-gray-600">Contact Name</label>
+              </div>
+              <p className="text-lg font-semibold text-gray-900">{profile.contact_name || 'Not specified'}</p>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Contact Title</label>
-              <p className="text-gray-900">{profile.contact_title || 'Not specified'}</p>
+            <div className="bg-white rounded-2xl p-4 border border-green-200 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-center mb-2">
+                <FiUser className="w-4 h-4 text-green-600 mr-2" />
+                <label className="block text-sm font-bold text-gray-600">Contact Title</label>
+              </div>
+              <p className="text-lg font-semibold text-gray-900">{profile.contact_title || 'Not specified'}</p>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">State</label>
-              <p className="text-gray-900">{profile.state?.name || 'Not specified'}</p>
+            <div className="bg-white rounded-2xl p-4 border border-green-200 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-center mb-2">
+                <FiMapPin className="w-4 h-4 text-green-600 mr-2" />
+                <label className="block text-sm font-bold text-gray-600">State</label>
+              </div>
+              <p className="text-lg font-semibold text-gray-900">{profile.state?.name || 'Not specified'}</p>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Has Courts</label>
-              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                profile.has_courts ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+            <div className="bg-white rounded-2xl p-4 border border-green-200 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-center mb-2">
+                <FiHome className="w-4 h-4 text-green-600 mr-2" />
+                <label className="block text-sm font-bold text-gray-600">Has Courts</label>
+              </div>
+              <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold ${
+                profile.has_courts ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-300' : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800 border border-gray-300'
               }`}>
-                {profile.has_courts ? 'Yes' : 'No'}
+                {profile.has_courts ? (
+                  <><FiCheckCircle className="w-4 h-4 mr-2" />Yes</>
+                ) : (
+                  <><FiXCircle className="w-4 h-4 mr-2" />No</>
+                )}
               </span>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Website</label>
-              <p className="text-gray-900">
+            <div className="bg-white rounded-2xl p-4 border border-green-200 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-center mb-2">
+                <FiGlobe className="w-4 h-4 text-green-600 mr-2" />
+                <label className="block text-sm font-bold text-gray-600">Website</label>
+              </div>
+              <div className="text-lg font-semibold text-gray-900">
                 {profile.website ? (
-                  <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800">
-                    {profile.website}
+                  <a href={profile.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-purple-600 hover:text-purple-800 transition-colors duration-200">
+                    <span className="mr-2">{profile.website}</span>
+                    <FiExternalLink className="w-4 h-4" />
                   </a>
                 ) : (
                   'Not provided'
                 )}
-              </p>
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Social Media</label>
-              <p className="text-gray-900">{profile.social_media || 'Not provided'}</p>
+            <div className="bg-white rounded-2xl p-4 border border-green-200 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-center mb-2">
+                <FiUsers className="w-4 h-4 text-green-600 mr-2" />
+                <label className="block text-sm font-bold text-gray-600">Social Media</label>
+              </div>
+              <p className="text-lg font-semibold text-gray-900">{profile.social_media || 'Not provided'}</p>
             </div>
           </div>
         </div>
 
         {/* Membership Information */}
-        <div>
-          <h4 className="text-md font-medium text-gray-900 mb-4">Membership Information</h4>
+        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-200">
+          <div className="flex items-center mb-6">
+            <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-pink-700 rounded-xl flex items-center justify-center mr-3">
+              <FiCreditCard className="w-4 h-4 text-white" />
+            </div>
+            <h4 className="text-xl font-bold text-gray-900">Membership Information</h4>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Premium Expires</label>
-              <p className="text-gray-900">
-                {profile.premium_expires_at ? 
-                  new Date(profile.premium_expires_at).toLocaleDateString() : 
+            <div className="bg-white rounded-2xl p-4 border border-purple-200 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-center mb-2">
+                <FiCreditCard className="w-4 h-4 text-purple-600 mr-2" />
+                <label className="block text-sm font-bold text-gray-600">Premium Expires</label>
+              </div>
+              <p className="text-lg font-semibold text-gray-900">
+                {profile.premium_expires_at ?
+                  new Date(profile.premium_expires_at).toLocaleDateString() :
                   'Not premium member'
                 }
               </p>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Member Since</label>
-              <p className="text-gray-900">{new Date(profile.created_at).toLocaleDateString()}</p>
+            <div className="bg-white rounded-2xl p-4 border border-purple-200 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-center mb-2">
+                <FiCalendar className="w-4 h-4 text-purple-600 mr-2" />
+                <label className="block text-sm font-bold text-gray-600">Member Since</label>
+              </div>
+              <p className="text-lg font-semibold text-gray-900">{new Date(profile.created_at).toLocaleDateString()}</p>
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   )

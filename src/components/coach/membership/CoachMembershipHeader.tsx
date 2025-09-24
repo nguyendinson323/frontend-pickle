@@ -1,4 +1,15 @@
 import React from 'react'
+import {
+  FiCheckCircle,
+  FiX,
+  FiAlertTriangle,
+  FiCalendar,
+  FiDollarSign,
+  FiUsers,
+  FiAward,
+  FiTrendingUp,
+  FiTarget
+} from 'react-icons/fi'
 
 interface CoachMembershipHeaderProps {
   membershipStatus: string
@@ -19,16 +30,36 @@ const CoachMembershipHeader: React.FC<CoachMembershipHeaderProps> = ({
   studentsCount,
   sessionsCompleted
 }) => {
-  const getStatusColor = (status: string) => {
+  const getStatusDisplay = (status: string) => {
     switch (status) {
       case 'active':
-        return 'bg-green-50 text-green-600'
+        return {
+          icon: <FiCheckCircle className="w-6 h-6" />,
+          gradient: 'from-green-600 to-emerald-700',
+          bgColor: 'from-green-50 to-emerald-50',
+          borderColor: 'border-green-200'
+        }
       case 'expired':
-        return 'bg-red-50 text-red-600'
+        return {
+          icon: <FiX className="w-6 h-6" />,
+          gradient: 'from-red-600 to-pink-700',
+          bgColor: 'from-red-50 to-pink-50',
+          borderColor: 'border-red-200'
+        }
       case 'canceled':
-        return 'bg-yellow-50 text-yellow-600'
+        return {
+          icon: <FiAlertTriangle className="w-6 h-6" />,
+          gradient: 'from-yellow-600 to-amber-700',
+          bgColor: 'from-yellow-50 to-amber-50',
+          borderColor: 'border-yellow-200'
+        }
       default:
-        return 'bg-gray-50 text-gray-600'
+        return {
+          icon: <FiAward className="w-6 h-6" />,
+          gradient: 'from-gray-600 to-gray-700',
+          bgColor: 'from-gray-50 to-gray-100',
+          borderColor: 'border-gray-200'
+        }
     }
   }
 
@@ -40,58 +71,101 @@ const CoachMembershipHeader: React.FC<CoachMembershipHeaderProps> = ({
     })
   }
 
+  const statusDisplay = getStatusDisplay(membershipStatus)
+
   return (
-    <div className="bg-white shadow-sm rounded-lg p-6 mb-6">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold text-gray-900">Coach Membership</h1>
-        <div className="text-sm text-gray-500">
-          Manage your coaching membership and track your performance
+    <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-200 shadow-2xl rounded-3xl p-8 mb-6">
+      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8">
+        <div className="mb-4 lg:mb-0">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Coach Membership</h1>
+          <p className="text-gray-600 font-medium">
+            Manage your coaching membership and track your performance
+          </p>
+        </div>
+        <div className={`bg-gradient-to-r ${statusDisplay.bgColor} border ${statusDisplay.borderColor} rounded-2xl px-6 py-3 flex items-center shadow-lg`}>
+          <div className={`bg-gradient-to-r ${statusDisplay.gradient} rounded-xl p-2 text-white mr-3`}>
+            {statusDisplay.icon}
+          </div>
+          <div>
+            <div className="text-xl font-bold text-gray-900 capitalize">{membershipStatus}</div>
+            <div className="text-sm font-medium text-gray-600">Membership Status</div>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div className={`p-4 rounded-lg ${getStatusColor(membershipStatus)}`}>
-          <div className="text-2xl font-bold capitalize">{membershipStatus}</div>
-          <div className="text-sm">Membership Status</div>
-        </div>
-        
-        <div className="bg-blue-50 p-4 rounded-lg">
-          <div className="text-2xl font-bold text-blue-600">
-            {membershipStatus === 'active' ? daysRemaining : '0'}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-6 hover:shadow-lg transition-all duration-300">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center">
+              <FiCalendar className="w-6 h-6 text-white" />
+            </div>
+            <div className="text-right">
+              <div className="text-2xl font-bold text-gray-900">
+                {membershipStatus === 'active' ? daysRemaining : '0'}
+              </div>
+              <div className="text-sm font-bold text-blue-700">Days Remaining</div>
+            </div>
           </div>
-          <div className="text-sm text-gray-600">Days Remaining</div>
         </div>
-        
-        <div className="bg-indigo-50 p-4 rounded-lg">
-          <div className="text-2xl font-bold text-indigo-600">${totalSpent.toFixed(2)}</div>
-          <div className="text-sm text-gray-600">Membership Spent</div>
-        </div>
-        
-        <div className="bg-purple-50 p-4 rounded-lg">
-          <div className="text-2xl font-bold text-purple-600">
-            {membershipSince ? formatDate(membershipSince) : 'N/A'}
+
+        <div className="bg-gradient-to-br from-purple-50 to-purple-50 border border-purple-200 rounded-2xl p-6 hover:shadow-lg transition-all duration-300">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl flex items-center justify-center">
+              <FiDollarSign className="w-6 h-6 text-white" />
+            </div>
+            <div className="text-right">
+              <div className="text-2xl font-bold text-gray-900">${totalSpent.toFixed(2)}</div>
+              <div className="text-sm font-bold text-purple-700">Membership Spent</div>
+            </div>
           </div>
-          <div className="text-sm text-gray-600">Coach Since</div>
+        </div>
+
+        <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200 rounded-2xl p-6 hover:shadow-lg transition-all duration-300 md:col-span-2 lg:col-span-1">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl flex items-center justify-center">
+              <FiAward className="w-6 h-6 text-white" />
+            </div>
+            <div className="text-right">
+              <div className="text-lg font-bold text-gray-900">
+                {membershipSince ? formatDate(membershipSince) : 'N/A'}
+              </div>
+              <div className="text-sm font-bold text-indigo-700">Coach Since</div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Coaching Performance Stats */}
-      <div className="border-t border-gray-200 pt-4">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Coaching Performance</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-green-50 p-4 rounded-lg text-center">
-            <div className="text-2xl font-bold text-green-600">${totalEarnings.toFixed(2)}</div>
-            <div className="text-sm text-gray-600">Total Earnings</div>
+      <div className="border-t-2 border-gray-200 pt-8">
+        <div className="flex items-center mb-6">
+          <div className="w-10 h-10 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center mr-4">
+            <FiTrendingUp className="w-5 h-5 text-white" />
           </div>
-          
-          <div className="bg-orange-50 p-4 rounded-lg text-center">
-            <div className="text-2xl font-bold text-orange-600">{studentsCount}</div>
-            <div className="text-sm text-gray-600">Students Taught</div>
+          <h3 className="text-2xl font-bold text-gray-900">Coaching Performance</h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-6 text-center hover:shadow-lg transition-all duration-300">
+            <div className="w-16 h-16 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <FiDollarSign className="w-8 h-8 text-white" />
+            </div>
+            <div className="text-3xl font-bold text-gray-900 mb-2">${totalEarnings.toFixed(2)}</div>
+            <div className="text-sm font-bold text-green-700">Total Earnings</div>
           </div>
-          
-          <div className="bg-teal-50 p-4 rounded-lg text-center">
-            <div className="text-2xl font-bold text-teal-600">{sessionsCompleted}</div>
-            <div className="text-sm text-gray-600">Sessions Completed</div>
+
+          <div className="bg-gradient-to-br from-orange-50 to-red-50 border border-orange-200 rounded-2xl p-6 text-center hover:shadow-lg transition-all duration-300">
+            <div className="w-16 h-16 bg-gradient-to-br from-orange-600 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <FiUsers className="w-8 h-8 text-white" />
+            </div>
+            <div className="text-3xl font-bold text-gray-900 mb-2">{studentsCount}</div>
+            <div className="text-sm font-bold text-orange-700">Students Taught</div>
+          </div>
+
+          <div className="bg-gradient-to-br from-teal-50 to-cyan-50 border border-teal-200 rounded-2xl p-6 text-center hover:shadow-lg transition-all duration-300">
+            <div className="w-16 h-16 bg-gradient-to-br from-teal-600 to-cyan-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <FiTarget className="w-8 h-8 text-white" />
+            </div>
+            <div className="text-3xl font-bold text-gray-900 mb-2">{sessionsCompleted}</div>
+            <div className="text-sm font-bold text-teal-700">Sessions Completed</div>
           </div>
         </div>
       </div>

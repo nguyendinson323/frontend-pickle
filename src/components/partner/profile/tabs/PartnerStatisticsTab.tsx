@@ -3,6 +3,23 @@ import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState, AppDispatch } from '../../../../store'
 import { fetchPartnerStatistics } from '../../../../store/slices/partnerStatisticsSlice'
+import {
+  FiBarChart2,
+  FiCalendar,
+  FiDollarSign,
+  FiTrendingUp,
+  FiUsers,
+  FiAward,
+  FiTarget,
+  FiHome,
+  FiActivity,
+  FiExternalLink,
+  FiAlertCircle,
+  FiStar,
+  FiPieChart,
+  FiArrowUp,
+  FiArrowDown
+} from 'react-icons/fi'
 
 export const PartnerStatisticsTab: React.FC = () => {
   const navigate = useNavigate()
@@ -30,168 +47,220 @@ export const PartnerStatisticsTab: React.FC = () => {
 
   if (isLoading && !bookingMetrics) {
     return (
-      <div className="animate-pulse">
-        <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-24 bg-gray-200 rounded"></div>
-          ))}
+      <div className="bg-gradient-to-br from-white to-gray-50 rounded-3xl p-8 shadow-lg border border-gray-200">
+        <div className="animate-pulse space-y-6">
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-gray-200 to-gray-300 rounded-2xl"></div>
+            <div className="flex-1">
+              <div className="h-8 bg-gradient-to-r from-gray-200 to-gray-300 rounded-xl w-1/3 mb-2"></div>
+              <div className="h-4 bg-gradient-to-r from-gray-200 to-gray-300 rounded-lg w-2/3"></div>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl p-6 h-32 shadow-lg"></div>
+            ))}
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-lg font-medium text-gray-900">Statistics & Analytics</h3>
-        <button
-          onClick={() => navigate('/partner/statistics')}
-          className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-        >
-          View Full Statistics
-        </button>
+    <div className="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl border border-gray-200 overflow-hidden">
+      <div className="bg-gradient-to-r from-indigo-600 to-purple-700 px-8 py-6">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0 text-white">
+          <div className="flex items-center">
+            <div className="w-10 h-10 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center mr-4">
+              <FiBarChart2 className="w-5 h-5" />
+            </div>
+            <h3 className="text-2xl font-bold">Statistics & Analytics</h3>
+          </div>
+          <button
+            onClick={() => navigate('/partner/statistics')}
+            className="inline-flex items-center px-6 py-3 bg-white bg-opacity-20 text-white rounded-2xl hover:bg-opacity-30 transition-all duration-300 font-bold hover:transform hover:scale-105"
+          >
+            <FiExternalLink className="w-5 h-5 mr-2" />
+            View Full Statistics
+          </button>
+        </div>
       </div>
+      <div className="p-8">
 
       {/* Error Display */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-          <p className="text-red-600 text-sm">{error}</p>
+        <div className="bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-200 rounded-2xl p-6 mb-6 shadow-lg">
+          <div className="flex items-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl flex items-center justify-center mr-4">
+              <FiAlertCircle className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-red-900 mb-1">Error</h3>
+              <p className="text-sm font-medium text-red-800">{error}</p>
+            </div>
+          </div>
         </div>
       )}
 
       {/* Key Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-        <div className="bg-white rounded-lg p-4 border border-green-100">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="bg-gradient-to-br from-white to-blue-50 rounded-2xl p-6 border-2 border-blue-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:transform hover:scale-105">
           <div className="flex items-center justify-between">
             <div>
-              <h5 className="font-medium text-gray-900">Total Bookings</h5>
-              <p className="text-2xl font-bold text-green-600">
+              <h5 className="font-bold text-gray-700 mb-2">Total Bookings</h5>
+              <p className="text-3xl font-bold text-blue-600">
                 {bookingMetrics?.total_reservations || 0}
               </p>
             </div>
-            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-              <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
+            <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <FiCalendar className="w-7 h-7 text-white" />
             </div>
           </div>
-          <p className="text-sm text-gray-500 mt-1">All time reservations</p>
+          <p className="text-sm font-medium text-blue-700 mt-3 flex items-center">
+            <FiActivity className="w-4 h-4 mr-1" />
+            All time reservations
+          </p>
         </div>
 
-        <div className="bg-white rounded-lg p-4 border border-green-100">
+        <div className="bg-gradient-to-br from-white to-green-50 rounded-2xl p-6 border-2 border-green-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:transform hover:scale-105">
           <div className="flex items-center justify-between">
             <div>
-              <h5 className="font-medium text-gray-900">Monthly Revenue</h5>
-              <p className="text-2xl font-bold text-green-600">
+              <h5 className="font-bold text-gray-700 mb-2">Monthly Revenue</h5>
+              <p className="text-3xl font-bold text-green-600">
                 ${getCurrentMonthRevenue().toLocaleString()}
               </p>
             </div>
-            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-              <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-              </svg>
+            <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <FiDollarSign className="w-7 h-7 text-white" />
             </div>
           </div>
-          <p className="text-sm text-gray-500 mt-1">Current month earnings</p>
+          <p className="text-sm font-medium text-green-700 mt-3 flex items-center">
+            <FiTrendingUp className="w-4 h-4 mr-1" />
+            Current month earnings
+          </p>
         </div>
 
-        <div className="bg-white rounded-lg p-4 border border-green-100">
+        <div className="bg-gradient-to-br from-white to-purple-50 rounded-2xl p-6 border-2 border-purple-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:transform hover:scale-105">
           <div className="flex items-center justify-between">
             <div>
-              <h5 className="font-medium text-gray-900">Court Utilization</h5>
-              <p className="text-2xl font-bold text-green-600">
+              <h5 className="font-bold text-gray-700 mb-2">Court Utilization</h5>
+              <p className="text-3xl font-bold text-purple-600">
                 {performanceMetrics ? `${performanceMetrics.court_utilization_rate.toFixed(1)}%` : '0%'}
               </p>
             </div>
-            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-              <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-              </svg>
+            <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <FiPieChart className="w-7 h-7 text-white" />
             </div>
           </div>
-          <p className="text-sm text-gray-500 mt-1">Facility usage rate</p>
+          <p className="text-sm font-medium text-purple-700 mt-3 flex items-center">
+            <FiTarget className="w-4 h-4 mr-1" />
+            Facility usage rate
+          </p>
         </div>
 
-        <div className="bg-white rounded-lg p-4 border border-green-100">
+        <div className="bg-gradient-to-br from-white to-indigo-50 rounded-2xl p-6 border-2 border-indigo-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:transform hover:scale-105">
           <div className="flex items-center justify-between">
             <div>
-              <h5 className="font-medium text-gray-900">Total Customers</h5>
-              <p className="text-2xl font-bold text-green-600">
+              <h5 className="font-bold text-gray-700 mb-2">Total Customers</h5>
+              <p className="text-3xl font-bold text-indigo-600">
                 {customerMetrics?.total_customers || 0}
               </p>
             </div>
-            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-              <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
+            <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <FiUsers className="w-7 h-7 text-white" />
             </div>
           </div>
-          <p className="text-sm text-gray-500 mt-1">Unique customers served</p>
+          <p className="text-sm font-medium text-indigo-700 mt-3 flex items-center">
+            <FiStar className="w-4 h-4 mr-1" />
+            Unique customers served
+          </p>
         </div>
 
-        <div className="bg-white rounded-lg p-4 border border-green-100">
+        <div className="bg-gradient-to-br from-white to-yellow-50 rounded-2xl p-6 border-2 border-yellow-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:transform hover:scale-105">
           <div className="flex items-center justify-between">
             <div>
-              <h5 className="font-medium text-gray-900">Tournaments</h5>
-              <p className="text-2xl font-bold text-green-600">
+              <h5 className="font-bold text-gray-700 mb-2">Tournaments</h5>
+              <p className="text-3xl font-bold text-yellow-600">
                 {tournamentMetrics?.total_tournaments || 0}
               </p>
             </div>
-            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-              <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-              </svg>
+            <div className="w-14 h-14 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <FiAward className="w-7 h-7 text-white" />
             </div>
           </div>
-          <p className="text-sm text-gray-500 mt-1">Events hosted</p>
+          <p className="text-sm font-medium text-yellow-700 mt-3 flex items-center">
+            <FiCalendar className="w-4 h-4 mr-1" />
+            Events hosted
+          </p>
         </div>
 
-        <div className="bg-white rounded-lg p-4 border border-green-100">
+        <div className="bg-gradient-to-br from-white to-emerald-50 rounded-2xl p-6 border-2 border-emerald-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:transform hover:scale-105">
           <div className="flex items-center justify-between">
             <div>
-              <h5 className="font-medium text-gray-900">Avg. Booking Value</h5>
-              <p className="text-2xl font-bold text-green-600">
+              <h5 className="font-bold text-gray-700 mb-2">Avg. Booking Value</h5>
+              <p className="text-3xl font-bold text-emerald-600">
                 ${bookingMetrics?.average_booking_value?.toFixed(2) || '0.00'}
               </p>
             </div>
-            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-              <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-              </svg>
+            <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <FiDollarSign className="w-7 h-7 text-white" />
             </div>
           </div>
-          <p className="text-sm text-gray-500 mt-1">Per reservation value</p>
+          <p className="text-sm font-medium text-emerald-700 mt-3 flex items-center">
+            <FiTrendingUp className="w-4 h-4 mr-1" />
+            Per reservation value
+          </p>
         </div>
       </div>
 
       {/* Performance Summary */}
       {performanceMetrics && (
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-          <h4 className="font-medium text-gray-900 mb-4">Performance Summary</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="text-center p-3 bg-green-50 rounded-lg">
-              <p className="text-sm font-medium text-green-700">Monthly Growth</p>
-              <p className="text-xl font-bold text-green-600">
+        <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl border border-gray-200 p-8 mb-8 shadow-lg">
+          <div className="flex items-center mb-6">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center mr-4">
+              <FiActivity className="w-5 h-5 text-white" />
+            </div>
+            <h4 className="text-2xl font-bold text-gray-900">Performance Summary</h4>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="text-center p-6 bg-white rounded-2xl shadow-lg border border-green-200 hover:shadow-xl transition-all duration-300 hover:transform hover:scale-105">
+              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                {performanceMetrics.monthly_growth_rate >= 0 ? (
+                  <FiArrowUp className="w-6 h-6 text-white" />
+                ) : (
+                  <FiArrowDown className="w-6 h-6 text-white" />
+                )}
+              </div>
+              <p className="text-sm font-bold text-gray-600 mb-2">Monthly Growth</p>
+              <p className="text-2xl font-bold text-green-600">
                 {performanceMetrics.monthly_growth_rate > 0 ? '+' : ''}
                 {performanceMetrics.monthly_growth_rate.toFixed(1)}%
               </p>
             </div>
-            <div className="text-center p-3 bg-blue-50 rounded-lg">
-              <p className="text-sm font-medium text-blue-700">Retention Rate</p>
-              <p className="text-xl font-bold text-blue-600">
+            <div className="text-center p-6 bg-white rounded-2xl shadow-lg border border-blue-200 hover:shadow-xl transition-all duration-300 hover:transform hover:scale-105">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <FiUsers className="w-6 h-6 text-white" />
+              </div>
+              <p className="text-sm font-bold text-gray-600 mb-2">Retention Rate</p>
+              <p className="text-2xl font-bold text-blue-600">
                 {customerMetrics?.customer_retention_rate?.toFixed(1) || 0}%
               </p>
             </div>
-            <div className="text-center p-3 bg-purple-50 rounded-lg">
-              <p className="text-sm font-medium text-purple-700">Revenue/Court</p>
-              <p className="text-xl font-bold text-purple-600">
+            <div className="text-center p-6 bg-white rounded-2xl shadow-lg border border-purple-200 hover:shadow-xl transition-all duration-300 hover:transform hover:scale-105">
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <FiHome className="w-6 h-6 text-white" />
+              </div>
+              <p className="text-sm font-bold text-gray-600 mb-2">Revenue/Court</p>
+              <p className="text-2xl font-bold text-purple-600">
                 ${performanceMetrics.revenue_per_court.toLocaleString()}
               </p>
             </div>
-            <div className="text-center p-3 bg-orange-50 rounded-lg">
-              <p className="text-sm font-medium text-orange-700">Cancellation Rate</p>
-              <p className="text-xl font-bold text-orange-600">
+            <div className="text-center p-6 bg-white rounded-2xl shadow-lg border border-orange-200 hover:shadow-xl transition-all duration-300 hover:transform hover:scale-105">
+              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <FiAlertCircle className="w-6 h-6 text-white" />
+              </div>
+              <p className="text-sm font-bold text-gray-600 mb-2">Cancellation Rate</p>
+              <p className="text-2xl font-bold text-orange-600">
                 {performanceMetrics.cancellation_rate.toFixed(1)}%
               </p>
             </div>
@@ -201,20 +270,32 @@ export const PartnerStatisticsTab: React.FC = () => {
 
       {/* Popular Courts */}
       {bookingMetrics?.popular_courts && bookingMetrics.popular_courts.length > 0 && (
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-          <h4 className="font-medium text-gray-900 mb-4">Most Popular Courts</h4>
-          <div className="space-y-3">
+        <div className="bg-gradient-to-r from-white to-green-50 rounded-2xl border border-green-200 p-8 mb-8 shadow-lg">
+          <div className="flex items-center mb-6">
+            <div className="w-10 h-10 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center mr-4">
+              <FiStar className="w-5 h-5 text-white" />
+            </div>
+            <h4 className="text-2xl font-bold text-gray-900">Most Popular Courts</h4>
+          </div>
+          <div className="space-y-4">
             {bookingMetrics.popular_courts.slice(0, 3).map((court, index) => (
-              <div key={court.court_id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div key={court.court_id} className="flex items-center justify-between p-6 bg-white rounded-2xl shadow-lg border border-green-100 hover:shadow-xl transition-all duration-300 hover:transform hover:scale-105">
                 <div className="flex items-center">
-                  <span className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-medium mr-3">
+                  <div className={`w-10 h-10 rounded-2xl flex items-center justify-center text-sm font-bold mr-4 shadow-lg ${
+                    index === 0 ? 'bg-gradient-to-br from-yellow-400 to-orange-500 text-white' :
+                    index === 1 ? 'bg-gradient-to-br from-gray-400 to-gray-600 text-white' :
+                    'bg-gradient-to-br from-orange-400 to-red-500 text-white'
+                  }`}>
                     {index + 1}
-                  </span>
-                  <span className="font-medium text-gray-900">{court.court_name}</span>
+                  </div>
+                  <div>
+                    <span className="font-bold text-gray-900 text-lg">{court.court_name}</span>
+                    <p className="text-sm text-gray-600 font-medium">Court #{court.court_id}</p>
+                  </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold text-green-600">{court.reservation_count}</p>
-                  <p className="text-xs text-gray-500">bookings</p>
+                  <p className="font-bold text-2xl text-green-600">{court.reservation_count}</p>
+                  <p className="text-sm text-green-700 font-medium">bookings</p>
                 </div>
               </div>
             ))}
@@ -222,29 +303,60 @@ export const PartnerStatisticsTab: React.FC = () => {
         </div>
       )}
 
-      <div className="bg-green-100 rounded-lg p-4 mb-4">
-        <h5 className="font-medium text-green-900 mb-2">📊 Available Analytics</h5>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-green-800">
-          <p>• Court utilization rates</p>
-          <p>• Revenue by time period</p>
-          <p>• Customer demographics</p>
-          <p>• Booking patterns</p>
-          <p>• Popular time slots</p>
-          <p>• Tournament participation</p>
-          <p>• Conversion metrics</p>
-          <p>• Growth trends</p>
+      <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-8 mb-8 border border-purple-200 shadow-lg">
+        <div className="flex items-center mb-6">
+          <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-pink-700 rounded-2xl flex items-center justify-center mr-4">
+            <FiBarChart2 className="w-5 h-5 text-white" />
+          </div>
+          <h5 className="text-2xl font-bold text-purple-900">Available Analytics</h5>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+          <div className="flex items-center bg-white p-4 rounded-2xl shadow-sm border border-purple-100">
+            <FiPieChart className="w-5 h-5 text-purple-600 mr-3" />
+            <p className="font-semibold text-purple-800">Court utilization rates</p>
+          </div>
+          <div className="flex items-center bg-white p-4 rounded-2xl shadow-sm border border-purple-100">
+            <FiDollarSign className="w-5 h-5 text-purple-600 mr-3" />
+            <p className="font-semibold text-purple-800">Revenue by time period</p>
+          </div>
+          <div className="flex items-center bg-white p-4 rounded-2xl shadow-sm border border-purple-100">
+            <FiUsers className="w-5 h-5 text-purple-600 mr-3" />
+            <p className="font-semibold text-purple-800">Customer demographics</p>
+          </div>
+          <div className="flex items-center bg-white p-4 rounded-2xl shadow-sm border border-purple-100">
+            <FiCalendar className="w-5 h-5 text-purple-600 mr-3" />
+            <p className="font-semibold text-purple-800">Booking patterns</p>
+          </div>
+          <div className="flex items-center bg-white p-4 rounded-2xl shadow-sm border border-purple-100">
+            <FiActivity className="w-5 h-5 text-purple-600 mr-3" />
+            <p className="font-semibold text-purple-800">Popular time slots</p>
+          </div>
+          <div className="flex items-center bg-white p-4 rounded-2xl shadow-sm border border-purple-100">
+            <FiAward className="w-5 h-5 text-purple-600 mr-3" />
+            <p className="font-semibold text-purple-800">Tournament participation</p>
+          </div>
+          <div className="flex items-center bg-white p-4 rounded-2xl shadow-sm border border-purple-100">
+            <FiTarget className="w-5 h-5 text-purple-600 mr-3" />
+            <p className="font-semibold text-purple-800">Conversion metrics</p>
+          </div>
+          <div className="flex items-center bg-white p-4 rounded-2xl shadow-sm border border-purple-100">
+            <FiTrendingUp className="w-5 h-5 text-purple-600 mr-3" />
+            <p className="font-semibold text-purple-800">Growth trends</p>
+          </div>
         </div>
       </div>
 
-      <button
-        onClick={() => navigate('/partner/statistics')}
-        className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
-      >
-        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-        </svg>
-        View Detailed Analytics
-      </button>
+      <div className="text-center">
+        <button
+          onClick={() => navigate('/partner/statistics')}
+          className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl hover:from-blue-700 hover:to-indigo-800 transition-all duration-300 shadow-lg hover:shadow-xl hover:transform hover:scale-105 font-bold text-lg"
+        >
+          <FiBarChart2 className="w-6 h-6 mr-3" />
+          View Detailed Analytics
+          <FiExternalLink className="w-5 h-5 ml-3" />
+        </button>
+      </div>
+      </div>
     </div>
   )
 }

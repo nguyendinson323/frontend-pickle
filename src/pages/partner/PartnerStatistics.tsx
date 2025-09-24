@@ -11,6 +11,17 @@ import {
 import StatisticsHeader from '../../components/partner/statistics/StatisticsHeader'
 import RevenueChart from '../../components/partner/statistics/RevenueChart'
 import MetricsGrid from '../../components/partner/statistics/MetricsGrid'
+import {
+  FiHome,
+  FiChevronRight,
+  FiBarChart2,
+  FiAlertCircle,
+  FiRefreshCw,
+  FiClock,
+  FiSettings,
+  FiActivity,
+  FiTrendingUp
+} from 'react-icons/fi'
 
 const PartnerStatistics: React.FC = () => {
   const navigate = useNavigate()
@@ -94,15 +105,32 @@ const PartnerStatistics: React.FC = () => {
 
   if (loading && !revenueData.length) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="animate-pulse space-y-6">
-            <div className="h-32 bg-gray-200 rounded-lg"></div>
-            <div className="h-64 bg-gray-200 rounded-lg"></div>
+          <div className="animate-pulse space-y-8">
+            {/* Loading header */}
+            <div className="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-8">
+              <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-gray-200 to-gray-300 rounded-2xl"></div>
+                <div className="flex-1">
+                  <div className="h-8 bg-gradient-to-r from-gray-200 to-gray-300 rounded-xl w-1/3 mb-3"></div>
+                  <div className="h-4 bg-gradient-to-r from-gray-200 to-gray-300 rounded-lg w-2/3"></div>
+                </div>
+              </div>
+            </div>
+            {/* Loading chart */}
+            <div className="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-8 h-80"></div>
+            {/* Loading metrics grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="h-24 bg-gray-200 rounded-lg"></div>
+                <div key={i} className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg p-6 h-32"></div>
               ))}
+            </div>
+            <div className="text-center">
+              <div className="inline-flex items-center bg-white rounded-2xl px-6 py-4 shadow-lg">
+                <div className="animate-spin rounded-full h-8 w-8 border-4 border-purple-600 border-t-transparent mr-4"></div>
+                <span className="text-lg font-semibold text-gray-700">Loading your analytics...</span>
+              </div>
             </div>
           </div>
         </div>
@@ -112,20 +140,30 @@ const PartnerStatistics: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-8 text-center">
-            <svg className="mx-auto h-12 w-12 text-red-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <h3 className="text-lg font-medium text-red-900 mb-2">Error Loading Statistics</h3>
-            <p className="text-red-700 mb-4">{error}</p>
-            <button
-              onClick={() => dispatch(fetchPartnerStatistics())}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-            >
-              Retry
-            </button>
+          <div className="bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-200 rounded-3xl p-12 text-center shadow-2xl">
+            <div className="w-20 h-20 bg-gradient-to-br from-red-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <FiAlertCircle className="h-10 w-10 text-white" />
+            </div>
+            <h3 className="text-2xl font-bold text-red-900 mb-4">Error Loading Statistics</h3>
+            <p className="text-lg text-red-700 mb-8 max-w-md mx-auto">{error}</p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button
+                onClick={() => dispatch(fetchPartnerStatistics())}
+                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-red-600 to-pink-700 text-white rounded-2xl hover:from-red-700 hover:to-pink-800 transition-all duration-300 shadow-lg hover:shadow-xl hover:transform hover:scale-105 font-bold"
+              >
+                <FiRefreshCw className="w-5 h-5 mr-3" />
+                Retry Loading
+              </button>
+              <button
+                onClick={() => navigate('/partner/dashboard')}
+                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-2xl hover:from-gray-700 hover:to-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl hover:transform hover:scale-105 font-bold"
+              >
+                <FiHome className="w-5 h-5 mr-3" />
+                Back to Dashboard
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -135,7 +173,7 @@ const PartnerStatistics: React.FC = () => {
   const hasData = revenueData.length > 0 || bookingMetrics || tournamentMetrics || customerMetrics || performanceMetrics
 
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Navigation Breadcrumb */}
         <div className="mb-8">
@@ -144,23 +182,17 @@ const PartnerStatistics: React.FC = () => {
               <li>
                 <button
                   onClick={() => navigate('/partner/dashboard')}
-                  className="text-gray-400 hover:text-gray-500"
+                  className="flex items-center text-gray-500 hover:text-purple-600 font-medium transition-all duration-200 hover:transform hover:scale-105"
                 >
+                  <FiHome className="w-4 h-4 mr-1" />
                   Dashboard
                 </button>
               </li>
               <li>
                 <div className="flex items-center">
-                  <svg
-                    className="flex-shrink-0 h-5 w-5 text-gray-300"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    aria-hidden="true"
-                  >
-                    <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
-                  </svg>
-                  <span className="ml-4 text-sm font-medium text-gray-500" aria-current="page">
+                  <FiChevronRight className="flex-shrink-0 h-5 w-5 text-gray-400 mx-2" />
+                  <span className="text-sm font-semibold text-purple-600 bg-white px-4 py-2 rounded-full shadow-sm border border-purple-200" aria-current="page">
+                    <FiBarChart2 className="w-4 h-4 inline mr-2" />
                     Statistics
                   </span>
                 </div>
@@ -177,86 +209,83 @@ const PartnerStatistics: React.FC = () => {
         />
 
         {/* Data Status Bar */}
-        <div className="bg-white rounded-lg shadow border border-gray-200 p-4 mb-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center text-sm text-gray-500">
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Last updated: {lastRefresh.toLocaleString()}
+        <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg border border-gray-200 p-6 mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+            <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-6">
+              <div className="flex items-center bg-blue-50 px-4 py-2 rounded-2xl border border-blue-200">
+                <FiClock className="w-4 h-4 mr-2 text-blue-600" />
+                <span className="text-sm font-medium text-blue-800">
+                  Last updated: {lastRefresh.toLocaleString()}
+                </span>
               </div>
-              <div className="flex items-center">
+              <div className="flex items-center bg-purple-50 px-4 py-2 rounded-2xl border border-purple-200">
                 <input
                   type="checkbox"
                   id="autoRefresh"
                   checked={autoRefresh}
                   onChange={(e) => setAutoRefresh(e.target.checked)}
-                  className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-purple-300 rounded"
                 />
-                <label htmlFor="autoRefresh" className="ml-2 text-sm text-gray-600">
+                <label htmlFor="autoRefresh" className="ml-2 text-sm font-medium text-purple-800">
+                  <FiActivity className="w-4 h-4 inline mr-1" />
                   Auto-refresh (30s)
                 </label>
               </div>
             </div>
-            <div className="mt-3 sm:mt-0">
+            <div>
               <button
                 onClick={handleRefreshData}
                 disabled={loading}
-                className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50"
+                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-700 text-white rounded-2xl hover:from-green-700 hover:to-emerald-800 transition-all duration-300 shadow-lg hover:shadow-xl hover:transform hover:scale-105 font-bold disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
-                <svg 
-                  className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                Refresh
+                <FiRefreshCw className={`w-5 h-5 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                {loading ? 'Refreshing...' : 'Refresh Data'}
               </button>
             </div>
           </div>
         </div>
 
         {loading && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <div className="flex items-center">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mr-3"></div>
-              <span className="text-blue-800">Loading statistics...</span>
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-6 mb-8 shadow-lg">
+            <div className="flex items-center justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent mr-4"></div>
+              <div className="text-center">
+                <span className="text-lg font-semibold text-blue-800">Loading statistics...</span>
+                <p className="text-sm text-blue-600 mt-1">Please wait while we fetch your latest data</p>
+              </div>
             </div>
           </div>
         )}
 
         {/* Error Display */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
-            <div className="flex">
+          <div className="bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-200 rounded-2xl p-8 mb-8 shadow-lg">
+            <div className="flex items-start">
               <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div className="ml-3 flex-1">
-                <h3 className="text-sm font-medium text-red-800">Error Loading Statistics</h3>
-                <div className="mt-2 text-sm text-red-700">
-                  <p>{error}</p>
+                <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl flex items-center justify-center">
+                  <FiAlertCircle className="h-6 w-6 text-white" />
                 </div>
-                <div className="mt-4">
-                  <div className="-mx-2 -my-1.5 flex">
-                    <button
-                      onClick={handleRefreshData}
-                      className="bg-red-50 px-2 py-1.5 rounded-md text-sm font-medium text-red-800 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-red-50 focus:ring-red-600"
-                    >
-                      Try Again
-                    </button>
-                    <button
-                      onClick={() => navigate('/partner/dashboard')}
-                      className="ml-3 bg-red-50 px-2 py-1.5 rounded-md text-sm font-medium text-red-800 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-red-50 focus:ring-red-600"
-                    >
-                      Go to Dashboard
-                    </button>
-                  </div>
+              </div>
+              <div className="ml-6 flex-1">
+                <h3 className="text-lg font-bold text-red-900 mb-2">Error Loading Statistics</h3>
+                <div className="text-red-700 mb-6">
+                  <p className="font-medium">{error}</p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <button
+                    onClick={handleRefreshData}
+                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-red-600 to-pink-700 text-white rounded-2xl hover:from-red-700 hover:to-pink-800 transition-all duration-300 shadow-lg hover:shadow-xl hover:transform hover:scale-105 font-bold"
+                  >
+                    <FiRefreshCw className="w-5 h-5 mr-2" />
+                    Try Again
+                  </button>
+                  <button
+                    onClick={() => navigate('/partner/dashboard')}
+                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-2xl hover:from-gray-700 hover:to-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl hover:transform hover:scale-105 font-bold"
+                  >
+                    <FiHome className="w-5 h-5 mr-2" />
+                    Go to Dashboard
+                  </button>
                 </div>
               </div>
             </div>
@@ -267,7 +296,7 @@ const PartnerStatistics: React.FC = () => {
           <>
             <RevenueChart revenueData={revenueData} />
 
-            <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
+            <div className="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl border border-gray-200 p-8">
               <MetricsGrid
                 bookingMetrics={bookingMetrics}
                 tournamentMetrics={tournamentMetrics}
@@ -277,26 +306,28 @@ const PartnerStatistics: React.FC = () => {
             </div>
           </>
         ) : !loading && !error && (
-          <div className="bg-white rounded-lg shadow border border-gray-200 p-8 text-center">
-            <svg className="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No Data Available</h3>
-            <p className="text-gray-500 mb-6 max-w-md mx-auto">
-              No statistics data available for the selected date range. 
+          <div className="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl border border-gray-200 p-12 text-center">
+            <div className="w-20 h-20 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
+              <FiBarChart2 className="h-10 w-10 text-white" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">No Data Available</h3>
+            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+              No statistics data available for the selected date range.
               Data will appear once you start receiving bookings and hosting tournaments.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <div className="flex flex-col sm:flex-row gap-6 justify-center">
               <button
                 onClick={() => navigate('/partner/management')}
-                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-700 text-white rounded-2xl hover:from-purple-700 hover:to-pink-800 transition-all duration-300 shadow-lg hover:shadow-xl hover:transform hover:scale-105 font-bold text-lg"
               >
+                <FiSettings className="w-6 h-6 mr-3" />
                 Manage Courts & Tournaments
               </button>
               <button
                 onClick={handleRefreshData}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl hover:from-blue-700 hover:to-indigo-800 transition-all duration-300 shadow-lg hover:shadow-xl hover:transform hover:scale-105 font-bold text-lg"
               >
+                <FiRefreshCw className="w-6 h-6 mr-3" />
                 Refresh Data
               </button>
             </div>

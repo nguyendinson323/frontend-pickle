@@ -1,5 +1,17 @@
 import React from 'react'
 import { PartnerDocument } from '../../../store/slices/partnerDocumentsSlice'
+import {
+  FiFileText,
+  FiSearch,
+  FiDownload,
+  FiEdit,
+  FiTrash2,
+  FiCheckCircle,
+  FiAlertCircle,
+  FiFile,
+  FiClock,
+  FiUser
+} from 'react-icons/fi'
 
 interface DocumentsListProps {
   documents: PartnerDocument[]
@@ -84,29 +96,32 @@ const DocumentsList: React.FC<DocumentsListProps> = ({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow border border-gray-200">
-      <div className="p-6 border-b border-gray-200">
+    <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-200 shadow-2xl rounded-3xl overflow-hidden">
+      <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-b-2 border-gray-200">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <h2 className="text-lg font-semibold text-gray-900">Documents</h2>
-          
+          <div className="flex items-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center mr-3">
+              <FiFileText className="w-5 h-5 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900">Documents</h2>
+          </div>
+
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative">
-              <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search documents..."
                 value={filter.searchTerm}
                 onChange={(e) => onFilterChange({ searchTerm: e.target.value })}
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                className="pl-10 pr-4 py-3 border-2 border-gray-300 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-medium text-gray-900 bg-gray-50 hover:bg-white transition-all duration-200 placeholder-gray-500"
               />
             </div>
 
             <select
               value={filter.type}
               onChange={(e) => onFilterChange({ type: e.target.value })}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              className="px-4 py-3 border-2 border-gray-300 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-medium text-gray-900 bg-gray-50 hover:bg-white transition-all duration-200"
             >
               <option value="">All Types</option>
               <option value="contract">Contract</option>
@@ -119,7 +134,7 @@ const DocumentsList: React.FC<DocumentsListProps> = ({
             <select
               value={filter.status}
               onChange={(e) => onFilterChange({ status: e.target.value })}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              className="px-4 py-3 border-2 border-gray-300 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-medium text-gray-900 bg-gray-50 hover:bg-white transition-all duration-200"
             >
               <option value="">All Statuses</option>
               <option value="active">Active</option>
@@ -131,53 +146,69 @@ const DocumentsList: React.FC<DocumentsListProps> = ({
         </div>
       </div>
 
-      <div className="p-6">
+      <div className="p-8">
         {loading ? (
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-3"></div>
-            <p className="text-gray-600">Loading documents...</p>
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-purple-600 mx-auto mb-6"></div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Loading Documents</h3>
+            <p className="text-gray-600 font-medium">Please wait while we load your documents...</p>
           </div>
         ) : filteredDocuments.length === 0 ? (
-          <div className="text-center py-8">
-            <svg className="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <p className="text-gray-500">
-              {filter.type || filter.status || filter.searchTerm 
-                ? 'No documents match your filters' 
-                : 'No documents uploaded yet'}
+          <div className="text-center py-12">
+            <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-3xl flex items-center justify-center mx-auto mb-6">
+              <FiFile className="w-10 h-10 text-gray-400" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">
+              {filter.type || filter.status || filter.searchTerm
+                ? 'No Documents Found'
+                : 'No Documents Uploaded'}
+            </h3>
+            <p className="text-gray-600 font-medium text-lg">
+              {filter.type || filter.status || filter.searchTerm
+                ? 'Try adjusting your filters to see more documents.'
+                : 'Upload documents to start managing your contracts and agreements.'}
             </p>
           </div>
         ) : (
           <div className="space-y-4">
             {filteredDocuments.map((document) => (
-              <div key={document.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+              <div key={document.id} className="bg-gradient-to-r from-white to-gray-50 border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition-all duration-200 shadow-md">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-lg font-medium text-gray-900 truncate">
-                        {document.document_name}
-                      </h3>
-                      
-                      <div className="flex gap-2">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getDocumentTypeColor(document.document_type)}`}>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+                      <div className="flex items-center">
+                        <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center mr-3">
+                          <FiFile className="w-5 h-5 text-white" />
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-900 truncate">
+                          {document.document_name}
+                        </h3>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2">
+                        <span className={`inline-flex items-center px-3 py-1 text-xs font-bold rounded-2xl border shadow-md ${getDocumentTypeColor(document.document_type)}`}>
+                          <FiFileText className="w-3 h-3 mr-1" />
                           {document.document_type}
                         </span>
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(document.status)}`}>
+                        <span className={`inline-flex items-center px-3 py-1 text-xs font-bold rounded-2xl border shadow-md ${getStatusColor(document.status)}`}>
+                          <FiCheckCircle className="w-3 h-3 mr-1" />
                           {document.status}
                         </span>
                         {document.document_type === 'contract' && !document.is_signed && (
-                          <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800">
+                          <span className="inline-flex items-center px-3 py-1 text-xs font-bold rounded-2xl bg-gradient-to-r from-orange-100 to-orange-200 border border-orange-300 text-orange-800">
+                            <FiEdit className="w-3 h-3 mr-1" />
                             Unsigned
                           </span>
                         )}
                         {document.is_signed && (
-                          <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                          <span className="inline-flex items-center px-3 py-1 text-xs font-bold rounded-2xl bg-gradient-to-r from-green-100 to-emerald-100 border border-green-200 text-green-800">
+                            <FiCheckCircle className="w-3 h-3 mr-1" />
                             Signed
                           </span>
                         )}
                         {isExpiringSoon(document.expiry_date) && (
-                          <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                          <span className="inline-flex items-center px-3 py-1 text-xs font-bold rounded-2xl bg-gradient-to-r from-red-100 to-pink-100 border border-red-200 text-red-800">
+                            <FiAlertCircle className="w-3 h-3 mr-1" />
                             Expiring Soon
                           </span>
                         )}
@@ -185,59 +216,60 @@ const DocumentsList: React.FC<DocumentsListProps> = ({
                     </div>
 
                     {document.description && (
-                      <p className="text-sm text-gray-600 mb-2">{document.description}</p>
+                      <p className="text-sm text-gray-700 font-medium mb-4 bg-gray-50 rounded-lg p-3">{document.description}</p>
                     )}
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm text-gray-500">
-                      <div>
-                        <span className="font-medium">Size:</span> {formatFileSize(document.file_size)}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                      <div className="flex items-center text-gray-600">
+                        <FiFile className="w-4 h-4 mr-2 text-blue-600" />
+                        <span className="font-medium">Size: {formatFileSize(document.file_size)}</span>
                       </div>
-                      <div>
-                        <span className="font-medium">Uploaded:</span> {formatDate(document.uploaded_at)}
+                      <div className="flex items-center text-gray-600">
+                        <FiClock className="w-4 h-4 mr-2 text-green-600" />
+                        <span className="font-medium">Uploaded: {formatDate(document.uploaded_at)}</span>
                       </div>
                       {document.expiry_date && (
-                        <div>
-                          <span className="font-medium">Expires:</span> {formatDate(document.expiry_date)}
+                        <div className="flex items-center text-gray-600">
+                          <FiAlertCircle className="w-4 h-4 mr-2 text-orange-600" />
+                          <span className="font-medium">Expires: {formatDate(document.expiry_date)}</span>
                         </div>
                       )}
-                      <div>
-                        <span className="font-medium">By:</span> {document.uploaded_by_name}
+                      <div className="flex items-center text-gray-600">
+                        <FiUser className="w-4 h-4 mr-2 text-purple-600" />
+                        <span className="font-medium">By: {document.uploaded_by_name}</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="mt-4 lg:mt-0 lg:ml-6 flex-shrink-0">
+                  <div className="mt-6 lg:mt-0 lg:ml-6 flex-shrink-0">
                     <div className="flex gap-2">
                       <button
                         onClick={() => onDownloadDocument(document.id)}
-                        className="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold py-2 px-4 rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl hover:transform hover:scale-105 flex items-center"
                         title="Download"
                       >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
+                        <FiDownload className="w-4 h-4 mr-2" />
+                        Download
                       </button>
-                      
+
                       {document.document_type === 'contract' && !document.is_signed && (
                         <button
                           onClick={() => onSignDocument(document.id)}
-                          className="px-3 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                          className="bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 text-white font-bold py-2 px-4 rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl hover:transform hover:scale-105 flex items-center"
                           title="Sign Document"
                         >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                          </svg>
+                          <FiEdit className="w-4 h-4 mr-2" />
+                          Sign
                         </button>
                       )}
-                      
+
                       <button
                         onClick={() => onDeleteDocument(document.id)}
-                        className="px-3 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                        className="bg-gradient-to-r from-red-600 to-pink-700 hover:from-red-700 hover:to-pink-800 text-white font-bold py-2 px-4 rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl hover:transform hover:scale-105 flex items-center"
                         title="Delete"
                       >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
+                        <FiTrash2 className="w-4 h-4 mr-2" />
+                        Delete
                       </button>
                     </div>
                   </div>

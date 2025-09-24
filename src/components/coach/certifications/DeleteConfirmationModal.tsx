@@ -1,5 +1,13 @@
 import React from 'react'
 import { CoachCertification } from '../../../types/coach'
+import {
+  FiAlertTriangle,
+  FiX,
+  FiTrash2,
+  FiCalendar,
+  FiHome,
+  FiAward
+} from 'react-icons/fi'
 
 interface DeleteConfirmationModalProps {
   isOpen: boolean
@@ -22,54 +30,82 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-md w-full">
+    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50">
+      <div className="bg-gradient-to-br from-white to-red-50 border border-red-200 rounded-3xl max-w-lg w-full shadow-2xl">
         {/* Header */}
-        <div className="p-6">
-          <div className="flex items-center space-x-3 mb-4">
-            <div className="flex-shrink-0">
-              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z" />
-                </svg>
+        <div className="bg-gradient-to-r from-red-600 to-pink-700 text-white px-8 py-6 rounded-t-3xl">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center mr-4">
+                <FiAlertTriangle className="w-6 h-6 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold">Delete Certification</h3>
+                <p className="text-red-100 font-medium mt-1">This action cannot be undone</p>
               </div>
             </div>
-            <div>
-              <h3 className="text-lg font-medium text-gray-900">Delete Certification</h3>
-            </div>
+            <button
+              onClick={onClose}
+              className="p-2 text-white hover:text-gray-200 rounded-xl hover:bg-white hover:bg-opacity-20 transition-all duration-200"
+            >
+              <FiX className="w-5 h-5" />
+            </button>
           </div>
+        </div>
 
-          <div className="mb-6">
-            <p className="text-gray-600 mb-4">
-              Are you sure you want to delete this certification? This action cannot be undone.
+        <div className="p-8">
+          <div className="mb-8">
+            <p className="text-gray-700 font-medium text-lg mb-6">
+              Are you sure you want to delete this certification? This action cannot be undone and will permanently remove the certification from your profile.
             </p>
-            
-            <div className="bg-gray-50 rounded-lg p-4">
-              <div className="text-sm">
-                <div className="font-medium text-gray-900">{certification.name}</div>
-                <div className="text-gray-600">Issued by: {certification.issuer}</div>
-                <div className="text-gray-600">
-                  Issue Date: {new Date(certification.issue_date).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric'
-                  })}
+
+            <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-2xl p-6 shadow-lg">
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-red-100 to-pink-100 rounded-2xl flex items-center justify-center mr-4">
+                  <FiAward className="h-6 w-6 text-red-600" />
+                </div>
+                <div className="flex-1">
+                  <div className="text-lg font-bold text-gray-900">{certification.name}</div>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-3">
+                  <div className="text-sm font-bold text-gray-700 mb-1 flex items-center">
+                    <FiHome className="h-3 w-3 mr-1 text-blue-500" />
+                    Issued by
+                  </div>
+                  <div className="font-bold text-blue-900">{certification.issuer}</div>
+                </div>
+                <div className="bg-green-50 border border-green-200 rounded-xl p-3">
+                  <div className="text-sm font-bold text-gray-700 mb-1 flex items-center">
+                    <FiCalendar className="h-3 w-3 mr-1 text-green-500" />
+                    Issue Date
+                  </div>
+                  <div className="font-bold text-green-900">
+                    {new Date(certification.issue_date).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric'
+                    })}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="flex justify-end space-x-3">
+          <div className="flex justify-end space-x-4">
             <button
               onClick={onClose}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+              className="px-6 py-3 border-2 border-gray-300 text-gray-700 font-bold bg-white hover:bg-gray-50 rounded-2xl transition-all duration-200 shadow-md hover:shadow-lg flex items-center"
             >
+              <FiX className="w-4 h-4 mr-2" />
               Cancel
             </button>
             <button
               onClick={handleConfirm}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
+              className="px-6 py-3 bg-gradient-to-r from-red-600 to-pink-700 hover:from-red-700 hover:to-pink-800 text-white font-bold rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl hover:transform hover:scale-105 flex items-center"
             >
+              <FiTrash2 className="w-4 h-4 mr-2" />
               Delete Certification
             </button>
           </div>

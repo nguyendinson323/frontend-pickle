@@ -1,4 +1,12 @@
 import React from 'react'
+import {
+  FiFilter,
+  FiX,
+  FiSearch,
+  FiSliders,
+  FiMapPin,
+  FiUsers
+} from 'react-icons/fi'
 
 interface Student {
   id: number
@@ -69,45 +77,57 @@ const StudentsFilters: React.FC<StudentsFiltersProps> = ({
   }
 
   return (
-    <div className="bg-white shadow-sm rounded-lg p-6 mb-6">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-medium text-gray-900">Filter Students</h3>
+    <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-200 shadow-2xl rounded-3xl p-8 mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+        <div className="flex items-center mb-4 sm:mb-0">
+          <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl flex items-center justify-center mr-3">
+            <FiFilter className="w-5 h-5 text-white" />
+          </div>
+          <h3 className="text-xl font-bold text-gray-900">Filter Students</h3>
+        </div>
         {hasActiveFilters && (
           <button
             onClick={onClearFilters}
-            className="text-sm text-indigo-600 hover:text-indigo-700 transition-colors duration-200"
+            className="bg-gradient-to-r from-red-600 to-pink-700 hover:from-red-700 hover:to-pink-800 text-white font-bold py-2 px-4 rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl hover:transform hover:scale-105 flex items-center"
           >
-            Clear all filters
+            <FiX className="w-4 h-4 mr-2" />
+            Clear Filters
           </button>
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         {/* Search Filter */}
-        <div>
-          <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-2">
-            Search
-          </label>
+        <div className="bg-white rounded-2xl p-4 shadow-md border border-gray-200">
+          <div className="flex items-center mb-3">
+            <FiSearch className="w-5 h-5 text-blue-600 mr-2" />
+            <label htmlFor="search" className="block text-sm font-bold text-gray-700">
+              Search
+            </label>
+          </div>
           <input
             type="text"
             id="search"
             placeholder="Name or email..."
             value={filters.search}
             onChange={(e) => onFiltersChange({ search: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium text-gray-900 bg-gray-50 hover:bg-white transition-all duration-200 placeholder-gray-500"
           />
         </div>
 
         {/* Min Level Filter */}
-        <div>
-          <label htmlFor="level_min" className="block text-sm font-medium text-gray-700 mb-2">
-            Min Level
-          </label>
+        <div className="bg-white rounded-2xl p-4 shadow-md border border-gray-200">
+          <div className="flex items-center mb-3">
+            <FiSliders className="w-5 h-5 text-green-600 mr-2" />
+            <label htmlFor="level_min" className="block text-sm font-bold text-gray-700">
+              Min Level
+            </label>
+          </div>
           <select
             id="level_min"
             value={filters.level_min}
             onChange={(e) => onFiltersChange({ level_min: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 font-medium text-gray-900 bg-gray-50 hover:bg-white transition-all duration-200"
           >
             <option value="">Any</option>
             {levelOptions.map((level) => (
@@ -119,15 +139,18 @@ const StudentsFilters: React.FC<StudentsFiltersProps> = ({
         </div>
 
         {/* Max Level Filter */}
-        <div>
-          <label htmlFor="level_max" className="block text-sm font-medium text-gray-700 mb-2">
-            Max Level
-          </label>
+        <div className="bg-white rounded-2xl p-4 shadow-md border border-gray-200">
+          <div className="flex items-center mb-3">
+            <FiSliders className="w-5 h-5 text-orange-600 mr-2" />
+            <label htmlFor="level_max" className="block text-sm font-bold text-gray-700">
+              Max Level
+            </label>
+          </div>
           <select
             id="level_max"
             value={filters.level_max}
             onChange={(e) => onFiltersChange({ level_max: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 font-medium text-gray-900 bg-gray-50 hover:bg-white transition-all duration-200"
           >
             <option value="">Any</option>
             {levelOptions.map((level) => (
@@ -139,15 +162,18 @@ const StudentsFilters: React.FC<StudentsFiltersProps> = ({
         </div>
 
         {/* State Filter */}
-        <div>
-          <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-2">
-            State
-          </label>
+        <div className="bg-white rounded-2xl p-4 shadow-md border border-gray-200">
+          <div className="flex items-center mb-3">
+            <FiMapPin className="w-5 h-5 text-purple-600 mr-2" />
+            <label htmlFor="state" className="block text-sm font-bold text-gray-700">
+              State
+            </label>
+          </div>
           <select
             id="state"
             value={filters.state}
             onChange={(e) => onFiltersChange({ state: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-medium text-gray-900 bg-gray-50 hover:bg-white transition-all duration-200"
           >
             <option value="">All States</option>
             {uniqueStates.map((state) => (
@@ -159,15 +185,18 @@ const StudentsFilters: React.FC<StudentsFiltersProps> = ({
         </div>
 
         {/* Activity Filter */}
-        <div>
-          <label htmlFor="activity" className="block text-sm font-medium text-gray-700 mb-2">
-            Activity
-          </label>
+        <div className="bg-white rounded-2xl p-4 shadow-md border border-gray-200">
+          <div className="flex items-center mb-3">
+            <FiUsers className="w-5 h-5 text-indigo-600 mr-2" />
+            <label htmlFor="activity" className="block text-sm font-bold text-gray-700">
+              Activity
+            </label>
+          </div>
           <select
             id="activity"
             value={filters.activity}
             onChange={(e) => onFiltersChange({ activity: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-medium text-gray-900 bg-gray-50 hover:bg-white transition-all duration-200"
           >
             <option value="all">All Students</option>
             <option value="active">Active (Has upcoming)</option>

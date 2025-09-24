@@ -1,4 +1,10 @@
 import React from 'react'
+import {
+  FiActivity,
+  FiCalendar,
+  FiAward,
+  FiDollarSign
+} from 'react-icons/fi'
 
 interface PartnerData {
   stats: {
@@ -20,10 +26,38 @@ interface PartnerStatsGridProps {
 
 const PartnerStatsGrid: React.FC<PartnerStatsGridProps> = ({ partnerData }) => {
   const stats = [
-    { label: 'Active Courts', value: partnerData.stats.total_courts || 0, icon: '🎾', color: 'bg-green-600' },
-    { label: 'Monthly Bookings', value: partnerData.stats.monthly_bookings || 0, icon: '📅', color: 'bg-blue-600' },
-    { label: 'Active Tournaments', value: partnerData.stats.active_tournaments || 0, icon: '🏆', color: 'bg-purple-600' },
-    { label: 'Monthly Revenue', value: `$${(partnerData.stats.monthly_revenue || 0).toLocaleString()}`, icon: '💰', color: 'bg-orange-600' }
+    {
+      label: 'Active Courts',
+      value: partnerData.stats.total_courts || 0,
+      icon: <FiActivity className="w-8 h-8" />,
+      color: 'from-green-600 to-emerald-700',
+      bgColor: 'from-green-50 to-emerald-50',
+      borderColor: 'border-green-200'
+    },
+    {
+      label: 'Monthly Bookings',
+      value: partnerData.stats.monthly_bookings || 0,
+      icon: <FiCalendar className="w-8 h-8" />,
+      color: 'from-blue-600 to-indigo-700',
+      bgColor: 'from-blue-50 to-indigo-50',
+      borderColor: 'border-blue-200'
+    },
+    {
+      label: 'Active Tournaments',
+      value: partnerData.stats.active_tournaments || 0,
+      icon: <FiAward className="w-8 h-8" />,
+      color: 'from-purple-600 to-indigo-700',
+      bgColor: 'from-purple-50 to-indigo-50',
+      borderColor: 'border-purple-200'
+    },
+    {
+      label: 'Monthly Revenue',
+      value: `$${(partnerData.stats.monthly_revenue || 0).toLocaleString()}`,
+      icon: <FiDollarSign className="w-8 h-8" />,
+      color: 'from-orange-600 to-orange-700',
+      bgColor: 'from-orange-50 to-orange-50',
+      borderColor: 'border-orange-200'
+    }
   ]
 
   return (
@@ -31,19 +65,13 @@ const PartnerStatsGrid: React.FC<PartnerStatsGridProps> = ({ partnerData }) => {
       {stats.map((stat) => (
         <div
           key={stat.label}
-          className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden"
+          className={`bg-gradient-to-br ${stat.bgColor} border ${stat.borderColor} rounded-2xl p-6 text-center hover:shadow-lg transition-all duration-300 shadow-md`}
         >
-          <div className="p-6">
-            <div className="flex items-center">
-              <div className={`${stat.color} rounded-lg p-3 text-white text-2xl`}>
-                {stat.icon}
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">{stat.label}</p>
-                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-              </div>
-            </div>
+          <div className={`w-16 h-16 bg-gradient-to-br ${stat.color} rounded-2xl flex items-center justify-center mx-auto mb-4 text-white shadow-lg`}>
+            {stat.icon}
           </div>
+          <div className="text-3xl font-bold text-gray-900 mb-2">{stat.value}</div>
+          <div className="text-sm font-bold text-gray-700">{stat.label}</div>
         </div>
       ))}
     </div>

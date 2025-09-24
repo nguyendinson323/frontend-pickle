@@ -1,5 +1,15 @@
 import React from 'react'
 import { CoachCertification, CertificationFilters } from '../../../types/coach'
+import {
+  FiAward,
+  FiDownload,
+  FiEdit3,
+  FiTrash2,
+  FiCalendar,
+  FiHome,
+  FiClock,
+  FiList
+} from 'react-icons/fi'
 
 interface CertificationsListProps {
   certifications: CoachCertification[]
@@ -50,7 +60,7 @@ const CertificationsList: React.FC<CertificationsListProps> = ({
 
   const getStatusBadge = (cert: CoachCertification) => {
     if (!cert.expiry_date) {
-      return { text: 'No Expiry', className: 'bg-gray-100 text-gray-800' }
+      return { text: 'No Expiry', className: 'bg-gray-100 text-gray-800 border-gray-200', icon: FiClock }
     }
 
     const currentDate = new Date()
@@ -58,11 +68,11 @@ const CertificationsList: React.FC<CertificationsListProps> = ({
     const thirtyDaysFromNow = new Date(currentDate.getTime() + (30 * 24 * 60 * 60 * 1000))
 
     if (expiryDate < currentDate) {
-      return { text: 'Expired', className: 'bg-red-100 text-red-800' }
+      return { text: 'Expired', className: 'bg-red-100 text-red-800 border-red-200', icon: FiClock }
     } else if (expiryDate <= thirtyDaysFromNow) {
-      return { text: 'Expiring Soon', className: 'bg-yellow-100 text-yellow-800' }
+      return { text: 'Expiring Soon', className: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: FiClock }
     } else {
-      return { text: 'Active', className: 'bg-green-100 text-green-800' }
+      return { text: 'Active', className: 'bg-green-100 text-green-800 border-green-200', icon: FiClock }
     }
   }
 
@@ -76,11 +86,13 @@ const CertificationsList: React.FC<CertificationsListProps> = ({
 
   if (filteredCertifications.length === 0) {
     return (
-      <div className="bg-white shadow-sm rounded-lg p-8 text-center">
+      <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-3xl shadow-xl p-12 text-center">
         <div className="text-gray-500">
-          <div className="text-4xl mb-4">🎓</div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No Certifications Found</h3>
-          <p className="text-gray-600">
+          <div className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+            <FiAward className="h-12 w-12 text-gray-500" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-900 mb-3">No Certifications Found</h3>
+          <p className="text-gray-600 font-medium text-lg max-w-md mx-auto">
             {filters.status !== 'all' || filters.issuer || filters.search
               ? 'Try adjusting your filters to see more certifications.'
               : 'Start by adding your professional certifications and licenses.'}
@@ -91,74 +103,87 @@ const CertificationsList: React.FC<CertificationsListProps> = ({
   }
 
   return (
-    <div className="bg-white shadow-sm rounded-lg overflow-hidden">
-      <div className="px-6 py-4 border-b border-gray-200">
-        <h3 className="text-lg font-medium text-gray-900">
+    <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-3xl shadow-xl overflow-hidden">
+      <div className="bg-gradient-to-r from-indigo-600 to-purple-700 text-white px-8 py-6">
+        <h3 className="text-2xl font-bold flex items-center">
+          <FiList className="h-6 w-6 mr-3" />
           Certifications ({filteredCertifications.length})
         </h3>
+        <p className="text-indigo-100 font-medium mt-1">Your professional credentials and licenses</p>
       </div>
 
-      <div className="divide-y divide-gray-200">
+      <div className="grid gap-6 p-8">
         {filteredCertifications.map((cert) => {
           const status = getStatusBadge(cert)
+          const StatusIcon = status.icon
           return (
-            <div key={cert.id} className="p-6 hover: transition-colors duration-200">
+            <div key={cert.id} className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl transition-all duration-200 hover:transform hover:scale-[1.02]">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <h4 className="text-lg font-medium text-gray-900">{cert.name}</h4>
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${status.className}`}>
-                      {status.text}
-                    </span>
-                  </div>
-                  
-                  <div className="text-sm text-gray-600 space-y-1">
-                    <div>
-                      <span className="font-medium">Issued by:</span> {cert.issuer}
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-2xl flex items-center justify-center">
+                      <FiAward className="h-6 w-6 text-indigo-600" />
                     </div>
-                    <div className="flex space-x-4">
-                      <span>
-                        <span className="font-medium">Issue Date:</span> {formatDate(cert.issue_date)}
+                    <div className="flex-1">
+                      <h4 className="text-xl font-bold text-gray-900 mb-1">{cert.name}</h4>
+                      <span className={`inline-flex items-center px-3 py-1 text-sm font-bold rounded-2xl border-2 ${status.className}`}>
+                        <StatusIcon className="h-3 w-3 mr-1" />
+                        {status.text}
                       </span>
-                      {cert.expiry_date && (
-                        <span>
-                          <span className="font-medium">Expires:</span> {formatDate(cert.expiry_date)}
-                        </span>
-                      )}
                     </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
+                      <div className="text-sm font-bold text-gray-700 mb-1 flex items-center">
+                        <FiHome className="h-4 w-4 mr-2 text-blue-500" />
+                        Issued by
+                      </div>
+                      <div className="font-bold text-blue-900">{cert.issuer}</div>
+                    </div>
+                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4">
+                      <div className="text-sm font-bold text-gray-700 mb-1 flex items-center">
+                        <FiCalendar className="h-4 w-4 mr-2 text-green-500" />
+                        Issue Date
+                      </div>
+                      <div className="font-bold text-green-900">{formatDate(cert.issue_date)}</div>
+                    </div>
+                    {cert.expiry_date && (
+                      <div className="bg-gradient-to-br from-orange-50 to-red-50 border border-orange-200 rounded-xl p-4">
+                        <div className="text-sm font-bold text-gray-700 mb-1 flex items-center">
+                          <FiClock className="h-4 w-4 mr-2 text-orange-500" />
+                          Expires
+                        </div>
+                        <div className="font-bold text-orange-900">{formatDate(cert.expiry_date)}</div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center space-x-2">
+                <div className="flex flex-col space-y-3 ml-6">
                   <button
                     onClick={() => onDownload(cert.id)}
-                    className="px-3 py-2 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors duration-200"
+                    className="p-3 bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 text-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-200 hover:transform hover:scale-105"
                     title="Download Certificate"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
+                    <FiDownload className="w-5 h-5" />
                   </button>
-                  
+
                   <button
                     onClick={() => onEdit(cert)}
-                    className="px-3 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors duration-200"
+                    className="p-3 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-200 hover:transform hover:scale-105"
                     title="Edit Certification"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
+                    <FiEdit3 className="w-5 h-5" />
                   </button>
 
                   <button
                     onClick={() => onDelete(cert)}
-                    className="px-3 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors duration-200"
+                    className="p-3 bg-gradient-to-r from-red-600 to-pink-700 hover:from-red-700 hover:to-pink-800 text-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-200 hover:transform hover:scale-105"
                     title="Delete Certification"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
+                    <FiTrash2 className="w-5 h-5" />
                   </button>
                 </div>
               </div>

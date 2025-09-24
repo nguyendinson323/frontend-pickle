@@ -1,5 +1,19 @@
 import React from 'react'
 import { Tournament } from '../../../store/slices/partnerManagementSlice'
+import {
+  FiSearch,
+  FiAward,
+  FiCalendar,
+  FiUsers,
+  FiDollarSign,
+  FiMapPin,
+  FiEdit2,
+  FiTrash2,
+  FiPlay,
+  FiPause,
+  FiLoader,
+  FiTag
+} from 'react-icons/fi'
 
 interface TournamentsListProps {
   tournaments: Tournament[]
@@ -27,10 +41,10 @@ const TournamentsList: React.FC<TournamentsListProps> = ({
 }) => {
   const getStatusColor = (status: string) => {
     const colors = {
-      upcoming: 'bg-blue-100 text-blue-800',
-      ongoing: 'bg-purple-100 text-purple-800',
-      completed: 'bg-teal-100 text-teal-800',
-      canceled: 'bg-red-100 text-red-800'
+      upcoming: 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 border border-blue-300',
+      ongoing: 'bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 border border-purple-300',
+      completed: 'bg-gradient-to-r from-green-100 to-green-200 text-green-800 border border-green-300',
+      canceled: 'bg-gradient-to-r from-red-100 to-red-200 text-red-800 border border-red-300'
     }
     return colors[status as keyof typeof colors] || colors.upcoming
   }
@@ -63,29 +77,34 @@ const TournamentsList: React.FC<TournamentsListProps> = ({
   const canDelete = (tournament: Tournament) => tournament.status === 'upcoming' && tournament.current_participants === 0
 
   return (
-    <div className="bg-white rounded-lg shadow border border-gray-200">
-      <div className="p-6 border-b border-gray-200">
+    <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-200 shadow-2xl rounded-3xl overflow-hidden">
+      <div className="bg-gradient-to-r from-purple-600 to-indigo-700 px-8 py-6">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <h2 className="text-lg font-semibold text-gray-900">Tournaments</h2>
+          <div className="text-white">
+            <div className="flex items-center">
+              <div className="w-8 h-8 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center mr-3">
+                <FiAward className="w-4 h-4" />
+              </div>
+              <h2 className="text-xl font-bold">Tournaments Management</h2>
+            </div>
+          </div>
           
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative">
-              <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search tournaments..."
                 value={filter.searchTerm}
                 onChange={(e) => onFilterChange({ searchTerm: e.target.value })}
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                className="pl-10 pr-4 py-3 border-2 border-gray-300 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-medium text-gray-900 bg-white hover:bg-gray-50 transition-all duration-200"
               />
             </div>
 
             <select
               value={filter.status}
               onChange={(e) => onFilterChange({ status: e.target.value })}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              className="px-4 py-3 border-2 border-gray-300 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-medium text-gray-900 bg-white hover:bg-gray-50 transition-all duration-200"
             >
               <option value="">All Statuses</option>
               <option value="upcoming">Upcoming</option>
@@ -97,39 +116,41 @@ const TournamentsList: React.FC<TournamentsListProps> = ({
         </div>
       </div>
 
-      <div className="p-6">
+      <div className="p-8">
         {loading ? (
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-3"></div>
-            <p className="text-gray-600">Loading tournaments...</p>
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-3xl flex items-center justify-center mx-auto mb-6 animate-pulse">
+              <FiLoader className="w-8 h-8 text-white animate-spin" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Loading Tournaments...</h3>
+            <p className="text-gray-600 font-medium">Please wait while we fetch your tournaments</p>
           </div>
         ) : filteredTournaments.length === 0 ? (
-          <div className="text-center py-8">
-            <svg className="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
-            </svg>
-            <p className="text-gray-500">
-              {filter.status || filter.searchTerm 
-                ? 'No tournaments match your filters' 
-                : 'No tournaments created yet'}
+          <div className="text-center py-12">
+            <div className="w-20 h-20 bg-gradient-to-br from-gray-400 to-gray-500 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <FiAward className="w-10 h-10 text-white" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-3">No Tournaments Found</h3>
+            <p className="text-gray-600 font-medium">
+              {filter.status || filter.searchTerm
+                ? 'No tournaments match your current filters'
+                : 'Start by creating your first tournament'}
             </p>
           </div>
         ) : (
           <div className="space-y-6">
             {filteredTournaments.map((tournament) => (
-              <div key={tournament.id} className="border border-gray-200 rounded-lg p-5 hover:shadow-lg transition-shadow">
+              <div key={tournament.id} className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl transition-all duration-300 hover:transform hover:scale-105">
                 <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between">
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 mb-3">
-                      <h3 className="text-lg font-semibold text-gray-900">{tournament.name}</h3>
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(tournament.status)}`}>
+                    <div className="flex items-center flex-wrap gap-3 mb-4">
+                      <h3 className="text-xl font-bold text-gray-900">{tournament.name}</h3>
+                      <span className={`inline-flex px-3 py-1 text-xs font-bold rounded-full ${getStatusColor(tournament.status)}`}>
                         {tournament.status.replace('_', ' ')}
                       </span>
-                      <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-indigo-100 text-indigo-800">
+                      <span className="inline-flex px-3 py-1 text-xs font-bold rounded-full bg-gradient-to-r from-indigo-100 to-indigo-200 text-indigo-800 border border-indigo-300">
+                        <FiTag className="w-3 h-3 mr-1" />
                         {tournament.tournament_type}
-                      </span>
-                      <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800">
-                        {tournament.skill_level}
                       </span>
                     </div>
 

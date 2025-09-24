@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import { PartnerMicrositeInfo } from '../../../store/slices/partnerMicrositeSlice'
 import SimpleImageUpload from '../../common/SimpleImageUpload'
+import {
+  FiEdit3,
+  FiX,
+  FiSave,
+  FiType,
+  FiLink,
+  FiImage,
+  FiSliders
+} from 'react-icons/fi'
 
 interface MicrositeEditModalProps {
   micrositeInfo: PartnerMicrositeInfo | null
@@ -24,7 +33,7 @@ const MicrositeEditModal: React.FC<MicrositeEditModalProps> = ({
     logo_url: '',
     banner_url: ''
   })
-  
+
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
@@ -44,7 +53,7 @@ const MicrositeEditModal: React.FC<MicrositeEditModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
-    
+
     try {
       await onSave(formData)
       onClose()
@@ -66,115 +75,136 @@ const MicrositeEditModal: React.FC<MicrositeEditModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      <div className="relative top-20 mx-auto p-6 border w-11/12 md:w-3/4 lg:w-2/3 xl:w-1/2 shadow-lg rounded-lg bg-white">
-        <div className="flex justify-between items-center pb-4 border-b">
-          <h3 className="text-xl font-bold text-gray-900">Edit Microsite</h3>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+      <div className="relative top-20 mx-auto p-0 border-0 w-11/12 md:w-3/4 lg:w-2/3 xl:w-1/2 shadow-2xl rounded-3xl bg-gradient-to-br from-white to-gray-50 overflow-hidden">
+
+        {/* Modal Header */}
+        <div className="bg-gradient-to-r from-purple-600 to-pink-700 px-8 py-6">
+          <div className="flex justify-between items-center text-white">
+            <div className="flex items-center">
+              <div className="w-8 h-8 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center mr-3">
+                <FiEdit3 className="w-4 h-4" />
+              </div>
+              <h3 className="text-xl font-bold">Edit Microsite</h3>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-white hover:bg-opacity-20 rounded-xl transition-colors"
+            >
+              <FiX className="w-6 h-6" />
+            </button>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-6 space-y-6">
+        {/* Modal Content */}
+        <form onSubmit={handleSubmit} className="p-8 space-y-8">
           {/* Basic Information */}
-          <div className="space-y-4">
-            <h4 className="text-lg font-medium text-gray-900">Basic Information</h4>
-            
+          <div className="space-y-6">
+            <div className="flex items-center mb-4">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center mr-3">
+                <FiType className="w-4 h-4 text-white" />
+              </div>
+              <h4 className="text-xl font-bold text-gray-900">Basic Information</h4>
+            </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-bold text-gray-700 mb-2">
                 Microsite Title
               </label>
               <input
                 type="text"
                 value={formData.title}
                 onChange={(e) => handleInputChange('title', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-medium text-gray-900 bg-white hover:bg-gray-50 transition-all duration-200"
                 placeholder="Enter microsite title"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-bold text-gray-700 mb-2">
                 Description
               </label>
               <textarea
                 value={formData.description}
                 onChange={(e) => handleInputChange('description', e.target.value)}
                 rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-medium text-gray-900 bg-white hover:bg-gray-50 transition-all duration-200"
                 placeholder="Enter microsite description"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-bold text-gray-700 mb-2">
                 Subdomain (Optional)
               </label>
-              <div className="flex">
-                <input
-                  type="text"
-                  value={formData.subdomain}
-                  onChange={(e) => handleInputChange('subdomain', e.target.value)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="mypartner"
-                />
-                <span className="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 rounded-r-lg bg-gray-50 text-gray-500 text-sm">
+              <div className="flex items-center bg-white border-2 border-gray-300 rounded-2xl overflow-hidden hover:bg-gray-50 transition-all duration-200">
+                <div className="flex items-center px-4 py-3 flex-1">
+                  <FiLink className="w-5 h-5 text-purple-600 mr-2" />
+                  <input
+                    type="text"
+                    value={formData.subdomain}
+                    onChange={(e) => handleInputChange('subdomain', e.target.value)}
+                    className="flex-1 bg-transparent focus:outline-none font-medium text-gray-900"
+                    placeholder="mypartner"
+                  />
+                </div>
+                <span className="px-4 py-3 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-600 text-sm font-bold border-l-2 border-gray-300">
                   .pickleballfed.com
                 </span>
               </div>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-2 text-sm text-gray-600 font-medium">
                 Choose a unique subdomain for your microsite
               </p>
             </div>
           </div>
 
           {/* Branding */}
-          <div className="space-y-4">
-            <h4 className="text-lg font-medium text-gray-900">Branding & Colors</h4>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-6">
+            <div className="flex items-center mb-4">
+              <div className="w-8 h-8 bg-gradient-to-br from-green-600 to-emerald-700 rounded-xl flex items-center justify-center mr-3">
+                <FiSliders className="w-4 h-4 text-white" />
+              </div>
+              <h4 className="text-xl font-bold text-gray-900">Branding & Colors</h4>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-gray-700 mb-2">
                   Primary Color
                 </label>
-                <div className="flex">
+                <div className="flex items-center bg-white border-2 border-gray-300 rounded-2xl overflow-hidden hover:bg-gray-50 transition-all duration-200">
                   <input
                     type="color"
                     value={formData.primary_color}
                     onChange={(e) => handleInputChange('primary_color', e.target.value)}
-                    className="w-12 h-10 border border-gray-300 rounded-l-lg cursor-pointer"
+                    className="w-16 h-12 border-0 cursor-pointer"
                   />
                   <input
                     type="text"
                     value={formData.primary_color}
                     onChange={(e) => handleInputChange('primary_color', e.target.value)}
-                    className="flex-1 px-3 py-2 border border-l-0 border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="flex-1 px-4 py-3 bg-transparent focus:outline-none font-medium text-gray-900"
                     placeholder="#000000"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-gray-700 mb-2">
                   Secondary Color
                 </label>
-                <div className="flex">
+                <div className="flex items-center bg-white border-2 border-gray-300 rounded-2xl overflow-hidden hover:bg-gray-50 transition-all duration-200">
                   <input
                     type="color"
                     value={formData.secondary_color}
                     onChange={(e) => handleInputChange('secondary_color', e.target.value)}
-                    className="w-12 h-10 border border-gray-300 rounded-l-lg cursor-pointer"
+                    className="w-16 h-12 border-0 cursor-pointer"
                   />
                   <input
                     type="text"
                     value={formData.secondary_color}
                     onChange={(e) => handleInputChange('secondary_color', e.target.value)}
-                    className="flex-1 px-3 py-2 border border-l-0 border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="flex-1 px-4 py-3 bg-transparent focus:outline-none font-medium text-gray-900"
                     placeholder="#FFFFFF"
                   />
                 </div>
@@ -183,55 +213,60 @@ const MicrositeEditModal: React.FC<MicrositeEditModalProps> = ({
           </div>
 
           {/* Media */}
-          <div className="space-y-4">
-            <h4 className="text-lg font-medium text-gray-900">Media</h4>
+          <div className="space-y-6">
+            <div className="flex items-center mb-4">
+              <div className="w-8 h-8 bg-gradient-to-br from-orange-600 to-red-700 rounded-xl flex items-center justify-center mr-3">
+                <FiImage className="w-4 h-4 text-white" />
+              </div>
+              <h4 className="text-xl font-bold text-gray-900">Media</h4>
+            </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-6">
+              <label className="block text-sm font-bold text-gray-700 mb-3">
                 Logo Image
               </label>
               <SimpleImageUpload
-                uploadType="partner-logo-auth"
                 value={formData.logo_url}
                 onChange={(url) => handleInputChange('logo_url', url)}
                 className="w-full"
               />
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-3 text-sm text-blue-800 font-medium">
                 Upload your logo image (square format recommended)
               </p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-2xl p-6">
+              <label className="block text-sm font-bold text-gray-700 mb-3">
                 Banner Image
               </label>
               <SimpleImageUpload
-                uploadType="club-banner"
                 value={formData.banner_url}
                 onChange={(url) => handleInputChange('banner_url', url)}
                 className="w-full"
               />
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-3 text-sm text-purple-800 font-medium">
                 Upload your banner image (3:1 aspect ratio recommended)
               </p>
             </div>
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end space-x-3 pt-6 border-t">
+          <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+              className="inline-flex items-center px-6 py-3 border-2 border-gray-300 rounded-2xl text-gray-700 font-bold hover:bg-gray-50 transition-all duration-200"
               disabled={saving}
             >
+              <FiX className="w-5 h-5 mr-2" />
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-700 text-white rounded-2xl hover:from-purple-700 hover:to-pink-800 transition-all duration-300 shadow-lg hover:shadow-xl hover:transform hover:scale-105 font-bold disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
+              <FiSave className="w-5 h-5 mr-2" />
               {saving ? 'Saving...' : 'Save Changes'}
             </button>
           </div>

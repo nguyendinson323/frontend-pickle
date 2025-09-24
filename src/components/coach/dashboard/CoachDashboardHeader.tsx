@@ -2,6 +2,15 @@ import React, { useState } from 'react'
 import { CoachProfile } from '../../../store/slices/coachDashboardSlice'
 import SimpleImageUpload from '../../common/SimpleImageUpload'
 import api from '../../../services/api'
+import {
+  FiCamera,
+  FiX,
+  FiUser,
+  FiAward,
+  FiMapPin,
+  FiDollarSign,
+  FiCalendar
+} from 'react-icons/fi'
 
 interface CoachDashboardHeaderProps {
   profile: CoachProfile
@@ -29,75 +38,99 @@ const CoachDashboardHeader: React.FC<CoachDashboardHeaderProps> = ({ profile }) 
 
   return (
     <div className="mb-8">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center">
-          <div className="relative w-16 h-16 mr-4">
-            <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center">
-              {currentPhotoUrl ? (
-                <img src={currentPhotoUrl} alt="Profile" className="w-16 h-16 rounded-full object-cover" />
-              ) : (
-                <span className="text-2xl text-white">👨‍🏫</span>
-              )}
+      <div className="bg-gradient-to-br from-white to-indigo-50 border border-indigo-200 rounded-3xl shadow-2xl p-8">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-center mb-6 lg:mb-0">
+            <div className="relative w-20 h-20 mr-6">
+              <div className="w-20 h-20 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-full flex items-center justify-center shadow-lg">
+                {currentPhotoUrl ? (
+                  <img src={currentPhotoUrl} alt="Profile" className="w-20 h-20 rounded-full object-cover border-4 border-white" />
+                ) : (
+                  <FiUser className="text-3xl text-white" />
+                )}
+              </div>
+              <button
+                onClick={() => setShowImageUpload(true)}
+                className="absolute -bottom-1 -right-1 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white rounded-full p-2 shadow-lg transition-all duration-200 hover:transform hover:scale-105"
+                title="Update profile photo"
+              >
+                <FiCamera className="w-4 h-4" />
+              </button>
             </div>
-            <button
-              onClick={() => setShowImageUpload(true)}
-              className="absolute -bottom-1 -right-1 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-1 shadow-lg transition-colors duration-200"
-              title="Update profile photo"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-            </button>
+            <div>
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">Welcome, Coach {profile.full_name}</h1>
+              <div className="flex flex-wrap items-center gap-4 mb-3">
+                <div className="flex items-center bg-indigo-100 border border-indigo-200 rounded-2xl px-3 py-1">
+                  <FiAward className="h-4 w-4 mr-2 text-indigo-600" />
+                  <span className="text-sm font-bold text-indigo-900">Certified Coach</span>
+                </div>
+                {profile.nrtp_level && (
+                  <div className="flex items-center bg-purple-100 border border-purple-200 rounded-2xl px-3 py-1">
+                    <FiAward className="h-4 w-4 mr-2 text-purple-600" />
+                    <span className="text-sm font-bold text-purple-900">NRTP Level {profile.nrtp_level}</span>
+                  </div>
+                )}
+                {profile.state_name && (
+                  <div className="flex items-center bg-blue-100 border border-blue-200 rounded-2xl px-3 py-1">
+                    <FiMapPin className="h-4 w-4 mr-2 text-blue-600" />
+                    <span className="text-sm font-bold text-blue-900">{profile.state_name}</span>
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center bg-green-100 border border-green-200 rounded-2xl px-4 py-2 inline-flex">
+                <FiDollarSign className="h-5 w-5 mr-2 text-green-600" />
+                <span className="text-lg font-bold text-green-900">${profile.hourly_rate}/hour</span>
+              </div>
+            </div>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Welcome, Coach {profile.full_name}</h1>
-            <p className="text-gray-600">
-              Certified Pickleball Coach
-              {profile.nrtp_level && ` • NRTP Level ${profile.nrtp_level}`}
-              {profile.state_name && ` • ${profile.state_name}`}
-            </p>
-            <p className="text-sm text-blue-600 font-medium">
-              ${profile.hourly_rate}/hour
-            </p>
-          </div>
-        </div>
 
-        <div className="text-right">
-          {profile.affiliation_expires_at && (
-            <p className="text-sm text-gray-600">
-              Affiliation expires: {new Date(profile.affiliation_expires_at).toLocaleDateString()}
-            </p>
-          )}
+          <div className="text-left lg:text-right">
+            {profile.affiliation_expires_at && (
+              <div className="bg-orange-100 border border-orange-200 rounded-2xl px-4 py-3">
+                <div className="flex items-center text-orange-800">
+                  <FiCalendar className="h-4 w-4 mr-2" />
+                  <div>
+                    <p className="text-sm font-bold">Affiliation expires</p>
+                    <p className="text-sm font-medium">{new Date(profile.affiliation_expires_at).toLocaleDateString()}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Image Upload Modal */}
       {showImageUpload && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-11/12 max-w-2xl shadow-lg rounded-md bg-white">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-gray-900">Update Profile Photo</h3>
-              <button
-                onClick={() => setShowImageUpload(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+        <div className="fixed inset-0 bg-black bg-opacity-60 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
+          <div className="bg-gradient-to-br from-white to-blue-50 border border-blue-200 rounded-3xl w-full max-w-2xl shadow-2xl">
+            <div className="bg-gradient-to-r from-indigo-600 to-purple-700 text-white px-8 py-6 rounded-t-3xl">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-2xl font-bold">Update Profile Photo</h3>
+                  <p className="text-indigo-100 font-medium mt-1">Upload your professional coaching photo</p>
+                </div>
+                <button
+                  onClick={() => setShowImageUpload(false)}
+                  className="p-2 text-white hover:text-gray-200 rounded-xl hover:bg-white hover:bg-opacity-20 transition-all duration-200"
+                >
+                  <FiX className="w-6 h-6" />
+                </button>
+              </div>
             </div>
 
-            <SimpleImageUpload
-              fieldName="profile_photo_url"
-              fileType="image"
-              value={currentPhotoUrl}
-              onChange={handlePhotoUpdate}
-              className="bg-gray-50"
-              title="Profile Photo"
-              enableCropping={true}
-              aspectRatio={1}
-            />
+            <div className="p-8">
+              <SimpleImageUpload
+                fieldName="profile_photo_url"
+                fileType="image"
+                value={currentPhotoUrl}
+                onChange={handlePhotoUpdate}
+                className="bg-white border border-gray-200 rounded-2xl"
+                title="Profile Photo"
+                enableCropping={true}
+                aspectRatio={1}
+              />
+            </div>
           </div>
         </div>
       )}

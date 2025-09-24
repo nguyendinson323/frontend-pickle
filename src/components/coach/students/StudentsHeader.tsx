@@ -1,4 +1,12 @@
 import React from 'react'
+import {
+  FiUsers,
+  FiUserCheck,
+  FiUserX,
+  FiStar,
+  FiDollarSign,
+  FiTrendingUp
+} from 'react-icons/fi'
 
 interface StudentsHeaderProps {
   totalStudents: number
@@ -16,43 +24,64 @@ const StudentsHeader: React.FC<StudentsHeaderProps> = ({
   totalRevenue
 }) => {
   return (
-    <div className="bg-white shadow-sm rounded-lg p-6 mb-6">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold text-gray-900">My Students</h1>
-        <div className="text-sm text-gray-500">
-          Track your students' progress and performance
+    <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-200 shadow-2xl rounded-3xl p-8 mb-8">
+      <div className="flex items-center mb-8">
+        <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center mr-4">
+          <FiTrendingUp className="w-6 h-6 text-white" />
+        </div>
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">My Students</h1>
+          <p className="text-gray-600 font-medium">
+            Track your students' progress and performance
+          </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <div className="bg-blue-50 p-4 rounded-lg">
-          <div className="text-2xl font-bold text-blue-600">{totalStudents}</div>
-          <div className="text-sm text-gray-600">Total Students</div>
-        </div>
-        
-        <div className="bg-green-50 p-4 rounded-lg">
-          <div className="text-2xl font-bold text-green-600">{activeStudents}</div>
-          <div className="text-sm text-gray-600">Active</div>
-          <div className="text-xs text-gray-500">(Upcoming sessions)</div>
-        </div>
-        
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <div className="text-2xl font-bold text-gray-600">{inactiveStudents}</div>
-          <div className="text-sm text-gray-600">Inactive</div>
-        </div>
-        
-        <div className="bg-yellow-50 p-4 rounded-lg">
-          <div className="text-2xl font-bold text-yellow-600">{averageRating.toFixed(1)}</div>
-          <div className="text-sm text-gray-600">Avg Rating</div>
-          <div className="text-xs text-gray-500">
-            {'★'.repeat(Math.floor(averageRating))}
-            {averageRating > 0 && averageRating % 1 !== 0 && '☆'}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        {/* Total Students */}
+        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-6 text-center hover:shadow-lg transition-all duration-300">
+          <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <FiUsers className="w-8 h-8 text-white" />
           </div>
+          <div className="text-3xl font-bold text-gray-900 mb-2">{totalStudents}</div>
+          <div className="text-sm font-bold text-blue-700">Total Students</div>
         </div>
-        
-        <div className="bg-indigo-50 p-4 rounded-lg">
-          <div className="text-2xl font-bold text-indigo-600">${totalRevenue.toFixed(0)}</div>
-          <div className="text-sm text-gray-600">Total Revenue</div>
+
+        {/* Active Students */}
+        <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-6 text-center hover:shadow-lg transition-all duration-300">
+          <div className="w-16 h-16 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <FiUserCheck className="w-8 h-8 text-white" />
+          </div>
+          <div className="text-3xl font-bold text-gray-900 mb-2">{activeStudents}</div>
+          <div className="text-sm font-bold text-green-700">Active Students</div>
+          <div className="text-xs text-green-600 font-medium mt-1">(Upcoming sessions)</div>
+        </div>
+
+        {/* Inactive Students */}
+        <div className="bg-gradient-to-br from-gray-50 to-slate-50 border border-gray-200 rounded-2xl p-6 text-center hover:shadow-lg transition-all duration-300">
+          <div className="w-16 h-16 bg-gradient-to-br from-gray-600 to-slate-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <FiUserX className="w-8 h-8 text-white" />
+          </div>
+          <div className="text-3xl font-bold text-gray-900 mb-2">{inactiveStudents}</div>
+          <div className="text-sm font-bold text-gray-700">Inactive Students</div>
+        </div>
+
+        {/* Average Rating */}
+        <div className="bg-gradient-to-br from-yellow-50 to-amber-50 border border-yellow-200 rounded-2xl p-6 text-center hover:shadow-lg transition-all duration-300">
+          <div className="w-16 h-16 bg-gradient-to-br from-yellow-600 to-amber-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <FiStar className="w-8 h-8 text-white" />
+          </div>
+          <div className="text-3xl font-bold text-gray-900 mb-2">{averageRating.toFixed(1)}</div>
+          <div className="text-sm font-bold text-yellow-700">Average Rating</div>
+        </div>
+
+        {/* Total Revenue */}
+        <div className="bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200 rounded-2xl p-6 text-center hover:shadow-lg transition-all duration-300">
+          <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <FiDollarSign className="w-8 h-8 text-white" />
+          </div>
+          <div className="text-3xl font-bold text-gray-900 mb-2">${totalRevenue.toFixed(0)}</div>
+          <div className="text-sm font-bold text-purple-700">Total Revenue</div>
         </div>
       </div>
     </div>

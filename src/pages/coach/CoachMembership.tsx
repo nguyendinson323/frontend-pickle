@@ -1,20 +1,29 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState, AppDispatch } from '../../store'
-import { 
+import {
   fetchCoachMembershipData,
   subscribeToCoachPlan,
   cancelCoachSubscription,
   renewCoachSubscription,
   updateCoachPaymentMethod
 } from '../../store/slices/coachMembershipSlice'
-import { 
+import {
   CoachMembershipHeader,
   CurrentSubscription,
   AvailablePlans,
   PaymentHistory,
   PaymentMethodModal
 } from '../../components/coach/membership'
+import {
+  FiCheckCircle,
+  FiX,
+  FiAlertCircle,
+  FiLoader,
+  FiAward,
+  FiUsers,
+  FiDollarSign
+} from 'react-icons/fi'
 
 const CoachMembershipPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -90,45 +99,52 @@ const CoachMembershipPage: React.FC = () => {
 
   if (loading && !currentSubscription && availablePlans.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your coaching membership information...</p>
+          <div className="bg-white rounded-3xl shadow-2xl p-12">
+            <div className="animate-spin rounded-full h-20 w-20 border-4 border-gray-300 border-t-indigo-600 mx-auto mb-6">
+              <FiLoader className="h-8 w-8 text-transparent" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">Loading Membership</h3>
+            <p className="text-gray-600 font-medium text-lg">Please wait while we load your coaching membership information...</p>
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Success Message */}
         {successMessage && (
-          <div className="mb-6 bg-green-50 border border-green-200 rounded-md p-4">
+          <div className="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-6 shadow-lg">
             <div className="flex">
               <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
+                <FiCheckCircle className="h-6 w-6 text-green-500" />
               </div>
               <div className="ml-3">
-                <p className="text-sm font-medium text-green-800">{successMessage}</p>
+                <p className="text-sm font-bold text-green-800">{successMessage}</p>
               </div>
+              <button
+                onClick={() => setSuccessMessage('')}
+                className="ml-auto text-green-400 hover:text-green-600 transition-colors duration-200"
+              >
+                <FiX className="h-5 w-5" />
+              </button>
             </div>
           </div>
         )}
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
+          <div className="mb-6 bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 rounded-2xl p-6 shadow-lg">
             <div className="flex">
               <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
+                <FiAlertCircle className="h-6 w-6 text-red-500" />
               </div>
               <div className="ml-3">
-                <p className="text-sm font-medium text-red-800">{error}</p>
+                <p className="text-sm font-bold text-red-800">{error}</p>
               </div>
             </div>
           </div>
@@ -175,47 +191,73 @@ const CoachMembershipPage: React.FC = () => {
         />
 
         {/* Coach Membership Benefits */}
-        <div className="bg-white shadow-sm rounded-lg p-6 mt-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Coach Membership Benefits</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center">
-              <div className="text-4xl mb-2">🎓</div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Certification Access</h3>
-              <p className="text-gray-600">Access to official coaching certifications and training materials</p>
+        <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-200 shadow-2xl rounded-3xl p-8 mt-6">
+          <div className="flex items-center mb-8">
+            <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl flex items-center justify-center mr-4">
+              <FiAward className="w-6 h-6 text-white" />
             </div>
-            <div className="text-center">
-              <div className="text-4xl mb-2">👥</div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Student Management</h3>
-              <p className="text-gray-600">Advanced tools to track student progress and manage coaching sessions</p>
+            <h2 className="text-2xl font-bold text-gray-900">Coach Membership Benefits</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <FiAward className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Certification Access</h3>
+              <p className="text-gray-600 font-medium">Access to official coaching certifications and training materials</p>
             </div>
-            <div className="text-center">
-              <div className="text-4xl mb-2">💰</div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Earning Opportunities</h3>
-              <p className="text-gray-600">Access to premium coaching opportunities and higher earning potential</p>
+            <div className="text-center bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <FiUsers className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Student Management</h3>
+              <p className="text-gray-600 font-medium">Advanced tools to track student progress and manage coaching sessions</p>
+            </div>
+            <div className="text-center bg-gradient-to-br from-purple-50 to-purple-50 border border-purple-200 rounded-2xl p-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <FiDollarSign className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Earning Opportunities</h3>
+              <p className="text-gray-600 font-medium">Access to premium coaching opportunities and higher earning potential</p>
             </div>
           </div>
         </div>
 
         {/* Professional Development */}
-        <div className="bg-gradient-to-r from-indigo-50 to-blue-50 shadow-sm rounded-lg p-6 mt-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Professional Development</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h3 className="text-md font-semibold text-gray-900 mb-2">Continuous Learning</h3>
-              <ul className="space-y-1 text-sm text-gray-600">
-                <li>• Monthly coaching webinars and workshops</li>
-                <li>• Access to latest coaching methodologies</li>
-                <li>• Peer networking opportunities</li>
-                <li>• Performance analytics and insights</li>
+        <div className="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-200 shadow-2xl rounded-3xl p-8 mt-6">
+          <div className="flex items-center mb-8">
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center mr-4">
+              <FiUsers className="w-6 h-6 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900">Professional Development</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
+              <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mr-3">
+                  <FiAward className="w-4 h-4 text-white" />
+                </div>
+                Continuous Learning
+              </h3>
+              <ul className="space-y-3 text-sm text-gray-700">
+                <li className="flex items-center"><FiCheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" /> Monthly coaching webinars and workshops</li>
+                <li className="flex items-center"><FiCheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" /> Access to latest coaching methodologies</li>
+                <li className="flex items-center"><FiCheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" /> Peer networking opportunities</li>
+                <li className="flex items-center"><FiCheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" /> Performance analytics and insights</li>
               </ul>
             </div>
-            <div>
-              <h3 className="text-md font-semibold text-gray-900 mb-2">Career Growth</h3>
-              <ul className="space-y-1 text-sm text-gray-600">
-                <li>• Professional coaching profile</li>
-                <li>• Student referral system</li>
-                <li>• Tournament coaching opportunities</li>
-                <li>• Elite coaching program access</li>
+            <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
+              <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mr-3">
+                  <FiDollarSign className="w-4 h-4 text-white" />
+                </div>
+                Career Growth
+              </h3>
+              <ul className="space-y-3 text-sm text-gray-700">
+                <li className="flex items-center"><FiCheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" /> Professional coaching profile</li>
+                <li className="flex items-center"><FiCheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" /> Student referral system</li>
+                <li className="flex items-center"><FiCheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" /> Tournament coaching opportunities</li>
+                <li className="flex items-center"><FiCheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" /> Elite coaching program access</li>
               </ul>
             </div>
           </div>

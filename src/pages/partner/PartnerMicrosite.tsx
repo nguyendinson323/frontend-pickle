@@ -7,6 +7,14 @@ import {
   updatePartnerMicrositeInfo,
   PartnerMicrositeInfo
 } from '../../store/slices/partnerMicrositeSlice'
+import {
+  FiLoader,
+  FiAlertCircle,
+  FiArrowLeft,
+  FiAlertTriangle,
+  FiInfo,
+  FiSettings
+} from 'react-icons/fi'
 
 import MicrositeHeader from '../../components/partner/microsite/MicrositeHeader'
 import CourtsSection from '../../components/partner/microsite/CourtsSection'
@@ -62,13 +70,13 @@ const PartnerMicrosite: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="animate-pulse">
-            <div className="h-64 bg-gray-200 rounded-lg mb-6"></div>
-            <div className="h-32 bg-gray-200 rounded-lg mb-6"></div>
-            <div className="h-48 bg-gray-200 rounded-lg"></div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex justify-center items-center">
+        <div className="text-center">
+          <div className="w-20 h-20 bg-gradient-to-br from-purple-600 to-pink-700 rounded-3xl flex items-center justify-center mx-auto mb-6 animate-pulse shadow-lg">
+            <FiLoader className="w-10 h-10 text-white animate-spin" />
           </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Loading Microsite</h2>
+          <p className="text-gray-600 font-medium">Please wait while we fetch the partner information...</p>
         </div>
       </div>
     )
@@ -76,18 +84,19 @@ const PartnerMicrosite: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-red-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-8 text-center">
-            <svg className="mx-auto h-12 w-12 text-red-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <h3 className="text-lg font-medium text-red-900 mb-2">Error Loading Microsite</h3>
-            <p className="text-red-700">{error}</p>
+          <div className="bg-gradient-to-br from-red-50 to-pink-50 border border-red-200 shadow-2xl rounded-3xl p-12 text-center">
+            <div className="w-20 h-20 bg-gradient-to-br from-red-600 to-pink-700 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <FiAlertCircle className="w-10 h-10 text-white" />
+            </div>
+            <h3 className="text-2xl font-bold text-red-900 mb-4">Error Loading Microsite</h3>
+            <p className="text-red-800 font-medium mb-8">{error}</p>
             <button
               onClick={() => navigate(-1)}
-              className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-red-600 to-pink-700 text-white rounded-2xl hover:from-red-700 hover:to-pink-800 transition-all duration-300 shadow-lg hover:shadow-xl hover:transform hover:scale-105 font-bold"
             >
+              <FiArrowLeft className="w-5 h-5 mr-2" />
               Go Back
             </button>
           </div>
@@ -97,7 +106,7 @@ const PartnerMicrosite: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <MicrositeHeader
           micrositeInfo={micrositeInfo}
@@ -126,20 +135,17 @@ const PartnerMicrosite: React.FC = () => {
         />
 
         {!micrositeInfo?.is_active && isOwner && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-6">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
+          <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 shadow-lg rounded-2xl p-6 mb-6">
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-gradient-to-br from-yellow-600 to-orange-700 rounded-2xl flex items-center justify-center mr-4">
+                <FiAlertTriangle className="w-5 h-5 text-white" />
               </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-yellow-800">
+              <div>
+                <h3 className="text-sm font-bold text-yellow-900 mb-1">
                   Microsite Inactive
                 </h3>
-                <p className="mt-2 text-sm text-yellow-700">
-                  Your microsite is currently inactive and not visible to the public. 
-                  Contact support to activate your microsite.
+                <p className="text-yellow-800 font-medium">
+                  Your microsite is currently inactive and not visible to the public. Contact support to activate your microsite.
                 </p>
               </div>
             </div>
@@ -147,21 +153,21 @@ const PartnerMicrosite: React.FC = () => {
         )}
 
         {courts.length === 0 && tournaments.length === 0 && isOwner && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-8 text-center">
-            <svg className="mx-auto h-12 w-12 text-blue-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <h3 className="text-lg font-medium text-blue-900 mb-2">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 shadow-2xl rounded-3xl p-12 text-center">
+            <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <FiInfo className="w-10 h-10 text-white" />
+            </div>
+            <h3 className="text-2xl font-bold text-blue-900 mb-4">
               Get Started with Your Microsite
             </h3>
-            <p className="text-blue-700 mb-4 max-w-md mx-auto">
-              Add courts and create tournaments to showcase on your microsite. 
-              This will help players find and book your facilities.
+            <p className="text-blue-800 font-medium mb-8 max-w-md mx-auto">
+              Add courts and create tournaments to showcase on your microsite. This will help players find and book your facilities.
             </p>
             <button
               onClick={() => navigate('/partner/management')}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl hover:from-blue-700 hover:to-indigo-800 transition-all duration-300 shadow-lg hover:shadow-xl hover:transform hover:scale-105 font-bold"
             >
+              <FiSettings className="w-5 h-5 mr-2" />
               Go to Management
             </button>
           </div>

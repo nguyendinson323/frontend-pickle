@@ -9,6 +9,12 @@ import {
   setSelectedMessage,
   PartnerMessage
 } from '../../store/slices/partnerInboxSlice'
+import {
+  FiHome,
+  FiChevronRight,
+  FiAlertCircle,
+  FiInbox
+} from 'react-icons/fi'
 
 import InboxHeader from '../../components/partner/inbox/InboxHeader'
 import InboxStatsCard from '../../components/partner/inbox/InboxStatsCard'
@@ -106,8 +112,46 @@ const PartnerInbox: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {/* Navigation Breadcrumb */}
+        <div className="mb-8">
+          <nav className="flex" aria-label="Breadcrumb">
+            <ol className="flex items-center space-x-4">
+              <li>
+                <button
+                  onClick={() => navigate('/')}
+                  className="text-gray-500 hover:text-gray-700 font-medium transition-colors duration-200 flex items-center"
+                >
+                  <FiHome className="w-4 h-4 mr-1" />
+                  Home
+                </button>
+              </li>
+              <li>
+                <div className="flex items-center">
+                  <FiChevronRight className="flex-shrink-0 h-5 w-5 text-gray-400 mx-2" />
+                  <button
+                    onClick={() => navigate('/partner/dashboard')}
+                    className="text-gray-500 hover:text-gray-700 font-medium transition-colors duration-200"
+                  >
+                    Dashboard
+                  </button>
+                </div>
+              </li>
+              <li>
+                <div className="flex items-center">
+                  <FiChevronRight className="flex-shrink-0 h-5 w-5 text-gray-400 mx-2" />
+                  <span className="text-sm font-bold text-blue-600 flex items-center" aria-current="page">
+                    <FiInbox className="w-4 h-4 mr-1" />
+                    Inbox
+                  </span>
+                </div>
+              </li>
+            </ol>
+          </nav>
+        </div>
+
         <InboxHeader
           totalMessages={stats?.total_messages || 0}
           unreadMessages={stats?.unread_messages || 0}
@@ -123,16 +167,16 @@ const PartnerInbox: React.FC = () => {
 
         <InboxStatsCard stats={stats} />
 
+        {/* Error Message */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+          <div className="mb-8 bg-gradient-to-br from-red-50 to-pink-50 border border-red-200 shadow-2xl rounded-3xl p-8">
+            <div className="flex items-center">
+              <div className="w-12 h-12 bg-gradient-to-br from-red-600 to-pink-700 rounded-2xl flex items-center justify-center mr-4">
+                <FiAlertCircle className="w-6 h-6 text-white" />
               </div>
-              <div className="ml-3">
-                <p className="text-sm text-red-800">{error}</p>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Inbox Error</h3>
+                <p className="text-red-800 font-medium">{error}</p>
               </div>
             </div>
           </div>
