@@ -1,5 +1,13 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import {
+  FiCalendar,
+  FiClock,
+  FiUser,
+  FiArrowRight,
+  FiPlus,
+  FiActivity
+} from 'react-icons/fi'
 
 interface Match {
   tournamentName: string
@@ -17,39 +25,70 @@ const PlayerUpcomingMatches: React.FC<PlayerUpcomingMatchesProps> = ({ upcomingM
   const navigate = useNavigate()
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h3 className="text-xl font-semibold text-gray-900 mb-6">Upcoming Matches</h3>
+    <div className="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-xl border-2 border-gray-100 p-8">
+      <div className="flex items-center mb-8">
+        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mr-4">
+          <FiCalendar className="w-6 h-6 text-white" />
+        </div>
+        <h3 className="text-2xl font-bold text-gray-900">Upcoming Matches</h3>
+      </div>
       {upcomingMatches.length > 0 ? (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {upcomingMatches.slice(0, 3).map((match, index) => (
-            <div key={index} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-              <div>
-                <p className="font-semibold text-gray-900">{match.tournamentName}</p>
-                <p className="text-sm text-gray-600">{match.opponent}</p>
-                <p className="text-xs text-gray-500">{match.date} at {match.time}</p>
-              </div>
-              <div className="text-right">
-                <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                  {match.status}
-                </span>
+            <div key={index} className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 border-2 border-blue-200 rounded-2xl hover:shadow-lg transition-all duration-300 hover:transform hover:scale-105">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center mb-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center mr-4">
+                      <FiActivity className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-blue-900 text-lg">{match.tournamentName}</p>
+                      <div className="flex items-center text-blue-700 text-sm font-medium">
+                        <FiUser className="w-4 h-4 mr-2" />
+                        <span>vs {match.opponent}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 text-sm">
+                    <div className="flex items-center text-blue-600">
+                      <FiCalendar className="w-4 h-4 mr-2" />
+                      <span className="font-medium">{match.date}</span>
+                    </div>
+                    <div className="flex items-center text-blue-600">
+                      <FiClock className="w-4 h-4 mr-2" />
+                      <span className="font-medium">{match.time}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className="bg-gradient-to-r from-green-500 to-emerald-600 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg">
+                    {match.status}
+                  </span>
+                </div>
               </div>
             </div>
           ))}
           <button
             onClick={() => navigate('/player/rankings')}
-            className="text-indigo-600 hover:text-indigo-500 text-sm font-medium"
+            className="inline-flex items-center text-indigo-600 hover:text-indigo-700 text-sm font-bold transition-colors duration-200"
           >
-            View match history →
+            View match history
+            <FiArrowRight className="w-4 h-4 ml-2" />
           </button>
         </div>
       ) : (
-        <div className="text-center py-8">
-          <div className="text-4xl mb-4">🏓</div>
-          <p className="text-gray-600 mb-4">No upcoming matches</p>
+        <div className="text-center py-12">
+          <div className="w-20 h-20 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+            <FiCalendar className="w-10 h-10 text-white" />
+          </div>
+          <h4 className="text-xl font-bold text-gray-900 mb-3">No upcoming matches</h4>
+          <p className="text-gray-600 mb-6 font-medium">Ready to compete? Join a tournament to get started!</p>
           <button
             onClick={() => navigate('/player/tournament-browse')}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
+            className="inline-flex items-center bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 py-4 rounded-2xl text-sm font-bold transition-all duration-300 shadow-xl hover:shadow-2xl hover:transform hover:scale-105"
           >
+            <FiPlus className="w-5 h-5 mr-3" />
             Join a Tournament
           </button>
         </div>

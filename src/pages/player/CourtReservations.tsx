@@ -128,7 +128,7 @@ const CourtReservations: React.FC = () => {
 
 
   return (
-    <div className="min-h-screen ">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-green-50 to-blue-50">
       <CourtReservationsHeader />
       
       <CourtReservationsTabs
@@ -165,19 +165,19 @@ const CourtReservations: React.FC = () => {
 
         {activeTab === 'my-reservations' && (
           !isAuthenticated ? (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
-              <div className="text-gray-400 mb-4">
+            <div className="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl border border-gray-200 p-12 text-center">
+              <div className="w-20 h-20 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
                 <span className="text-4xl">🔐</span>
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Login Required</h3>
-              <p className="text-gray-500 mb-4">
-                Please log in to view and manage your court reservations.
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Login Required</h3>
+              <p className="text-lg text-gray-600 mb-8 max-w-md mx-auto">
+                Please log in to view and manage your court reservations and book new courts.
               </p>
               <a
                 href="/login"
-                className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-700 text-white font-bold rounded-2xl hover:from-green-700 hover:to-emerald-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-300 shadow-lg hover:shadow-xl hover:transform hover:scale-105"
               >
-                Log In
+                Log In to Access Reservations
               </a>
             </div>
           ) : (

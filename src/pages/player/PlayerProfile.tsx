@@ -5,6 +5,13 @@ import { RootState, AppDispatch } from '../../store'
 import { PlayerDashboard } from '../../types'
 import { fetchDashboard } from '../../store/slices/authSlice'
 import { PlayerProfileView, PlayerProfileForm } from '../../components/player/profile'
+import {
+  FiUser,
+  FiHome,
+  FiChevronRight,
+  FiLoader,
+  FiAlertCircle
+} from 'react-icons/fi'
 
 const PlayerProfilePage: React.FC = () => {
   const navigate = useNavigate()
@@ -34,8 +41,14 @@ const PlayerProfilePage: React.FC = () => {
 
   if (!user || user.role !== 'player' || !dashboard) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50">
+        <div className="text-center">
+          <div className="w-20 h-20 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+            <FiLoader className="w-10 h-10 text-white animate-spin" />
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">Loading Profile</h3>
+          <p className="text-gray-600 font-medium">Please wait while we load your information...</p>
+        </div>
       </div>
     )
   }
@@ -52,47 +65,52 @@ const PlayerProfilePage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen  py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Navigation Breadcrumb */}
         <div className="mb-8">
           <nav className="flex" aria-label="Breadcrumb">
-            <ol className="flex items-center space-x-4">
-              <li>
-                <button
-                  onClick={() => navigate('/player/dashboard')}
-                  className="text-gray-400 hover:text-gray-500"
-                >
-                  Dashboard
-                </button>
-              </li>
-              <li>
-                <div className="flex items-center">
-                  <svg
-                    className="flex-shrink-0 h-5 w-5 text-gray-300"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    aria-hidden="true"
+            <div className="bg-white rounded-2xl shadow-lg border-2 border-gray-100 p-4">
+              <ol className="flex items-center space-x-4">
+                <li>
+                  <button
+                    onClick={() => navigate('/player/dashboard')}
+                    className="flex items-center text-indigo-600 hover:text-indigo-800 font-medium transition-colors duration-200"
                   >
-                    <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
-                  </svg>
-                  <span className="ml-4 text-sm font-medium text-gray-500" aria-current="page">
-                    Profile
-                  </span>
-                </div>
-              </li>
-            </ol>
+                    <FiHome className="w-4 h-4 mr-2" />
+                    Dashboard
+                  </button>
+                </li>
+                <li>
+                  <div className="flex items-center">
+                    <FiChevronRight className="flex-shrink-0 h-5 w-5 text-gray-400 mx-2" />
+                    <div className="flex items-center text-gray-700 font-medium">
+                      <FiUser className="w-4 h-4 mr-2" />
+                      Profile
+                    </div>
+                  </div>
+                </li>
+              </ol>
+            </div>
           </nav>
         </div>
 
         {/* Page Title */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Player Profile</h1>
-          <p className="mt-1 text-sm text-gray-600">
-            View and manage your player information
-          </p>
+          <div className="bg-gradient-to-r from-white to-indigo-50 rounded-3xl shadow-xl border-2 border-indigo-100 p-8">
+            <div className="flex items-center">
+              <div className="w-16 h-16 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center mr-6 shadow-lg">
+                <FiUser className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">Player Profile</h1>
+                <p className="text-lg text-indigo-700 font-medium">
+                  View and manage your player information
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Profile Content */}

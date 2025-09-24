@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState, AppDispatch } from '../../store'
 import socketService from '../../services/socketService'
-import { 
+import {
   fetchConversations,
   fetchMessages,
   sendMessage,
@@ -27,6 +27,11 @@ import {
   ImagePreviewModal
 } from '../../components/player/messages'
 import { Conversation, Message } from '../../store/slices/playerMessagesSlice'
+import {
+  FiMessageCircle,
+  FiAlertCircle,
+  FiRefreshCw
+} from 'react-icons/fi'
 
 // Constants
 const SEARCH_DEBOUNCE_DELAY = 300
@@ -310,18 +315,23 @@ const PlayerMessages: React.FC = () => {
   // Error handling
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-red-600 text-lg font-medium mb-4">
-            Error loading messages: {error}
+          <div className="w-20 h-20 bg-gradient-to-r from-red-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+            <FiAlertCircle className="w-10 h-10 text-white" />
           </div>
-          <button 
+          <h3 className="text-2xl font-bold text-gray-900 mb-3">Error Loading Messages</h3>
+          <div className="text-red-700 text-lg font-medium mb-6 bg-red-100 border border-red-200 rounded-2xl p-4 max-w-md mx-auto">
+            {error}
+          </div>
+          <button
             onClick={() => {
               dispatch(fetchConversations())
               dispatch(fetchContacts())
             }}
-            className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
+            className="inline-flex items-center bg-gradient-to-r from-red-600 to-pink-600 text-white px-6 py-3 rounded-2xl font-bold hover:from-red-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-300 shadow-xl hover:shadow-2xl hover:transform hover:scale-105"
           >
+            <FiRefreshCw className="w-5 h-5 mr-2" />
             Retry
           </button>
         </div>
@@ -330,17 +340,17 @@ const PlayerMessages: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100">
       <MessagesHeader unreadCount={unreadCount} />
 
       {/* Main Chat Interface */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 h-96 md:h-[600px] flex overflow-hidden">
+        <div className="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl border-2 border-gray-200 h-96 md:h-[600px] flex overflow-hidden">
           {/* Conversations List */}
-          <div className="w-full md:w-1/3 border-r border-gray-200 flex flex-col">
+          <div className="w-full md:w-1/3 border-r-2 border-gray-200 flex flex-col">
             <ConversationsList {...conversationListProps} />
           </div>
-          
+
           {/* Chat Area */}
           <div className="hidden md:flex md:flex-1 flex-col">
             {activeConversation ? (
@@ -349,13 +359,15 @@ const PlayerMessages: React.FC = () => {
                 <MessageInput {...messageInputProps} />
               </>
             ) : (
-              <div className="flex-1 flex items-center justify-center bg-gray-50">
+              <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-gray-50 to-indigo-50">
                 <div className="text-center">
-                  <div className="text-4xl mb-4">💬</div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  <div className="w-24 h-24 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                    <FiMessageCircle className="w-12 h-12 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">
                     Select a conversation
                   </h3>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 font-medium">
                     Choose a conversation from the list to start messaging
                   </p>
                 </div>
@@ -367,7 +379,7 @@ const PlayerMessages: React.FC = () => {
 
       {/* Mobile Chat View */}
       {activeConversation && (
-        <div className="md:hidden fixed inset-0 bg-white z-50 flex flex-col">
+        <div className="md:hidden fixed inset-0 bg-gradient-to-br from-white to-gray-50 z-50 flex flex-col">
           <ChatWindow {...chatWindowProps} />
           <MessageInput {...messageInputProps} />
         </div>

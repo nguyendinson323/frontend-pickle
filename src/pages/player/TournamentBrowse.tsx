@@ -24,6 +24,7 @@ import {
   TournamentBrowseRegistrations,
   TournamentRegistrationModal
 } from '../../components/player/tournaments'
+import { FiLoader } from 'react-icons/fi'
 
 const TournamentBrowsePage: React.FC = () => {
   const navigate = useNavigate()
@@ -125,14 +126,19 @@ const TournamentBrowsePage: React.FC = () => {
 
   if (!user || user.role !== 'player') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+        <div className="bg-white p-12 rounded-3xl shadow-2xl border-2 border-gray-100 text-center">
+          <div className="w-20 h-20 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl animate-pulse">
+            <FiLoader className="w-10 h-10 text-white animate-spin" />
+          </div>
+          <p className="text-xl font-bold text-gray-700">Loading Tournament Dashboard...</p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen  py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <TournamentBrowseHeader />
         
@@ -144,7 +150,7 @@ const TournamentBrowsePage: React.FC = () => {
 
         {/* Browse Tab */}
         {activeTab === 'browse' && (
-          <div className="space-y-8">
+          <div className="space-y-8 animate-fade-in">
             <TournamentBrowseFilters
               filters={filters}
               statesList={statesList}
@@ -166,11 +172,13 @@ const TournamentBrowsePage: React.FC = () => {
 
         {/* Registered Tab */}
         {activeTab === 'registered' && (
-          <TournamentBrowseRegistrations
-            userRegistrations={userRegistrations}
-            onWithdraw={handleWithdraw}
-            onBrowseClick={() => setActiveTab('browse')}
-          />
+          <div className="animate-fade-in">
+            <TournamentBrowseRegistrations
+              userRegistrations={userRegistrations}
+              onWithdraw={handleWithdraw}
+              onBrowseClick={() => setActiveTab('browse')}
+            />
+          </div>
         )}
       </div>
 

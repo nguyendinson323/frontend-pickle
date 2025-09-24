@@ -114,23 +114,26 @@ const PlayerFinderPage: React.FC = () => {
 
   if (!user || user.role !== 'player') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+        <div className="bg-white rounded-3xl shadow-xl p-12 text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-indigo-200 border-t-indigo-600 mx-auto mb-6"></div>
+          <p className="text-lg font-medium text-gray-700">Loading Player Finder...</p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <PlayerFinderHeader isPremium={user.is_premium} />
         
         {/* Privacy Settings */}
-        <div className="mb-8 bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-lg font-medium text-gray-900">Privacy Settings</h3>
-              <p className="text-sm text-gray-600">Control whether other players can find you in searches</p>
+        <div className="mb-8 bg-gradient-to-r from-white to-gray-50 rounded-3xl shadow-xl border-2 border-gray-100 p-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+            <div className="mb-4 lg:mb-0">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Privacy Settings</h3>
+              <p className="text-gray-700 font-medium">Control whether other players can find you in searches</p>
             </div>
             <div className="flex items-center">
               <input
@@ -138,16 +141,16 @@ const PlayerFinderPage: React.FC = () => {
                 id="searchable"
                 checked={user.is_searchable}
                 onChange={(e) => handleToggleSearchability(e.target.checked)}
-                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                className="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded-lg"
               />
-              <label htmlFor="searchable" className="ml-2 block text-sm text-gray-900">
+              <label htmlFor="searchable" className="ml-3 block text-sm font-bold text-gray-900">
                 {user.is_searchable ? 'Visible in searches' : 'Hidden from searches'}
               </label>
             </div>
           </div>
           {!user.is_searchable && (
-            <div className="mt-3 p-3 bg-yellow-50 rounded-md">
-              <p className="text-sm text-yellow-700">
+            <div className="mt-6 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl border-2 border-yellow-200">
+              <p className="text-sm font-medium text-yellow-800">
                 You are currently hidden from player searches. Other players will not be able to find and connect with you.
               </p>
             </div>

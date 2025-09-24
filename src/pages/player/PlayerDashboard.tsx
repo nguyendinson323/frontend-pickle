@@ -47,8 +47,11 @@ const PlayerDashboardPage: React.FC = () => {
 
   if (!user || user.role !== 'player' || !dashboard) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+        <div className="bg-white rounded-3xl shadow-xl p-12 text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-indigo-200 border-t-indigo-600 mx-auto mb-6"></div>
+          <p className="text-lg font-medium text-gray-700">Loading your dashboard...</p>
+        </div>
       </div>
     )
   }
@@ -74,7 +77,7 @@ const PlayerDashboardPage: React.FC = () => {
   }))
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <PlayerDashboardHeader profile={{

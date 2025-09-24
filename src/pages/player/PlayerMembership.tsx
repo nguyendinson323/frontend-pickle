@@ -1,20 +1,28 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState, AppDispatch } from '../../store'
-import { 
+import {
   fetchPlayerMembershipData,
   subscribeToPlan,
   cancelPlayerSubscription,
   renewSubscription,
   updatePaymentMethod
 } from '../../store/slices/playerMembershipSlice'
-import { 
+import {
   MembershipHeader,
   CurrentSubscription,
   AvailablePlans,
   PaymentHistory,
   PaymentMethodModal
 } from '../../components/player/membership'
+import {
+  FiCheckCircle,
+  FiAlertCircle,
+  FiAward,
+  FiBarChart2,
+  FiUsers,
+  FiLoader
+} from 'react-icons/fi'
 
 const PlayerMembershipPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -81,29 +89,32 @@ const PlayerMembershipPage: React.FC = () => {
 
   if (loading && !currentSubscription && availablePlans.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your membership information...</p>
+          <div className="w-16 h-16 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+            <FiLoader className="w-8 h-8 text-white animate-spin" />
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">Loading Membership</h3>
+          <p className="text-gray-600 font-medium">Getting your membership information ready...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Success Message */}
         {successMessage && (
-          <div className="mb-6 bg-green-50 border border-green-200 rounded-md p-4">
-            <div className="flex">
+          <div className="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-3xl p-6 shadow-xl">
+            <div className="flex items-center">
               <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
+                <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
+                  <FiCheckCircle className="w-5 h-5 text-white" />
+                </div>
               </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-green-800">{successMessage}</p>
+              <div className="ml-4">
+                <p className="text-base font-bold text-green-800">{successMessage}</p>
               </div>
             </div>
           </div>
@@ -111,15 +122,15 @@ const PlayerMembershipPage: React.FC = () => {
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
-            <div className="flex">
+          <div className="mb-6 bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-200 rounded-3xl p-6 shadow-xl">
+            <div className="flex items-center">
               <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
+                <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-pink-600 rounded-full flex items-center justify-center">
+                  <FiAlertCircle className="w-5 h-5 text-white" />
+                </div>
               </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-red-800">{error}</p>
+              <div className="ml-4">
+                <p className="text-base font-bold text-red-800">{error}</p>
               </div>
             </div>
           </div>
@@ -163,23 +174,35 @@ const PlayerMembershipPage: React.FC = () => {
         />
 
         {/* Membership Benefits */}
-        <div className="bg-white shadow-sm rounded-lg p-6 mt-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Membership Benefits</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center">
-              <div className="text-4xl mb-2">🏆</div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Tournament Access</h3>
-              <p className="text-gray-600">Participate in federation-sanctioned tournaments and events</p>
+        <div className="bg-gradient-to-br from-white to-gray-50 shadow-xl rounded-3xl border-2 border-gray-100 p-8 mt-6">
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <FiAward className="w-8 h-8 text-white" />
             </div>
-            <div className="text-center">
-              <div className="text-4xl mb-2">📊</div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Official Rankings</h3>
-              <p className="text-gray-600">Track your progress with official NRTP ratings and rankings</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Membership Benefits</h2>
+            <p className="text-gray-600 font-medium">Unlock exclusive features and opportunities</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center bg-gradient-to-br from-orange-50 to-red-50 border-2 border-orange-200 rounded-3xl p-6 hover:shadow-lg transition-all duration-300 hover:transform hover:scale-105">
+              <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <FiAward className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Tournament Access</h3>
+              <p className="text-gray-700 font-medium">Participate in federation-sanctioned tournaments and events</p>
             </div>
-            <div className="text-center">
-              <div className="text-4xl mb-2">🤝</div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Community Access</h3>
-              <p className="text-gray-600">Connect with other players and access coaching resources</p>
+            <div className="text-center bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-3xl p-6 hover:shadow-lg transition-all duration-300 hover:transform hover:scale-105">
+              <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <FiBarChart2 className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Official Rankings</h3>
+              <p className="text-gray-700 font-medium">Track your progress with official NRTP ratings and rankings</p>
+            </div>
+            <div className="text-center bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-3xl p-6 hover:shadow-lg transition-all duration-300 hover:transform hover:scale-105">
+              <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <FiUsers className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Community Access</h3>
+              <p className="text-gray-700 font-medium">Connect with other players and access coaching resources</p>
             </div>
           </div>
         </div>

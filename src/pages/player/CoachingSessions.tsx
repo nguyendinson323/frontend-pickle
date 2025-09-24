@@ -145,7 +145,7 @@ const CoachingSessions: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen ">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
       <CoachingSessionsHeader />
       
       <CoachingSessionsTabs 

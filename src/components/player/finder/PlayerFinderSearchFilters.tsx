@@ -1,6 +1,13 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { PlayerFinderFilters } from '../../../store/slices/playerFinderSlice'
+import {
+  FiSearch,
+  FiMapPin,
+  FiUsers,
+  FiStar,
+  FiCalendar
+} from 'react-icons/fi'
 
 interface State {
   id: number
@@ -31,20 +38,28 @@ const PlayerFinderSearchFilters: React.FC<PlayerFinderSearchFiltersProps> = ({
   return (
     <div className="space-y-8">
       {/* Search Filters */}
-      <div className="bg-white shadow rounded-lg">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg leading-6 font-medium text-gray-900">Search Filters</h3>
+      <div className="bg-gradient-to-br from-white to-gray-50 shadow-xl rounded-3xl border-2 border-gray-100">
+        <div className="px-8 py-6 border-b border-gray-200">
+          <div className="flex items-center">
+            <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mr-4">
+              <FiSearch className="w-6 h-6 text-white" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900">Search Filters</h3>
+          </div>
         </div>
-        <div className="p-6 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            
+        <div className="p-8 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
             {/* State Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">State</label>
+            <div className="bg-blue-50 rounded-2xl p-4 border border-blue-200">
+              <div className="flex items-center mb-3">
+                <FiMapPin className="w-5 h-5 text-blue-600 mr-3" />
+                <label className="block text-sm font-bold text-blue-800">State</label>
+              </div>
               <select
                 value={filters.state_id || ''}
                 onChange={(e) => onFilterChange('state_id', e.target.value ? parseInt(e.target.value) : null)}
-                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                className="w-full px-4 py-3 border-2 border-blue-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium bg-white"
               >
                 <option value="">All States</option>
                 {statesList.map(state => (
@@ -56,12 +71,15 @@ const PlayerFinderSearchFilters: React.FC<PlayerFinderSearchFiltersProps> = ({
             </div>
 
             {/* Gender Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Gender</label>
+            <div className="bg-purple-50 rounded-2xl p-4 border border-purple-200">
+              <div className="flex items-center mb-3">
+                <FiUsers className="w-5 h-5 text-purple-600 mr-3" />
+                <label className="block text-sm font-bold text-purple-800">Gender</label>
+              </div>
               <select
                 value={filters.gender || ''}
                 onChange={(e) => onFilterChange('gender', e.target.value || null)}
-                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                className="w-full px-4 py-3 border-2 border-purple-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-medium bg-white"
               >
                 <option value="">Any Gender</option>
                 <option value="Male">Male</option>
@@ -73,12 +91,15 @@ const PlayerFinderSearchFilters: React.FC<PlayerFinderSearchFiltersProps> = ({
             {/* Distance filtering not available - players don't have stored location coordinates */}
 
             {/* NRTP Level Min */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Min NRTP Level</label>
+            <div className="bg-green-50 rounded-2xl p-4 border border-green-200">
+              <div className="flex items-center mb-3">
+                <FiStar className="w-5 h-5 text-green-600 mr-3" />
+                <label className="block text-sm font-bold text-green-800">Min NRTP Level</label>
+              </div>
               <select
                 value={filters.nrtp_level_min || ''}
                 onChange={(e) => onFilterChange('nrtp_level_min', e.target.value ? parseFloat(e.target.value) : null)}
-                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                className="w-full px-4 py-3 border-2 border-green-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 font-medium bg-white"
               >
                 <option value="">Any Level</option>
                 <option value={1.0}>1.0+</option>
@@ -94,12 +115,15 @@ const PlayerFinderSearchFilters: React.FC<PlayerFinderSearchFiltersProps> = ({
             </div>
 
             {/* NRTP Level Max */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Max NRTP Level</label>
+            <div className="bg-orange-50 rounded-2xl p-4 border border-orange-200">
+              <div className="flex items-center mb-3">
+                <FiStar className="w-5 h-5 text-orange-600 mr-3" />
+                <label className="block text-sm font-bold text-orange-800">Max NRTP Level</label>
+              </div>
               <select
                 value={filters.nrtp_level_max || ''}
                 onChange={(e) => onFilterChange('nrtp_level_max', e.target.value ? parseFloat(e.target.value) : null)}
-                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                className="w-full px-4 py-3 border-2 border-orange-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 font-medium bg-white"
               >
                 <option value="">Any Level</option>
                 <option value={1.5}>Up to 1.5</option>
@@ -114,12 +138,15 @@ const PlayerFinderSearchFilters: React.FC<PlayerFinderSearchFiltersProps> = ({
             </div>
 
             {/* Age Min */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Min Age</label>
+            <div className="bg-pink-50 rounded-2xl p-4 border border-pink-200">
+              <div className="flex items-center mb-3">
+                <FiCalendar className="w-5 h-5 text-pink-600 mr-3" />
+                <label className="block text-sm font-bold text-pink-800">Min Age</label>
+              </div>
               <select
                 value={filters.age_min || ''}
                 onChange={(e) => onFilterChange('age_min', e.target.value ? parseInt(e.target.value) : null)}
-                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                className="w-full px-4 py-3 border-2 border-pink-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 font-medium bg-white"
               >
                 <option value="">Any Age</option>
                 <option value={18}>18+</option>
@@ -133,11 +160,12 @@ const PlayerFinderSearchFilters: React.FC<PlayerFinderSearchFiltersProps> = ({
 
           </div>
           
-          <div className="flex justify-end">
+          <div className="flex justify-center mt-8">
             <button
               onClick={onSearch}
-              className="bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="inline-flex items-center bg-gradient-to-r from-indigo-600 to-purple-600 border border-transparent rounded-2xl shadow-xl py-4 px-8 text-base font-bold text-white hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 hover:transform hover:scale-105"
             >
+              <FiSearch className="w-5 h-5 mr-3" />
               Search Players
             </button>
           </div>

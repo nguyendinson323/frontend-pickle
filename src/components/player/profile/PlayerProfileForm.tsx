@@ -6,6 +6,25 @@ import { startLoading, stopLoading } from '../../../store/slices/loadingSlice'
 import { Player, User } from '../../../types/auth'
 import api from '../../../services/api'
 import SimpleImageUpload from '../../common/SimpleImageUpload'
+import {
+  FiEdit3,
+  FiUser,
+  FiMail,
+  FiPhone,
+  FiCalendar,
+  FiMapPin,
+  FiFileText,
+  FiImage,
+  FiSettings,
+  FiShield,
+  FiSave,
+  FiX,
+  FiAlertCircle,
+  FiCheckCircle,
+  FiLock,
+  FiUnlock,
+  FiInfo
+} from 'react-icons/fi'
 
 interface PlayerProfileFormProps {
   player: Player
@@ -177,20 +196,33 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-xl overflow-hidden">
-      <div className="bg-indigo-600 text-white p-6">
-        <h2 className="text-xl font-semibold mb-2">Edit Profile</h2>
-        <p className="text-indigo-100">Update your player information</p>
+    <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border-2 border-gray-100">
+      <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 text-white p-8">
+        <div className="flex items-center">
+          <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-6 shadow-lg">
+            <FiEdit3 className="w-8 h-8 text-white" />
+          </div>
+          <div>
+            <h2 className="text-3xl font-bold mb-2">Edit Profile</h2>
+            <p className="text-indigo-100 text-lg font-medium">Update your player information</p>
+          </div>
+        </div>
       </div>
 
-      <div className="p-8 space-y-8">
+      <div className="p-8 space-y-8 bg-gradient-to-br from-white to-gray-50">
         {/* User Account Info Section */}
-        <div>
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Account Information</h3>
+        <div className="bg-white rounded-3xl shadow-xl border-2 border-blue-100 p-8">
+          <div className="flex items-center mb-6">
+            <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mr-4 shadow-lg">
+              <FiUser className="w-6 h-6 text-white" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900">Account Information</h3>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
-                Username <span className="text-red-500">*</span>
+              <label htmlFor="username" className="block text-sm font-bold text-blue-700 mb-3 flex items-center">
+                <FiUser className="w-4 h-4 mr-2" />
+                Username <span className="text-red-500 ml-1">*</span>
               </label>
               <input
                 type="text"
@@ -198,12 +230,13 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
                 name="username"
                 value={userData.username}
                 onChange={handleUserInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-3 border-2 border-blue-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium bg-blue-50 transition-all duration-300"
               />
             </div>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email <span className="text-red-500">*</span>
+              <label htmlFor="email" className="block text-sm font-bold text-green-700 mb-3 flex items-center">
+                <FiMail className="w-4 h-4 mr-2" />
+                Email <span className="text-red-500 ml-1">*</span>
               </label>
               <input
                 type="email"
@@ -211,11 +244,12 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
                 name="email"
                 value={userData.email}
                 onChange={handleUserInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-3 border-2 border-green-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 font-medium bg-green-50 transition-all duration-300"
               />
             </div>
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="phone" className="block text-sm font-bold text-purple-700 mb-3 flex items-center">
+                <FiPhone className="w-4 h-4 mr-2" />
                 Phone
               </label>
               <input
@@ -224,15 +258,20 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
                 name="phone"
                 value={userData.phone}
                 onChange={handleUserInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-3 border-2 border-purple-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-medium bg-purple-50 transition-all duration-300"
               />
             </div>
           </div>
         </div>
 
         {/* Player Profile Info Section */}
-        <div>
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Player Information</h3>
+        <div className="bg-white rounded-3xl shadow-xl border-2 border-indigo-100 p-8">
+          <div className="flex items-center mb-6">
+            <div className="w-12 h-12 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center mr-4 shadow-lg">
+              <FiShield className="w-6 h-6 text-white" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900">Player Information</h3>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label htmlFor="full_name" className="block text-sm font-medium text-gray-700 mb-2">
@@ -368,25 +407,36 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
         </div>
 
         {/* Privacy Settings Section */}
-        <div>
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Privacy & Searchability</h3>
-          <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-lg p-6">
-            <div className="flex items-start space-x-4">
+        <div className="bg-white rounded-3xl shadow-xl border-2 border-yellow-100 p-8">
+          <div className="flex items-center mb-6">
+            <div className="w-12 h-12 bg-gradient-to-r from-yellow-600 to-orange-600 rounded-full flex items-center justify-center mr-4 shadow-lg">
+              {userData.is_searchable ? <FiUnlock className="w-6 h-6 text-white" /> : <FiLock className="w-6 h-6 text-white" />}
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900">Privacy & Searchability</h3>
+          </div>
+          <div className={`bg-gradient-to-br border-2 rounded-3xl p-8 ${
+            userData.is_searchable
+              ? 'from-green-50 to-emerald-50 border-green-200'
+              : 'from-yellow-50 to-orange-50 border-yellow-200'
+          }`}>
+            <div className="flex items-start space-x-6">
               <div className="flex-shrink-0">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl ${
-                  userData.is_searchable ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'
+                <div className={`w-16 h-16 rounded-full flex items-center justify-center shadow-lg ${
+                  userData.is_searchable ? 'bg-gradient-to-r from-green-500 to-emerald-600' : 'bg-gradient-to-r from-yellow-500 to-orange-600'
                 }`}>
-                  {userData.is_searchable ? '👁️' : '🔒'}
+                  {userData.is_searchable ? <FiUnlock className="w-8 h-8 text-white" /> : <FiLock className="w-8 h-8 text-white" />}
                 </div>
               </div>
               <div className="flex-1">
-                <div className="flex items-center justify-between mb-3">
-                  <label htmlFor="is_searchable" className="text-lg font-semibold text-gray-900">
+                <div className="flex items-center justify-between mb-6">
+                  <label htmlFor="is_searchable" className="text-xl font-bold text-gray-900">
                     Player Search Visibility
                   </label>
-                  <div className="flex items-center">
-                    <span className={`text-sm font-medium mr-3 ${
-                      userData.is_searchable ? 'text-green-700' : 'text-gray-700'
+                  <div className="flex items-center space-x-4">
+                    <span className={`text-lg font-bold px-4 py-2 rounded-full shadow-lg ${
+                      userData.is_searchable
+                        ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white'
+                        : 'bg-gradient-to-r from-yellow-500 to-orange-600 text-white'
                     }`}>
                       {userData.is_searchable ? 'Visible' : 'Hidden'}
                     </span>
@@ -399,40 +449,36 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
                         onChange={handleUserInputChange}
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                      <div className="w-14 h-8 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-green-500 peer-checked:to-emerald-600 shadow-lg"></div>
                     </label>
                   </div>
                 </div>
 
-                <div className={`p-4 rounded-lg border-2 transition-all ${
+                <div className={`p-6 rounded-2xl border-2 transition-all shadow-lg ${
                   userData.is_searchable
-                    ? 'bg-green-50 border-green-200 text-green-800'
-                    : 'bg-gray-50 border-gray-200 text-gray-800'
+                    ? 'bg-gradient-to-br from-green-100 to-emerald-100 border-green-300'
+                    : 'bg-gradient-to-br from-yellow-100 to-orange-100 border-yellow-300'
                 }`}>
-                  <div className="flex items-start space-x-2">
-                    <div className="flex-shrink-0 mt-0.5">
+                  <div className="flex items-start space-x-4">
+                    <div className="flex-shrink-0 mt-1">
                       {userData.is_searchable ? (
-                        <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
+                        <FiCheckCircle className="w-6 h-6 text-green-700" />
                       ) : (
-                        <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                        </svg>
+                        <FiAlertCircle className="w-6 h-6 text-yellow-700" />
                       )}
                     </div>
                     <div>
                       {userData.is_searchable ? (
                         <div>
-                          <p className="font-medium text-sm mb-1">You are visible to other players</p>
-                          <p className="text-sm">
+                          <p className="font-bold text-green-800 mb-2 text-lg">You are visible to other players</p>
+                          <p className="text-green-700 font-medium">
                             Other players can find you in search results and send match requests. This helps you connect with players in your area.
                           </p>
                         </div>
                       ) : (
                         <div>
-                          <p className="font-medium text-sm mb-1">You are hidden from searches</p>
-                          <p className="text-sm">
+                          <p className="font-bold text-yellow-800 mb-2 text-lg">You are hidden from searches</p>
+                          <p className="text-yellow-700 font-medium">
                             You will not appear in player searches and cannot receive match requests from other players.
                           </p>
                         </div>
@@ -441,14 +487,15 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
                   </div>
                 </div>
 
-                <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                  <div className="flex items-start space-x-2">
-                    <svg className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <p className="text-xs text-blue-800">
-                      <strong>Note:</strong> This setting only affects player finder searches. Your visibility in tournament results, rankings, and official federation records is not affected.
-                    </p>
+                <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl shadow-lg">
+                  <div className="flex items-start space-x-3">
+                    <FiInfo className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-blue-800 font-bold mb-1">Important Note</p>
+                      <p className="text-sm text-blue-700 font-medium">
+                        This setting only affects player finder searches. Your visibility in tournament results, rankings, and official federation records is not affected.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -457,21 +504,25 @@ const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({ player, user, onC
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-end space-x-4">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={handleSaveChanges}
-            className="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          >
-            Save Changes
-          </button>
+        <div className="bg-white rounded-3xl shadow-xl border-2 border-gray-100 p-8">
+          <div className="flex justify-end space-x-6">
+            <button
+              type="button"
+              onClick={onCancel}
+              className="px-8 py-4 border-2 border-gray-300 text-gray-700 rounded-2xl hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:transform hover:scale-105 flex items-center"
+            >
+              <FiX className="w-5 h-5 mr-2" />
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleSaveChanges}
+              className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:transform hover:scale-105 flex items-center"
+            >
+              <FiSave className="w-5 h-5 mr-2" />
+              Save Changes
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -1,4 +1,11 @@
 import React from 'react'
+import {
+  FiSend,
+  FiCalendar,
+  FiClock,
+  FiMessageSquare,
+  FiX
+} from 'react-icons/fi'
 
 interface MatchRequestForm {
   preferred_date: string
@@ -24,59 +31,93 @@ const PlayerFinderMatchRequestModal: React.FC<PlayerFinderMatchRequestModalProps
   if (!showModal) return null
 
   return (
-    <div className="fixed z-10 inset-0 overflow-y-auto">
+    <div className="fixed z-50 inset-0 overflow-y-auto">
       <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+        <div className="fixed inset-0 bg-black bg-opacity-60 transition-opacity"></div>
         <span className="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
-        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-          <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-              Send Match Request
-            </h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Preferred Date</label>
-                <input
-                  type="date"
-                  value={matchRequestForm.preferred_date}
-                  onChange={(e) => onFormChange({...matchRequestForm, preferred_date: e.target.value})}
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
+        <div className="inline-block align-bottom bg-gradient-to-br from-white to-gray-50 rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border-2 border-gray-200">
+          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="w-12 h-12 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center mr-4">
+                  <FiSend className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-white">
+                  Send Match Request
+                </h3>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Preferred Time</label>
-                <input
-                  type="time"
-                  value={matchRequestForm.preferred_time}
-                  onChange={(e) => onFormChange({...matchRequestForm, preferred_time: e.target.value})}
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Message (Optional)</label>
-                <textarea
-                  rows={3}
-                  value={matchRequestForm.message}
-                  onChange={(e) => onFormChange({...matchRequestForm, message: e.target.value})}
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  placeholder="Add a personal message..."
-                />
-              </div>
+              <button
+                onClick={onClose}
+                className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center hover:bg-opacity-30 transition-colors"
+              >
+                <FiX className="w-5 h-5 text-white" />
+              </button>
             </div>
           </div>
-          <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+
+          <div className="p-8 space-y-8">
+            <div className="bg-blue-50 rounded-2xl p-6 border border-blue-200">
+              <div className="flex items-center mb-4">
+                <FiCalendar className="w-5 h-5 text-blue-600 mr-3" />
+                <label className="block text-lg font-bold text-blue-800">
+                  Preferred Date
+                </label>
+              </div>
+              <input
+                type="date"
+                value={matchRequestForm.preferred_date}
+                onChange={(e) => onFormChange({...matchRequestForm, preferred_date: e.target.value})}
+                className="w-full px-6 py-4 border-2 border-blue-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium bg-white text-lg"
+              />
+            </div>
+
+            <div className="bg-green-50 rounded-2xl p-6 border border-green-200">
+              <div className="flex items-center mb-4">
+                <FiClock className="w-5 h-5 text-green-600 mr-3" />
+                <label className="block text-lg font-bold text-green-800">
+                  Preferred Time
+                </label>
+              </div>
+              <input
+                type="time"
+                value={matchRequestForm.preferred_time}
+                onChange={(e) => onFormChange({...matchRequestForm, preferred_time: e.target.value})}
+                className="w-full px-6 py-4 border-2 border-green-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 font-medium bg-white text-lg"
+              />
+            </div>
+
+            <div className="bg-purple-50 rounded-2xl p-6 border border-purple-200">
+              <div className="flex items-center mb-4">
+                <FiMessageSquare className="w-5 h-5 text-purple-600 mr-3" />
+                <label className="block text-lg font-bold text-purple-800">
+                  Message (Optional)
+                </label>
+              </div>
+              <textarea
+                rows={4}
+                value={matchRequestForm.message}
+                onChange={(e) => onFormChange({...matchRequestForm, message: e.target.value})}
+                className="w-full px-6 py-4 border-2 border-purple-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-medium bg-white resize-none"
+                placeholder="Add a personal message to introduce yourself..."
+              />
+            </div>
+          </div>
+
+          <div className="bg-gray-100 px-8 py-6 flex flex-col sm:flex-row gap-4">
+            <button
+              onClick={onClose}
+              className="flex-1 inline-flex items-center justify-center px-8 py-4 bg-gray-200 text-gray-700 font-bold rounded-2xl hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-300"
+            >
+              <FiX className="w-5 h-5 mr-3" />
+              Cancel
+            </button>
             <button
               onClick={onSubmit}
               disabled={!matchRequestForm.preferred_date || !matchRequestForm.preferred_time}
-              className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm disabled:bg-gray-400"
+              className="flex-1 inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-2xl hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-xl hover:shadow-2xl hover:transform hover:scale-105"
             >
+              <FiSend className="w-5 h-5 mr-3" />
               Send Request
-            </button>
-            <button
-              onClick={onClose}
-              className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-            >
-              Cancel
             </button>
           </div>
         </div>

@@ -1,4 +1,14 @@
 import React, { useState } from 'react'
+import {
+  FiCheck,
+  FiPackage,
+  FiStar,
+  FiCreditCard,
+  FiCalendar,
+  FiDollarSign,
+  FiGift,
+  FiZap
+} from 'react-icons/fi'
 
 interface SubscriptionPlan {
   id: number
@@ -51,23 +61,35 @@ const AvailablePlans: React.FC<AvailablePlansProps> = ({
 
   if (plans.length === 0) {
     return (
-      <div className="bg-white shadow-sm rounded-lg p-6 mb-6">
-        <h2 className="text-lg font-medium text-gray-900 mb-4">Available Plans</h2>
-        <div className="text-center py-8">
-          <div className="text-gray-500">
-            <div className="text-4xl mb-2">📋</div>
-            <p className="text-gray-600">No subscription plans available at this time.</p>
+      <div className="bg-gradient-to-br from-white to-gray-50 shadow-xl rounded-3xl border-2 border-gray-100 p-8 mb-6">
+        <div className="text-center mb-6">
+          <div className="w-16 h-16 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <FiPackage className="w-8 h-8 text-white" />
           </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Available Plans</h2>
+        </div>
+        <div className="text-center py-12">
+          <div className="w-20 h-20 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+            <FiPackage className="w-10 h-10 text-white" />
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-3">No Plans Available</h3>
+          <p className="text-gray-600 font-medium">No subscription plans available at this time.</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="bg-white shadow-sm rounded-lg p-6 mb-6">
-      <h2 className="text-lg font-medium text-gray-900 mb-4">Available Membership Plans</h2>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="bg-gradient-to-br from-white to-gray-50 shadow-xl rounded-3xl border-2 border-gray-100 p-8 mb-6">
+      <div className="text-center mb-8">
+        <div className="w-16 h-16 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <FiPackage className="w-8 h-8 text-white" />
+        </div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Available Membership Plans</h2>
+        <p className="text-gray-600 font-medium">Choose the perfect plan for your needs</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {plans.map((plan) => {
           const features = parseFeatures(plan.features)
           const billingCycle = selectedBilling[plan.id] || 'monthly'
@@ -75,19 +97,20 @@ const AvailablePlans: React.FC<AvailablePlansProps> = ({
           const isCurrentPlan = currentPlanId === plan.id
 
           return (
-            <div 
-              key={plan.id} 
-              className={`border rounded-lg p-6 relative ${
-                isCurrentPlan 
-                  ? 'border-indigo-500 ring-2 ring-indigo-200' 
+            <div
+              key={plan.id}
+              className={`bg-gradient-to-br from-white to-gray-50 border-2 rounded-3xl p-8 relative transition-all duration-300 hover:shadow-xl hover:transform hover:scale-105 ${
+                isCurrentPlan
+                  ? 'border-indigo-400 ring-2 ring-indigo-200 shadow-lg'
                   : 'border-gray-200 hover:border-indigo-300'
               }`}
             >
               {isCurrentPlan && (
-                <div className="absolute -top-3 left-6">
-                  <span className="bg-indigo-600 text-white px-3 py-1 text-xs font-semibold rounded-full">
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                  <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 text-sm font-bold rounded-full shadow-lg flex items-center">
+                    <FiStar className="w-4 h-4 mr-2" />
                     Current Plan
-                  </span>
+                  </div>
                 </div>
               )}
 
@@ -96,69 +119,92 @@ const AvailablePlans: React.FC<AvailablePlansProps> = ({
                 <p className="text-gray-600 mt-1 text-sm">{plan.description}</p>
               </div>
 
-              <div className="text-center mb-6">
-                <div className="text-3xl font-bold text-indigo-600">
-                  ${billingCycle === 'monthly' ? plan.monthly_price : plan.yearly_price}
+              <div className="text-center mb-8">
+                <div className="flex items-center justify-center mb-3">
+                  <FiDollarSign className="w-6 h-6 text-indigo-600 mr-2" />
+                  <div className="text-4xl font-bold text-indigo-600">
+                    {billingCycle === 'monthly' ? plan.monthly_price : plan.yearly_price}
+                  </div>
                 </div>
-                <div className="text-sm text-gray-500">
+                <div className="text-base font-medium text-gray-600">
                   per {billingCycle === 'monthly' ? 'month' : 'year'}
                 </div>
                 {billingCycle === 'yearly' && percentage > 0 && (
-                  <div className="text-xs text-green-600 mt-1">
-                    Save ${savings.toFixed(2)} ({percentage}%)
+                  <div className="inline-flex items-center mt-2 px-3 py-1 bg-gradient-to-r from-green-100 to-emerald-100 border border-green-200 rounded-full">
+                    <FiGift className="w-3 h-3 text-green-600 mr-1" />
+                    <span className="text-sm font-bold text-green-700">
+                      Save ${savings.toFixed(2)} ({percentage}%)
+                    </span>
                   </div>
                 )}
               </div>
 
-              <div className="mb-6">
-                <div className="flex border border-gray-200 rounded-lg p-1">
-                  <button
-                    onClick={() => setBillingCycle(plan.id, 'monthly')}
-                    className={`flex-1 py-2 px-3 text-sm rounded-md transition-colors duration-200 ${
-                      billingCycle === 'monthly'
-                        ? 'bg-indigo-600 text-white'
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    Monthly
-                  </button>
-                  <button
-                    onClick={() => setBillingCycle(plan.id, 'yearly')}
-                    className={`flex-1 py-2 px-3 text-sm rounded-md transition-colors duration-200 ${
-                      billingCycle === 'yearly'
-                        ? 'bg-indigo-600 text-white'
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    Yearly
-                  </button>
+              <div className="mb-8">
+                <div className="bg-gray-100 rounded-2xl p-2 border border-gray-200">
+                  <div className="grid grid-cols-2 gap-1">
+                    <button
+                      onClick={() => setBillingCycle(plan.id, 'monthly')}
+                      className={`flex items-center justify-center py-3 px-4 text-sm font-bold rounded-xl transition-all duration-300 ${
+                        billingCycle === 'monthly'
+                          ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg transform scale-105'
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-white'
+                      }`}
+                    >
+                      <FiCalendar className="w-4 h-4 mr-2" />
+                      Monthly
+                    </button>
+                    <button
+                      onClick={() => setBillingCycle(plan.id, 'yearly')}
+                      className={`flex items-center justify-center py-3 px-4 text-sm font-bold rounded-xl transition-all duration-300 ${
+                        billingCycle === 'yearly'
+                          ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg transform scale-105'
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-white'
+                      }`}
+                    >
+                      <FiZap className="w-4 h-4 mr-2" />
+                      Yearly
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              <div className="mb-6">
-                <h4 className="text-sm font-medium text-gray-700 mb-3">What's included:</h4>
-                <ul className="space-y-2">
+              <div className="mb-8">
+                <h4 className="text-base font-bold text-gray-800 mb-4 flex items-center">
+                  <FiCheck className="w-5 h-5 text-green-500 mr-2" />
+                  What's included:
+                </h4>
+                <div className="space-y-3">
                   {features.map((feature, index) => (
-                    <li key={index} className="flex items-start text-sm text-gray-600">
-                      <svg className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                      {feature}
-                    </li>
+                    <div key={index} className="flex items-start bg-green-50 border border-green-200 rounded-2xl p-3">
+                      <div className="w-6 h-6 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
+                        <FiCheck className="w-3 h-3 text-white" />
+                      </div>
+                      <span className="text-sm font-medium text-gray-800">{feature}</span>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
 
               <button
                 onClick={() => handleSubscribe(plan.id)}
                 disabled={isCurrentPlan}
-                className={`w-full py-2 px-4 rounded-md font-medium transition-colors duration-200 ${
+                className={`w-full py-4 px-6 rounded-2xl font-bold transition-all duration-300 flex items-center justify-center ${
                   isCurrentPlan
-                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                    ? 'bg-gradient-to-r from-gray-200 to-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 shadow-xl hover:shadow-2xl hover:transform hover:scale-105'
                 }`}
               >
-                {isCurrentPlan ? 'Current Plan' : 'Subscribe Now'}
+                {isCurrentPlan ? (
+                  <>
+                    <FiCheck className="w-5 h-5 mr-2" />
+                    Current Plan
+                  </>
+                ) : (
+                  <>
+                    <FiCreditCard className="w-5 h-5 mr-2" />
+                    Subscribe Now
+                  </>
+                )}
               </button>
             </div>
           )

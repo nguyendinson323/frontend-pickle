@@ -1,4 +1,15 @@
 import React, { useState } from 'react'
+import {
+  FiCreditCard,
+  FiX,
+  FiUser,
+  FiCalendar,
+  FiLock,
+  FiHome,
+  FiDollarSign,
+  FiInfo,
+  FiCheck
+} from 'react-icons/fi'
 
 interface PaymentMethodModalProps {
   isOpen: boolean
@@ -65,94 +76,106 @@ const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-md w-full p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold text-gray-900">Update Payment Method</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50">
+      <div className="bg-gradient-to-br from-white to-gray-50 rounded-3xl max-w-2xl w-full shadow-2xl border-2 border-gray-200">
+        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-6 rounded-t-3xl">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="w-12 h-12 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center mr-4">
+                <FiCreditCard className="w-6 h-6 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-white">Update Payment Method</h2>
+            </div>
+            <button
+              onClick={onClose}
+              className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center hover:bg-opacity-30 transition-colors duration-200"
+            >
+              <FiX className="w-5 h-5 text-white" />
+            </button>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Payment Method
-            </label>
+        <div className="p-8">
+
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="bg-blue-50 rounded-2xl p-6 border border-blue-200">
+            <div className="flex items-center mb-4">
+              <FiDollarSign className="w-5 h-5 text-blue-600 mr-3" />
+              <label className="block text-lg font-bold text-blue-800">Payment Method</label>
+            </div>
             <select
               value={paymentMethod}
               onChange={(e) => setPaymentMethod(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-6 py-4 border-2 border-blue-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium bg-white text-lg"
             >
-              <option value="credit_card">Credit Card</option>
-              <option value="debit_card">Debit Card</option>
-              <option value="bank_transfer">Bank Transfer</option>
+              <option value="credit_card">💳 Credit Card</option>
+              <option value="debit_card">💳 Debit Card</option>
+              <option value="bank_transfer">🏦 Bank Transfer</option>
             </select>
           </div>
 
           {(paymentMethod === 'credit_card' || paymentMethod === 'debit_card') && (
             <>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Cardholder Name
-                </label>
+              <div className="bg-green-50 rounded-2xl p-6 border border-green-200">
+                <div className="flex items-center mb-4">
+                  <FiUser className="w-5 h-5 text-green-600 mr-3" />
+                  <label className="block text-lg font-bold text-green-800">Cardholder Name</label>
+                </div>
                 <input
                   type="text"
                   value={cardholderName}
                   onChange={(e) => setCardholderName(e.target.value)}
                   placeholder="John Doe"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full px-6 py-4 border-2 border-green-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 font-medium bg-white text-lg"
                   required
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Card Number
-                </label>
+              <div className="bg-purple-50 rounded-2xl p-6 border border-purple-200">
+                <div className="flex items-center mb-4">
+                  <FiCreditCard className="w-5 h-5 text-purple-600 mr-3" />
+                  <label className="block text-lg font-bold text-purple-800">Card Number</label>
+                </div>
                 <input
                   type="text"
                   value={cardNumber}
                   onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
                   placeholder="1234 5678 9012 3456"
                   maxLength={19}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full px-6 py-4 border-2 border-purple-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-medium bg-white text-lg font-mono"
                   required
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Expiry Date
-                  </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="bg-orange-50 rounded-2xl p-6 border border-orange-200">
+                  <div className="flex items-center mb-4">
+                    <FiCalendar className="w-5 h-5 text-orange-600 mr-3" />
+                    <label className="block text-lg font-bold text-orange-800">Expiry Date</label>
+                  </div>
                   <input
                     type="text"
                     value={expiryDate}
                     onChange={(e) => setExpiryDate(formatExpiryDate(e.target.value))}
                     placeholder="MM/YY"
                     maxLength={5}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full px-6 py-4 border-2 border-orange-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 font-medium bg-white text-lg font-mono"
                     required
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    CVV
-                  </label>
+                <div className="bg-red-50 rounded-2xl p-6 border border-red-200">
+                  <div className="flex items-center mb-4">
+                    <FiLock className="w-5 h-5 text-red-600 mr-3" />
+                    <label className="block text-lg font-bold text-red-800">CVV</label>
+                  </div>
                   <input
                     type="text"
                     value={cvv}
                     onChange={(e) => setCvv(e.target.value.replace(/\D/g, '').substring(0, 4))}
                     placeholder="123"
                     maxLength={4}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full px-6 py-4 border-2 border-red-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 font-medium bg-white text-lg font-mono"
                     required
                   />
                 </div>
@@ -161,30 +184,44 @@ const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({
           )}
 
           {paymentMethod === 'bank_transfer' && (
-            <div className="bg-blue-50 p-4 rounded-md">
-              <div className="text-sm text-blue-800">
-                <p className="font-medium mb-2">Bank Transfer Instructions:</p>
-                <p>You will receive bank transfer details via email after confirming this update.</p>
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-3xl p-8">
+              <div className="flex items-start">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mr-4 flex-shrink-0">
+                  <FiInfo className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h4 className="text-xl font-bold text-blue-800 mb-3 flex items-center">
+                    <FiHome className="w-5 h-5 mr-2" />
+                    Bank Transfer Instructions
+                  </h4>
+                  <p className="text-base font-medium text-blue-700 leading-relaxed">
+                    You will receive detailed bank transfer information via email after confirming this update.
+                    This includes account details, reference numbers, and payment instructions.
+                  </p>
+                </div>
               </div>
             </div>
           )}
 
-          <div className="flex space-x-2 pt-4">
+          <div className="bg-gray-100 rounded-2xl p-6 flex flex-col sm:flex-row gap-4">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors duration-200"
+              className="flex-1 inline-flex items-center justify-center px-8 py-4 bg-gray-200 text-gray-700 font-bold rounded-2xl hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-300"
             >
+              <FiX className="w-5 h-5 mr-3" />
               Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors duration-200"
+              className="flex-1 inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-2xl hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 shadow-xl hover:shadow-2xl hover:transform hover:scale-105"
             >
+              <FiCheck className="w-5 h-5 mr-3" />
               Update Payment Method
             </button>
           </div>
         </form>
+        </div>
       </div>
     </div>
   )
