@@ -1,5 +1,6 @@
 import React, { useMemo, useCallback, useState } from 'react'
 import { StateCourt } from '../../../store/slices/stateManagementSlice'
+import { FiHome, FiEye, FiMapPin, FiUser, FiCalendar, FiZap } from 'react-icons/fi'
 
 interface CourtsTabProps {
   courts: StateCourt[]
@@ -109,35 +110,38 @@ const CourtsTab: React.FC<CourtsTabProps> = React.memo(({
   return (
     <div className="space-y-4">
       {courts.length === 0 ? (
-        <div className="text-center py-12">
-          <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-          </svg>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No courts registered</h3>
-          <p className="mt-1 text-sm text-gray-500">No courts have been registered by clubs or partners in your state yet.</p>
+        <div className="text-center py-16">
+          <div className="bg-gradient-to-br from-green-100 to-emerald-200 p-8 rounded-full mx-auto w-24 h-24 flex items-center justify-center shadow-lg">
+            <FiHome className="w-12 h-12 text-green-600" />
+          </div>
+          <h3 className="mt-6 text-xl font-bold text-gray-900">No courts registered</h3>
+          <p className="mt-3 text-gray-600 max-w-sm mx-auto leading-relaxed">No courts have been registered by clubs or partners in your state yet.</p>
         </div>
       ) : (
         validCourts.map((court) => (
-          <div key={court.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between mb-4">
+          <div key={court.id} className="border border-gray-200/50 rounded-2xl p-8 hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm transform hover:scale-[1.02] shadow-lg">
+            <div className="flex items-center justify-between mb-6">
               <div className="flex-1">
-                <div className="flex items-center space-x-3 mb-2">
-                  <h3 className="text-lg font-semibold text-gray-900">
+                <div className="flex items-center space-x-4 mb-3">
+                  <h3 className="text-2xl font-bold text-gray-900">
                     {court.name || 'Unnamed Court'}
                   </h3>
                   {court.status && (
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(court.status)}`}>
+                    <span className={`inline-flex px-3 py-2 text-sm font-bold rounded-xl shadow-sm ${getStatusColor(court.status)}`}>
                       {court.status.charAt(0).toUpperCase() + court.status.slice(1)}
                     </span>
                   )}
                   {court.owner_type && (
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getOwnerColor(court.owner_type)}`}>
+                    <span className={`inline-flex px-3 py-2 text-sm font-bold rounded-xl shadow-sm ${getOwnerColor(court.owner_type)}`}>
                       {court.owner_type.charAt(0).toUpperCase() + court.owner_type.slice(1)}
                     </span>
                   )}
                 </div>
                 {court.address && (
-                  <p className="text-sm text-gray-600">{court.address}</p>
+                  <div className="flex items-center space-x-2">
+                    <FiMapPin className="w-4 h-4 text-gray-500" />
+                    <p className="text-gray-600 font-medium">{court.address}</p>
+                  </div>
                 )}
               </div>
               
@@ -170,69 +174,82 @@ const CourtsTab: React.FC<CourtsTabProps> = React.memo(({
             </div>
 
             {court.description && (
-              <p className="text-gray-600 mb-4">{court.description}</p>
+              <p className="text-gray-700 mb-6 leading-relaxed">{court.description}</p>
             )}
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-              <div>
-                <div className="text-sm text-gray-500">Owner</div>
-                <div className="font-medium">{court.owner?.name || 'Unknown Owner'}</div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
+              <div className="bg-blue-50 p-4 rounded-xl">
+                <div className="flex items-center space-x-2 mb-2">
+                  <FiUser className="w-4 h-4 text-blue-600" />
+                  <div className="text-sm text-blue-700 font-semibold">Owner</div>
+                </div>
+                <div className="font-bold text-gray-900">{court.owner?.name || 'Unknown Owner'}</div>
                 {court.owner?.contact_email && (
-                  <div className="text-xs text-gray-500">{court.owner.contact_email}</div>
+                  <div className="text-xs text-blue-600 mt-1">{court.owner.contact_email}</div>
                 )}
               </div>
-              <div>
-                <div className="text-sm text-gray-500">Courts Available</div>
-                <div className="font-medium">
+              <div className="bg-green-50 p-4 rounded-xl">
+                <div className="flex items-center space-x-2 mb-2">
+                  <FiHome className="w-4 h-4 text-green-600" />
+                  <div className="text-sm text-green-700 font-semibold">Courts Available</div>
+                </div>
+                <div className="font-bold text-gray-900">
                   {court.court_count || 1} court{(court.court_count || 1) !== 1 ? 's' : ''}
                 </div>
               </div>
-              <div>
-                <div className="text-sm text-gray-500">Surface & Type</div>
-                <div className="font-medium">
+              <div className="bg-purple-50 p-4 rounded-xl">
+                <div className="flex items-center space-x-2 mb-2">
+                  <FiMapPin className="w-4 h-4 text-purple-600" />
+                  <div className="text-sm text-purple-700 font-semibold">Surface & Type</div>
+                </div>
+                <div className="font-bold text-gray-900">
                   {court.surface_type || 'Not specified'}
                   {court.indoor !== undefined && (
-                    <span className="text-xs ml-1">
+                    <span className="text-xs ml-1 block text-purple-600">
                       ({court.indoor ? 'Indoor' : 'Outdoor'})
                     </span>
                   )}
                 </div>
               </div>
-              <div>
-                <div className="text-sm text-gray-500">Upcoming Reservations</div>
-                <div className="font-medium">{court.reservations_count || 0}</div>
+              <div className="bg-orange-50 p-4 rounded-xl">
+                <div className="flex items-center space-x-2 mb-2">
+                  <FiCalendar className="w-4 h-4 text-orange-600" />
+                  <div className="text-sm text-orange-700 font-semibold">Upcoming Reservations</div>
+                </div>
+                <div className="font-bold text-gray-900">{court.reservations_count || 0}</div>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              <div>
-                <div className="text-sm text-gray-500">Schedule</div>
-                <div className="font-medium">{formatSchedule(court.schedules || [])}</div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              <div className="bg-indigo-50 p-4 rounded-xl">
+                <div className="text-sm text-indigo-700 font-semibold mb-2">Schedule</div>
+                <div className="font-bold text-gray-900">{formatSchedule(court.schedules || [])}</div>
               </div>
-              <div>
-                <div className="text-sm text-gray-500">Features</div>
-                <div className="flex items-center space-x-2">
+              <div className="bg-yellow-50 p-4 rounded-xl">
+                <div className="text-sm text-yellow-700 font-semibold mb-2">Features</div>
+                <div className="flex flex-wrap gap-2">
                   {court.lights && (
-                    <span className="inline-flex items-center px-2 py-1 rounded text-xs bg-yellow-100 text-yellow-800">
-                      <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
-                      </svg>
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-yellow-200 text-yellow-800 font-semibold">
+                      <FiZap className="w-3 h-3 mr-1" />
                       Lighting
                     </span>
                   )}
                   {court.amenities && typeof court.amenities === 'string' && court.amenities.trim() && (
-                    <span className="inline-flex items-center px-2 py-1 rounded text-xs bg-green-100 text-green-800">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-green-200 text-green-800 font-semibold">
                       Amenities
                     </span>
                   )}
+                  {(!court.lights && (!court.amenities || !court.amenities.trim())) && (
+                    <span className="text-gray-500 text-sm">No special features</span>
+                  )}
                 </div>
               </div>
-              <div>
-                <div className="text-sm text-gray-500">Contact</div>
+              <div className="bg-teal-50 p-4 rounded-xl">
+                <div className="text-sm text-teal-700 font-semibold mb-2">Contact</div>
                 {court.owner?.phone ? (
-                  <div className="font-medium">{court.owner.phone}</div>
+                  <div className="font-bold text-gray-900">{court.owner.phone}</div>
                 ) : (
-                  <div className="text-sm text-gray-400">No contact info</div>
+                  <div className="text-sm text-gray-500">No contact info</div>
                 )}
               </div>
             </div>
@@ -249,10 +266,11 @@ const CourtsTab: React.FC<CourtsTabProps> = React.memo(({
               <div className="flex space-x-2">
                 <button
                   onClick={() => onViewCourt(court)}
-                  className="text-blue-600 hover:text-blue-900 text-sm font-medium"
+                  className="bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-2 rounded-xl font-semibold flex items-center space-x-2 transition-all duration-200 hover:scale-105"
                   disabled={changingStatus === court.id}
                 >
-                  View Details
+                  <FiEye className="w-4 h-4" />
+                  <span>View Details</span>
                 </button>
               </div>
             </div>

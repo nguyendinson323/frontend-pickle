@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import { FiGlobe, FiEye, FiEdit, FiPlus, FiSettings, FiImage, FiShare2, FiUsers, FiActivity, FiLoader, FiFolder, FiStar, FiCheckCircle, FiExternalLink, FiSmartphone, FiMonitor, FiTrendingUp, FiHeart } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState, AppDispatch } from '../../../../store'
@@ -31,18 +32,27 @@ export const StateMicrositeTab: React.FC = () => {
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h3 className="text-lg font-medium text-gray-900">State Microsite</h3>
-          <p className="text-sm text-gray-600">Manage your state's public microsite and content</p>
+    <div className="space-y-8">
+      {/* Header Section with Modern Design */}
+      <div className="bg-gradient-to-br from-white to-pink-50 rounded-3xl shadow-2xl border-2 border-gray-200/50 p-8 backdrop-blur-sm">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
+          <div className="flex items-center space-x-6">
+            <div className="w-16 h-16 bg-gradient-to-br from-pink-600 to-rose-600 rounded-3xl flex items-center justify-center shadow-xl">
+              <FiGlobe className="w-8 h-8 text-white" />
+            </div>
+            <div>
+              <h3 className="text-3xl font-bold bg-gradient-to-r from-pink-900 via-rose-900 to-red-900 bg-clip-text text-transparent mb-2">State Microsite Studio</h3>
+              <p className="text-lg text-gray-600 font-medium">Create and manage your state's professional public microsite with advanced content tools</p>
+            </div>
+          </div>
+          <button
+            onClick={() => navigate('/state/microsite')}
+            className="flex items-center justify-center px-8 py-4 bg-gradient-to-r from-pink-600 to-pink-700 text-white font-bold rounded-3xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+          >
+            <FiSettings className="w-5 h-5 mr-3" />
+            Manage Microsite
+          </button>
         </div>
-        <button
-          onClick={() => navigate('/state/microsite')}
-          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
-        >
-          Manage Microsite
-        </button>
       </div>
 
       {/* Error Display */}
@@ -53,28 +63,47 @@ export const StateMicrositeTab: React.FC = () => {
       )}
 
       {/* Microsite Overview */}
-      <div className="bg-gradient-to-r from-red-500 to-pink-500 rounded-lg p-6 text-white mb-6">
-        <div className="flex items-center justify-between">
+      <div className="bg-gradient-to-br from-pink-500 via-rose-500 to-red-500 rounded-3xl shadow-2xl border-2 border-pink-200/50 p-8 text-white backdrop-blur-sm overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-32 translate-x-32 blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/20 rounded-full translate-y-24 -translate-x-24 blur-2xl"></div>
+        <div className="relative z-10 flex items-center justify-between">
           <div>
-            <h4 className="text-xl font-semibold mb-2">Your State Microsite</h4>
-            <p className="text-red-100 mb-4">
-              Create a professional online presence for your state committee with a customizable microsite.
+            <h4 className="text-3xl font-bold mb-4">Your Professional State Microsite</h4>
+            <p className="text-pink-100 mb-6 text-lg leading-relaxed">
+              Create a stunning professional online presence for your state committee with a fully customizable, responsive microsite platform.
             </p>
-            <div className="flex items-center space-x-4 text-sm">
-              <span>🌐 Custom Domain</span>
-              <span>📱 Mobile Responsive</span>
-              <span>📰 News Management</span>
+            <div className="flex items-center space-x-6 text-base">
+              <div className="flex items-center space-x-2 bg-white/20 rounded-2xl px-4 py-2 backdrop-blur-sm">
+                <FiGlobe className="w-5 h-5" />
+                <span className="font-bold">Custom Domain</span>
+              </div>
+              <div className="flex items-center space-x-2 bg-white/20 rounded-2xl px-4 py-2 backdrop-blur-sm">
+                <FiSmartphone className="w-5 h-5" />
+                <span className="font-bold">Mobile Responsive</span>
+              </div>
+              <div className="flex items-center space-x-2 bg-white/20 rounded-2xl px-4 py-2 backdrop-blur-sm">
+                <FiImage className="w-5 h-5" />
+                <span className="font-bold">News Management</span>
+              </div>
+              <div className="flex items-center space-x-2 bg-white/20 rounded-2xl px-4 py-2 backdrop-blur-sm">
+                <FiTrendingUp className="w-5 h-5" />
+                <span className="font-bold">Analytics</span>
+              </div>
             </div>
           </div>
           <div className="text-center">
             <button
               onClick={() => navigate('/state/microsite')}
-              className="bg-white text-red-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white"
+              className="bg-white text-pink-600 px-8 py-4 rounded-3xl font-bold text-lg shadow-xl hover:shadow-2xl hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-white/50 transform hover:scale-105 transition-all duration-300 mb-3"
             >
+              <FiEdit className="w-5 h-5 inline mr-3" />
               Customize Site
             </button>
             {micrositeInfo?.is_public && (
-              <p className="text-red-100 text-sm mt-2">✓ Site is Live</p>
+              <div className="flex items-center justify-center space-x-2 bg-white/20 rounded-2xl px-4 py-2 backdrop-blur-sm">
+                <FiCheckCircle className="w-4 h-4 text-green-300" />
+                <span className="text-pink-100 font-bold">Site is Live</span>
+              </div>
             )}
           </div>
         </div>

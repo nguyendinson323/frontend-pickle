@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import { FiMail, FiInbox, FiSend, FiFileText, FiUsers, FiActivity, FiLoader, FiFolder, FiMessageSquare, FiStar, FiEye, FiTrendingUp, FiAlertCircle } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState, AppDispatch } from '../../../../store'
@@ -63,40 +64,65 @@ export const StateInboxTab: React.FC = () => {
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h3 className="text-lg font-medium text-gray-900">Inbox</h3>
-          <p className="text-sm text-gray-600">Manage state committee communications</p>
+    <div className="space-y-8">
+      {/* Header Section with Modern Design */}
+      <div className="bg-gradient-to-br from-white to-indigo-50 rounded-3xl shadow-2xl border-2 border-gray-200/50 p-8 backdrop-blur-sm">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
+          <div className="flex items-center space-x-6">
+            <div className="w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-3xl flex items-center justify-center shadow-xl">
+              <FiInbox className="w-8 h-8 text-white" />
+            </div>
+            <div>
+              <h3 className="text-3xl font-bold bg-gradient-to-r from-indigo-900 via-purple-900 to-pink-900 bg-clip-text text-transparent mb-2">Communications Inbox</h3>
+              <p className="text-lg text-gray-600 font-medium">Manage state committee communications with advanced messaging features</p>
+            </div>
+          </div>
+          <button
+            onClick={() => navigate('/state/inbox')}
+            className="flex items-center justify-center px-8 py-4 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white font-bold rounded-3xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+          >
+            <FiEye className="w-5 h-5 mr-3" />
+            Open Full Inbox
+          </button>
         </div>
-        <button
-          onClick={() => navigate('/state/inbox')}
-          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
-        >
-          Open Full Inbox
-        </button>
       </div>
 
       {/* Error Display */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-          <p className="text-red-600 text-sm">{error}</p>
+        <div className="bg-gradient-to-r from-red-50 to-red-100 border-2 border-red-200/50 rounded-3xl shadow-xl p-6 backdrop-blur-sm">
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 bg-red-500 rounded-2xl flex items-center justify-center shadow-lg">
+              <FiAlertCircle className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h4 className="text-lg font-bold text-red-800 mb-2">Communication Error</h4>
+              <p className="text-red-700 font-medium">{error}</p>
+            </div>
+          </div>
         </div>
       )}
 
       {/* Inbox Stats */}
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-blue-700">Total Messages</p>
-                <p className="text-2xl font-bold text-blue-900">{stats.total_messages}</p>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-3xl shadow-2xl border-2 border-blue-200/50 p-6 hover:shadow-3xl transition-all duration-300 transform hover:scale-105 backdrop-blur-sm">
+            <div className="flex items-center justify-between mb-6">
+              <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-blue-700 rounded-3xl flex items-center justify-center shadow-xl">
+                <FiMail className="w-8 h-8 text-white" />
               </div>
-              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
+              <div className="flex items-center space-x-2 bg-white/60 rounded-2xl px-3 py-2 backdrop-blur-sm">
+                <FiActivity className="w-4 h-4 text-blue-600" />
+                <span className="text-xs font-bold text-blue-700">Active</span>
+              </div>
+            </div>
+            <div>
+              <p className="text-sm font-bold text-blue-700 mb-2">Total Messages</p>
+              <p className="text-4xl font-bold text-blue-900 mb-4">{stats.total_messages.toLocaleString()}</p>
+              <div className="flex items-center space-x-2 bg-blue-600/10 rounded-2xl px-4 py-2">
+                <FiTrendingUp className="w-4 h-4 text-green-600" />
+                <span className="text-sm font-bold text-blue-700">
+                  Communication Hub
+                </span>
               </div>
             </div>
           </div>

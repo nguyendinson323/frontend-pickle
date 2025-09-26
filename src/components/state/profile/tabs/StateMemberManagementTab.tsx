@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { FiUsers, FiUserPlus, FiUserCheck, FiUserX, FiSettings, FiActivity, FiLoader, FiFolder, FiEye, FiDownload, FiFileText, FiStar, FiShield, FiCheckCircle, FiClock, FiAlertCircle } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState, AppDispatch } from '../../../../store'
@@ -105,25 +106,35 @@ export const StateMemberManagementTab: React.FC = () => {
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h3 className="text-lg font-medium text-gray-900">Member Management</h3>
-          <p className="text-sm text-gray-600">Manage members, applications, and membership status</p>
-        </div>
-        <div className="flex space-x-3">
-          <button
-            onClick={() => navigate('/state/members?action=invite')}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
-          >
-            Invite Members
-          </button>
-          <button
-            onClick={() => navigate('/state/members')}
-            className="px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500"
-          >
-            Manage All
-          </button>
+    <div className="space-y-8">
+      {/* Header Section with Modern Design */}
+      <div className="bg-gradient-to-br from-white to-teal-50 rounded-3xl shadow-2xl border-2 border-gray-200/50 p-8 backdrop-blur-sm">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
+          <div className="flex items-center space-x-6">
+            <div className="w-16 h-16 bg-gradient-to-br from-teal-600 to-cyan-600 rounded-3xl flex items-center justify-center shadow-xl">
+              <FiUsers className="w-8 h-8 text-white" />
+            </div>
+            <div>
+              <h3 className="text-3xl font-bold bg-gradient-to-r from-teal-900 via-cyan-900 to-blue-900 bg-clip-text text-transparent mb-2">Member Management Center</h3>
+              <p className="text-lg text-gray-600 font-medium">Comprehensive management of members, applications, and membership status with advanced tools</p>
+            </div>
+          </div>
+          <div className="flex space-x-4">
+            <button
+              onClick={() => navigate('/state/members?action=invite')}
+              className="flex items-center justify-center px-8 py-4 bg-gradient-to-r from-teal-600 to-teal-700 text-white font-bold rounded-3xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+            >
+              <FiUserPlus className="w-5 h-5 mr-3" />
+              Invite Members
+            </button>
+            <button
+              onClick={() => navigate('/state/members')}
+              className="flex items-center justify-center px-8 py-4 border-2 border-teal-300 text-teal-700 font-bold rounded-3xl hover:bg-teal-50 focus:outline-none focus:ring-2 focus:ring-teal-500 transform hover:scale-105 transition-all duration-300"
+            >
+              <FiSettings className="w-5 h-5 mr-3" />
+              Manage All
+            </button>
+          </div>
         </div>
       </div>
 

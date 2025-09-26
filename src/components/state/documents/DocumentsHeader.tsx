@@ -1,4 +1,5 @@
 import React from 'react'
+import { FiFileText, FiPlus, FiDollarSign, FiLayers, FiUsers, FiTrendingUp, FiActivity, FiFile } from 'react-icons/fi'
 
 interface DocumentsHeaderProps {
   activeTab: 'documents' | 'invoices' | 'templates'
@@ -16,73 +17,116 @@ const DocumentsHeader: React.FC<DocumentsHeaderProps> = ({
   onCreateTemplate
 }) => {
   return (
-    <div className="bg-white rounded-lg shadow-lg border border-gray-200 mb-6">
-      <div className="px-6 py-4 border-b border-gray-200">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Documents & Invoices</h1>
-            <p className="text-gray-600 mt-1">Manage documents, invoices, and templates</p>
+    <div className="bg-gradient-to-br from-white to-blue-50/30 rounded-3xl shadow-2xl border-2 border-gray-200/50 mb-8 backdrop-blur-sm">
+      <div className="p-8 border-b-2 border-gray-200/50">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
+          <div className="flex items-center space-x-6">
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-3xl flex items-center justify-center shadow-xl">
+              <FiLayers className="w-8 h-8 text-white" />
+            </div>
+            <div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-900 via-purple-900 to-pink-900 bg-clip-text text-transparent mb-2">
+                Documents & Invoices
+              </h1>
+              <p className="text-gray-600 text-lg font-medium">Manage documents, invoices, and templates with advanced features</p>
+            </div>
           </div>
-          <div className="flex space-x-3 mt-4 sm:mt-0">
+          <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
             {activeTab === 'documents' && (
               <button
                 onClick={onUploadDocument}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold rounded-3xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
               >
+                <FiPlus className="w-5 h-5 mr-3" />
                 Upload Document
               </button>
             )}
             {activeTab === 'invoices' && (
               <button
                 onClick={onCreateInvoice}
-                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                className="flex items-center justify-center px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold rounded-3xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
               >
+                <FiDollarSign className="w-5 h-5 mr-3" />
                 Create Invoice
               </button>
             )}
             {activeTab === 'templates' && (
               <button
                 onClick={onCreateTemplate}
-                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                className="flex items-center justify-center px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-3xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
               >
+                <FiFile className="w-5 h-5 mr-3" />
                 Create Template
               </button>
             )}
           </div>
         </div>
       </div>
-      
-      <div className="px-6 py-0">
-        <nav className="flex space-x-8">
+
+      <div className="px-8 py-4">
+        <nav className="flex flex-wrap gap-4">
           <button
             onClick={() => setActiveTab('documents')}
-            className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+            className={`flex items-center space-x-3 px-8 py-4 font-bold text-sm rounded-3xl transition-all duration-300 shadow-lg transform hover:scale-105 ${
               activeTab === 'documents'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-xl'
+                : 'bg-white text-gray-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 hover:text-blue-700 border-2 border-gray-200 hover:border-blue-200'
             }`}
           >
-            Documents
+            <FiFileText className={`w-5 h-5 ${
+              activeTab === 'documents' ? 'text-white' : 'text-blue-600'
+            }`} />
+            <span>Documents</span>
+            <div className={`px-3 py-1 rounded-full text-xs font-bold ${
+              activeTab === 'documents'
+                ? 'bg-white/20 text-white'
+                : 'bg-blue-100 text-blue-700'
+            }`}>
+              <FiActivity className="w-3 h-3 inline mr-1" />
+              Active
+            </div>
           </button>
           <button
             onClick={() => setActiveTab('invoices')}
-            className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+            className={`flex items-center space-x-3 px-8 py-4 font-bold text-sm rounded-3xl transition-all duration-300 shadow-lg transform hover:scale-105 ${
               activeTab === 'invoices'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-xl'
+                : 'bg-white text-gray-600 hover:bg-gradient-to-r hover:from-green-50 hover:to-green-100 hover:text-green-700 border-2 border-gray-200 hover:border-green-200'
             }`}
           >
-            Invoices
+            <FiDollarSign className={`w-5 h-5 ${
+              activeTab === 'invoices' ? 'text-white' : 'text-green-600'
+            }`} />
+            <span>Invoices</span>
+            <div className={`px-3 py-1 rounded-full text-xs font-bold ${
+              activeTab === 'invoices'
+                ? 'bg-white/20 text-white'
+                : 'bg-green-100 text-green-700'
+            }`}>
+              <FiTrendingUp className="w-3 h-3 inline mr-1" />
+              Billing
+            </div>
           </button>
           <button
             onClick={() => setActiveTab('templates')}
-            className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+            className={`flex items-center space-x-3 px-8 py-4 font-bold text-sm rounded-3xl transition-all duration-300 shadow-lg transform hover:scale-105 ${
               activeTab === 'templates'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-xl'
+                : 'bg-white text-gray-600 hover:bg-gradient-to-r hover:from-purple-50 hover:to-purple-100 hover:text-purple-700 border-2 border-gray-200 hover:border-purple-200'
             }`}
           >
-            Templates
+            <FiFile className={`w-5 h-5 ${
+              activeTab === 'templates' ? 'text-white' : 'text-purple-600'
+            }`} />
+            <span>Templates</span>
+            <div className={`px-3 py-1 rounded-full text-xs font-bold ${
+              activeTab === 'templates'
+                ? 'bg-white/20 text-white'
+                : 'bg-purple-100 text-purple-700'
+            }`}>
+              <FiUsers className="w-3 h-3 inline mr-1" />
+              Shared
+            </div>
           </button>
         </nav>
       </div>

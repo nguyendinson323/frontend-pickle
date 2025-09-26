@@ -17,6 +17,7 @@ import {
   StateMessage,
   AnnouncementTemplate
 } from '../../store/slices/stateInboxSlice'
+import { FiInbox } from 'react-icons/fi'
 
 import InboxHeader from '../../components/state/inbox/InboxHeader'
 import InboxTabs from '../../components/state/inbox/InboxTabs'
@@ -214,13 +215,19 @@ const StateInbox: React.FC = () => {
   if (loading && messages.length === 0) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+        <div className="relative">
+          <div className="animate-spin rounded-full h-32 w-32 border-4 border-blue-100"></div>
+          <div className="animate-spin rounded-full h-32 w-32 border-4 border-blue-600 border-t-transparent absolute inset-0"></div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <FiInbox className="w-8 h-8 text-blue-600 animate-pulse" />
+          </div>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <InboxHeader
           stats={stats}
@@ -229,8 +236,15 @@ const StateInbox: React.FC = () => {
         />
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
-            {error}
+          <div className="bg-gradient-to-r from-red-50 to-red-100 border border-red-200 text-red-700 px-6 py-4 rounded-xl shadow-sm mb-6 backdrop-blur-sm">
+            <div className="flex items-center space-x-2">
+              <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <span className="font-medium">{error}</span>
+            </div>
           </div>
         )}
 
@@ -242,7 +256,7 @@ const StateInbox: React.FC = () => {
           templatesCount={templates.length}
         />
 
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-8 hover:shadow-2xl transition-all duration-300">
           {renderTabContent()}
         </div>
 

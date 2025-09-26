@@ -12,6 +12,7 @@ import {
   saveStateDocumentMetadata
 } from '../../store/slices/stateDocumentsSlice'
 import SimpleImageUpload from '../../components/common/SimpleImageUpload'
+import { FiHome, FiChevronRight, FiFileText, FiPlus, FiSearch, FiFilter, FiDownload, FiEdit, FiTrash, FiEye, FiLock, FiUpload, FiLoader, FiBarChart2, FiFile, FiImage, FiX } from 'react-icons/fi'
 
 const StateDocuments: React.FC = () => {
   const navigate = useNavigate()
@@ -151,52 +152,59 @@ const StateDocuments: React.FC = () => {
   }
 
   const getFileTypeIcon = (fileType: string | null) => {
-    if (!fileType) return '📄'
-    if (fileType.includes('pdf')) return '📋'
-    if (fileType.includes('image')) return '🖼️'
-    if (fileType.includes('word') || fileType.includes('doc')) return '📝'
-    if (fileType.includes('excel') || fileType.includes('sheet')) return '📊'
-    return '📄'
+    if (!fileType) return FiFile
+    if (fileType.includes('pdf')) return FiFileText
+    if (fileType.includes('image')) return FiImage
+    if (fileType.includes('word') || fileType.includes('doc')) return FiFileText
+    if (fileType.includes('excel') || fileType.includes('sheet')) return FiBarChart2
+    return FiFile
+  }
+
+  const getFileTypeColor = (fileType: string | null) => {
+    if (!fileType) return 'from-gray-500 to-gray-600'
+    if (fileType.includes('pdf')) return 'from-red-500 to-red-600'
+    if (fileType.includes('image')) return 'from-green-500 to-green-600'
+    if (fileType.includes('word') || fileType.includes('doc')) return 'from-blue-500 to-blue-600'
+    if (fileType.includes('excel') || fileType.includes('sheet')) return 'from-orange-500 to-orange-600'
+    return 'from-gray-500 to-gray-600'
   }
 
   if (!user || user.role !== 'state') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+        <div className="bg-white p-12 rounded-3xl shadow-2xl border-2 border-gray-100 text-center">
+          <div className="w-20 h-20 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl animate-pulse">
+            <FiLoader className="w-10 h-10 text-white animate-spin" />
+          </div>
+          <p className="text-xl font-bold text-gray-700">Loading Documents...</p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation Breadcrumb */}
         <div className="mb-8">
           <nav className="flex" aria-label="Breadcrumb">
-            <ol className="flex items-center space-x-4">
+            <ol className="flex items-center space-x-3">
               <li>
                 <button
                   onClick={() => navigate('/')}
-                  className="text-gray-400 hover:text-gray-500 transition-colors"
+                  className="flex items-center px-4 py-2 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-2xl font-medium transition-all duration-300 border-2 border-transparent hover:border-indigo-200 shadow-lg hover:shadow-xl group"
                 >
+                  <FiHome className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-300" />
                   Home
                 </button>
               </li>
               <li>
                 <div className="flex items-center">
-                  <svg
-                    className="flex-shrink-0 h-5 w-5 text-gray-300"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    aria-hidden="true"
-                  >
-                    <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
-                  </svg>
+                  <FiChevronRight className="flex-shrink-0 h-5 w-5 text-gray-400 mx-2" />
                   <button
                     onClick={() => navigate('/state/dashboard')}
-                    className="ml-4 text-gray-400 hover:text-gray-500 transition-colors"
+                    className="flex items-center px-4 py-2 text-purple-600 bg-purple-50 hover:bg-purple-100 rounded-2xl font-medium transition-all duration-300 border-2 border-transparent hover:border-purple-200 shadow-lg hover:shadow-xl"
                   >
                     State Dashboard
                   </button>
@@ -204,18 +212,13 @@ const StateDocuments: React.FC = () => {
               </li>
               <li>
                 <div className="flex items-center">
-                  <svg
-                    className="flex-shrink-0 h-5 w-5 text-gray-300"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    aria-hidden="true"
-                  >
-                    <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
-                  </svg>
-                  <span className="ml-4 text-sm font-medium text-gray-500" aria-current="page">
-                    Documents
-                  </span>
+                  <FiChevronRight className="flex-shrink-0 h-5 w-5 text-gray-400 mx-2" />
+                  <div className="flex items-center px-4 py-2 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border-2 border-green-100 shadow-lg">
+                    <FiFileText className="w-4 h-4 text-green-600 mr-2" />
+                    <span className="text-sm font-bold text-green-700" aria-current="page">
+                      Documents
+                    </span>
+                  </div>
                 </div>
               </li>
             </ol>
@@ -224,188 +227,249 @@ const StateDocuments: React.FC = () => {
 
         {/* Page Header */}
         <div className="mb-8">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Document Management</h1>
-              <p className="text-gray-600">
-                Upload, manage, and download official state committee documents and files
-              </p>
-            </div>
-            <div className="mt-4 lg:mt-0">
-              <button
-                onClick={() => setShowUploadModal(true)}
-                className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center"
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                Upload Document
-              </button>
+          <div className="bg-white rounded-3xl shadow-2xl border-2 border-gray-100 p-8 bg-gradient-to-r from-indigo-50 via-white to-purple-50">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex items-center mb-6 lg:mb-0">
+                <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mr-6 shadow-xl">
+                  <FiFileText className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-900 via-purple-900 to-pink-900 bg-clip-text text-transparent mb-2">Document Management</h1>
+                  <p className="text-lg text-gray-600 font-medium">
+                    Upload, manage, and download official state committee documents and files
+                  </p>
+                </div>
+              </div>
+              <div>
+                <button
+                  onClick={() => setShowUploadModal(true)}
+                  className="flex items-center px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold rounded-3xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                >
+                  <FiPlus className="w-5 h-5 mr-3" />
+                  Upload Document
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Error Display */}
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
-            <div className="flex">
-              <svg className="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-              </svg>
-              <p className="ml-3 text-sm text-red-700">{error}</p>
+          <div className="mb-8 bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-200 rounded-3xl p-6">
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-pink-600 rounded-full flex items-center justify-center mr-4 shadow-lg">
+                <FiX className="w-5 h-5 text-white" />
+              </div>
+              <p className="text-red-800 font-medium">{error}</p>
             </div>
           </div>
         )}
 
         {/* Tabs */}
-        <div className="border-b border-gray-200 mb-8">
-          <nav className="-mb-px flex space-x-8" aria-label="Tabs">
-            <button
-              onClick={() => setSelectedTab('documents')}
-              className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm ${
-                selectedTab === 'documents'
-                  ? 'border-red-500 text-red-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              Documents ({documents.length})
-            </button>
-            <button
-              onClick={() => setSelectedTab('stats')}
-              className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm ${
-                selectedTab === 'stats'
-                  ? 'border-red-500 text-red-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              Statistics
-            </button>
-          </nav>
+        <div className="mb-8">
+          <div className="bg-white rounded-3xl shadow-xl border-2 border-gray-100 p-2">
+            <nav className="flex space-x-2" aria-label="Tabs">
+              <button
+                onClick={() => setSelectedTab('documents')}
+                className={`flex items-center px-6 py-4 font-bold text-sm rounded-2xl transition-all duration-300 shadow-lg transform hover:scale-105 ${
+                  selectedTab === 'documents'
+                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-xl'
+                    : 'bg-gray-50 text-gray-600 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 hover:text-indigo-700 border-2 border-gray-200 hover:border-indigo-200'
+                }`}
+              >
+                <FiFileText className={`w-5 h-5 mr-3 ${
+                  selectedTab === 'documents' ? 'text-white' : 'text-gray-500'
+                }`} />
+                Documents ({documents.length})
+              </button>
+              <button
+                onClick={() => setSelectedTab('stats')}
+                className={`flex items-center px-6 py-4 font-bold text-sm rounded-2xl transition-all duration-300 shadow-lg transform hover:scale-105 ${
+                  selectedTab === 'stats'
+                    ? 'bg-gradient-to-r from-orange-600 to-red-600 text-white shadow-xl'
+                    : 'bg-gray-50 text-gray-600 hover:bg-gradient-to-r hover:from-orange-50 hover:to-red-50 hover:text-orange-700 border-2 border-gray-200 hover:border-orange-200'
+                }`}
+              >
+                <FiBarChart2 className={`w-5 h-5 mr-3 ${
+                  selectedTab === 'stats' ? 'text-white' : 'text-gray-500'
+                }`} />
+                Statistics
+              </button>
+            </nav>
+          </div>
         </div>
 
         {selectedTab === 'documents' && (
           <>
             {/* Search and Filters */}
-            <div className="bg-white rounded-lg shadow border border-gray-200 p-6 mb-8">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="bg-white rounded-3xl shadow-2xl border-2 border-gray-100 p-8 mb-8">
+              <div className="flex items-center mb-6">
+                <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center mr-3 shadow-lg">
+                  <FiFilter className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">Search & Filter Documents</h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Search Documents</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-3">Search Documents</label>
                   <div className="flex">
-                    <input
-                      type="text"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      placeholder="Search by title or description..."
-                      className="flex-1 border border-gray-300 rounded-l-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500"
-                    />
+                    <div className="relative flex-1">
+                      <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder="Search by title or description..."
+                        className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-l-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-medium shadow-lg"
+                      />
+                    </div>
                     <button
                       onClick={handleSearch}
-                      className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-r-md text-sm font-medium transition-colors"
+                      className="flex items-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-r-2xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
                     >
+                      <FiSearch className="w-5 h-5 mr-2" />
                       Search
                     </button>
                   </div>
                 </div>
-                
+
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">File Type</label>
-                  <select
-                    value={filters.file_type}
-                    onChange={(e) => handleFilterChange('file_type', e.target.value)}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500"
-                  >
-                    <option value="">All Types</option>
-                    <option value="pdf">PDF</option>
-                    <option value="doc">Word Document</option>
-                    <option value="excel">Excel</option>
-                    <option value="image">Image</option>
-                  </select>
+                  <label className="block text-sm font-bold text-gray-700 mb-3">File Type</label>
+                  <div className="relative">
+                    <FiFileText className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <select
+                      value={filters.file_type}
+                      onChange={(e) => handleFilterChange('file_type', e.target.value)}
+                      className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-medium shadow-lg appearance-none"
+                    >
+                      <option value="">All Types</option>
+                      <option value="pdf">PDF</option>
+                      <option value="doc">Word Document</option>
+                      <option value="excel">Excel</option>
+                      <option value="image">Image</option>
+                    </select>
+                  </div>
                 </div>
-                
+
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Visibility</label>
-                  <select
-                    value={filters.is_public === null ? '' : filters.is_public.toString()}
-                    onChange={(e) => handleFilterChange('is_public', e.target.value === '' ? null : e.target.value === 'true')}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500"
-                  >
-                    <option value="">All Documents</option>
-                    <option value="true">Public</option>
-                    <option value="false">Private</option>
-                  </select>
+                  <label className="block text-sm font-bold text-gray-700 mb-3">Visibility</label>
+                  <div className="relative">
+                    <FiEye className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <select
+                      value={filters.is_public === null ? '' : filters.is_public.toString()}
+                      onChange={(e) => handleFilterChange('is_public', e.target.value === '' ? null : e.target.value === 'true')}
+                      className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-medium shadow-lg appearance-none"
+                    >
+                      <option value="">All Documents</option>
+                      <option value="true">Public</option>
+                      <option value="false">Private</option>
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Documents List */}
-            <div className="bg-white rounded-lg shadow border border-gray-200">
+            <div className="bg-white rounded-3xl shadow-2xl border-2 border-gray-100">
               {loading ? (
-                <div className="p-8 text-center">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto"></div>
-                  <p className="mt-4 text-gray-600">Loading documents...</p>
+                <div className="p-16 text-center">
+                  <div className="w-20 h-20 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl animate-pulse">
+                    <FiLoader className="w-10 h-10 text-white animate-spin" />
+                  </div>
+                  <p className="text-xl font-bold text-gray-700">Loading documents...</p>
                 </div>
               ) : documents.length === 0 ? (
-                <div className="p-8 text-center">
-                  <svg className="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  <p className="text-gray-600">No documents found</p>
-                  <p className="text-gray-400 text-sm mt-1">Upload your first document to get started</p>
+                <div className="p-16 text-center">
+                  <div className="w-20 h-20 bg-gradient-to-r from-gray-400 to-gray-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
+                    <FiFileText className="w-10 h-10 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">No Documents Found</h3>
+                  <p className="text-gray-600 font-medium mb-8">Upload your first document to get started with document management!</p>
+                  <button
+                    onClick={() => setShowUploadModal(true)}
+                    className="flex items-center px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold rounded-3xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 mx-auto"
+                  >
+                    <FiUpload className="w-5 h-5 mr-3" />
+                    Upload First Document
+                  </button>
                 </div>
               ) : (
-                <div className="divide-y divide-gray-200">
-                  {documents.map((document) => (
-                    <div key={document.id} className="p-6 hover:bg-gray-50 transition-colors">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                          <div className="text-2xl">
-                            {getFileTypeIcon(document.file_type)}
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="text-lg font-medium text-gray-900">{document.title}</h3>
-                            {document.description && (
-                              <p className="text-gray-600 text-sm mt-1">{document.description}</p>
-                            )}
-                            <div className="flex items-center space-x-4 text-sm text-gray-500 mt-2">
-                              <span>Type: {document.file_type || 'Unknown'}</span>
-                              <span>Uploaded: {formatDate(document.created_at)}</span>
-                              <span className={`px-2 py-1 rounded-full text-xs ${
-                                document.is_public 
-                                  ? 'bg-green-100 text-green-800' 
-                                  : 'bg-gray-100 text-gray-800'
-                              }`}>
-                                {document.is_public ? 'Public' : 'Private'}
-                              </span>
+                <div className="divide-y-2 divide-gray-100">
+                  {documents.map((document) => {
+                    const IconComponent = getFileTypeIcon(document.file_type)
+                    const iconColor = getFileTypeColor(document.file_type)
+                    return (
+                      <div key={document.id} className="p-8 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 transition-all duration-300">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center space-x-6 flex-1">
+                            <div className={`w-16 h-16 bg-gradient-to-r ${iconColor} rounded-2xl flex items-center justify-center shadow-xl`}>
+                              <IconComponent className="w-8 h-8 text-white" />
+                            </div>
+                            <div className="flex-1">
+                              <h3 className="text-xl font-bold text-gray-900 mb-2">{document.title}</h3>
+                              {document.description && (
+                                <p className="text-gray-600 font-medium mb-3 leading-relaxed">{document.description}</p>
+                              )}
+                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div className="bg-blue-50 p-3 rounded-2xl border-2 border-blue-100">
+                                  <span className="text-xs font-bold text-blue-700">Type:</span>
+                                  <p className="font-bold text-blue-900">{document.file_type || 'Unknown'}</p>
+                                </div>
+                                <div className="bg-green-50 p-3 rounded-2xl border-2 border-green-100">
+                                  <span className="text-xs font-bold text-green-700">Uploaded:</span>
+                                  <p className="font-bold text-green-900">{formatDate(document.created_at)}</p>
+                                </div>
+                                <div className={`p-3 rounded-2xl border-2 ${
+                                  document.is_public
+                                    ? 'bg-emerald-50 border-emerald-100'
+                                    : 'bg-gray-50 border-gray-100'
+                                }`}>
+                                  <span className={`text-xs font-bold ${
+                                    document.is_public ? 'text-emerald-700' : 'text-gray-700'
+                                  }`}>Visibility:</span>
+                                  <div className="flex items-center">
+                                    {document.is_public ? <FiEye className="w-4 h-4 mr-1 text-emerald-600" /> : <FiLock className="w-4 h-4 mr-1 text-gray-600" />}
+                                    <p className={`font-bold ${
+                                      document.is_public ? 'text-emerald-900' : 'text-gray-900'
+                                    }`}>
+                                      {document.is_public ? 'Public' : 'Private'}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        
-                        <div className="flex items-center space-x-2">
-                          <button
-                            onClick={() => handleDownload(document.id)}
-                            className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
-                          >
-                            Download
-                          </button>
-                          <button
-                            onClick={() => {
-                              dispatch(setSelectedDocument(document))
-                              setShowEditModal(true)
-                            }}
-                            className="text-yellow-600 hover:text-yellow-800 text-sm font-medium"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDelete(document.id)}
-                            className="text-red-600 hover:text-red-800 text-sm font-medium"
-                          >
-                            Delete
-                          </button>
+
+                          <div className="flex flex-col space-y-3 ml-6">
+                            <button
+                              onClick={() => handleDownload(document.id)}
+                              className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                            >
+                              <FiDownload className="w-4 h-4 mr-2" />
+                              Download
+                            </button>
+                            <button
+                              onClick={() => {
+                                dispatch(setSelectedDocument(document))
+                                setShowEditModal(true)
+                              }}
+                              className="flex items-center px-4 py-2 bg-gradient-to-r from-yellow-600 to-orange-600 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                            >
+                              <FiEdit className="w-4 h-4 mr-2" />
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDelete(document.id)}
+                              className="flex items-center px-4 py-2 bg-gradient-to-r from-red-600 to-pink-600 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                            >
+                              <FiTrash className="w-4 h-4 mr-2" />
+                              Delete
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               )}
             </div>
@@ -413,88 +477,97 @@ const StateDocuments: React.FC = () => {
         )}
 
         {selectedTab === 'stats' && stats && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
-              <div className="flex items-center">
-                <div className="bg-blue-100 rounded-lg p-3">
-                  <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
+          <div className="animate-fade-in">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-3xl shadow-2xl border-2 border-blue-200 p-8 hover:shadow-3xl transition-all duration-300 transform hover:scale-105">
+                <div className="flex items-center mb-4">
+                  <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-xl">
+                    <FiFileText className="w-8 h-8 text-white" />
+                  </div>
                 </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Total Documents</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.total_documents}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
-              <div className="flex items-center">
-                <div className="bg-green-100 rounded-lg p-3">
-                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Public Documents</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.public_documents}</p>
+                <div>
+                  <p className="text-sm font-bold text-blue-700 mb-2">Total Documents</p>
+                  <p className="text-4xl font-bold text-blue-900">{stats.total_documents}</p>
                 </div>
               </div>
-            </div>
 
-            <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
-              <div className="flex items-center">
-                <div className="bg-yellow-100 rounded-lg p-3">
-                  <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
+              <div className="bg-gradient-to-br from-green-50 to-emerald-100 rounded-3xl shadow-2xl border-2 border-green-200 p-8 hover:shadow-3xl transition-all duration-300 transform hover:scale-105">
+                <div className="flex items-center mb-4">
+                  <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl flex items-center justify-center shadow-xl">
+                    <FiEye className="w-8 h-8 text-white" />
+                  </div>
                 </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Private Documents</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.private_documents}</p>
+                <div>
+                  <p className="text-sm font-bold text-green-700 mb-2">Public Documents</p>
+                  <p className="text-4xl font-bold text-green-900">{stats.public_documents}</p>
                 </div>
               </div>
-            </div>
 
-            <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
-              <div className="flex items-center">
-                <div className="bg-purple-100 rounded-lg p-3">
-                  <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                  </svg>
+              <div className="bg-gradient-to-br from-yellow-50 to-orange-100 rounded-3xl shadow-2xl border-2 border-yellow-200 p-8 hover:shadow-3xl transition-all duration-300 transform hover:scale-105">
+                <div className="flex items-center mb-4">
+                  <div className="w-16 h-16 bg-gradient-to-r from-yellow-600 to-orange-600 rounded-2xl flex items-center justify-center shadow-xl">
+                    <FiLock className="w-8 h-8 text-white" />
+                  </div>
                 </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Recent Activity</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.recent_activity}</p>
-                  <p className="text-xs text-gray-500">Last 7 days</p>
+                <div>
+                  <p className="text-sm font-bold text-yellow-700 mb-2">Private Documents</p>
+                  <p className="text-4xl font-bold text-yellow-900">{stats.private_documents}</p>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-purple-50 to-pink-100 rounded-3xl shadow-2xl border-2 border-purple-200 p-8 hover:shadow-3xl transition-all duration-300 transform hover:scale-105">
+                <div className="flex items-center mb-4">
+                  <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center shadow-xl">
+                    <FiBarChart2 className="w-8 h-8 text-white" />
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-purple-700 mb-2">Recent Activity</p>
+                  <p className="text-4xl font-bold text-purple-900">{stats.recent_activity}</p>
+                  <p className="text-sm text-purple-600 font-medium">Last 7 days</p>
                 </div>
               </div>
             </div>
 
             {/* Documents by Type Chart */}
-            <div className="md:col-span-2 lg:col-span-4 bg-white rounded-lg shadow border border-gray-200 p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Documents by Type</h3>
-              <div className="space-y-3">
-                {Object.entries(stats.documents_by_type).map(([type, count]) => (
-                  <div key={type} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-lg">{getFileTypeIcon(type)}</span>
-                      <span className="text-sm font-medium text-gray-700 capitalize">{type}</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <div className="bg-gray-200 rounded-full h-2 flex-1 w-24">
-                        <div 
-                          className="bg-red-600 h-2 rounded-full" 
-                          style={{ 
-                            width: `${stats.total_documents > 0 ? (count / stats.total_documents) * 100 : 0}%` 
-                          }}
+            <div className="bg-white rounded-3xl shadow-2xl border-2 border-gray-100 p-8">
+              <div className="flex items-center mb-8">
+                <div className="w-12 h-12 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center mr-4 shadow-xl">
+                  <FiBarChart2 className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900">Documents by Type</h3>
+              </div>
+              <div className="space-y-6">
+                {Object.entries(stats.documents_by_type).map(([type, count]) => {
+                  const IconComponent = getFileTypeIcon(type)
+                  const iconColor = getFileTypeColor(type)
+                  const percentage = stats.total_documents > 0 ? (count / stats.total_documents) * 100 : 0
+                  return (
+                    <div key={type} className="bg-gradient-to-r from-gray-50 to-white p-6 rounded-3xl border-2 border-gray-200 hover:shadow-xl transition-all duration-300">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center space-x-4">
+                          <div className={`w-12 h-12 bg-gradient-to-r ${iconColor} rounded-2xl flex items-center justify-center shadow-lg`}>
+                            <IconComponent className="w-6 h-6 text-white" />
+                          </div>
+                          <div>
+                            <span className="text-lg font-bold text-gray-800 capitalize">{type}</span>
+                            <p className="text-sm text-gray-600">{percentage.toFixed(1)}% of total</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-3xl font-bold text-gray-900">{count}</span>
+                          <p className="text-sm text-gray-600">documents</p>
+                        </div>
+                      </div>
+                      <div className="bg-gray-200 rounded-full h-3 shadow-inner">
+                        <div
+                          className={`bg-gradient-to-r ${iconColor} h-3 rounded-full shadow-lg transition-all duration-1000 ease-out`}
+                          style={{ width: `${percentage}%` }}
                         ></div>
                       </div>
-                      <span className="text-sm font-medium text-gray-900 w-8 text-right">{count}</span>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </div>
           </div>
@@ -502,13 +575,18 @@ const StateDocuments: React.FC = () => {
 
         {/* Upload Modal */}
         {showUploadModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Upload Document</h3>
+          <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-white rounded-3xl shadow-2xl border-2 border-gray-100 p-8 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center mb-8">
+                <div className="w-12 h-12 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full flex items-center justify-center mr-4 shadow-xl">
+                  <FiUpload className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900">Upload Document</h3>
+              </div>
               <form onSubmit={handleUploadSubmit}>
-                <div className="space-y-6">
+                <div className="space-y-8">
                   {/* File Upload */}
-                  <div>
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-3xl border-2 border-blue-100">
                     <SimpleImageUpload
                       fieldName="document_url"
                       fileType="document"
@@ -518,15 +596,13 @@ const StateDocuments: React.FC = () => {
                       title="Document Upload"
                       enableCropping={false}
                       icon={
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
+                        <FiFileText className="w-5 h-5" />
                       }
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-bold text-gray-700 mb-3">
                       Title *
                     </label>
                     <input
@@ -534,39 +610,41 @@ const StateDocuments: React.FC = () => {
                       required
                       value={uploadForm.title}
                       onChange={(e) => setUploadForm({ ...uploadForm, title: e.target.value })}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500"
+                      className="w-full border-2 border-gray-300 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-medium shadow-lg"
                       placeholder="Enter document title"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-bold text-gray-700 mb-3">
                       Description
                     </label>
                     <textarea
                       value={uploadForm.description}
                       onChange={(e) => setUploadForm({ ...uploadForm, description: e.target.value })}
-                      rows={3}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500"
+                      rows={4}
+                      className="w-full border-2 border-gray-300 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-medium shadow-lg"
                       placeholder="Enter document description (optional)"
                     />
                   </div>
 
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      id="is_public"
-                      checked={uploadForm.is_public}
-                      onChange={(e) => setUploadForm({ ...uploadForm, is_public: e.target.checked })}
-                      className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
-                    />
-                    <label htmlFor="is_public" className="ml-2 text-sm text-gray-700">
-                      Make this document public (visible to other users)
-                    </label>
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-3xl border-2 border-green-100">
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        id="is_public"
+                        checked={uploadForm.is_public}
+                        onChange={(e) => setUploadForm({ ...uploadForm, is_public: e.target.checked })}
+                        className="h-5 w-5 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                      />
+                      <label htmlFor="is_public" className="ml-4 text-sm font-bold text-green-800">
+                        Make this document public (visible to other users)
+                      </label>
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex justify-end space-x-3 mt-6">
+                <div className="flex justify-end space-x-4 mt-8">
                   <button
                     type="button"
                     onClick={() => {
@@ -578,16 +656,21 @@ const StateDocuments: React.FC = () => {
                         document_url: ''
                       })
                     }}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+                    className="flex items-center px-6 py-3 text-sm font-bold text-gray-700 bg-white border-2 border-gray-300 rounded-2xl hover:bg-gray-50 hover:border-gray-400 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
                   >
+                    <FiX className="w-4 h-4 mr-2" />
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={loading || !uploadForm.document_url || !uploadForm.title}
-                    className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors disabled:opacity-50"
+                    className="flex items-center px-6 py-3 text-sm font-bold text-white bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:transform-none"
                   >
-                    {loading ? 'Saving...' : 'Save Document'}
+                    {loading ? (
+                      <><FiLoader className="w-4 h-4 mr-2 animate-spin" />Saving...</>
+                    ) : (
+                      <><FiUpload className="w-4 h-4 mr-2" />Save Document</>
+                    )}
                   </button>
                 </div>
               </form>
@@ -597,13 +680,18 @@ const StateDocuments: React.FC = () => {
 
         {/* Edit Modal */}
         {showEditModal && selectedDocument && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Edit Document</h3>
+          <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-white rounded-3xl shadow-2xl border-2 border-gray-100 p-8 w-full max-w-2xl">
+              <div className="flex items-center mb-8">
+                <div className="w-12 h-12 bg-gradient-to-r from-yellow-600 to-orange-600 rounded-full flex items-center justify-center mr-4 shadow-xl">
+                  <FiEdit className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900">Edit Document</h3>
+              </div>
               <form onSubmit={handleEditSubmit}>
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-bold text-gray-700 mb-3">
                       Title *
                     </label>
                     <input
@@ -611,53 +699,60 @@ const StateDocuments: React.FC = () => {
                       required
                       value={editForm.title}
                       onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500"
+                      className="w-full border-2 border-gray-300 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 font-medium shadow-lg"
                     />
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-bold text-gray-700 mb-3">
                       Description
                     </label>
                     <textarea
                       value={editForm.description}
                       onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-                      rows={3}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500"
+                      rows={4}
+                      className="w-full border-2 border-gray-300 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 font-medium shadow-lg"
                     />
                   </div>
-                  
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      id="edit_is_public"
-                      checked={editForm.is_public}
-                      onChange={(e) => setEditForm({ ...editForm, is_public: e.target.checked })}
-                      className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
-                    />
-                    <label htmlFor="edit_is_public" className="ml-2 text-sm text-gray-700">
-                      Make this document public
-                    </label>
+
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-3xl border-2 border-green-100">
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        id="edit_is_public"
+                        checked={editForm.is_public}
+                        onChange={(e) => setEditForm({ ...editForm, is_public: e.target.checked })}
+                        className="h-5 w-5 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                      />
+                      <label htmlFor="edit_is_public" className="ml-4 text-sm font-bold text-green-800">
+                        Make this document public
+                      </label>
+                    </div>
                   </div>
                 </div>
-                
-                <div className="flex justify-end space-x-3 mt-6">
+
+                <div className="flex justify-end space-x-4 mt-8">
                   <button
                     type="button"
                     onClick={() => {
                       setShowEditModal(false)
                       dispatch(setSelectedDocument(null))
                     }}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+                    className="flex items-center px-6 py-3 text-sm font-bold text-gray-700 bg-white border-2 border-gray-300 rounded-2xl hover:bg-gray-50 hover:border-gray-400 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
                   >
+                    <FiX className="w-4 h-4 mr-2" />
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={loading}
-                    className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors disabled:opacity-50"
+                    className="flex items-center px-6 py-3 text-sm font-bold text-white bg-gradient-to-r from-yellow-600 to-orange-600 rounded-2xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:transform-none"
                   >
-                    {loading ? 'Updating...' : 'Update'}
+                    {loading ? (
+                      <><FiLoader className="w-4 h-4 mr-2 animate-spin" />Updating...</>
+                    ) : (
+                      <><FiEdit className="w-4 h-4 mr-2" />Update Document</>
+                    )}
                   </button>
                 </div>
               </form>

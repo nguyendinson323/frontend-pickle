@@ -10,6 +10,7 @@ import {
 
 import StatisticsHeader from '../../components/state/statistics/StatisticsHeader'
 import StatisticsCard, { MetricDisplay, ProgressBar, ListItem } from '../../components/state/statistics/StatisticsCard'
+import { FiBarChart2, FiUsers, FiMap, FiHome, FiHeart, FiDollarSign, FiTrendingUp, FiArrowUp, FiArrowDown, FiRefreshCw, FiAlertCircle, FiAward } from 'react-icons/fi'
 
 const StateStatistics: React.FC = () => {
   const navigate = useNavigate()
@@ -88,14 +89,23 @@ const StateStatistics: React.FC = () => {
 
   if (loading && !tournamentAnalytics) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-white to-purple-50/30 flex items-center justify-center">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="relative">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600 shadow-lg"></div>
+            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-blue-400/20 to-purple-400/20 animate-pulse"></div>
+          </div>
+          <div className="text-center">
+            <p className="text-xl font-bold text-gray-900 mb-1">Loading Analytics</p>
+            <p className="text-sm text-gray-600">Please wait while we fetch your statistics...</p>
+          </div>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-white to-purple-50/30 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <StatisticsHeader
           dateRange={dateRange}
@@ -106,128 +116,234 @@ const StateStatistics: React.FC = () => {
         />
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
-            {error}
+          <div className="bg-gradient-to-r from-red-50 to-red-100 border border-red-200/50 rounded-3xl shadow-xl p-8 backdrop-blur-sm mb-8">
+            <div className="flex items-center space-x-4">
+              <div className="bg-red-500 p-3 rounded-2xl shadow-lg">
+                <FiAlertCircle className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-red-800 mb-2">Error Loading Analytics</h3>
+                <p className="text-red-700">{error}</p>
+                <button
+                  onClick={() => fetchData()}
+                  className="mt-4 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 hover:scale-105 flex items-center space-x-2 shadow-lg"
+                >
+                  <FiRefreshCw className="w-4 h-4" />
+                  <span>Retry</span>
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           {/* Tournament Analytics */}
-          <StatisticsCard
-            title="Tournament Performance"
-            subtitle="Tournament participation and revenue metrics"
-            loading={loading}
-          >
-            {tournamentAnalytics && (
-              <div className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <MetricDisplay
-                    label="Total Tournaments"
-                    value={tournamentAnalytics.total_tournaments}
-                    colorClass="text-blue-600"
-                  />
-                  <MetricDisplay
-                    label="Completion Rate"
-                    value={`${tournamentAnalytics.participation_metrics.completion_rate.toFixed(1)}%`}
-                    colorClass="text-green-600"
-                  />
+          <div className="bg-gradient-to-br from-white to-blue-50/30 rounded-3xl shadow-xl border border-gray-200/50 p-8 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 hover:scale-105">
+            <div className="flex items-center space-x-3 mb-8">
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-3 rounded-2xl shadow-lg">
+                <FiBarChart2 className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">Tournament Performance</h2>
+                <p className="text-sm text-gray-600 mt-1">Tournament participation and revenue metrics</p>
+              </div>
+            </div>
+            {loading && (
+              <div className="animate-pulse">
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                  <div className="bg-gray-200 h-20 rounded-2xl"></div>
+                  <div className="bg-gray-200 h-20 rounded-2xl"></div>
                 </div>
-
-                <div>
-                  <h4 className="font-medium text-gray-900 mb-3">Status Distribution</h4>
-                  <div className="space-y-2">
-                    <ProgressBar
-                      label="Completed"
-                      value={tournamentAnalytics.tournaments_by_status.completed}
-                      max={tournamentAnalytics.total_tournaments}
-                      colorClass="bg-green-600"
-                    />
-                    <ProgressBar
-                      label="Upcoming"
-                      value={tournamentAnalytics.tournaments_by_status.upcoming}
-                      max={tournamentAnalytics.total_tournaments}
-                      colorClass="bg-blue-600"
-                    />
-                    <ProgressBar
-                      label="Ongoing"
-                      value={tournamentAnalytics.tournaments_by_status.ongoing}
-                      max={tournamentAnalytics.total_tournaments}
-                      colorClass="bg-yellow-600"
-                    />
+                <div className="space-y-4">
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-32 bg-gray-200 rounded-2xl"></div>
+                </div>
+              </div>
+            )}
+            {tournamentAnalytics && !loading && (
+              <div className="space-y-8">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl shadow-lg border border-blue-200/50">
+                    <div className="text-3xl font-bold text-blue-600 mb-2">
+                      {tournamentAnalytics.total_tournaments.toLocaleString()}
+                    </div>
+                    <div className="text-sm font-medium text-gray-700">Total Tournaments</div>
+                  </div>
+                  <div className="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl shadow-lg border border-green-200/50">
+                    <div className="text-3xl font-bold text-green-600 mb-2">
+                      {tournamentAnalytics.participation_metrics.completion_rate.toFixed(1)}%
+                    </div>
+                    <div className="text-sm font-medium text-gray-700">Completion Rate</div>
                   </div>
                 </div>
 
-                <div>
-                  <h4 className="font-medium text-gray-900 mb-3">Revenue Metrics</h4>
-                  <div className="space-y-2">
-                    <ListItem
-                      label="Total Revenue"
-                      value={formatCurrency(tournamentAnalytics.revenue_metrics.total_revenue)}
-                    />
-                    <ListItem
-                      label="Average Entry Fee"
-                      value={formatCurrency(tournamentAnalytics.revenue_metrics.average_entry_fee)}
-                    />
+                <div className="bg-white/60 rounded-2xl p-6 backdrop-blur-sm">
+                  <h4 className="font-bold text-gray-900 mb-4 flex items-center space-x-2">
+                    <FiTrendingUp className="w-4 h-4 text-blue-600" />
+                    <span>Status Distribution</span>
+                  </h4>
+                  <div className="space-y-4">
+                    <div className="mb-4">
+                      <div className="flex justify-between text-sm font-medium text-gray-700 mb-2">
+                        <span>Completed</span>
+                        <span>{tournamentAnalytics.tournaments_by_status.completed.toLocaleString()}</span>
+                      </div>
+                      <div className="w-full bg-gray-200/50 rounded-full h-3 shadow-inner">
+                        <div
+                          className="bg-green-500 h-3 rounded-full transition-all duration-500 shadow-sm"
+                          style={{ width: `${(tournamentAnalytics.tournaments_by_status.completed / tournamentAnalytics.total_tournaments) * 100}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    <div className="mb-4">
+                      <div className="flex justify-between text-sm font-medium text-gray-700 mb-2">
+                        <span>Upcoming</span>
+                        <span>{tournamentAnalytics.tournaments_by_status.upcoming.toLocaleString()}</span>
+                      </div>
+                      <div className="w-full bg-gray-200/50 rounded-full h-3 shadow-inner">
+                        <div
+                          className="bg-blue-500 h-3 rounded-full transition-all duration-500 shadow-sm"
+                          style={{ width: `${(tournamentAnalytics.tournaments_by_status.upcoming / tournamentAnalytics.total_tournaments) * 100}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    <div className="mb-4">
+                      <div className="flex justify-between text-sm font-medium text-gray-700 mb-2">
+                        <span>Ongoing</span>
+                        <span>{tournamentAnalytics.tournaments_by_status.ongoing.toLocaleString()}</span>
+                      </div>
+                      <div className="w-full bg-gray-200/50 rounded-full h-3 shadow-inner">
+                        <div
+                          className="bg-yellow-500 h-3 rounded-full transition-all duration-500 shadow-sm"
+                          style={{ width: `${(tournamentAnalytics.tournaments_by_status.ongoing / tournamentAnalytics.total_tournaments) * 100}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white/60 rounded-2xl p-6 backdrop-blur-sm">
+                  <h4 className="font-bold text-gray-900 mb-4 flex items-center space-x-2">
+                    <FiDollarSign className="w-4 h-4 text-green-600" />
+                    <span>Revenue Metrics</span>
+                  </h4>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center py-3 border-b border-gray-200/50 last:border-b-0">
+                      <div className="font-medium text-gray-900">Total Revenue</div>
+                      <div className="text-lg font-bold text-green-600">
+                        {formatCurrency(tournamentAnalytics.revenue_metrics.total_revenue)}
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center py-3 border-b border-gray-200/50 last:border-b-0">
+                      <div className="font-medium text-gray-900">Average Entry Fee</div>
+                      <div className="text-lg font-bold text-blue-600">
+                        {formatCurrency(tournamentAnalytics.revenue_metrics.average_entry_fee)}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             )}
-          </StatisticsCard>
+          </div>
 
           {/* Player Analytics */}
-          <StatisticsCard
-            title="Player Growth"
-            subtitle="Player registration and demographics"
-            loading={loading}
-          >
-            {playerAnalytics && (
-              <div className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <MetricDisplay
-                    label="Total Players"
-                    value={playerAnalytics.total_players}
-                    colorClass="text-purple-600"
-                  />
-                  <MetricDisplay
-                    label="Growth Rate"
-                    value={`${playerAnalytics.growth_metrics.growth_rate.toFixed(1)}%`}
-                    change={playerAnalytics.growth_metrics.growth_rate}
-                    colorClass="text-green-600"
-                  />
+          <div className="bg-gradient-to-br from-white to-purple-50/30 rounded-3xl shadow-xl border border-gray-200/50 p-8 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 hover:scale-105">
+            <div className="flex items-center space-x-3 mb-8">
+              <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-3 rounded-2xl shadow-lg">
+                <FiUsers className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">Player Growth</h2>
+                <p className="text-sm text-gray-600 mt-1">Player registration and demographics</p>
+              </div>
+            </div>
+            {loading && (
+              <div className="animate-pulse">
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                  <div className="bg-gray-200 h-20 rounded-2xl"></div>
+                  <div className="bg-gray-200 h-20 rounded-2xl"></div>
                 </div>
-
-                <div>
-                  <h4 className="font-medium text-gray-900 mb-3">Recent Growth</h4>
-                  <div className="space-y-2">
-                    <ListItem
-                      label="This Month"
-                      value={playerAnalytics.growth_metrics.new_registrations_this_month}
-                      subtitle="New registrations"
-                    />
-                    <ListItem
-                      label="Last Month"
-                      value={playerAnalytics.growth_metrics.new_registrations_last_month}
-                      subtitle="New registrations"
-                    />
+                <div className="space-y-4">
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-32 bg-gray-200 rounded-2xl"></div>
+                </div>
+              </div>
+            )}
+            {playerAnalytics && !loading && (
+              <div className="space-y-8">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl shadow-lg border border-purple-200/50">
+                    <div className="text-3xl font-bold text-purple-600 mb-2">
+                      {playerAnalytics.total_players.toLocaleString()}
+                    </div>
+                    <div className="text-sm font-medium text-gray-700">Total Players</div>
+                  </div>
+                  <div className="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl shadow-lg border border-green-200/50">
+                    <div className="text-3xl font-bold text-green-600 mb-2">
+                      {playerAnalytics.growth_metrics.growth_rate.toFixed(1)}%
+                    </div>
+                    <div className="text-sm font-medium text-gray-700 mb-2">Growth Rate</div>
+                    <div className={`text-xs flex items-center justify-center space-x-1 ${
+                      playerAnalytics.growth_metrics.growth_rate >= 0 ? 'text-green-600' : 'text-red-600'
+                    }`}>
+                      {playerAnalytics.growth_metrics.growth_rate >= 0 ? <FiArrowUp className="w-3 h-3" /> : <FiArrowDown className="w-3 h-3" />}
+                      <span>{Math.abs(playerAnalytics.growth_metrics.growth_rate)}%</span>
+                    </div>
                   </div>
                 </div>
 
-                <div>
-                  <h4 className="font-medium text-gray-900 mb-3">Activity Metrics</h4>
-                  <div className="space-y-2">
-                    <ListItem
-                      label="Active Players"
-                      value={playerAnalytics.activity_metrics.active_players}
-                    />
-                    <ListItem
-                      label="Tournament Participants"
-                      value={playerAnalytics.activity_metrics.tournament_participants}
-                    />
+                <div className="bg-white/60 rounded-2xl p-6 backdrop-blur-sm">
+                  <h4 className="font-bold text-gray-900 mb-4 flex items-center space-x-2">
+                    <FiTrendingUp className="w-4 h-4 text-purple-600" />
+                    <span>Recent Growth</span>
+                  </h4>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center py-3 border-b border-gray-200/50 last:border-b-0">
+                      <div>
+                        <div className="font-medium text-gray-900">This Month</div>
+                        <div className="text-sm text-gray-500">New registrations</div>
+                      </div>
+                      <div className="text-lg font-bold text-purple-600">
+                        {playerAnalytics.growth_metrics.new_registrations_this_month.toLocaleString()}
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center py-3 border-b border-gray-200/50 last:border-b-0">
+                      <div>
+                        <div className="font-medium text-gray-900">Last Month</div>
+                        <div className="text-sm text-gray-500">New registrations</div>
+                      </div>
+                      <div className="text-lg font-bold text-gray-600">
+                        {playerAnalytics.growth_metrics.new_registrations_last_month.toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white/60 rounded-2xl p-6 backdrop-blur-sm">
+                  <h4 className="font-bold text-gray-900 mb-4 flex items-center space-x-2">
+                    <FiUsers className="w-4 h-4 text-blue-600" />
+                    <span>Activity Metrics</span>
+                  </h4>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center py-3 border-b border-gray-200/50 last:border-b-0">
+                      <div className="font-medium text-gray-900">Active Players</div>
+                      <div className="text-lg font-bold text-blue-600">
+                        {playerAnalytics.activity_metrics.active_players.toLocaleString()}
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center py-3 border-b border-gray-200/50 last:border-b-0">
+                      <div className="font-medium text-gray-900">Tournament Participants</div>
+                      <div className="text-lg font-bold text-green-600">
+                        {playerAnalytics.activity_metrics.tournament_participants.toLocaleString()}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             )}
-          </StatisticsCard>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">

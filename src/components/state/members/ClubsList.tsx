@@ -1,5 +1,6 @@
 import React from 'react'
 import { StateClub } from '../../../store/slices/stateMemberManagementSlice'
+import { FiHome, FiMail, FiPhone, FiCalendar, FiUser, FiCheckCircle, FiXCircle, FiGlobe, FiMapPin } from 'react-icons/fi'
 
 interface ClubsListProps {
   clubs: StateClub[]
@@ -23,10 +24,10 @@ const ClubsList: React.FC<ClubsListProps> = ({
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow border border-gray-200 p-8">
-        <div className="animate-pulse space-y-4">
+      <div className="bg-gradient-to-br from-white to-purple-50/30 rounded-2xl shadow-xl border border-gray-200/50 p-8 backdrop-blur-sm">
+        <div className="animate-pulse space-y-6">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-16 bg-gray-200 rounded"></div>
+            <div key={i} className="h-20 bg-gradient-to-r from-gray-200 to-gray-300 rounded-2xl"></div>
           ))}
         </div>
       </div>
@@ -35,62 +36,89 @@ const ClubsList: React.FC<ClubsListProps> = ({
 
   if (clubs.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow border border-gray-200 p-8 text-center">
-        <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-        </svg>
-        <h3 className="mt-2 text-sm font-medium text-gray-900">No clubs found</h3>
-        <p className="mt-1 text-sm text-gray-500">No clubs match your current filters.</p>
+      <div className="bg-gradient-to-br from-white to-purple-50/30 rounded-2xl shadow-xl border border-gray-200/50 p-12 text-center backdrop-blur-sm">
+        <div className="bg-gradient-to-br from-purple-100 to-indigo-200 p-8 rounded-full mx-auto w-24 h-24 flex items-center justify-center shadow-lg mb-6">
+          <FiHome className="w-12 h-12 text-purple-600" />
+        </div>
+        <h3 className="text-xl font-bold text-gray-900 mb-2">No clubs found</h3>
+        <p className="text-gray-600 max-w-sm mx-auto leading-relaxed">No clubs match your current filters. Try adjusting your search criteria.</p>
       </div>
     )
   }
 
   return (
-    <div className="bg-white rounded-lg shadow border border-gray-200">
+    <div className="bg-gradient-to-br from-white to-purple-50/30 rounded-2xl shadow-xl border border-gray-200/50 backdrop-blur-sm">
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+        <table className="min-w-full divide-y divide-gray-200/50">
+          <thead className="bg-gradient-to-r from-gray-50 to-purple-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Club
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                <div className="flex items-center">
+                  <FiHome className="w-4 h-4 mr-2 text-purple-600" />
+                  Club
+                </div>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Manager
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                <div className="flex items-center">
+                  <FiUser className="w-4 h-4 mr-2 text-blue-600" />
+                  Manager
+                </div>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Type
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                <div className="flex items-center">
+                  <FiMapPin className="w-4 h-4 mr-2 text-green-600" />
+                  Type
+                </div>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Courts
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                <div className="flex items-center">
+                  <FiHome className="w-4 h-4 mr-2 text-orange-600" />
+                  Courts
+                </div>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Contact
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                <div className="flex items-center">
+                  <FiMail className="w-4 h-4 mr-2 text-teal-600" />
+                  Contact
+                </div>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                <div className="flex items-center">
+                  <FiCheckCircle className="w-4 h-4 mr-2 text-green-600" />
+                  Status
+                </div>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Created
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                <div className="flex items-center">
+                  <FiCalendar className="w-4 h-4 mr-2 text-gray-600" />
+                  Created
+                </div>
               </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white/80 divide-y divide-gray-200/50">
             {clubs.map((club) => (
-              <tr key={club.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
+              <tr key={club.id} className="hover:bg-purple-50/30 transition-colors duration-200">
+                <td className="px-6 py-6 whitespace-nowrap">
                   <div>
-                    <div className="text-sm font-medium text-gray-900">{club.name}</div>
+                    <div className="text-sm font-bold text-gray-900 mb-1">{club.name}</div>
                     {club.rfc && (
-                      <div className="text-sm text-gray-500">
-                        RFC: {club.rfc}
+                      <div className="text-sm text-gray-600 mb-1">
+                        RFC: <span className="font-semibold">{club.rfc}</span>
                       </div>
                     )}
                     {club.website && (
-                      <div className="text-xs text-blue-600 hover:text-blue-800">
-                        <a href={club.website} target="_blank" rel="noopener noreferrer">
+                      <div className="text-xs">
+                        <a
+                          href={club.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors font-semibold"
+                        >
+                          <FiGlobe className="w-3 h-3 mr-1" />
                           Website
                         </a>
                       </div>
@@ -123,29 +151,35 @@ const ClubsList: React.FC<ClubsListProps> = ({
                     )}
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${club.membership_status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                <td className="px-6 py-6 whitespace-nowrap">
+                  <span className={`inline-flex items-center px-3 py-2 text-sm font-bold rounded-xl shadow-sm ${club.membership_status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                    {club.membership_status === 'active' ? <FiCheckCircle className="w-3 h-3 mr-1" /> : <FiXCircle className="w-3 h-3 mr-1" />}
                     {club.membership_status}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {formatDate(club.created_at)}
+                <td className="px-6 py-6 whitespace-nowrap text-sm font-medium text-gray-600">
+                  <div className="flex items-center">
+                    <FiCalendar className="w-3 h-3 mr-1" />
+                    {formatDate(club.created_at)}
+                  </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <div className="flex justify-end space-x-2">
+                <td className="px-6 py-6 whitespace-nowrap text-right text-sm font-medium">
+                  <div className="flex justify-end space-x-3">
                     {club.membership_status !== 'active' ? (
                       <button
                         onClick={() => onUpdateStatus(club.id, true)}
-                        className="text-green-600 hover:text-green-900 transition-colors"
+                        className="bg-green-100 hover:bg-green-200 text-green-700 px-4 py-2 rounded-xl font-semibold flex items-center space-x-2 transition-all duration-200 hover:scale-105 shadow-sm"
                       >
-                        Activate
+                        <FiCheckCircle className="w-4 h-4" />
+                        <span>Activate</span>
                       </button>
                     ) : (
                       <button
                         onClick={() => onUpdateStatus(club.id, false)}
-                        className="text-red-600 hover:text-red-900 transition-colors"
+                        className="bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded-xl font-semibold flex items-center space-x-2 transition-all duration-200 hover:scale-105 shadow-sm"
                       >
-                        Deactivate
+                        <FiXCircle className="w-4 h-4" />
+                        <span>Deactivate</span>
                       </button>
                     )}
                   </div>

@@ -1,5 +1,6 @@
 import React from 'react'
 import { StatePlayer } from '../../../store/slices/stateMemberManagementSlice'
+import { FiUsers, FiMail, FiCalendar, FiAward, FiCheckCircle, FiXCircle, FiUser } from 'react-icons/fi'
 
 interface PlayersListProps {
   players: StatePlayer[]
@@ -45,10 +46,10 @@ const PlayersList: React.FC<PlayersListProps> = ({
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow border border-gray-200 p-8">
-        <div className="animate-pulse space-y-4">
+      <div className="bg-gradient-to-br from-white to-blue-50/30 rounded-2xl shadow-xl border border-gray-200/50 p-8 backdrop-blur-sm">
+        <div className="animate-pulse space-y-6">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-16 bg-gray-200 rounded"></div>
+            <div key={i} className="h-20 bg-gradient-to-r from-gray-200 to-gray-300 rounded-2xl"></div>
           ))}
         </div>
       </div>
@@ -57,100 +58,131 @@ const PlayersList: React.FC<PlayersListProps> = ({
 
   if (players.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow border border-gray-200 p-8 text-center">
-        <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-        </svg>
-        <h3 className="mt-2 text-sm font-medium text-gray-900">No players found</h3>
-        <p className="mt-1 text-sm text-gray-500">No players match your current filters.</p>
+      <div className="bg-gradient-to-br from-white to-blue-50/30 rounded-2xl shadow-xl border border-gray-200/50 p-12 text-center backdrop-blur-sm">
+        <div className="bg-gradient-to-br from-blue-100 to-indigo-200 p-8 rounded-full mx-auto w-24 h-24 flex items-center justify-center shadow-lg mb-6">
+          <FiUsers className="w-12 h-12 text-blue-600" />
+        </div>
+        <h3 className="text-xl font-bold text-gray-900 mb-2">No players found</h3>
+        <p className="text-gray-600 max-w-sm mx-auto leading-relaxed">No players match your current filters. Try adjusting your search criteria.</p>
       </div>
     )
   }
 
   return (
-    <div className="bg-white rounded-lg shadow border border-gray-200">
+    <div className="bg-gradient-to-br from-white to-blue-50/30 rounded-2xl shadow-xl border border-gray-200/50 backdrop-blur-sm">
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+        <table className="min-w-full divide-y divide-gray-200/50">
+          <thead className="bg-gradient-to-r from-gray-50 to-blue-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center">
+                <FiUser className="w-4 h-4 mr-2 text-blue-600" />
                 Player
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Skill Level
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                <div className="flex items-center">
+                  <FiAward className="w-4 h-4 mr-2 text-purple-600" />
+                  Skill Level
+                </div>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                <div className="flex items-center">
+                  <FiCheckCircle className="w-4 h-4 mr-2 text-green-600" />
+                  Status
+                </div>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Tournaments
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                <div className="flex items-center">
+                  <FiAward className="w-4 h-4 mr-2 text-yellow-600" />
+                  Tournaments
+                </div>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Ranking
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                <div className="flex items-center">
+                  <FiAward className="w-4 h-4 mr-2 text-indigo-600" />
+                  Ranking
+                </div>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Registered
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                <div className="flex items-center">
+                  <FiCalendar className="w-4 h-4 mr-2 text-gray-600" />
+                  Registered
+                </div>
               </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white/80 divide-y divide-gray-200/50">
             {players.map((player) => (
-              <tr key={player.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
+              <tr key={player.id} className="hover:bg-blue-50/30 transition-colors duration-200">
+                <td className="px-6 py-6 whitespace-nowrap">
                   <div className="flex items-center">
-                    <div className="h-10 w-10 flex-shrink-0">
-                      <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                        <span className="text-sm font-medium text-blue-600">
+                    <div className="h-12 w-12 flex-shrink-0">
+                      <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-200 flex items-center justify-center shadow-lg">
+                        <span className="text-lg font-bold text-blue-600">
                           {player.full_name.charAt(0).toUpperCase()}
                         </span>
                       </div>
                     </div>
                     <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">
+                      <div className="text-sm font-bold text-gray-900">
                         {player.full_name}
                       </div>
-                      <div className="text-sm text-gray-500">{player.user.email}</div>
+                      <div className="text-sm text-gray-600 flex items-center mt-1">
+                        <FiMail className="w-3 h-3 mr-1" />
+                        {player.user.email}
+                      </div>
                     </div>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getSkillLevelColor(player.nrtp_level)}`}>
-                    {player.nrtp_level || 'N/A'}
+                <td className="px-6 py-6 whitespace-nowrap">
+                  <span className={`inline-flex px-3 py-2 text-sm font-bold rounded-xl shadow-sm ${getSkillLevelColor(player.nrtp_level)}`}>
+                    NRTP {player.nrtp_level || 'N/A'}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(player.membership_status)}`}>
+                <td className="px-6 py-6 whitespace-nowrap">
+                  <span className={`inline-flex items-center px-3 py-2 text-sm font-bold rounded-xl shadow-sm ${getStatusColor(player.membership_status)}`}>
+                    {player.membership_status === 'active' ? <FiCheckCircle className="w-3 h-3 mr-1" /> : <FiXCircle className="w-3 h-3 mr-1" />}
                     {player.membership_status}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  -
+                <td className="px-6 py-6 whitespace-nowrap text-sm font-medium text-gray-600">
+                  <span className="bg-gray-100 px-3 py-1 rounded-lg">Coming Soon</span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {player.ranking_position ? `#${player.ranking_position}` : '-'}
+                <td className="px-6 py-6 whitespace-nowrap text-sm font-bold text-gray-900">
+                  {player.ranking_position ? (
+                    <span className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-lg font-bold">
+                      #{player.ranking_position}
+                    </span>
+                  ) : (
+                    <span className="text-gray-500">Unranked</span>
+                  )}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {formatDate(player.created_at)}
+                <td className="px-6 py-6 whitespace-nowrap text-sm font-medium text-gray-600">
+                  <div className="flex items-center">
+                    <FiCalendar className="w-3 h-3 mr-1" />
+                    {formatDate(player.created_at)}
+                  </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <div className="flex justify-end space-x-2">
+                <td className="px-6 py-6 whitespace-nowrap text-right text-sm font-medium">
+                  <div className="flex justify-end space-x-3">
                     {player.membership_status !== 'active' && (
                       <button
                         onClick={() => onUpdateStatus(player.id, 'active')}
-                        className="text-green-600 hover:text-green-900 transition-colors"
+                        className="bg-green-100 hover:bg-green-200 text-green-700 px-4 py-2 rounded-xl font-semibold flex items-center space-x-2 transition-all duration-200 hover:scale-105 shadow-sm"
                       >
-                        Activate
+                        <FiCheckCircle className="w-4 h-4" />
+                        <span>Activate</span>
                       </button>
                     )}
                     {player.membership_status === 'active' && (
                       <button
                         onClick={() => onUpdateStatus(player.id, 'inactive')}
-                        className="text-red-600 hover:text-red-900 transition-colors"
+                        className="bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded-xl font-semibold flex items-center space-x-2 transition-all duration-200 hover:scale-105 shadow-sm"
                       >
-                        Deactivate
+                        <FiXCircle className="w-4 h-4" />
+                        <span>Deactivate</span>
                       </button>
                     )}
                   </div>

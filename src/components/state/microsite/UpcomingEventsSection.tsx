@@ -1,5 +1,6 @@
 import React from 'react'
 import { StateMicrositeEvent } from '../../../store/slices/stateMicrositeSlice'
+import { FiCalendar, FiMapPin, FiDollarSign, FiUsers, FiEye, FiArrowRight, FiAward } from 'react-icons/fi'
 
 interface UpcomingEventsSectionProps {
   events: StateMicrositeEvent[]
@@ -54,62 +55,74 @@ const UpcomingEventsSection: React.FC<UpcomingEventsSectionProps> = ({ events })
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="bg-gradient-to-br from-white to-green-50/30 rounded-3xl shadow-xl border border-gray-200/50 p-8 backdrop-blur-sm">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 space-y-4 sm:space-y-0">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Upcoming Tournaments</h2>
-          <p className="text-gray-600 mt-1">Don't miss these exciting pickleball events</p>
+          <div className="flex items-center space-x-3 mb-2">
+            <div className="bg-green-500 p-3 rounded-2xl shadow-lg">
+              <FiCalendar className="w-6 h-6 text-white" />
+            </div>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Upcoming Tournaments</h2>
+          </div>
+          <p className="text-gray-600 text-lg">Don't miss these exciting pickleball events</p>
         </div>
-        <div className="text-sm text-gray-500">
+        <div className="bg-green-100 text-green-800 px-4 py-2 rounded-xl font-bold text-sm">
           {events.length} tournament{events.length !== 1 ? 's' : ''} scheduled
         </div>
       </div>
 
       {events.length === 0 ? (
-        <div className="text-center py-12">
-          <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a4 4 0 118 0v4m-4 8a3 3 0 100-6 3 3 0 000 6z" />
-          </svg>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No upcoming tournaments</h3>
-          <p className="mt-1 text-sm text-gray-500">Check back soon for new tournament announcements!</p>
+        <div className="text-center py-16">
+          <div className="bg-gradient-to-br from-gray-100 to-gray-200 p-8 rounded-full mx-auto w-24 h-24 flex items-center justify-center shadow-lg mb-6">
+            <FiAward className="w-12 h-12 text-gray-600" />
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">No upcoming tournaments</h3>
+          <p className="text-gray-600 max-w-md mx-auto leading-relaxed">Check back soon for new tournament announcements and exciting events!</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {events.map((event) => (
-            <div key={event.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-              <div className="mb-3">
-                <div className="flex items-start justify-between mb-2">
-                  <h3 className="font-semibold text-gray-900 text-lg">{event.name}</h3>
-                  <div className="flex flex-col items-end space-y-1">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(event.status)}`}>
+            <div key={event.id} className="group bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg border border-gray-200/50 p-6 hover:shadow-xl transition-all duration-300 hover:scale-105">
+              <div className="mb-4">
+                <div className="flex items-start justify-between mb-3">
+                  <h3 className="font-bold text-gray-900 text-lg leading-tight">{event.name}</h3>
+                  <div className="flex flex-col items-end space-y-2">
+                    <span className={`inline-flex items-center px-3 py-1 text-xs font-bold rounded-xl shadow-sm ${getStatusColor(event.status)}`}>
+                      <FiCalendar className="w-3 h-3 mr-1" />
                       {event.status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                     </span>
                     {event.tournament_type && (
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getTournamentTypeColor(event.tournament_type)}`}>
+                      <span className={`inline-flex items-center px-3 py-1 text-xs font-bold rounded-xl shadow-sm ${getTournamentTypeColor(event.tournament_type)}`}>
+                        <FiAward className="w-3 h-3 mr-1" />
                         {event.tournament_type}
                       </span>
                     )}
                   </div>
                 </div>
                 
-                <div className="space-y-2 text-sm text-gray-600">
-                  <div className="flex items-center">
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a4 4 0 118 0v4m-4 8a3 3 0 100-6 3 3 0 000 6z" />
-                    </svg>
-                    <span className="font-medium">{formatDateRange(event.start_date, event.end_date)}</span>
+                <div className="space-y-3">
+                  <div className="bg-white/60 rounded-xl p-3 backdrop-blur-sm">
+                    <div className="flex items-center space-x-2 mb-1">
+                      <div className="bg-blue-100 p-1 rounded-lg">
+                        <FiCalendar className="w-3 h-3 text-blue-600" />
+                      </div>
+                      <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</span>
+                    </div>
+                    <span className="font-bold text-gray-900">{formatDateRange(event.start_date, event.end_date)}</span>
                   </div>
 
                   {event.venue_name && (
-                    <div className="flex items-start">
-                      <svg className="w-4 h-4 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
+                    <div className="bg-white/60 rounded-xl p-3 backdrop-blur-sm">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <div className="bg-purple-100 p-1 rounded-lg">
+                          <FiMapPin className="w-3 h-3 text-purple-600" />
+                        </div>
+                        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Venue</span>
+                      </div>
                       <div>
-                        <div className="font-medium">{event.venue_name}</div>
+                        <div className="font-bold text-gray-900">{event.venue_name}</div>
                         {event.venue_address && (
-                          <div className="text-xs text-gray-500">{event.venue_address}</div>
+                          <div className="text-sm text-gray-600 mt-1">{event.venue_address}</div>
                         )}
                       </div>
                     </div>
@@ -117,30 +130,41 @@ const UpcomingEventsSection: React.FC<UpcomingEventsSectionProps> = ({ events })
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 pt-3 border-t border-gray-100">
+              <div className="grid grid-cols-2 gap-4 mt-4">
                 {event.entry_fee !== null && (
-                  <div className="text-center">
-                    <div className="text-lg font-semibold text-green-600">
-                      ${event.entry_fee === 0 ? 'Free' : event.entry_fee.toFixed(2)}
+                  <div className="bg-white/60 rounded-xl p-3 text-center backdrop-blur-sm">
+                    <div className="flex items-center justify-center space-x-2 mb-1">
+                      <div className="bg-green-100 p-1 rounded-lg">
+                        <FiDollarSign className="w-3 h-3 text-green-600" />
+                      </div>
+                      <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Entry Fee</span>
                     </div>
-                    <div className="text-xs text-gray-500">Entry Fee</div>
+                    <div className="text-xl font-bold text-green-600">
+                      {event.entry_fee === 0 ? 'Free' : `$${event.entry_fee.toFixed(2)}`}
+                    </div>
                   </div>
                 )}
-                
+
                 {event.max_participants && (
-                  <div className="text-center">
-                    <div className="text-lg font-semibold text-blue-600">
+                  <div className="bg-white/60 rounded-xl p-3 text-center backdrop-blur-sm">
+                    <div className="flex items-center justify-center space-x-2 mb-1">
+                      <div className="bg-blue-100 p-1 rounded-lg">
+                        <FiUsers className="w-3 h-3 text-blue-600" />
+                      </div>
+                      <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Registered</span>
+                    </div>
+                    <div className="text-xl font-bold text-blue-600">
                       {event.current_registrations || 0}/{event.max_participants}
                     </div>
-                    <div className="text-xs text-gray-500">Registered</div>
                   </div>
                 )}
               </div>
 
               {event.status === 'upcoming' && (
-                <div className="mt-4">
-                  <button className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors">
-                    View Details
+                <div className="mt-6">
+                  <button className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg transition-all duration-200 hover:scale-105 flex items-center justify-center space-x-2">
+                    <FiEye className="w-4 h-4" />
+                    <span>View Details</span>
                   </button>
                 </div>
               )}
@@ -150,9 +174,10 @@ const UpcomingEventsSection: React.FC<UpcomingEventsSectionProps> = ({ events })
       )}
 
       {events.length > 0 && (
-        <div className="mt-6 text-center">
-          <button className="text-blue-600 hover:text-blue-800 font-medium text-sm">
-            View All Tournaments →
+        <div className="mt-8 text-center">
+          <button className="group bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-8 py-3 rounded-xl font-semibold shadow-lg transition-all duration-200 hover:scale-105 flex items-center space-x-2 mx-auto">
+            <span>View All Tournaments</span>
+            <FiArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
           </button>
         </div>
       )}

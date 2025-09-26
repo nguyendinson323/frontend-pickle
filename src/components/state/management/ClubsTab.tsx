@@ -1,5 +1,6 @@
 import React, { useMemo, useCallback, useState } from 'react'
 import { StateClub } from '../../../store/slices/stateManagementSlice'
+import { FiUsers, FiEye, FiMapPin, FiPhone, FiMail, FiGlobe, FiCalendar, FiHome, FiAward, FiClock, FiShare2 } from 'react-icons/fi'
 
 interface ClubsTabProps {
   clubs: StateClub[]
@@ -86,12 +87,12 @@ const ClubsTab: React.FC<ClubsTabProps> = React.memo(({
   return (
     <div className="space-y-4">
       {clubs.length === 0 ? (
-        <div className="text-center py-12">
-          <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-          </svg>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No clubs registered</h3>
-          <p className="mt-1 text-sm text-gray-500">No clubs have been registered in your state yet.</p>
+        <div className="text-center py-16">
+          <div className="bg-gradient-to-br from-purple-100 to-indigo-200 p-8 rounded-full mx-auto w-24 h-24 flex items-center justify-center shadow-lg">
+            <FiUsers className="w-12 h-12 text-purple-600" />
+          </div>
+          <h3 className="mt-6 text-xl font-bold text-gray-900">No clubs registered</h3>
+          <p className="mt-3 text-gray-600 max-w-sm mx-auto leading-relaxed">No clubs have been registered in your state yet. Encourage local communities to join!</p>
         </div>
       ) : (
         validClubs.map((club) => {
@@ -99,7 +100,7 @@ const ClubsTab: React.FC<ClubsTabProps> = React.memo(({
           const premiumStatus = getPremiumStatus(club.premium_expires_at)
           
           return (
-            <div key={club.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+            <div key={club.id} className="border border-gray-200/50 rounded-2xl p-8 hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm transform hover:scale-[1.02] shadow-lg">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-2">
@@ -113,14 +114,12 @@ const ClubsTab: React.FC<ClubsTabProps> = React.memo(({
                           loading="lazy"
                         />
                       ) : (
-                        <div className="h-10 w-10 rounded-lg bg-gray-300 flex items-center justify-center mr-3">
-                          <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                          </svg>
+                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-100 to-indigo-200 flex items-center justify-center mr-4 shadow-lg">
+                          <FiUsers className="h-6 w-6 text-purple-600" />
                         </div>
                       )}
                       <div>
-                        <h3 className="text-lg font-semibold text-gray-900">
+                        <h3 className="text-2xl font-bold text-gray-900">
                           {club.name || 'Unnamed Club'}
                         </h3>
                         {club.club_type && (
@@ -128,14 +127,15 @@ const ClubsTab: React.FC<ClubsTabProps> = React.memo(({
                         )}
                       </div>
                     </div>
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${affiliationStatus.color}`}>
+                    <span className={`inline-flex px-3 py-2 text-sm font-bold rounded-xl shadow-sm ${affiliationStatus.color}`}>
                       {affiliationStatus.status}
                     </span>
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${premiumStatus.color}`}>
+                    <span className={`inline-flex px-3 py-2 text-sm font-bold rounded-xl shadow-sm ${premiumStatus.color}`}>
                       {premiumStatus.status}
                     </span>
                     {club.has_courts && (
-                      <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                      <span className="inline-flex items-center px-3 py-2 text-sm font-bold rounded-xl shadow-sm bg-blue-100 text-blue-800">
+                        <FiHome className="w-3 h-3 mr-1" />
                         Has Courts
                       </span>
                     )}
@@ -143,53 +143,75 @@ const ClubsTab: React.FC<ClubsTabProps> = React.memo(({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                <div>
-                  <div className="text-sm text-gray-500">Manager</div>
-                  <div className="font-medium">{club.manager_name || 'Not specified'}</div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
+                <div className="bg-indigo-50 p-4 rounded-xl">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <FiUsers className="w-4 h-4 text-indigo-600" />
+                    <div className="text-sm text-indigo-700 font-semibold">Manager</div>
+                  </div>
+                  <div className="font-bold text-gray-900">{club.manager_name || 'Not specified'}</div>
                   {club.manager_title && (
-                    <div className="text-xs text-gray-500">{club.manager_title}</div>
+                    <div className="text-xs text-indigo-600 mt-1">{club.manager_title}</div>
                   )}
                 </div>
-                <div>
-                  <div className="text-sm text-gray-500">Members</div>
-                  <div className="font-medium">{club.members_count || 0}</div>
+                <div className="bg-green-50 p-4 rounded-xl">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <FiUsers className="w-4 h-4 text-green-600" />
+                    <div className="text-sm text-green-700 font-semibold">Members</div>
+                  </div>
+                  <div className="font-bold text-gray-900">{club.members_count || 0}</div>
                 </div>
-                <div>
-                  <div className="text-sm text-gray-500">Courts</div>
-                  <div className="font-medium">{club.courts_count || 0}</div>
+                <div className="bg-blue-50 p-4 rounded-xl">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <FiHome className="w-4 h-4 text-blue-600" />
+                    <div className="text-sm text-blue-700 font-semibold">Courts</div>
+                  </div>
+                  <div className="font-bold text-gray-900">{club.courts_count || 0}</div>
                 </div>
-                <div>
-                  <div className="text-sm text-gray-500">Tournaments</div>
-                  <div className="font-medium">{club.tournaments_count || 0}</div>
+                <div className="bg-purple-50 p-4 rounded-xl">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <FiAward className="w-4 h-4 text-purple-600" />
+                    <div className="text-sm text-purple-700 font-semibold">Tournaments</div>
+                  </div>
+                  <div className="font-bold text-gray-900">{club.tournaments_count || 0}</div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <div className="text-sm text-gray-500">Contact Information</div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="bg-teal-50 p-4 rounded-xl">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <FiMail className="w-4 h-4 text-teal-600" />
+                    <div className="text-sm text-teal-700 font-semibold">Contact Information</div>
+                  </div>
                   {club.user?.email ? (
-                    <div className="font-medium">{club.user.email}</div>
+                    <div className="font-bold text-gray-900 flex items-center">
+                      <FiMail className="w-3 h-3 mr-2 text-teal-600" />
+                      {club.user.email}
+                    </div>
                   ) : (
-                    <div className="text-sm text-gray-400">No contact email</div>
+                    <div className="text-sm text-gray-500">No contact email</div>
                   )}
                   {club.user?.phone && (
-                    <div className="text-sm text-gray-600">{club.user.phone}</div>
+                    <div className="text-sm text-teal-600 mt-1 flex items-center">
+                      <FiPhone className="w-3 h-3 mr-2" />
+                      {club.user.phone}
+                    </div>
                   )}
                 </div>
-                <div>
-                  <div className="text-sm text-gray-500">Online Presence</div>
-                  <div className="flex items-center space-x-2">
+                <div className="bg-orange-50 p-4 rounded-xl">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <FiGlobe className="w-4 h-4 text-orange-600" />
+                    <div className="text-sm text-orange-700 font-semibold">Online Presence</div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
                     {club.website && isValidUrl(club.website) && (
                       <a
                         href={club.website.startsWith('http') ? club.website : `https://${club.website}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center px-2 py-1 rounded text-xs bg-blue-100 text-blue-800 hover:bg-blue-200"
+                        className="inline-flex items-center px-3 py-2 rounded-xl text-xs bg-blue-100 text-blue-800 hover:bg-blue-200 font-semibold transition-colors duration-200"
                       >
-                        <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
+                        <FiGlobe className="w-3 h-3 mr-1" />
                         Website
                       </a>
                     )}
@@ -198,33 +220,37 @@ const ClubsTab: React.FC<ClubsTabProps> = React.memo(({
                         href={club.social_media.startsWith('http') ? club.social_media : `https://${club.social_media}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center px-2 py-1 rounded text-xs bg-purple-100 text-purple-800 hover:bg-purple-200"
+                        className="inline-flex items-center px-3 py-2 rounded-xl text-xs bg-purple-100 text-purple-800 hover:bg-purple-200 font-semibold transition-colors duration-200"
                       >
-                        <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 9V9a1 1 0 011-1h8a1 1 0 011 1v6M7 15a2 2 0 11-4 0 2 2 0 014 0zM15 15a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
+                        <FiShare2 className="w-3 h-3 mr-1" />
                         Social
                       </a>
                     )}
                     {(!club.website || !isValidUrl(club.website)) && (!club.social_media || !isValidUrl(club.social_media)) && (
-                      <div className="text-sm text-gray-400">No online presence</div>
+                      <div className="text-sm text-gray-500">No online presence</div>
                     )}
                   </div>
                 </div>
               </div>
 
               {(club.affiliation_expires_at || club.premium_expires_at) && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 p-3 bg-gray-50 rounded-lg">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   {club.affiliation_expires_at && (
-                    <div>
-                      <div className="text-sm text-gray-500">Affiliation Expires</div>
-                      <div className="font-medium">{formatDate(club.affiliation_expires_at)}</div>
+                    <div className="bg-yellow-50 p-4 rounded-xl">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <FiCalendar className="w-4 h-4 text-yellow-600" />
+                        <div className="text-sm text-yellow-700 font-semibold">Affiliation Expires</div>
+                      </div>
+                      <div className="font-bold text-gray-900">{formatDate(club.affiliation_expires_at)}</div>
                     </div>
                   )}
                   {club.premium_expires_at && (
-                    <div>
-                      <div className="text-sm text-gray-500">Premium Expires</div>
-                      <div className="font-medium">{formatDate(club.premium_expires_at)}</div>
+                    <div className="bg-purple-50 p-4 rounded-xl">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <FiClock className="w-4 h-4 text-purple-600" />
+                        <div className="text-sm text-purple-700 font-semibold">Premium Expires</div>
+                      </div>
+                      <div className="font-bold text-gray-900">{formatDate(club.premium_expires_at)}</div>
                     </div>
                   )}
                 </div>
@@ -242,9 +268,10 @@ const ClubsTab: React.FC<ClubsTabProps> = React.memo(({
                 <div className="flex space-x-2">
                   <button
                     onClick={() => onViewClub(club)}
-                    className="text-blue-600 hover:text-blue-900 text-sm font-medium"
+                    className="bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-2 rounded-xl font-semibold flex items-center space-x-2 transition-all duration-200 hover:scale-105"
                   >
-                    View Details
+                    <FiEye className="w-4 h-4" />
+                    <span>View Details</span>
                   </button>
                 </div>
               </div>

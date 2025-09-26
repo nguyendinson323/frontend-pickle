@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import { FiTarget, FiTrendingUp, FiUsers, FiHome, FiActivity, FiLoader, FiFolder, FiPlus, FiEye, FiSettings, FiCalendar, FiMapPin, FiStar, FiCheckCircle, FiClock, FiAlertCircle, FiBarChart } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState, AppDispatch } from '../../../../store'
@@ -40,18 +41,27 @@ export const StateManagementTab: React.FC = () => {
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h3 className="text-lg font-medium text-gray-900">State Management</h3>
-          <p className="text-sm text-gray-600">Manage tournaments, clubs, courts, and state operations</p>
+    <div className="space-y-8">
+      {/* Header Section with Modern Design */}
+      <div className="bg-gradient-to-br from-white to-emerald-50 rounded-3xl shadow-2xl border-2 border-gray-200/50 p-8 backdrop-blur-sm">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
+          <div className="flex items-center space-x-6">
+            <div className="w-16 h-16 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-3xl flex items-center justify-center shadow-xl">
+              <FiTarget className="w-8 h-8 text-white" />
+            </div>
+            <div>
+              <h3 className="text-3xl font-bold bg-gradient-to-r from-emerald-900 via-teal-900 to-blue-900 bg-clip-text text-transparent mb-2">State Management Hub</h3>
+              <p className="text-lg text-gray-600 font-medium">Comprehensive management of tournaments, clubs, courts, and state operations</p>
+            </div>
+          </div>
+          <button
+            onClick={() => navigate('/state/management')}
+            className="flex items-center justify-center px-8 py-4 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-bold rounded-3xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+          >
+            <FiBarChart className="w-5 h-5 mr-3" />
+            Full Management Dashboard
+          </button>
         </div>
-        <button
-          onClick={() => navigate('/state/management')}
-          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
-        >
-          Full Management Dashboard
-        </button>
       </div>
 
       {/* Error Display */}
@@ -62,25 +72,40 @@ export const StateManagementTab: React.FC = () => {
       )}
 
       {/* Management Overview */}
-      <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-lg p-6 text-white mb-6">
-        <div className="flex items-center justify-between">
+      <div className="bg-gradient-to-br from-emerald-500 via-teal-500 to-blue-600 rounded-3xl shadow-2xl border-2 border-emerald-200/50 p-8 text-white backdrop-blur-sm overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-32 translate-x-32 blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/20 rounded-full translate-y-24 -translate-x-24 blur-2xl"></div>
+        <div className="relative z-10 flex items-center justify-between">
           <div>
-            <h4 className="text-xl font-semibold mb-2">State Operations Overview</h4>
-            <p className="text-green-100 mb-4">
-              Manage all state pickleball activities, tournaments, and member organizations.
+            <h4 className="text-3xl font-bold mb-4">State Operations Command Center</h4>
+            <p className="text-emerald-100 mb-6 text-lg leading-relaxed">
+              Comprehensive management platform for all state pickleball activities, tournaments, and member organizations with advanced analytics.
             </p>
-            <div className="flex items-center space-x-6 text-sm">
-              <span>🏆 Tournaments</span>
-              <span>🏢 Clubs</span>
-              <span>🏟️ Courts</span>
-              <span>👥 Members</span>
+            <div className="flex items-center space-x-8 text-base">
+              <div className="flex items-center space-x-2 bg-white/20 rounded-2xl px-4 py-2 backdrop-blur-sm">
+                <FiStar className="w-5 h-5" />
+                <span className="font-bold">Tournaments</span>
+              </div>
+              <div className="flex items-center space-x-2 bg-white/20 rounded-2xl px-4 py-2 backdrop-blur-sm">
+                <FiHome className="w-5 h-5" />
+                <span className="font-bold">Clubs</span>
+              </div>
+              <div className="flex items-center space-x-2 bg-white/20 rounded-2xl px-4 py-2 backdrop-blur-sm">
+                <FiMapPin className="w-5 h-5" />
+                <span className="font-bold">Courts</span>
+              </div>
+              <div className="flex items-center space-x-2 bg-white/20 rounded-2xl px-4 py-2 backdrop-blur-sm">
+                <FiUsers className="w-5 h-5" />
+                <span className="font-bold">Members</span>
+              </div>
             </div>
           </div>
           <div className="text-center">
             <button
               onClick={() => navigate('/state/management')}
-              className="bg-white text-green-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white"
+              className="bg-white text-emerald-600 px-8 py-4 rounded-3xl font-bold text-lg shadow-xl hover:shadow-2xl hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-white/50 transform hover:scale-105 transition-all duration-300"
             >
+              <FiSettings className="w-5 h-5 inline mr-3" />
               Manage State
             </button>
           </div>

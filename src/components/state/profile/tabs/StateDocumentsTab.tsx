@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { FiFileText, FiUpload, FiFolder, FiEye, FiEdit, FiTrash2, FiDownload, FiActivity, FiLoader, FiPlusCircle, FiSettings, FiBarChart, FiDatabase, FiImage, FiFile } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState, AppDispatch } from '../../../../store'
@@ -73,25 +74,35 @@ export const StateDocumentsTab: React.FC = () => {
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h3 className="text-lg font-medium text-gray-900">Documents</h3>
-          <p className="text-sm text-gray-600">Manage your state committee's documents and files</p>
-        </div>
-        <div className="flex space-x-3">
-          <button
-            onClick={() => navigate('/state/documents?action=upload')}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
-          >
-            Upload Document
-          </button>
-          <button
-            onClick={() => navigate('/state/documents')}
-            className="px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500"
-          >
-            Manage All
-          </button>
+    <div className="space-y-8">
+      {/* Header Section with Modern Design */}
+      <div className="bg-gradient-to-br from-white to-orange-50 rounded-3xl shadow-2xl border-2 border-gray-200/50 p-8 backdrop-blur-sm">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
+          <div className="flex items-center space-x-6">
+            <div className="w-16 h-16 bg-gradient-to-br from-orange-600 to-red-600 rounded-3xl flex items-center justify-center shadow-xl">
+              <FiFileText className="w-8 h-8 text-white" />
+            </div>
+            <div>
+              <h3 className="text-3xl font-bold bg-gradient-to-r from-orange-900 via-red-900 to-pink-900 bg-clip-text text-transparent mb-2">Document Management Hub</h3>
+              <p className="text-lg text-gray-600 font-medium">Organize and manage your state committee's documents and files with advanced tools</p>
+            </div>
+          </div>
+          <div className="flex space-x-4">
+            <button
+              onClick={() => navigate('/state/documents?action=upload')}
+              className="flex items-center justify-center px-8 py-4 bg-gradient-to-r from-orange-600 to-orange-700 text-white font-bold rounded-3xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+            >
+              <FiUpload className="w-5 h-5 mr-3" />
+              Upload Document
+            </button>
+            <button
+              onClick={() => navigate('/state/documents')}
+              className="flex items-center justify-center px-8 py-4 border-2 border-orange-300 text-orange-700 font-bold rounded-3xl hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-orange-500 transform hover:scale-105 transition-all duration-300"
+            >
+              <FiSettings className="w-5 h-5 mr-3" />
+              Manage All
+            </button>
+          </div>
         </div>
       </div>
 

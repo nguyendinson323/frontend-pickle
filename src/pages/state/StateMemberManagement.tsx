@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
+import { FiUsers, FiAlertCircle } from 'react-icons/fi'
 import { RootState, AppDispatch } from '../../store'
 import {
   fetchStateMemberData,
@@ -140,7 +141,10 @@ const StateMemberManagement: React.FC = () => {
           <div className="space-y-8">
             {players.length > 0 && (
               <div>
-                <h2 className="text-lg font-medium text-gray-900 mb-4">Recent Players</h2>
+                <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                  <FiUsers className="w-6 h-6 mr-3 text-blue-600" />
+                  Recent Players
+                </h2>
                 <PlayersList
                   players={players.slice(0, 5)}
                   onUpdateStatus={handlePlayerStatusUpdate}
@@ -151,7 +155,10 @@ const StateMemberManagement: React.FC = () => {
             
             {coaches.length > 0 && (
               <div>
-                <h2 className="text-lg font-medium text-gray-900 mb-4">Recent Coaches</h2>
+                <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                  <FiUsers className="w-6 h-6 mr-3 text-green-600" />
+                  Recent Coaches
+                </h2>
                 <CoachesList
                   coaches={coaches.slice(0, 5)}
                   onUpdateVerification={handleCoachVerificationUpdate}
@@ -162,7 +169,10 @@ const StateMemberManagement: React.FC = () => {
             
             {clubs.length > 0 && (
               <div>
-                <h2 className="text-lg font-medium text-gray-900 mb-4">Recent Clubs</h2>
+                <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                  <FiUsers className="w-6 h-6 mr-3 text-purple-600" />
+                  Recent Clubs
+                </h2>
                 <ClubsList
                   clubs={clubs.slice(0, 5)}
                   onUpdateStatus={handleClubStatusUpdate}
@@ -173,7 +183,10 @@ const StateMemberManagement: React.FC = () => {
             
             {partners.length > 0 && (
               <div>
-                <h2 className="text-lg font-medium text-gray-900 mb-4">Recent Partners</h2>
+                <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                  <FiUsers className="w-6 h-6 mr-3 text-orange-600" />
+                  Recent Partners
+                </h2>
                 <PartnersList
                   partners={partners.slice(0, 5)}
                   onUpdateStatus={handlePartnerStatusUpdate}
@@ -191,7 +204,7 @@ const StateMemberManagement: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <MembersHeader
           activeTab={activeTab}
@@ -209,15 +222,14 @@ const StateMemberManagement: React.FC = () => {
         <MembersStatsCard stats={stats} />
 
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+          <div className="bg-gradient-to-r from-red-50 to-red-100 border border-red-200/50 rounded-2xl p-6 mb-8 shadow-lg backdrop-blur-sm">
+            <div className="flex items-center space-x-4">
+              <div className="bg-red-500 p-2 rounded-xl shadow-lg">
+                <FiAlertCircle className="h-6 w-6 text-white" />
               </div>
-              <div className="ml-3">
-                <p className="text-sm text-red-800">{error}</p>
+              <div>
+                <h3 className="font-semibold text-red-900">Error</h3>
+                <p className="text-sm text-red-800 mt-1">{error}</p>
               </div>
             </div>
           </div>

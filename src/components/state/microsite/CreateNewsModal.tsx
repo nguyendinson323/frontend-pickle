@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { StateMicrositeNews } from '../../../store/slices/stateMicrositeSlice'
 import SimpleImageUpload from '../../common/SimpleImageUpload'
+import { FiX, FiFileText, FiImage, FiStar, FiEye, FiSave, FiEdit2 } from 'react-icons/fi'
 
 interface CreateNewsModalProps {
   isOpen: boolean
@@ -92,144 +93,190 @@ const CreateNewsModal: React.FC<CreateNewsModalProps> = ({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      <div className="relative top-8 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
-        <div className="mt-3">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-medium text-gray-900">
-              {editNews ? 'Edit News Article' : 'Create News Article'}
-            </h3>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Title */}
-            <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-                Article Title *
-              </label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                value={formData.title}
-                onChange={handleInputChange}
-                required
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter article title"
-              />
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full z-50">
+      <div className="relative top-8 mx-auto p-6 w-full max-w-4xl">
+        <div className="bg-gradient-to-br from-white to-orange-50 rounded-3xl shadow-2xl border border-gray-200/50">
+          <div className="p-8">
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center space-x-3">
+                <div className="bg-orange-500 p-3 rounded-2xl shadow-lg">
+                  {editNews ? <FiEdit2 className="w-6 h-6 text-white" /> : <FiFileText className="w-6 h-6 text-white" />}
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900">
+                  {editNews ? 'Edit News Article' : 'Create News Article'}
+                </h3>
+              </div>
+              <button
+                onClick={onClose}
+                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-colors duration-200"
+              >
+                <FiX className="w-6 h-6" />
+              </button>
             </div>
 
-            {/* News Image */}
-            <div>
-              <SimpleImageUpload
-                uploadType="news-image"
-                value={formData.image_url}
-                onChange={handleImageUpload}
-                title="Article Image (Optional)"
-                className="bg-gray-50 border border-gray-200"
-                icon={
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                }
-              />
-              <p className="mt-1 text-sm text-gray-500">
-                Upload an image to display with your article (PNG, JPG up to 5MB)
-              </p>
-            </div>
+            <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Title */}
+              <div className="bg-white/60 rounded-2xl p-6 backdrop-blur-sm">
+                <div className="flex items-center space-x-2 mb-6">
+                  <FiFileText className="w-5 h-5 text-orange-600" />
+                  <h4 className="text-lg font-bold text-gray-900">Article Details</h4>
+                </div>
+                <div>
+                  <label htmlFor="title" className="block text-sm font-bold text-gray-700 mb-2">
+                    Article Title *
+                  </label>
+                  <input
+                    type="text"
+                    id="title"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-200"
+                    placeholder="Enter article title"
+                  />
+                </div>
+              </div>
 
-            {/* Featured */}
-            <div className="flex items-center">
-              <input
-                id="is_featured"
-                name="is_featured"
-                type="checkbox"
-                checked={formData.is_featured}
-                onChange={handleInputChange}
-                className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label htmlFor="is_featured" className="text-sm text-gray-700">
-                Make this a featured article
-              </label>
-              <p className="ml-2 text-xs text-gray-500">(Featured articles appear prominently)</p>
-            </div>
+              {/* News Image */}
+              <div className="bg-white/60 rounded-2xl p-6 backdrop-blur-sm">
+                <div className="flex items-center space-x-2 mb-6">
+                  <FiImage className="w-5 h-5 text-orange-600" />
+                  <h4 className="text-lg font-bold text-gray-900">Article Image</h4>
+                </div>
+                <SimpleImageUpload
+                  fieldName="news-image"
+                  fileType="image"
+                  value={formData.image_url}
+                  onChange={handleImageUpload}
+                  title="Article Image (Optional)"
+                  className="bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-300 rounded-2xl"
+                  enableCropping={true}
+                  aspectRatio={16/9}
+                  icon={
+                    <FiImage className="w-6 h-6" />
+                  }
+                />
+                <p className="mt-3 text-sm text-gray-600">
+                  Upload an image to display with your article (PNG, JPG up to 5MB)
+                </p>
+              </div>
 
-            {/* Content */}
-            <div>
-              <label htmlFor="content" className="block text-sm font-medium text-gray-700">
-                Article Content *
-              </label>
-              <textarea
-                id="content"
-                name="content"
-                value={formData.content}
-                onChange={handleInputChange}
-                required
-                rows={10}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Write your article content here..."
-              />
-              <p className="mt-1 text-sm text-gray-500">
-                Write your full article content. You can include multiple paragraphs.
-              </p>
-            </div>
+              {/* Featured */}
+              <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl p-6 border border-yellow-200/50">
+                <div className="flex items-center space-x-3">
+                  <input
+                    id="is_featured"
+                    name="is_featured"
+                    type="checkbox"
+                    checked={formData.is_featured}
+                    onChange={handleInputChange}
+                    className="h-5 w-5 text-yellow-600 focus:ring-2 focus:ring-yellow-500 border-gray-300 rounded transition-colors duration-200"
+                  />
+                  <div className="flex items-center space-x-2">
+                    <FiStar className="w-5 h-5 text-yellow-600" />
+                    <label htmlFor="is_featured" className="text-sm font-medium text-gray-800">
+                      Make this a featured article
+                    </label>
+                  </div>
+                </div>
+                <p className="mt-2 text-xs text-gray-600 ml-8">
+                  Featured articles appear prominently at the top of your news section
+                </p>
+              </div>
 
-            {/* Preview */}
-            {formData.title && formData.content && (
-              <div className="border border-gray-200 rounded-lg p-4 ">
-                <h4 className="text-sm font-medium text-gray-900 mb-3">Preview:</h4>
-                <div className="bg-white rounded-lg p-4 border">
-                  {formData.is_featured && (
-                    <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 mb-2">
-                      Featured
-                    </span>
-                  )}
-                  {formData.image_url && (
-                    <div className="mb-3">
-                      <img
-                        src={formData.image_url}
-                        alt="Preview"
-                        className="w-full h-32 object-cover rounded-lg"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).style.display = 'none'
-                        }}
-                      />
-                    </div>
-                  )}
-                  <h5 className="font-semibold text-gray-900 text-lg mb-2">{formData.title}</h5>
-                  <p className="text-sm text-gray-600 whitespace-pre-wrap line-clamp-4">
-                    {formData.content}
+              {/* Content */}
+              <div className="bg-white/60 rounded-2xl p-6 backdrop-blur-sm">
+                <div className="flex items-center space-x-2 mb-6">
+                  <FiEdit2 className="w-5 h-5 text-orange-600" />
+                  <h4 className="text-lg font-bold text-gray-900">Article Content</h4>
+                </div>
+                <div>
+                  <label htmlFor="content" className="block text-sm font-bold text-gray-700 mb-2">
+                    Article Content *
+                  </label>
+                  <textarea
+                    id="content"
+                    name="content"
+                    value={formData.content}
+                    onChange={handleInputChange}
+                    required
+                    rows={10}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-200"
+                    placeholder="Write your article content here..."
+                  />
+                  <p className="mt-3 text-sm text-gray-600">
+                    Write your full article content. You can include multiple paragraphs.
                   </p>
                 </div>
               </div>
-            )}
 
-            <div className="flex justify-end space-x-3 pt-6">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:"
-                disabled={loading}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={loading || !formData.title || !formData.content}
-                className="px-4 py-2 bg-green-600 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? (editNews ? 'Updating...' : 'Publishing...') : (editNews ? 'Update Article' : 'Publish Article')}
-              </button>
-            </div>
-          </form>
+              {/* Preview */}
+              {formData.title && formData.content && (
+                <div className="bg-white/60 rounded-2xl p-6 backdrop-blur-sm">
+                  <div className="flex items-center space-x-2 mb-6">
+                    <FiEye className="w-5 h-5 text-orange-600" />
+                    <h4 className="text-lg font-bold text-gray-900">Preview</h4>
+                  </div>
+                  <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg border border-gray-200/50 p-6">
+                    {formData.is_featured && (
+                      <div className="inline-flex items-center px-4 py-2 text-sm font-bold rounded-xl shadow-sm bg-gradient-to-r from-yellow-400 to-orange-400 text-white mb-4">
+                        <FiStar className="w-4 h-4 mr-2" />
+                        Featured
+                      </div>
+                    )}
+                    {formData.image_url && (
+                      <div className="relative mb-4 overflow-hidden rounded-2xl">
+                        <img
+                          src={formData.image_url}
+                          alt="Preview"
+                          className="w-full h-48 object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none'
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                      </div>
+                    )}
+                    <h5 className="font-bold text-gray-900 text-xl mb-3 leading-tight">{formData.title}</h5>
+                    <div className="bg-white/60 rounded-xl p-4 backdrop-blur-sm">
+                      <p className="text-sm text-gray-700 whitespace-pre-wrap line-clamp-6 leading-relaxed">
+                        {formData.content}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex justify-end space-x-4 pt-6">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="px-6 py-3 bg-gray-100 text-gray-600 rounded-xl font-semibold hover:bg-gray-200 transition-colors duration-200"
+                  disabled={loading}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading || !formData.title || !formData.content}
+                  className="px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-semibold shadow-lg hover:from-orange-600 hover:to-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-105 flex items-center space-x-2"
+                >
+                  {loading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                      <span>{editNews ? 'Updating...' : 'Publishing...'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <FiSave className="w-4 h-4" />
+                      <span>{editNews ? 'Update Article' : 'Publish Article'}</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>

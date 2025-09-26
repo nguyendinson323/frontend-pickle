@@ -10,6 +10,7 @@ import {
   clearError
 } from '../../store/slices/stateMembershipSlice'
 import SimpleImageUpload from '../../components/common/SimpleImageUpload'
+import { FiHome, FiAward, FiUsers, FiCheckCircle, FiXCircle, FiClock, FiDollarSign, FiMail, FiPhone, FiGlobe, FiShield, FiFileText, FiCalendar, FiArrowRight, FiX, FiCamera, FiEdit, FiRefreshCw } from 'react-icons/fi'
 
 const StateMembership: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -135,97 +136,187 @@ const StateMembership: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="relative">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600 shadow-lg"></div>
+            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-blue-400/20 to-purple-400/20 animate-pulse"></div>
+          </div>
+          <div className="text-center">
+            <p className="text-xl font-bold text-gray-900 mb-1">Loading State Membership</p>
+            <p className="text-sm text-gray-600">Please wait while we fetch your data...</p>
+          </div>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-cyan-600 rounded-lg p-8 mb-8 text-white">
-        <h1 className="text-3xl font-bold mb-2">State Association Membership</h1>
-        <p className="text-blue-100">Manage your state pickleball association effectively</p>
-        {stateCommittee && (
-          <p className="text-blue-100 mt-2">
-            {stateCommittee.name} • {stateCommittee.president_name}
-          </p>
-        )}
-      </div>
-
-      {/* Error Display */}
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-          {error}
-        </div>
-      )}
-
-      {/* Tabs */}
-      <div className="border-b border-gray-200 mb-6">
-        <nav className="-mb-px flex space-x-8">
-          {(['overview', 'benefits', 'governance'] as const).map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`py-2 px-1 border-b-2 font-medium text-sm capitalize ${
-                activeTab === tab
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </nav>
-      </div>
-
-      {/* Tab Content */}
-      {activeTab === 'overview' && (
-        <div className="space-y-6">
-          {/* Current Status */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold mb-4">Association Status</h2>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="border rounded-lg p-4">
-                <p className="text-sm text-gray-500">Status</p>
-                <p className={`text-lg font-semibold ${
-                  affiliationStatus?.isActive ? 'text-green-600' : 'text-red-600'
-                }`}>
-                  {affiliationStatus?.isActive ? 'Active' : 'Inactive'}
-                </p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-white to-purple-50/30">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Modern Header */}
+        <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-purple-700 rounded-3xl shadow-2xl p-8 mb-8 text-white relative overflow-hidden backdrop-blur-sm">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-32 translate-x-32 blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-300/20 rounded-full translate-y-24 -translate-x-24 blur-2xl"></div>
+          <div className="relative z-10">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="bg-white/20 p-3 rounded-2xl backdrop-blur-sm shadow-lg">
+                <FiHome className="w-8 h-8 text-white" />
               </div>
-              <div className="border rounded-lg p-4">
-                <p className="text-sm text-gray-500">Member Since</p>
-                <p className="text-lg font-semibold">
-                  {affiliationStatus?.memberSince ? new Date(affiliationStatus.memberSince).getFullYear() : 'N/A'}
-                </p>
-              </div>
-              <div className="border rounded-lg p-4">
-                <p className="text-sm text-gray-500">Days Remaining</p>
-                <p className="text-lg font-semibold">
-                  {affiliationStatus?.daysRemaining || 0}
-                </p>
-              </div>
-              <div className="border rounded-lg p-4">
-                <p className="text-sm text-gray-500">Next Renewal</p>
-                <p className="text-lg font-semibold">
-                  {affiliationStatus?.expiresAt ? formatDate(affiliationStatus.expiresAt) : 'N/A'}
-                </p>
-              </div>
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">State Association Membership</h1>
             </div>
-            {affiliationStatus && !affiliationStatus.isActive && (
-              <div className="mt-4">
-                <button
-                  onClick={() => setShowRenewalModal(true)}
-                  disabled={loading}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                >
-                  Renew Affiliation
-                </button>
+            <p className="text-blue-100 text-lg mb-4">Manage your state pickleball association effectively with comprehensive tools and insights</p>
+            {stateCommittee && (
+              <div className="flex items-center space-x-4 bg-white/10 backdrop-blur-sm rounded-2xl p-4">
+                <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                  {stateCommittee.logo_url ? (
+                    <img src={stateCommittee.logo_url} alt="Logo" className="w-10 h-10 rounded-full object-cover" />
+                  ) : (
+                    <FiHome className="w-6 h-6 text-white" />
+                  )}
+                </div>
+                <div>
+                  <p className="font-semibold text-lg">{stateCommittee.name}</p>
+                  <p className="text-blue-200">{stateCommittee.president_name} • {stateCommittee.president_title}</p>
+                </div>
               </div>
             )}
           </div>
+        </div>
+
+        {/* Error Display */}
+        {error && (
+          <div className="bg-gradient-to-r from-red-50 to-red-100 border border-red-200 rounded-2xl p-4 mb-6 shadow-lg">
+            <div className="flex items-center space-x-3">
+              <div className="bg-red-500 p-2 rounded-full">
+                <FiXCircle className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="font-semibold text-red-800">Error</p>
+                <p className="text-red-700">{error}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modern Tabs */}
+        <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 p-2 mb-8">
+          <nav className="flex space-x-2">
+            {(
+              [
+                { key: 'overview', label: 'Overview', icon: FiHome },
+                { key: 'benefits', label: 'Benefits', icon: FiAward },
+                { key: 'governance', label: 'Governance', icon: FiShield }
+              ] as const
+            ).map((tab) => {
+              const IconComponent = tab.icon
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`flex items-center space-x-2 py-3 px-6 rounded-xl font-semibold text-sm transition-all duration-300 ${
+                    activeTab === tab.key
+                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transform scale-105'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100/60'
+                  }`}
+                >
+                  <IconComponent className="w-4 h-4" />
+                  <span>{tab.label}</span>
+                </button>
+              )
+            })}
+          </nav>
+        </div>
+
+        {/* Tab Content */}
+        {activeTab === 'overview' && (
+          <div className="space-y-8">
+            {/* Current Status */}
+            <div className="bg-gradient-to-br from-white to-blue-50/30 rounded-3xl shadow-xl border border-gray-200/50 p-8 backdrop-blur-sm">
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="bg-blue-500 p-3 rounded-2xl shadow-lg">
+                  <FiCheckCircle className="w-6 h-6 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900">Association Status</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg p-6 border border-gray-200/50 hover:shadow-xl transition-all duration-300">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className={`p-2 rounded-xl ${
+                      affiliationStatus?.isActive ? 'bg-green-100' : 'bg-red-100'
+                    }`}>
+                      {affiliationStatus?.isActive ? (
+                        <FiCheckCircle className="w-5 h-5 text-green-600" />
+                      ) : (
+                        <FiXCircle className="w-5 h-5 text-red-600" />
+                      )}
+                    </div>
+                    <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Status</p>
+                  </div>
+                  <p className={`text-2xl font-bold ${
+                    affiliationStatus?.isActive ? 'text-green-600' : 'text-red-600'
+                  }`}>
+                    {affiliationStatus?.isActive ? 'Active' : 'Inactive'}
+                  </p>
+                </div>
+                <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg p-6 border border-gray-200/50 hover:shadow-xl transition-all duration-300">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="bg-blue-100 p-2 rounded-xl">
+                      <FiCalendar className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Member Since</p>
+                  </div>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {affiliationStatus?.memberSince ? new Date(affiliationStatus.memberSince).getFullYear() : 'N/A'}
+                  </p>
+                </div>
+                <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg p-6 border border-gray-200/50 hover:shadow-xl transition-all duration-300">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="bg-orange-100 p-2 rounded-xl">
+                      <FiClock className="w-5 h-5 text-orange-600" />
+                    </div>
+                    <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Days Remaining</p>
+                  </div>
+                  <p className="text-2xl font-bold text-orange-600">
+                    {affiliationStatus?.daysRemaining || 0}
+                  </p>
+                </div>
+                <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg p-6 border border-gray-200/50 hover:shadow-xl transition-all duration-300">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="bg-purple-100 p-2 rounded-xl">
+                      <FiRefreshCw className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Next Renewal</p>
+                  </div>
+                  <p className="text-2xl font-bold text-purple-600">
+                    {affiliationStatus?.expiresAt ? formatDate(affiliationStatus.expiresAt) : 'N/A'}
+                  </p>
+                </div>
+              </div>
+              {affiliationStatus && !affiliationStatus.isActive && (
+                <div className="mt-8 p-6 bg-gradient-to-r from-red-50 to-red-100 rounded-2xl border border-red-200">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="bg-red-500 p-2 rounded-xl">
+                        <FiXCircle className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="font-bold text-red-800">Membership Expired</p>
+                        <p className="text-red-700">Renew your affiliation to continue accessing member benefits</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setShowRenewalModal(true)}
+                      disabled={loading}
+                      className="bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:from-red-600 hover:to-red-700 disabled:opacity-50 transition-all duration-200 hover:scale-105 flex items-center space-x-2"
+                    >
+                      <FiRefreshCw className="w-4 h-4" />
+                      <span>Renew Now</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
 
           {/* Committee Profile Information */}
           <div className="bg-white rounded-lg shadow p-6">
@@ -338,95 +429,131 @@ const StateMembership: React.FC = () => {
         </div>
       )}
 
-      {activeTab === 'benefits' && (
-        <div className="space-y-6">
-          {/* Annual Fee Information */}
-          {affiliationRequirements && (
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">Annual Affiliation</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="border rounded-lg p-4">
-                  <p className="text-sm text-gray-500">Annual Fee</p>
-                  <p className="text-3xl font-bold text-blue-600">
-                    {formatCurrency(affiliationRequirements.annualFee)}
-                  </p>
-                  <p className="text-sm text-gray-500">{affiliationRequirements.paymentSchedule}</p>
-                </div>
-                <div className="border rounded-lg p-4">
-                  <p className="text-sm text-gray-500">Current Status</p>
-                  <p className={`text-lg font-semibold ${
-                    affiliationStatus?.isActive ? 'text-green-600' : 'text-red-600'
-                  }`}>
-                    {affiliationStatus?.isActive ? 'Active' : 'Expired'}
-                  </p>
-                  {affiliationStatus?.expiresAt && (
-                    <p className="text-sm text-gray-500">
-                      Expires: {formatDate(affiliationStatus.expiresAt)}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Benefits */}
-          {affiliationRequirements && (
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">Federation Benefits</h2>
-              <div className="space-y-3">
-                {affiliationRequirements.benefits.map((benefit, index) => (
-                  <div key={index} className="flex items-center space-x-3">
-                    <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span>{benefit}</span>
+        {activeTab === 'benefits' && (
+          <div className="space-y-8">
+            {/* Annual Fee Information */}
+            {affiliationRequirements && (
+              <div className="bg-gradient-to-br from-white to-emerald-50/30 rounded-3xl shadow-xl border border-gray-200/50 p-8 backdrop-blur-sm">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="bg-emerald-500 p-3 rounded-2xl shadow-lg">
+                    <FiDollarSign className="w-6 h-6 text-white" />
                   </div>
-                ))}
+                  <h2 className="text-2xl font-bold text-gray-900">Annual Affiliation</h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg p-6 border border-gray-200/50 hover:shadow-xl transition-all duration-300">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <div className="bg-blue-100 p-2 rounded-xl">
+                        <FiDollarSign className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <p className="font-semibold text-gray-500 uppercase tracking-wider">Annual Fee</p>
+                    </div>
+                    <p className="text-4xl font-bold text-blue-600 mb-2">
+                      {formatCurrency(affiliationRequirements.annualFee)}
+                    </p>
+                    <p className="text-blue-700 font-medium">{affiliationRequirements.paymentSchedule}</p>
+                  </div>
+                  <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg p-6 border border-gray-200/50 hover:shadow-xl transition-all duration-300">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <div className={`p-2 rounded-xl ${
+                        affiliationStatus?.isActive ? 'bg-green-100' : 'bg-red-100'
+                      }`}>
+                        {affiliationStatus?.isActive ? (
+                          <FiCheckCircle className="w-5 h-5 text-green-600" />
+                        ) : (
+                          <FiXCircle className="w-5 h-5 text-red-600" />
+                        )}
+                      </div>
+                      <p className="font-semibold text-gray-500 uppercase tracking-wider">Current Status</p>
+                    </div>
+                    <p className={`text-2xl font-bold mb-2 ${
+                      affiliationStatus?.isActive ? 'text-green-600' : 'text-red-600'
+                    }`}>
+                      {affiliationStatus?.isActive ? 'Active' : 'Expired'}
+                    </p>
+                    {affiliationStatus?.expiresAt && (
+                      <div className="flex items-center space-x-2">
+                        <FiCalendar className="w-4 h-4 text-gray-500" />
+                        <p className="text-gray-600 font-medium">
+                          Expires: {formatDate(affiliationStatus.expiresAt)}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Support Services */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold mb-4">Federation Support</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center p-4 border rounded-lg">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                  </svg>
+            {/* Benefits */}
+            {affiliationRequirements && (
+              <div className="bg-gradient-to-br from-white to-green-50/30 rounded-3xl shadow-xl border border-gray-200/50 p-8 backdrop-blur-sm">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="bg-green-500 p-3 rounded-2xl shadow-lg">
+                    <FiAward className="w-6 h-6 text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-gray-900">Federation Benefits</h2>
                 </div>
-                <h3 className="font-medium mb-2">Technical Support</h3>
-                <p className="text-sm text-gray-600">24/7 platform support and training resources</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {affiliationRequirements.benefits.map((benefit, index) => (
+                    <div key={index} className="bg-gradient-to-r from-white to-gray-50 rounded-2xl p-4 shadow-lg border border-gray-200/50 hover:shadow-xl transition-all duration-300">
+                      <div className="flex items-start space-x-3">
+                        <div className="bg-green-100 p-2 rounded-lg flex-shrink-0 mt-1">
+                          <FiCheckCircle className="w-4 h-4 text-green-600" />
+                        </div>
+                        <p className="text-gray-800 font-medium leading-relaxed">{benefit}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="text-center p-4 border rounded-lg">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+            )}
+
+            {/* Support Services */}
+            <div className="bg-gradient-to-br from-white to-blue-50/30 rounded-3xl shadow-xl border border-gray-200/50 p-8 backdrop-blur-sm">
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="bg-blue-500 p-3 rounded-2xl shadow-lg">
+                  <FiShield className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="font-medium mb-2">Compliance Assistance</h3>
-                <p className="text-sm text-gray-600">Help meeting national federation standards</p>
+                <h2 className="text-2xl font-bold text-gray-900">Federation Support</h2>
               </div>
-              <div className="text-center p-4 border rounded-lg">
-                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="group">
+                  <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg p-6 text-center border border-gray-200/50 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <div className="bg-gradient-to-r from-blue-500 to-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform duration-200">
+                      <FiShield className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="font-bold text-lg text-gray-900 mb-3">Technical Support</h3>
+                    <p className="text-gray-600 leading-relaxed">24/7 platform support and comprehensive training resources for your team</p>
+                  </div>
                 </div>
-                <h3 className="font-medium mb-2">Growth Programs</h3>
-                <p className="text-sm text-gray-600">Resources to expand pickleball in your state</p>
+                <div className="group">
+                  <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg p-6 text-center border border-gray-200/50 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <div className="bg-gradient-to-r from-green-500 to-green-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform duration-200">
+                      <FiCheckCircle className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="font-bold text-lg text-gray-900 mb-3">Compliance Assistance</h3>
+                    <p className="text-gray-600 leading-relaxed">Expert help meeting national federation standards and requirements</p>
+                  </div>
+                </div>
+                <div className="group">
+                  <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg p-6 text-center border border-gray-200/50 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <div className="bg-gradient-to-r from-purple-500 to-purple-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform duration-200">
+                      <FiUsers className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="font-bold text-lg text-gray-900 mb-3">Growth Programs</h3>
+                    <p className="text-gray-600 leading-relaxed">Comprehensive resources to expand pickleball participation in your state</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {activeTab === 'governance' && (
-        <div className="space-y-6">
-          {/* Compliance Status */}
-          {complianceStatus && (
-            <div className="bg-white rounded-lg shadow p-6">
+        {activeTab === 'governance' && (
+          <div className="space-y-8">
+            {/* Compliance Status */}
+            {complianceStatus && (
+              <div className="bg-gradient-to-br from-white to-indigo-50/30 rounded-3xl shadow-xl border border-gray-200/50 p-8 backdrop-blur-sm">
               <h2 className="text-xl font-semibold mb-4">Compliance Requirements</h2>
               <div className="space-y-4">
                 <div className={`flex items-center justify-between p-3 ${complianceStatus.annualReport.completed ? 'bg-green-50' : 'bg-yellow-50'} rounded-lg`}>
@@ -575,189 +702,241 @@ const StateMembership: React.FC = () => {
         </div>
       )}
 
-      {/* Renewal Modal */}
-      {showRenewalModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
-          <div className="bg-white p-8 rounded-lg shadow-xl max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">Renew State Affiliation</h3>
-            <p className="text-gray-600 mb-4">
-              Annual affiliation fee: {affiliationRequirements ? formatCurrency(affiliationRequirements.annualFee) : '$2,500.00'}
-            </p>
-            <p className="text-gray-600 mb-6">
-              This will extend your state association membership for one year.
-            </p>
-            <div className="flex justify-end space-x-3">
-              <button
-                onClick={() => setShowRenewalModal(false)}
-                className="px-4 py-2 text-gray-500 border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleRenewalAffiliation}
-                disabled={loading}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-              >
-                {loading ? 'Processing...' : 'Renew Affiliation'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Edit Profile Modal */}
-      {showEditProfileModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-8 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
-            <div className="mt-3">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-medium text-gray-900">Edit Committee Profile</h3>
+        {/* Renewal Modal */}
+        {showRenewalModal && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full flex items-center justify-center z-50">
+            <div className="bg-gradient-to-br from-white to-blue-50 p-8 rounded-3xl shadow-2xl max-w-md w-full mx-4 border border-gray-200/50">
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="bg-blue-500 p-3 rounded-2xl">
+                  <FiRefreshCw className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900">Renew State Affiliation</h3>
+              </div>
+              <div className="bg-white/60 rounded-2xl p-4 mb-4 backdrop-blur-sm">
+                <div className="flex items-center space-x-3">
+                  <FiDollarSign className="w-5 h-5 text-blue-600" />
+                  <div>
+                    <p className="text-sm text-gray-600 font-medium">Annual affiliation fee</p>
+                    <p className="text-2xl font-bold text-blue-600">
+                      {affiliationRequirements ? formatCurrency(affiliationRequirements.annualFee) : '$2,500.00'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <p className="text-gray-700 mb-6 leading-relaxed">
+                This will extend your state association membership for one year and provide continued access to all federation benefits and support.
+              </p>
+              <div className="flex justify-end space-x-3">
                 <button
-                  onClick={() => setShowEditProfileModal(false)}
-                  className="text-gray-400 hover:text-gray-600"
+                  onClick={() => setShowRenewalModal(false)}
+                  className="px-6 py-3 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl font-semibold transition-colors duration-200"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  Cancel
+                </button>
+                <button
+                  onClick={handleRenewalAffiliation}
+                  disabled={loading}
+                  className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-105 flex items-center space-x-2"
+                >
+                  {loading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                      <span>Processing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <FiRefreshCw className="w-4 h-4" />
+                      <span>Renew Affiliation</span>
+                    </>
+                  )}
                 </button>
               </div>
-
-              <form onSubmit={handleUpdateProfile} className="space-y-6">
-                {/* Logo Upload */}
-                <div>
-                  <SimpleImageUpload
-                    fieldName="committee_logo_url"
-                    fileType="image"
-                    value={profileFormData.logo_url}
-                    onChange={handleLogoUpload}
-                    title="Committee Logo"
-                    className="bg-gray-50 border border-gray-200"
-                    enableCropping={true}
-                    aspectRatio={1}
-                    icon={
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                    }
-                  />
-                  <p className="mt-1 text-sm text-gray-500">
-                    Upload your committee's official logo (PNG, JPG up to 5MB)
-                  </p>
-                </div>
-
-                {/* Basic Information */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="president_name" className="block text-sm font-medium text-gray-700">
-                      President Name *
-                    </label>
-                    <input
-                      type="text"
-                      id="president_name"
-                      name="president_name"
-                      value={profileFormData.president_name}
-                      onChange={handleProfileFormChange}
-                      required
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="president_title" className="block text-sm font-medium text-gray-700">
-                      President Title
-                    </label>
-                    <input
-                      type="text"
-                      id="president_title"
-                      name="president_title"
-                      value={profileFormData.president_title}
-                      onChange={handleProfileFormChange}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
-                </div>
-
-                {/* Contact Information */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="institutional_email" className="block text-sm font-medium text-gray-700">
-                      Institutional Email
-                    </label>
-                    <input
-                      type="email"
-                      id="institutional_email"
-                      name="institutional_email"
-                      value={profileFormData.institutional_email}
-                      onChange={handleProfileFormChange}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                      Phone Number
-                    </label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      name="phone"
-                      value={profileFormData.phone}
-                      onChange={handleProfileFormChange}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="website" className="block text-sm font-medium text-gray-700">
-                      Website URL
-                    </label>
-                    <input
-                      type="url"
-                      id="website"
-                      name="website"
-                      value={profileFormData.website}
-                      onChange={handleProfileFormChange}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="social_media" className="block text-sm font-medium text-gray-700">
-                      Social Media
-                    </label>
-                    <input
-                      type="text"
-                      id="social_media"
-                      name="social_media"
-                      value={profileFormData.social_media}
-                      onChange={handleProfileFormChange}
-                      placeholder="Facebook, Instagram, etc."
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex justify-end space-x-3 pt-6">
-                  <button
-                    type="button"
-                    onClick={() => setShowEditProfileModal(false)}
-                    className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-                    disabled={loading}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="px-4 py-2 bg-blue-600 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {loading ? 'Saving...' : 'Save Changes'}
-                  </button>
-                </div>
-              </form>
             </div>
           </div>
-        </div>
-      )}
+        )}
+
+        {/* Edit Profile Modal */}
+        {showEditProfileModal && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full z-50">
+            <div className="relative top-8 mx-auto p-6 w-full max-w-2xl">
+              <div className="bg-gradient-to-br from-white to-purple-50 rounded-3xl shadow-2xl border border-gray-200/50">
+                <div className="p-8">
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center space-x-3">
+                      <div className="bg-purple-500 p-3 rounded-2xl">
+                        <FiEdit className="w-6 h-6 text-white" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-gray-900">Edit Committee Profile</h3>
+                    </div>
+                    <button
+                      onClick={() => setShowEditProfileModal(false)}
+                      className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-colors duration-200"
+                    >
+                      <FiX className="w-6 h-6" />
+                    </button>
+                  </div>
+
+                  <form onSubmit={handleUpdateProfile} className="space-y-8">
+                    {/* Logo Upload */}
+                    <div className="bg-white/60 rounded-2xl p-6 backdrop-blur-sm">
+                      <div className="flex items-center space-x-2 mb-4">
+                        <FiCamera className="w-5 h-5 text-purple-600" />
+                        <h4 className="text-lg font-bold text-gray-900">Committee Logo</h4>
+                      </div>
+                      <SimpleImageUpload
+                        fieldName="committee_logo_url"
+                        fileType="image"
+                        value={profileFormData.logo_url}
+                        onChange={handleLogoUpload}
+                        title="Committee Logo"
+                        className="bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-300 rounded-2xl"
+                        enableCropping={true}
+                        aspectRatio={1}
+                        icon={
+                          <FiCamera className="w-6 h-6" />
+                        }
+                      />
+                      <p className="mt-3 text-sm text-gray-600">
+                        Upload your committee's official logo (PNG, JPG up to 5MB)
+                      </p>
+                    </div>
+
+                    {/* Basic Information */}
+                    <div className="bg-white/60 rounded-2xl p-6 backdrop-blur-sm">
+                      <div className="flex items-center space-x-2 mb-4">
+                        <FiUsers className="w-5 h-5 text-purple-600" />
+                        <h4 className="text-lg font-bold text-gray-900">Basic Information</h4>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <label htmlFor="president_name" className="block text-sm font-bold text-gray-700 mb-2">
+                            President Name *
+                          </label>
+                          <input
+                            type="text"
+                            id="president_name"
+                            name="president_name"
+                            value={profileFormData.president_name}
+                            onChange={handleProfileFormChange}
+                            required
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200"
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="president_title" className="block text-sm font-bold text-gray-700 mb-2">
+                            President Title
+                          </label>
+                          <input
+                            type="text"
+                            id="president_title"
+                            name="president_title"
+                            value={profileFormData.president_title}
+                            onChange={handleProfileFormChange}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Contact Information */}
+                    <div className="bg-white/60 rounded-2xl p-6 backdrop-blur-sm">
+                      <div className="flex items-center space-x-2 mb-4">
+                        <FiMail className="w-5 h-5 text-purple-600" />
+                        <h4 className="text-lg font-bold text-gray-900">Contact Information</h4>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <label htmlFor="institutional_email" className="block text-sm font-bold text-gray-700 mb-2">
+                            Institutional Email
+                          </label>
+                          <input
+                            type="email"
+                            id="institutional_email"
+                            name="institutional_email"
+                            value={profileFormData.institutional_email}
+                            onChange={handleProfileFormChange}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200"
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="phone" className="block text-sm font-bold text-gray-700 mb-2">
+                            Phone Number
+                          </label>
+                          <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            value={profileFormData.phone}
+                            onChange={handleProfileFormChange}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200"
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                        <div>
+                          <label htmlFor="website" className="block text-sm font-bold text-gray-700 mb-2">
+                            Website URL
+                          </label>
+                          <input
+                            type="url"
+                            id="website"
+                            name="website"
+                            value={profileFormData.website}
+                            onChange={handleProfileFormChange}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200"
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="social_media" className="block text-sm font-bold text-gray-700 mb-2">
+                            Social Media
+                          </label>
+                          <input
+                            type="text"
+                            id="social_media"
+                            name="social_media"
+                            value={profileFormData.social_media}
+                            onChange={handleProfileFormChange}
+                            placeholder="Facebook, Instagram, etc."
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end space-x-4 pt-6">
+                      <button
+                        type="button"
+                        onClick={() => setShowEditProfileModal(false)}
+                        className="px-6 py-3 bg-gray-100 text-gray-600 rounded-xl font-semibold hover:bg-gray-200 transition-colors duration-200"
+                        disabled={loading}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className="px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:from-purple-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-105 flex items-center space-x-2"
+                      >
+                        {loading ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                            <span>Saving...</span>
+                          </>
+                        ) : (
+                          <>
+                            <FiCheckCircle className="w-4 h-4" />
+                            <span>Save Changes</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

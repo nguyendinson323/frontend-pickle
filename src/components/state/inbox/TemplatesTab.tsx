@@ -1,5 +1,6 @@
 import React from 'react'
 import { AnnouncementTemplate } from '../../../store/slices/stateInboxSlice'
+import { FiFileText, FiPlus, FiEdit3, FiTrash2, FiPlay, FiUsers } from 'react-icons/fi'
 
 interface TemplatesTabProps {
   templates: AnnouncementTemplate[]
@@ -43,83 +44,88 @@ const TemplatesTab: React.FC<TemplatesTabProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <div>
-          <h3 className="text-lg font-medium text-gray-900">Message Templates</h3>
-          <p className="text-sm text-gray-500">Create and manage reusable message templates for announcements</p>
+      <div className="flex justify-between items-center mb-8">
+        <div className="flex items-center space-x-4">
+          <div className="bg-gradient-to-br from-purple-500 to-indigo-600 p-4 rounded-2xl shadow-lg">
+            <FiFileText className="w-8 h-8 text-white" />
+          </div>
+          <div>
+            <h3 className="text-2xl font-bold bg-gradient-to-r from-gray-900 via-purple-800 to-indigo-900 bg-clip-text text-transparent">Message Templates</h3>
+            <p className="text-gray-600 mt-1 text-lg">Create and manage reusable message templates for announcements</p>
+          </div>
         </div>
         <button
           onClick={onCreateTemplate}
-          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center text-sm"
+          className="bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 text-white px-6 py-3 rounded-xl flex items-center shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 font-medium"
         >
-          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
+          <FiPlus className="w-5 h-5 mr-3" />
           Create Template
         </button>
       </div>
 
       {templates.length === 0 ? (
-        <div className="text-center py-12">
-          <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No templates</h3>
-          <p className="mt-1 text-sm text-gray-500">Get started by creating your first message template.</p>
+        <div className="text-center py-16">
+          <div className="bg-gradient-to-br from-purple-100 to-indigo-200 p-8 rounded-full mx-auto w-24 h-24 flex items-center justify-center shadow-lg">
+            <FiFileText className="w-12 h-12 text-purple-600" />
+          </div>
+          <h3 className="mt-6 text-xl font-bold text-gray-900">No templates</h3>
+          <p className="mt-3 text-gray-600 max-w-sm mx-auto leading-relaxed">Get started by creating your first message template to streamline your communications.</p>
         </div>
       ) : (
         templates.map((template) => (
-          <div 
-            key={template.id} 
-            className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow bg-white"
+          <div
+            key={template.id}
+            className="border border-gray-200/50 rounded-2xl p-6 hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm transform hover:scale-[1.02] shadow-lg"
           >
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
-                <div className="flex items-center space-x-3 mb-2">
-                  <h3 className="text-lg font-medium text-gray-900">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold text-gray-900">
                     {template.name}
                   </h3>
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getTargetAudienceColor(template.target_audience)}`}>
+                  <span className={`inline-flex items-center px-3 py-2 text-xs font-bold rounded-xl shadow-sm ${getTargetAudienceColor(template.target_audience)}`}>
+                    <FiUsers className="w-3 h-3 mr-1" />
                     {template.target_audience}
                   </span>
                 </div>
 
-                <div className="mb-3">
-                  <p className="text-sm text-gray-600">
-                    Subject: <span className="font-medium">{template.subject}</span>
+                <div className="mb-4">
+                  <p className="text-sm text-gray-700 flex items-center space-x-2">
+                    <span className="font-medium text-gray-500">Subject:</span>
+                    <span className="font-bold text-gray-900">{template.subject}</span>
                   </p>
-                  <p className="text-sm text-gray-500">
-                    Created: {formatDate(template.created_at)}
+                  <p className="text-sm text-gray-500 mt-2 flex items-center space-x-1">
+                    <span>📅</span>
+                    <span>Created: {formatDate(template.created_at)}</span>
                   </p>
                 </div>
 
-                <div className="mb-3">
-                  <p className="text-sm text-gray-700 line-clamp-3">
-                    {template.content.length > 200 
-                      ? `${template.content.substring(0, 200)}...`
+                <div className="mb-4">
+                  <p className="text-gray-700 line-clamp-3 leading-relaxed">
+                    {template.content.length > 250
+                      ? `${template.content.substring(0, 250)}...`
                       : template.content
                     }
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-2 ml-4">
+              <div className="flex items-center space-x-3 ml-6">
                 <button
                   onClick={() => onUseTemplate(template)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium"
+                  className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2 rounded-xl font-semibold flex items-center shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
                   title="Use this template"
                 >
+                  <FiPlay className="w-4 h-4 mr-2" />
                   Use Template
                 </button>
 
                 <button
                   onClick={() => onEditTemplate(template)}
-                  className="text-gray-600 hover:text-gray-800 text-sm font-medium"
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-700 p-2 rounded-xl transition-all duration-200 hover:scale-110 shadow-sm"
                   title="Edit template"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
+                  <FiEdit3 className="w-4 h-4" />
                 </button>
 
                 <button
@@ -128,12 +134,10 @@ const TemplatesTab: React.FC<TemplatesTabProps> = ({
                       onDeleteTemplate(template.id)
                     }
                   }}
-                  className="text-red-600 hover:text-red-800 text-sm font-medium"
+                  className="bg-red-100 hover:bg-red-200 text-red-700 p-2 rounded-xl transition-all duration-200 hover:scale-110 shadow-sm"
                   title="Delete template"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
+                  <FiTrash2 className="w-4 h-4" />
                 </button>
               </div>
             </div>

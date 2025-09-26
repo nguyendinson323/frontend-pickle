@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { FiHome, FiDollarSign, FiCalendar, FiUser, FiSettings, FiActivity, FiLoader, FiFolder, FiCheckCircle, FiClock, FiAlertCircle, FiStar, FiAward, FiShield, FiDownload, FiFileText, FiPhone } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState, AppDispatch } from '../../../../store'
@@ -89,27 +90,37 @@ export const StateMembershipTab: React.FC = () => {
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h3 className="text-lg font-medium text-gray-900">Membership & Affiliation</h3>
-          <p className="text-sm text-gray-600">Manage your federation membership and affiliation status</p>
-        </div>
-        <div className="flex space-x-3">
-          {affiliationStatus && !affiliationStatus.isActive || (affiliationStatus?.daysRemaining && affiliationStatus.daysRemaining < 60) ? (
+    <div className="space-y-8">
+      {/* Header Section with Modern Design */}
+      <div className="bg-gradient-to-br from-white to-amber-50 rounded-3xl shadow-2xl border-2 border-gray-200/50 p-8 backdrop-blur-sm">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
+          <div className="flex items-center space-x-6">
+            <div className="w-16 h-16 bg-gradient-to-br from-amber-600 to-yellow-600 rounded-3xl flex items-center justify-center shadow-xl">
+              <FiAward className="w-8 h-8 text-white" />
+            </div>
+            <div>
+              <h3 className="text-3xl font-bold bg-gradient-to-r from-amber-900 via-yellow-900 to-orange-900 bg-clip-text text-transparent mb-2">Membership & Affiliation Center</h3>
+              <p className="text-lg text-gray-600 font-medium">Comprehensive federation membership management and affiliation status tracking</p>
+            </div>
+          </div>
+          <div className="flex space-x-4">
+            {affiliationStatus && !affiliationStatus.isActive || (affiliationStatus?.daysRemaining && affiliationStatus.daysRemaining < 60) ? (
+              <button
+                onClick={handleRenewalClick}
+                className="flex items-center justify-center px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 text-white font-bold rounded-3xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+              >
+                <FiCheckCircle className="w-5 h-5 mr-3" />
+                Renew Membership
+              </button>
+            ) : null}
             <button
-              onClick={handleRenewalClick}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+              onClick={() => navigate('/state/membership')}
+              className="flex items-center justify-center px-8 py-4 border-2 border-amber-300 text-amber-700 font-bold rounded-3xl hover:bg-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-500 transform hover:scale-105 transition-all duration-300"
             >
-              Renew Membership
+              <FiSettings className="w-5 h-5 mr-3" />
+              Membership Details
             </button>
-          ) : null}
-          <button
-            onClick={() => navigate('/state/membership')}
-            className="px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500"
-          >
-            Membership Details
-          </button>
+          </div>
         </div>
       </div>
 

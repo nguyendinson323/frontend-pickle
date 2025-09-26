@@ -1,5 +1,6 @@
 import React from 'react'
 import { StateMessage } from '../../../store/slices/stateInboxSlice'
+import { FiMail, FiEye, FiCheck, FiTrash2, FiAlertCircle } from 'react-icons/fi'
 
 interface InboxTabProps {
   messages: StateMessage[]
@@ -52,82 +53,88 @@ const InboxTab: React.FC<InboxTabProps> = ({
   return (
     <div className="space-y-4">
       {messages.length === 0 ? (
-        <div className="text-center py-12">
-          <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0L12 8 4 13" />
-          </svg>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No messages</h3>
-          <p className="mt-1 text-sm text-gray-500">You have no received messages.</p>
+        <div className="text-center py-16">
+          <div className="bg-gradient-to-br from-blue-100 to-indigo-200 p-8 rounded-full mx-auto w-24 h-24 flex items-center justify-center shadow-lg">
+            <FiMail className="w-12 h-12 text-blue-600" />
+          </div>
+          <h3 className="mt-6 text-xl font-bold text-gray-900">No messages</h3>
+          <p className="mt-3 text-gray-600 max-w-sm mx-auto leading-relaxed">You have no received messages. New messages will appear here.</p>
         </div>
       ) : (
         messages.map((message) => (
-          <div 
-            key={message.id} 
-            className={`border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer ${
-              !message.is_read ? 'bg-blue-50 border-blue-200' : 'bg-white'
+          <div
+            key={message.id}
+            className={`border rounded-2xl p-6 hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-[1.02] ${
+              !message.is_read
+                ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 shadow-blue-100/50'
+                : 'bg-white/80 backdrop-blur-sm border-gray-200/50 shadow-lg'
             }`}
           >
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0" onClick={() => onViewMessage(message)}>
                 <div className="flex items-center space-x-3 mb-2">
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-3">
                     {!message.is_read && (
-                      <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                      <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full shadow-lg animate-pulse"></div>
                     )}
-                    <h3 className={`text-lg font-medium ${!message.is_read ? 'font-semibold text-gray-900' : 'text-gray-700'}`}>
+                    <h3 className={`text-xl font-bold ${!message.is_read ? 'text-gray-900' : 'text-gray-800'}`}>
                       {message.subject}
                     </h3>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getMessageTypeColor(message.message_type)}`}>
+                  <div className="flex items-center space-x-3">
+                    <span className={`inline-flex px-3 py-2 text-xs font-bold rounded-xl shadow-sm ${getMessageTypeColor(message.message_type)}`}>
                       {message.message_type === 'announcement' ? 'Announcement' : 'Direct'}
                     </span>
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getSenderRoleColor(message.sender.role)}`}>
+                    <span className={`inline-flex px-3 py-2 text-xs font-bold rounded-xl shadow-sm ${getSenderRoleColor(message.sender.role)}`}>
                       {message.sender.role.charAt(0).toUpperCase() + message.sender.role.slice(1)}
                     </span>
                   </div>
                 </div>
 
-                <div className="mb-3">
-                  <p className="text-sm text-gray-600">
-                    From: <span className="font-medium">{message.sender.username}</span> ({message.sender.email})
+                <div className="mb-4">
+                  <p className="text-sm text-gray-700 flex items-center space-x-2">
+                    <span className="font-medium text-gray-500">From:</span>
+                    <span className="font-bold text-gray-900">{message.sender.username}</span>
+                    <span className="text-gray-500">({message.sender.email})</span>
                   </p>
-                  <p className="text-sm text-gray-500">
-                    {formatDate(message.sent_at)}
+                  <p className="text-sm text-gray-500 mt-2 flex items-center space-x-1">
+                    <span>📅</span>
+                    <span>{formatDate(message.sent_at)}</span>
                   </p>
                 </div>
 
-                <div className="mb-3">
-                  <p className="text-sm text-gray-700 line-clamp-2">
-                    {message.content.length > 150 
-                      ? `${message.content.substring(0, 150)}...`
+                <div className="mb-4">
+                  <p className="text-gray-700 line-clamp-3 leading-relaxed">
+                    {message.content.length > 200
+                      ? `${message.content.substring(0, 200)}...`
                       : message.content
                     }
                   </p>
                 </div>
 
                 {message.message_type === 'announcement' && message.announcement_stats && (
-                  <div className="mb-3 p-2 bg-gray-50 rounded-lg">
-                    <p className="text-xs text-gray-600">
-                      Announcement Stats: {message.announcement_stats.total_recipients} recipients, {message.announcement_stats.delivered} delivered, {message.announcement_stats.read} read
+                  <div className="mb-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200/50">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <FiAlertCircle className="w-4 h-4 text-green-600" />
+                      <span className="text-sm font-semibold text-green-800">Announcement Statistics</span>
+                    </div>
+                    <p className="text-sm text-green-700">
+                      📊 {message.announcement_stats.total_recipients} recipients • ✅ {message.announcement_stats.delivered} delivered • 👁️ {message.announcement_stats.read} read
                     </p>
                   </div>
                 )}
               </div>
 
-              <div className="flex items-center space-x-2 ml-4">
+              <div className="flex items-center space-x-3 ml-6">
                 <button
                   onClick={(e) => {
                     e.stopPropagation()
                     onViewMessage(message)
                   }}
-                  className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                  className="bg-blue-100 hover:bg-blue-200 text-blue-700 p-2 rounded-xl transition-all duration-200 hover:scale-110 shadow-sm"
                   title="View message"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
+                  <FiEye className="w-4 h-4" />
                 </button>
 
                 {!message.is_read && (
@@ -136,12 +143,10 @@ const InboxTab: React.FC<InboxTabProps> = ({
                       e.stopPropagation()
                       onMarkAsRead(message.id)
                     }}
-                    className="text-green-600 hover:text-green-800 text-sm font-medium"
+                    className="bg-green-100 hover:bg-green-200 text-green-700 p-2 rounded-xl transition-all duration-200 hover:scale-110 shadow-sm"
                     title="Mark as read"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
+                    <FiCheck className="w-4 h-4" />
                   </button>
                 )}
 
@@ -152,12 +157,10 @@ const InboxTab: React.FC<InboxTabProps> = ({
                       onDeleteMessage(message.id)
                     }
                   }}
-                  className="text-red-600 hover:text-red-800 text-sm font-medium"
+                  className="bg-red-100 hover:bg-red-200 text-red-700 p-2 rounded-xl transition-all duration-200 hover:scale-110 shadow-sm"
                   title="Delete message"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
+                  <FiTrash2 className="w-4 h-4" />
                 </button>
               </div>
             </div>

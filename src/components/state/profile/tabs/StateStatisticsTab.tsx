@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import { FiBarChart2, FiTrendingUp, FiUsers, FiStar, FiDollarSign, FiActivity, FiLoader, FiFolder, FiPieChart, FiBarChart, FiTarget, FiAward, FiCalendar, FiDownload, FiEye, FiSettings } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState, AppDispatch } from '../../../../store'
@@ -38,18 +39,27 @@ export const StateStatisticsTab: React.FC = () => {
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h3 className="text-lg font-medium text-gray-900">Statistics</h3>
-          <p className="text-sm text-gray-600">Analyze your state committee's performance and growth</p>
+    <div className="space-y-8">
+      {/* Header Section with Modern Design */}
+      <div className="bg-gradient-to-br from-white to-purple-50 rounded-3xl shadow-2xl border-2 border-gray-200/50 p-8 backdrop-blur-sm">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
+          <div className="flex items-center space-x-6">
+            <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-3xl flex items-center justify-center shadow-xl">
+              <FiBarChart2 className="w-8 h-8 text-white" />
+            </div>
+            <div>
+              <h3 className="text-3xl font-bold bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 bg-clip-text text-transparent mb-2">Analytics Dashboard</h3>
+              <p className="text-lg text-gray-600 font-medium">Comprehensive performance analytics and growth insights for your state committee</p>
+            </div>
+          </div>
+          <button
+            onClick={() => navigate('/state/statistics')}
+            className="flex items-center justify-center px-8 py-4 bg-gradient-to-r from-purple-600 to-purple-700 text-white font-bold rounded-3xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+          >
+            <FiBarChart className="w-5 h-5 mr-3" />
+            View Full Analytics
+          </button>
         </div>
-        <button
-          onClick={() => navigate('/state/statistics')}
-          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
-        >
-          View Full Analytics
-        </button>
       </div>
 
       {/* Error Display */}

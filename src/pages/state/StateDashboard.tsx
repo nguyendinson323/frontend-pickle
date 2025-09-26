@@ -11,6 +11,7 @@ import {
   StateRecentActivity,
   StatePerformanceOverview
 } from '../../components/state/dashboard'
+import { FiHome, FiChevronRight, FiRefreshCw, FiClock, FiLoader } from 'react-icons/fi'
 
 const StateDashboardPage: React.FC = () => {
   const navigate = useNavigate()
@@ -57,30 +58,45 @@ const StateDashboardPage: React.FC = () => {
 
   if (!user || user.role !== 'state') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+        <div className="bg-white p-12 rounded-3xl shadow-2xl border-2 border-gray-100 text-center">
+          <div className="w-20 h-20 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl animate-pulse">
+            <FiLoader className="w-10 h-10 text-white animate-spin" />
+          </div>
+          <p className="text-xl font-bold text-gray-700">Loading State Dashboard...</p>
+        </div>
       </div>
     )
   }
 
   if (isLoading || !dashboardData) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+        <div className="bg-white p-12 rounded-3xl shadow-2xl border-2 border-gray-100 text-center">
+          <div className="w-20 h-20 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl animate-pulse">
+            <FiLoader className="w-10 h-10 text-white animate-spin" />
+          </div>
+          <p className="text-xl font-bold text-gray-700">Loading Dashboard Data...</p>
+        </div>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-red-600 text-lg font-medium">{error}</div>
-          <button 
-            onClick={handleRefresh} 
-            className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+      <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-orange-50 flex items-center justify-center">
+        <div className="bg-white p-12 rounded-3xl shadow-2xl border-2 border-red-100 text-center">
+          <div className="w-20 h-20 bg-gradient-to-r from-red-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
+            <span className="text-3xl text-white">⚠️</span>
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-4">Dashboard Error</h3>
+          <div className="text-red-600 text-lg font-medium mb-6">{error}</div>
+          <button
+            onClick={handleRefresh}
+            className="flex items-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl hover:shadow-xl transform hover:scale-105 transition-all duration-300 mx-auto"
           >
-            Retry
+            <FiRefreshCw className="w-5 h-5 mr-2" />
+            Retry Dashboard
           </button>
         </div>
       </div>
@@ -93,35 +109,30 @@ const StateDashboardPage: React.FC = () => {
   const recentActivity = dashboardData?.recentActivity || []
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation Breadcrumb */}
         <div className="mb-8">
           <nav className="flex" aria-label="Breadcrumb">
-            <ol className="flex items-center space-x-4">
+            <ol className="flex items-center space-x-3">
               <li>
                 <button
                   onClick={() => navigate('/')}
-                  className="text-gray-400 hover:text-gray-500 transition-colors"
+                  className="flex items-center px-4 py-2 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-2xl font-medium transition-all duration-300 border-2 border-transparent hover:border-indigo-200 shadow-lg hover:shadow-xl group"
                 >
+                  <FiHome className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-300" />
                   Home
                 </button>
               </li>
               <li>
                 <div className="flex items-center">
-                  <svg
-                    className="flex-shrink-0 h-5 w-5 text-gray-300"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    aria-hidden="true"
-                  >
-                    <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
-                  </svg>
-                  <span className="ml-4 text-sm font-medium text-gray-500" aria-current="page">
-                    State Dashboard
-                  </span>
+                  <FiChevronRight className="flex-shrink-0 h-5 w-5 text-gray-400 mx-2" />
+                  <div className="flex items-center px-4 py-2 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl border-2 border-purple-100 shadow-lg">
+                    <span className="text-sm font-bold text-purple-700" aria-current="page">
+                      State Dashboard
+                    </span>
+                  </div>
                 </div>
               </li>
             </ol>
@@ -130,82 +141,89 @@ const StateDashboardPage: React.FC = () => {
 
         {/* Dashboard Header with Controls */}
         <div className="mb-8">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">State Dashboard</h1>
-              <p className="text-gray-600">
-                {profile ? `${profile.name} - ${profile.state?.name || 'Unknown State'}` : 'Loading...'}
-              </p>
-            </div>
-            <div className="mt-4 lg:mt-0 flex flex-col sm:flex-row gap-4">
-              {/* Refresh Controls */}
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center text-sm text-gray-500">
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  Last updated: {lastRefresh.toLocaleTimeString()}
+          <div className="bg-white rounded-3xl shadow-2xl border-2 border-gray-100 p-8 bg-gradient-to-r from-indigo-50 via-white to-purple-50">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex items-center mb-6 lg:mb-0">
+                <div className="w-16 h-16 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center mr-6 shadow-xl">
+                  <span className="text-2xl text-white">🏛️</span>
                 </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="autoRefresh"
-                    checked={autoRefresh}
-                    onChange={(e) => setAutoRefresh(e.target.checked)}
-                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                  />
-                  <label htmlFor="autoRefresh" className="ml-2 text-sm text-gray-600">
-                    Auto-refresh
-                  </label>
+                <div>
+                  <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-900 via-purple-900 to-pink-900 bg-clip-text text-transparent mb-2">State Dashboard</h1>
+                  <p className="text-lg text-gray-600 font-medium">
+                    {profile ? `${profile.name} - ${profile.state?.name || 'Unknown State'}` : 'Loading...'}
+                  </p>
                 </div>
               </div>
-              <button
-                onClick={handleRefresh}
-                disabled={isLoading}
-                className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 transition-colors"
-              >
-                <svg 
-                  className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                Refresh
-              </button>
+              <div className="flex flex-col sm:flex-row gap-4">
+                {/* Refresh Controls */}
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                  <div className="bg-white p-4 rounded-2xl border-2 border-blue-100 shadow-lg">
+                    <div className="flex items-center text-sm text-blue-700 mb-2">
+                      <FiClock className="w-4 h-4 mr-2" />
+                      <span className="font-bold">Last updated: {lastRefresh.toLocaleTimeString()}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        id="autoRefresh"
+                        checked={autoRefresh}
+                        onChange={(e) => setAutoRefresh(e.target.checked)}
+                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                      />
+                      <label htmlFor="autoRefresh" className="ml-2 text-sm text-gray-700 font-medium">
+                        Auto-refresh
+                      </label>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleRefresh}
+                    disabled={isLoading}
+                    className="flex items-center px-6 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:transform-none"
+                  >
+                    <FiRefreshCw className={`w-5 h-5 mr-3 ${isLoading ? 'animate-spin' : ''}`} />
+                    {isLoading ? 'Refreshing...' : 'Refresh Data'}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Quick Navigation to State Profile Sections */}
-        <div className="bg-white rounded-lg shadow border border-gray-200 p-6 mb-8">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
+        <div className="bg-white rounded-3xl shadow-2xl border-2 border-gray-100 p-8 mb-8">
+          <div className="flex items-center mb-6">
+            <div className="w-12 h-12 bg-gradient-to-r from-orange-600 to-red-600 rounded-full flex items-center justify-center mr-4 shadow-xl">
+              <span className="text-xl text-white">⚡</span>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900">Quick Actions</h2>
+          </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
             {[
-              { label: 'Account', icon: '👤', path: '/state/account' },
-              { label: 'Inbox', icon: '📬', path: '/state/inbox' },
-              { label: 'Management', icon: '⚙️', path: '/state/management' },
-              { label: 'Microsite', icon: '🌐', path: '/state/microsite' },
-              { label: 'Statistics', icon: '📊', path: '/state/statistics' },
-              { label: 'Documents', icon: '📄', path: '/state/documents' },
-              { label: 'Affiliation', icon: '🏛️', path: '/state/affiliation' },
-              { label: 'Members', icon: '👥', path: '/state/member-management' }
+              { label: 'Account', icon: '👤', path: '/state/account', color: 'from-blue-500 to-blue-600' },
+              { label: 'Inbox', icon: '📬', path: '/state/inbox', color: 'from-green-500 to-green-600' },
+              { label: 'Management', icon: '⚙️', path: '/state/management', color: 'from-purple-500 to-purple-600' },
+              { label: 'Microsite', icon: '🌐', path: '/state/microsite', color: 'from-indigo-500 to-indigo-600' },
+              { label: 'Statistics', icon: '📊', path: '/state/statistics', color: 'from-yellow-500 to-orange-600' },
+              { label: 'Documents', icon: '📄', path: '/state/documents', color: 'from-red-500 to-pink-600' },
+              { label: 'Affiliation', icon: '🏛️', path: '/state/affiliation', color: 'from-teal-500 to-cyan-600' },
+              { label: 'Members', icon: '👥', path: '/state/member-management', color: 'from-pink-500 to-rose-600' }
             ].map((action) => (
               <button
                 key={action.label}
                 onClick={() => navigate(action.path)}
-                className="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 transition-colors group"
+                className="flex flex-col items-center p-6 rounded-2xl bg-gradient-to-br from-gray-50 to-white border-2 border-gray-200 hover:border-gray-300 hover:shadow-xl transition-all duration-300 transform hover:scale-105 group"
               >
-                <span className="text-2xl mb-2 group-hover:scale-110 transition-transform">{action.icon}</span>
-                <span className="text-sm font-medium text-gray-700 group-hover:text-indigo-700 text-center">{action.label}</span>
+                <div className={`w-12 h-12 bg-gradient-to-r ${action.color} rounded-full flex items-center justify-center mb-3 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110`}>
+                  <span className="text-xl text-white">{action.icon}</span>
+                </div>
+                <span className="text-sm font-bold text-gray-700 group-hover:text-gray-900 text-center">{action.label}</span>
               </button>
             ))}
           </div>
         </div>
 
         {dashboardData && (
-          <>
+          <div className="animate-fade-in">
             <StateStatsGrid stateData={dashboardData} />
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
@@ -234,7 +252,7 @@ const StateDashboardPage: React.FC = () => {
               tournamentParticipation: dashboardData.stats.tournamentParticipation,
               nationalRanking: dashboardData.stats.nationalRanking
             }} />
-          </>
+          </div>
         )}
       </div>
     </div>

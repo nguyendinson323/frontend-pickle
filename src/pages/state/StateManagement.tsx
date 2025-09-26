@@ -14,6 +14,7 @@ import {
   StateClub,
   StatePartner
 } from '../../store/slices/stateManagementSlice'
+import { FiSettings } from 'react-icons/fi'
 
 import ManagementHeader from '../../components/state/management/ManagementHeader'
 import ManagementTabs from '../../components/state/management/ManagementTabs'
@@ -188,10 +189,16 @@ const StateManagement: React.FC = () => {
   const renderTabContent = useMemo(() => {
     if (loading || isRefreshing) {
       return (
-        <div className="flex items-center justify-center py-12">
+        <div className="flex items-center justify-center py-16">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-2 text-gray-600">Loading...</p>
+            <div className="relative">
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-100 mx-auto"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent absolute inset-0"></div>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <FiSettings className="w-6 h-6 text-blue-600 animate-pulse" />
+              </div>
+            </div>
+            <p className="mt-4 text-gray-600 font-medium">Loading management data...</p>
           </div>
         </div>
       )
@@ -242,12 +249,18 @@ const StateManagement: React.FC = () => {
   // Show loading state only on initial load or when user is not authenticated
   if ((loading || isRefreshing) && (!tournaments || tournaments.length === 0) && !error) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-4 text-gray-600">Loading state management data...</p>
+              <div className="relative">
+                <div className="animate-spin rounded-full h-32 w-32 border-4 border-blue-100"></div>
+                <div className="animate-spin rounded-full h-32 w-32 border-4 border-blue-600 border-t-transparent absolute inset-0"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <FiSettings className="w-12 h-12 text-blue-600 animate-pulse" />
+                </div>
+              </div>
+              <p className="mt-6 text-gray-700 text-lg font-semibold">Loading state management data...</p>
             </div>
           </div>
         </div>
@@ -258,10 +271,17 @@ const StateManagement: React.FC = () => {
   // Redirect if user is not authorized
   if (user && user.role !== 'state') {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-red-50 to-rose-100 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-            <p>Access denied. You must be a state committee member to view this page.</p>
+          <div className="bg-gradient-to-r from-red-50 to-red-100 border border-red-200 text-red-700 px-6 py-4 rounded-xl shadow-lg backdrop-blur-sm">
+            <div className="flex items-center space-x-3">
+              <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+                <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM10 18a8 8 0 100-16 8 8 0 000 16z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <p className="font-semibold">Access denied. You must be a state committee member to view this page.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -269,7 +289,7 @@ const StateManagement: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <ManagementHeader
           stats={stats}
@@ -277,8 +297,15 @@ const StateManagement: React.FC = () => {
         />
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
-            {error}
+          <div className="bg-gradient-to-r from-red-50 to-red-100 border border-red-200 text-red-700 px-6 py-4 rounded-xl shadow-lg backdrop-blur-sm mb-8">
+            <div className="flex items-center space-x-3">
+              <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <span className="font-semibold">{error}</span>
+            </div>
           </div>
         )}
 
@@ -291,7 +318,7 @@ const StateManagement: React.FC = () => {
           partnersCount={partners.length}
         />
 
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-8 hover:shadow-2xl transition-all duration-300">
           {renderTabContent}
         </div>
 

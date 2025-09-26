@@ -1,5 +1,6 @@
 import React, { useMemo, useCallback, useState } from 'react'
 import { StateTournament } from '../../../store/slices/stateManagementSlice'
+import { FiAward, FiEye, FiEdit3, FiTrash2, FiCalendar, FiMapPin, FiUsers, FiDollarSign } from 'react-icons/fi'
 
 interface TournamentsTabProps {
   tournaments: StateTournament[]
@@ -90,35 +91,35 @@ const TournamentsTab: React.FC<TournamentsTabProps> = React.memo(({
   return (
     <div className="space-y-4">
       {tournaments.length === 0 ? (
-        <div className="text-center py-12">
-          <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-          </svg>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No tournaments</h3>
-          <p className="mt-1 text-sm text-gray-500">Get started by creating your first state tournament.</p>
+        <div className="text-center py-16">
+          <div className="bg-gradient-to-br from-blue-100 to-indigo-200 p-8 rounded-full mx-auto w-24 h-24 flex items-center justify-center shadow-lg">
+            <FiAward className="w-12 h-12 text-blue-600" />
+          </div>
+          <h3 className="mt-6 text-xl font-bold text-gray-900">No tournaments</h3>
+          <p className="mt-3 text-gray-600 max-w-sm mx-auto leading-relaxed">Get started by creating your first state tournament to engage your community.</p>
         </div>
       ) : (
         validTournaments.map((tournament) => (
-          <div key={tournament.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between mb-4">
+          <div key={tournament.id} className="border border-gray-200/50 rounded-2xl p-8 hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm transform hover:scale-[1.02] shadow-lg">
+            <div className="flex items-center justify-between mb-6">
               <div className="flex-1">
-                <div className="flex items-center space-x-3 mb-2">
-                  <h3 className="text-lg font-semibold text-gray-900">
+                <div className="flex items-center space-x-4 mb-3">
+                  <h3 className="text-2xl font-bold text-gray-900">
                     {tournament.name || 'Unnamed Tournament'}
                   </h3>
                   {tournament.status && (
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(tournament.status)}`}>
+                    <span className={`inline-flex px-3 py-2 text-sm font-bold rounded-xl shadow-sm ${getStatusColor(tournament.status)}`}>
                       {tournament.status.charAt(0).toUpperCase() + tournament.status.slice(1)}
                     </span>
                   )}
                   {tournament.organizer_type && (
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getOrganizerColor(tournament.organizer_type)}`}>
+                    <span className={`inline-flex px-3 py-2 text-sm font-bold rounded-xl shadow-sm ${getOrganizerColor(tournament.organizer_type)}`}>
                       {tournament.organizer_type.charAt(0).toUpperCase() + tournament.organizer_type.slice(1)} Tournament
                     </span>
                   )}
                 </div>
                 {tournament.tournament_type && (
-                  <p className="text-sm text-gray-600">{tournament.tournament_type} Tournament</p>
+                  <p className="text-gray-600 font-medium">{tournament.tournament_type} Tournament</p>
                 )}
               </div>
               
@@ -152,11 +153,11 @@ const TournamentsTab: React.FC<TournamentsTabProps> = React.memo(({
             </div>
 
             {tournament.banner_url && (
-              <div className="mb-4">
+              <div className="mb-6">
                 <img
                   src={tournament.banner_url}
                   alt={`${tournament.name} banner`}
-                  className="w-full h-32 object-cover rounded-lg"
+                  className="w-full h-40 object-cover rounded-xl shadow-lg"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.style.display = 'none';
@@ -166,44 +167,59 @@ const TournamentsTab: React.FC<TournamentsTabProps> = React.memo(({
             )}
 
             {tournament.description && (
-              <p className="text-gray-600 mb-4">{tournament.description}</p>
+              <p className="text-gray-700 mb-6 leading-relaxed">{tournament.description}</p>
             )}
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-              <div>
-                <div className="text-sm text-gray-500">Tournament Dates</div>
-                <div className="font-medium">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
+              <div className="bg-blue-50 p-4 rounded-xl">
+                <div className="flex items-center space-x-2 mb-2">
+                  <FiCalendar className="w-4 h-4 text-blue-600" />
+                  <div className="text-sm text-blue-700 font-semibold">Tournament Dates</div>
+                </div>
+                <div className="font-bold text-gray-900">
                   {tournament.start_date && tournament.end_date
                     ? `${formatDate(tournament.start_date)} - ${formatDate(tournament.end_date)}`
                     : 'Dates not set'
                   }
                 </div>
               </div>
-              <div>
-                <div className="text-sm text-gray-500">Registration</div>
-                <div className="font-medium">
+              <div className="bg-green-50 p-4 rounded-xl">
+                <div className="flex items-center space-x-2 mb-2">
+                  <FiCalendar className="w-4 h-4 text-green-600" />
+                  <div className="text-sm text-green-700 font-semibold">Registration</div>
+                </div>
+                <div className="font-bold text-gray-900">
                   {tournament.registration_start && tournament.registration_end
                     ? `${formatDate(tournament.registration_start)} - ${formatDate(tournament.registration_end)}`
                     : 'Registration not set'
                   }
                 </div>
               </div>
-              <div>
-                <div className="text-sm text-gray-500">Participants</div>
-                <div className="font-medium">{tournament.registration_count || 0}</div>
+              <div className="bg-purple-50 p-4 rounded-xl">
+                <div className="flex items-center space-x-2 mb-2">
+                  <FiUsers className="w-4 h-4 text-purple-600" />
+                  <div className="text-sm text-purple-700 font-semibold">Participants</div>
+                </div>
+                <div className="font-bold text-gray-900">{tournament.registration_count || 0}</div>
               </div>
-              <div>
-                <div className="text-sm text-gray-500">Revenue</div>
-                <div className="font-medium">{formatCurrency(tournament.revenue)}</div>
+              <div className="bg-orange-50 p-4 rounded-xl">
+                <div className="flex items-center space-x-2 mb-2">
+                  <FiDollarSign className="w-4 h-4 text-orange-600" />
+                  <div className="text-sm text-orange-700 font-semibold">Revenue</div>
+                </div>
+                <div className="font-bold text-gray-900">{formatCurrency(tournament.revenue)}</div>
               </div>
             </div>
 
             {tournament.venue_name && (
-              <div className="mb-4">
-                <div className="text-sm text-gray-500">Venue</div>
-                <div className="font-medium">{tournament.venue_name}</div>
+              <div className="mb-6 p-4 bg-gray-50 rounded-xl">
+                <div className="flex items-center space-x-2 mb-2">
+                  <FiMapPin className="w-4 h-4 text-gray-600" />
+                  <div className="text-sm text-gray-600 font-semibold">Venue</div>
+                </div>
+                <div className="font-bold text-gray-900">{tournament.venue_name}</div>
                 {tournament.venue_address && (
-                  <div className="text-sm text-gray-600">{tournament.venue_address}</div>
+                  <div className="text-gray-700 mt-1">{tournament.venue_address}</div>
                 )}
               </div>
             )}
@@ -230,25 +246,24 @@ const TournamentsTab: React.FC<TournamentsTabProps> = React.memo(({
                 )}
               </div>
 
-              <div className="flex space-x-2">
+              <div className="flex space-x-3">
                 <button
                   onClick={() => onViewTournament(tournament)}
-                  className="text-blue-600 hover:text-blue-900 text-sm font-medium"
+                  className="bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-2 rounded-xl font-semibold flex items-center space-x-2 transition-all duration-200 hover:scale-105"
                 >
-                  View Details
+                  <FiEye className="w-4 h-4" />
+                  <span>View Details</span>
                 </button>
                 {/* Only show edit/delete for state-organized tournaments */}
                 {tournament.organizer_type === 'state' && (
                   <>
                     <button
                       onClick={() => onEditTournament(tournament)}
-                      className="text-green-600 hover:text-green-900 text-sm font-medium inline-flex items-center"
+                      className="bg-green-100 hover:bg-green-200 text-green-700 p-2 rounded-xl transition-all duration-200 hover:scale-110 shadow-sm"
                       title="Edit Tournament"
                       disabled={changingStatus === tournament.id}
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
+                      <FiEdit3 className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => {
@@ -259,13 +274,11 @@ const TournamentsTab: React.FC<TournamentsTabProps> = React.memo(({
                           onDeleteTournament(tournament.id)
                         }
                       }}
-                      className="text-red-600 hover:text-red-900 text-sm font-medium inline-flex items-center"
+                      className="bg-red-100 hover:bg-red-200 text-red-700 p-2 rounded-xl transition-all duration-200 hover:scale-110 shadow-sm"
                       title="Delete Tournament"
                       disabled={changingStatus === tournament.id}
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
+                      <FiTrash2 className="w-4 h-4" />
                     </button>
                   </>
                 )}

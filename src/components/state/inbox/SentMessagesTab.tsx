@@ -1,5 +1,6 @@
 import React from 'react'
 import { StateMessage } from '../../../store/slices/stateInboxSlice'
+import { FiSend, FiEye, FiTrash2, FiUsers, FiAlertCircle } from 'react-icons/fi'
 
 interface SentMessagesTabProps {
   messages: StateMessage[]
@@ -48,92 +49,96 @@ const SentMessagesTab: React.FC<SentMessagesTabProps> = ({
   return (
     <div className="space-y-4">
       {messages.length === 0 ? (
-        <div className="text-center py-12">
-          <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-          </svg>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No sent messages</h3>
-          <p className="mt-1 text-sm text-gray-500">You haven't sent any messages yet.</p>
+        <div className="text-center py-16">
+          <div className="bg-gradient-to-br from-green-100 to-emerald-200 p-8 rounded-full mx-auto w-24 h-24 flex items-center justify-center shadow-lg">
+            <FiSend className="w-12 h-12 text-green-600" />
+          </div>
+          <h3 className="mt-6 text-xl font-bold text-gray-900">No sent messages</h3>
+          <p className="mt-3 text-gray-600 max-w-sm mx-auto leading-relaxed">You haven't sent any messages yet. Sent messages will appear here.</p>
         </div>
       ) : (
         messages.map((message) => (
-          <div 
-            key={message.id} 
-            className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer bg-white"
+          <div
+            key={message.id}
+            className="border border-gray-200/50 rounded-2xl p-6 hover:shadow-xl transition-all duration-300 cursor-pointer bg-white/80 backdrop-blur-sm transform hover:scale-[1.02] shadow-lg"
           >
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0" onClick={() => onViewMessage(message)}>
-                <div className="flex items-center space-x-3 mb-2">
-                  <h3 className="text-lg font-medium text-gray-900">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold text-gray-900">
                     {message.subject}
                   </h3>
-                  <div className="flex items-center space-x-2">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getMessageTypeColor(message.message_type)}`}>
+                  <div className="flex items-center space-x-3">
+                    <span className={`inline-flex px-3 py-2 text-xs font-bold rounded-xl shadow-sm ${getMessageTypeColor(message.message_type)}`}>
                       {message.message_type === 'announcement' ? 'Announcement' : 'Direct'}
                     </span>
                     {message.recipients && message.recipients.length > 0 && (
-                      <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                      <span className="inline-flex items-center px-3 py-2 text-xs font-bold rounded-xl shadow-sm bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-800">
+                        <FiUsers className="w-3 h-3 mr-1" />
                         {message.recipients.length} Recipient{message.recipients.length > 1 ? 's' : ''}
                       </span>
                     )}
                   </div>
                 </div>
 
-                <div className="mb-3">
+                <div className="mb-4">
                   {message.recipients && message.recipients.length > 0 ? (
-                    <p className="text-sm text-gray-600">
-                      To: 
+                    <p className="text-sm text-gray-700 flex items-center space-x-2">
+                      <span className="font-medium text-gray-500">To:</span>
                       {message.recipients.length === 1 ? (
-                        <span className="font-medium">
-                          {message.recipients[0].recipient.username} ({message.recipients[0].recipient.email})
+                        <span className="font-bold text-gray-900">
+                          {message.recipients[0].recipient.username} <span className="text-gray-500">({message.recipients[0].recipient.email})</span>
                         </span>
                       ) : (
-                        <span className="font-medium">
+                        <span className="font-bold text-indigo-700">
                           {message.recipients.length} Recipients
                         </span>
                       )}
                     </p>
                   ) : (
-                    <p className="text-sm text-gray-600">
-                      To: <span className="font-medium">Unknown Recipients</span>
+                    <p className="text-sm text-gray-700 flex items-center space-x-2">
+                      <span className="font-medium text-gray-500">To:</span>
+                      <span className="font-bold text-gray-900">Unknown Recipients</span>
                     </p>
                   )}
-                  <p className="text-sm text-gray-500">
-                    Sent: {formatDate(message.sent_at)}
+                  <p className="text-sm text-gray-500 mt-2 flex items-center space-x-1">
+                    <span>📅</span>
+                    <span>Sent: {formatDate(message.sent_at)}</span>
                   </p>
                 </div>
 
-                <div className="mb-3">
-                  <p className="text-sm text-gray-700 line-clamp-2">
-                    {message.content.length > 150 
-                      ? `${message.content.substring(0, 150)}...`
+                <div className="mb-4">
+                  <p className="text-gray-700 line-clamp-3 leading-relaxed">
+                    {message.content.length > 200
+                      ? `${message.content.substring(0, 200)}...`
                       : message.content
                     }
                   </p>
                 </div>
 
                 {message.message_type === 'announcement' && message.announcement_stats && (
-                  <div className="mb-3 p-2 bg-gray-50 rounded-lg">
-                    <p className="text-xs text-gray-600">
-                      Announcement Stats: {message.announcement_stats.total_recipients} recipients, {message.announcement_stats.delivered} delivered, {message.announcement_stats.read} read
+                  <div className="mb-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200/50">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <FiAlertCircle className="w-4 h-4 text-green-600" />
+                      <span className="text-sm font-semibold text-green-800">Announcement Statistics</span>
+                    </div>
+                    <p className="text-sm text-green-700">
+                      📊 {message.announcement_stats.total_recipients} recipients • ✅ {message.announcement_stats.delivered} delivered • 👁️ {message.announcement_stats.read} read
                     </p>
                   </div>
                 )}
               </div>
 
-              <div className="flex items-center space-x-2 ml-4">
+              <div className="flex items-center space-x-3 ml-6">
                 <button
                   onClick={(e) => {
                     e.stopPropagation()
                     onViewMessage(message)
                   }}
-                  className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                  className="bg-blue-100 hover:bg-blue-200 text-blue-700 p-2 rounded-xl transition-all duration-200 hover:scale-110 shadow-sm"
                   title="View message"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
+                  <FiEye className="w-4 h-4" />
                 </button>
 
                 <button
@@ -143,12 +148,10 @@ const SentMessagesTab: React.FC<SentMessagesTabProps> = ({
                       onDeleteMessage(message.id)
                     }
                   }}
-                  className="text-red-600 hover:text-red-800 text-sm font-medium"
+                  className="bg-red-100 hover:bg-red-200 text-red-700 p-2 rounded-xl transition-all duration-200 hover:scale-110 shadow-sm"
                   title="Delete message"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
+                  <FiTrash2 className="w-4 h-4" />
                 </button>
               </div>
             </div>
